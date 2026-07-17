@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter and local tooling
+.ipynb_checkpoints/
+.idea/
+.vscode/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Models, datasets, indexes and experiment outputs
+models/
+checkpoints/
+datasets/
+data/
+corpus/
+indexes/
+faiss_index/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+*.sqlite
+*.db
+
+# Logs, caches and generated artifacts
+logs/
+outputs/
+results/
+wandb/
+mlruns/
+*.log
+*.tmp
+*.cache
+*.jsonl
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Preserved nested repository metadata (kept locally, never committed)
+**/.git.upstream/
