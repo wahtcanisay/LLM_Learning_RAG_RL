@@ -44,7 +44,15 @@ class MedRAG:
     # Day 1 代码入口：MedRAG 负责把“模型、检索器、Prompt、答案生成”串成一个调用接口。
     # 学习时先沿着 __init__ → RetrievalSystem → answer → generate 追踪数据流。
 
-    def __init__(self, llm_name="OpenAI/gpt-3.5-turbo-16k", rag=True, follow_up=False, retriever_name="MedCPT", corpus_name="Textbooks", db_dir="./corpus", cache_dir=None, corpus_cache=False, HNSW=False):
+    def __init__(self, llm_name="OpenAI/gpt-3.5-turbo-16k", 
+                 rag=True, 
+                 follow_up=False, 
+                 retriever_name="MedCPT", 
+                 corpus_name="Textbooks", 
+                 db_dir="./corpus", 
+                 cache_dir=None, 
+                 corpus_cache=False, 
+                 HNSW=False):
         # 这些参数决定本次运行使用什么生成模型、是否检索、检索后端、语料库和索引目录。
         self.llm_name = llm_name
         self.rag = rag
@@ -56,7 +64,11 @@ class MedRAG:
         # rag=True 会在初始化阶段创建 RetrievalSystem；它可能进一步下载语料或构建索引。
         # rag=False 不创建检索器，后面的 medrag_answer 会走 No-RAG（仅生成）路径。
         if rag:
-            self.retrieval_system = RetrievalSystem(self.retriever_name, self.corpus_name, self.db_dir, cache=corpus_cache, HNSW=HNSW)
+            self.retrieval_system = RetrievalSystem(self.retriever_name, 
+                                                    self.corpus_name, 
+                                                    self.db_dir, 
+                                                    cache=corpus_cache, 
+                                                    HNSW=HNSW)
         else:
             self.retrieval_system = None
         # 模板只负责组织消息文本，不负责检索；真正渲染发生在 medrag_answer 中。
@@ -176,9 +188,10 @@ class MedRAG:
                     **kwargs
                 )
             else:
+                # self.model就是init当中定义好的pipeline
                 response = self.model(
                     prompt,
-                    do_sample=False,
+                    do_sample=False, # 确定性采样，关闭随机采样
                     eos_token_id=self.tokenizer.eos_token_id,
                     pad_token_id=self.tokenizer.eos_token_id,
                     max_length=self.max_length,
@@ -195,7 +208,12 @@ class MedRAG:
         question (str): question to be answered
         options (Dict[str, str]): options to be chosen from
         k (int): number of snippets to retrieve
-        rrf_k (int): parameter for Reciprocal Rank Fusion
+
+        rrf_k (int): Reciprocal Rank Fusion 的平滑常数，计算公式如下：
+                        RRF_score += 1 / (rrf_k + rank + 1) rank越靠前贡献越大，
+                        rrf_k越小，就强调第一名和前几名
+                        rrf_k越大，不同排名之间的分数差距越小
+                        
         save_dir (str): directory to save the results
         snippets (List[Dict]): list of snippets to be used
         snippets_ids (List[Dict]): list of snippet ids to be used
