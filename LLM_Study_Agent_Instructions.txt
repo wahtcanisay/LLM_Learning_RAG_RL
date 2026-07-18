@@ -13,17 +13,33 @@
 三、总学习路线
 必须按以下顺序推进，不要随意跳阶段：
 
-阶段 1：MedRAG 复现
+阶段 1：MedRAG 基础检索复现
 目标：掌握医学 RAG 的语料、检索、生成和评测流程。
 建议内容：
 1. 跑通 MedRAG 官方最小示例。
 2. 使用较小医学语料或官方语料子集，避免一开始下载全部 PubMed。
 3. 使用 Qwen 3B/4B 作为本地生成模型。
-4. 对比 No-RAG、BM25、Dense、Hybrid、Iterative RAG。
+4. 对比 No-RAG、BM25、Dense、Hybrid、Hybrid + Reranker。
 5. 记录 Recall@k、MRR、问答准确率、运行时间和显存占用。
 6. 输出可复现的环境文件、运行命令、实验表格和失败记录。
 
-阶段 2：MedicalGPT 的 LoRA/QLoRA SFT
+阶段 2：R2RAG 动态路由与迭代检索
+目标：学习根据问题难度决定检索轮数、查询改写和停止时机。
+建议内容：
+1. 先跑通官方流程，再把控制逻辑迁移到 MedRAG 的统一 Retriever 接口。
+2. 第一版固定使用 Hybrid Retrieval，避免同时改变多个变量。
+3. 对比固定单轮、固定多轮和动态路由。
+4. 记录正确率、平均检索轮数、延迟、token 消耗和停止错误。
+
+阶段 3：LinearRAG 图结构检索与医学迁移
+目标：学习轻量图结构检索，并验证其对医学跨实体、多跳问题的价值。
+建议内容：
+1. 先在官方数据上跑通索引构建和检索。
+2. 通过统一接口实现 LinearGraphRetriever。
+3. 在医学语料子集上比较 BM25、Dense、Hybrid 和 LinearRAG。
+4. 单独验证图检索后，再与 R2RAG 动态控制组合。
+
+阶段 4：MedicalGPT 的 LoRA/QLoRA SFT
 目标：掌握领域指令微调的完整流程。
 建议内容：
 1. 先用小数据和 Qwen 3B/4B 跑通 LoRA 或 QLoRA SFT。
@@ -32,7 +48,7 @@
 4. 至少评测格式遵循、领域问答质量和幻觉情况。
 5. 不把“成功运行训练脚本”等同于完成项目，必须保留数据说明、训练曲线和定量结果。
 
-阶段 3：Search-R1 3B 搜索强化学习复现
+阶段 5：Search-R1 3B 搜索强化学习复现
 目标：理解搜索工具调用、rollout、reward 和 GRPO 训练流程。
 建议内容：
 1. 优先复现官方 3B 配置或最接近的轻量配置。
@@ -41,19 +57,21 @@
 4. 检查工具调用格式、最终答案、平均搜索轮数、重复搜索率和 reward 曲线。
 5. 对比 Base、SFT（如有）与 RL。
 
-阶段 4：Mini-WebSeer-3B
-目标：在单张 32GB 显卡上复现 WebSeer 的核心思想，而不是复现 14B 原论文最终分数。
+阶段 6：MedSearch-R1 医学证据搜索 Agent
+目标：将 MedRAG 检索、MedicalGPT 医学 SFT 与 Search-R1 多轮 GRPO 组合成成本感知、证据可追溯的医学搜索 Agent。
 建议内容：
 1. 基础模型优先使用 Qwen2.5-3B；流程稳定后可尝试 Qwen3-4B。
-2. 第一版只保留 Search 与 Submit Answer。
-3. 第二版再增加 Webpage Reader，自定义代码执行工具最后再做。
-4. 最大上下文控制在 2048～4096 tokens。
-5. 最大工具轮数控制在 4～6 轮。
-6. 每题 rollout 数先设为 2。
-7. 使用 LoRA/QLoRA、BF16、Gradient Checkpointing 和 Gradient Accumulation。
-8. 奖励先使用答案正确性、格式合法性、非法调用惩罚和重复搜索惩罚。
-9. 再加入“反思后答案是否真正改善”的自反思奖励。
-10. 最终比较 Base、SFT、SFT+RL，并分析小模型出现的非法 JSON、重复搜索、过早停止和 reward collapse。
+2. 复用 MedRAG 阶段验证过的检索后端和 MedicalGPT 的领域 adapter。
+3. 第一版只保留 Search、Inspect 与 Submit，并使用带标准答案的医学选择题。
+4. 医学 SFT 数据、RL 训练题和最终测试集必须隔离并检查近重复。
+5. 合成轨迹只用于工具格式冷启动，最终结论必须来自独立真实测试集。
+6. 最大上下文控制在 2048～4096 tokens，最大工具轮数从 2 开始，稳定后增加到 4。
+7. 每题 rollout 数从 2 开始，使用 LoRA/QLoRA、Gradient Checkpointing 和 Gradient Accumulation。
+8. 奖励先使用答案正确性、格式合法性、非法调用惩罚和重复查询惩罚，再单独加入证据奖励和搜索成本。
+9. 第二版借鉴 LA-CDM，让 Agent 显式维护医学假设和置信度，但不模拟患者检查、不依赖 MIMIC-CDM。
+10. 对比 Base、Medical SFT、Fixed RAG、ReAct、Medical Search-R1 和完整 MedSearch-R1。
+11. 记录答案、检索、成本、延迟、显存和失败轨迹，不把搜索轮数增加当成性能提升。
+12. 项目具体设计以 docs/superpowers/specs/2026-07-18-medsearch-r1-design.md 为准。
 
 四、每日督导规则
 1. 如当前桌面 Agent 支持计划任务、通知或提醒功能，请创建一个每天本地时间 19:00 的学习提醒。
@@ -126,7 +144,7 @@ STUDY_PROGRESS.md 至少包含以下内容：
 - 可以写入简历的真实项目描述。
 
 九、当前立即执行的第一步
-当前从“阶段 1：MedRAG 复现”开始。
+当前从“阶段 1：MedRAG 基础检索复现”开始。
 第一个任务不要直接训练模型，而是：
 1. 创建项目目录；
 2. 克隆并阅读 MedRAG 官方仓库；
@@ -138,5 +156,5 @@ STUDY_PROGRESS.md 至少包含以下内容：
 - 默认使用中文。
 - 解释代码时面向初学者，但不要回避关键原理。
 - 每次最多给我一个核心任务，必要时附带两三个检查步骤。
-- 当我试图跳过基础步骤直接做 WebSeer 时，提醒我先确认 MedRAG、SFT 和 Search-R1 的对应基础是否已经完成。
+- 当我试图跳过基础步骤直接做 MedSearch-R1 时，提醒我先确认 MedRAG、R2RAG、LinearRAG、MedicalGPT SFT 和 Search-R1 的对应基础是否已经完成。
 - 当我已经掌握某一步时，减少重复解释，直接进入实验和代码检查。
