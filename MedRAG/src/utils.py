@@ -103,7 +103,7 @@ def embed(chunk_dir, index_dir, model_name, **kwarg):
     return embed_chunks.shape[-1]
 
 def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
-    # Dense Retrieval 的索引阶段：向量写入 FAISS，同时记录向量行号对应的原始 JSONL 分片。
+    # Dense Retrieval 的索引阶段：.npy格式的向量写入 FAISS，同时记录向量行号对应的原始 JSONL 分片。
     with open(os.path.join(index_dir, "metadatas.jsonl"), 'w') as f:
         f.write("")
     
@@ -123,6 +123,7 @@ def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
 
     for fname in tqdm.tqdm(sorted(os.listdir(os.path.join(index_dir, "embedding")))):
         curr_embed = np.load(os.path.join(index_dir, "embedding", fname))
+        # index写入向量以及对应metadata写入索引号和对应的文本分片 
         index.add(curr_embed)
         with open(os.path.join(index_dir, "metadatas.jsonl"), 'a+') as f:
             f.write("\n".join([json.dumps({'index': i, 'source': fname.replace(".npy", "")}) for i in range(len(curr_embed))]) + '\n')
@@ -157,22 +158,30 @@ class Retriever:
         self.index_dir = os.path.join(self.db_dir, self.corpus_name, "index", self.retriever_name.replace("Query-Encoder", "Article-Encoder"))
         # BM25 分支使用 Pyserini/Lucene 倒排索引，不需要生成 embedding。
         if "bm25" in self.retriever_name.lower():
+            # LuceneSearcher是Pyserini提供的BM25搜索器封装，负责打开建立好的Lucene索引，接受字符串查询，计算相关性，返回top-k文档及其分数
             from pyserini.search.lucene import LuceneSearcher
             self.metadatas = None
             self.embedding_function = None
             if os.path.exists(self.index_dir):
                 self.index = LuceneSearcher(os.path.join(self.index_dir))
             else:
-                os.system("python -m pyserini.index.lucene --collection JsonCollection --input {:s} --index {:s} --generator DefaultLuceneDocumentGenerator --threads 16".format(self.chunk_dir, self.index_dir))
+                # 不存在引索库时就调用Lucene引索构建程序
+                os.system("python -m pyserini.index.lucene "
+                "--collection JsonCollection "
+                "--input {:s} --index {:s} " # 读取input中的jsonl文件，并将每个chunk转换为Lucene文档，建立词项->文档倒排映射，文档频率/长度，以及BM25的引索结构
+                "--generator DefaultLuceneDocumentGenerator "
+                "--threads 16".format(self.chunk_dir, self.index_dir))
                 self.index = LuceneSearcher(os.path.join(self.index_dir))
         else:
             # Dense 分支读取或构建 FAISS 索引，并加载查询编码器。
             if os.path.exists(os.path.join(self.index_dir, "faiss.index")):
+                # 已有直接使用
                 self.index = faiss.read_index(os.path.join(self.index_dir, "faiss.index"))
                 self.metadatas = [json.loads(line) for line in open(os.path.join(self.index_dir, "metadatas.jsonl")).read().strip().split('\n')]
             else:
                 print("[In progress] Embedding the {:s} corpus with the {:s} retriever...".format(self.corpus_name, self.retriever_name.replace("Query-Encoder", "Article-Encoder")))
                 if self.corpus_name in ["textbooks", "pubmed", "wikipedia"] and self.retriever_name in ["allenai/specter", "facebook/contriever", "ncbi/MedCPT-Query-Encoder"] and not os.path.exists(os.path.join(self.index_dir, "embedding")):
+                    #已有计算好的embedding则下载
                     print("[In progress] Downloading the {:s} embeddings given by the {:s} model...".format(self.corpus_name, self.retriever_name.replace("Query-Encoder", "Article-Encoder")))
                     os.makedirs(self.index_dir, exist_ok=True)
                     if self.corpus_name == "textbooks":
@@ -200,8 +209,9 @@ class Retriever:
                     os.system("rm {:s}".format(os.path.join(self.index_dir, "embedding.zip")))
                     h_dim = 768
                 else:
+                    # 没有则使用embed()
                     h_dim = embed(chunk_dir=self.chunk_dir, index_dir=self.index_dir, model_name=self.retriever_name.replace("Query-Encoder", "Article-Encoder"), **kwarg)
-
+                # 构建索引，生成faiss.index /metadata.jsonl
                 print("[In progress] Embedding finished! The dimension of the embeddings is {:d}.".format(h_dim))
                 self.index = construct_index(index_dir=self.index_dir, model_name=self.retriever_name.replace("Query-Encoder", "Article-Encoder"), h_dim=h_dim, HNSW=HNSW)
                 print("[Finished] Corpus indexing finished!")
