@@ -104,11 +104,14 @@ def embed(chunk_dir, index_dir, model_name, **kwarg):
 
 def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
     # Dense Retrieval 的索引阶段：.npy格式的向量写入 FAISS，同时记录向量行号对应的原始 JSONL 分片。
+    # 这里学习的是 FAISS 的调用契约，不需要阅读 FAISS 内部 C++ 实现：
+    # add() 写入向量，search() 查询，write_index()/read_index() 负责持久化。
     with open(os.path.join(index_dir, "metadatas.jsonl"), 'w') as f:
         f.write("")
     
     if HNSW:
         M = M
+        # HNSW 是近似近邻索引；不启用时使用 Flat 精确扫描，适合小规模 toy 数据验证。
         # SPECTER 使用 L2；其他当前配置的 Dense 模型使用 Inner Product。
         if "specter" in model_name.lower():
             index = faiss.IndexHNSWFlat(h_dim, M)
@@ -116,6 +119,7 @@ def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
             index = faiss.IndexHNSWFlat(h_dim, M)
             index.metric_type = faiss.METRIC_INNER_PRODUCT
     else:
+        # h_dim 必须与 embedding 的最后一维一致，否则 FAISS 无法接收向量。
         if "specter" in model_name.lower():
             index = faiss.IndexFlatL2(h_dim)
         else:
@@ -123,7 +127,8 @@ def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
 
     for fname in tqdm.tqdm(sorted(os.listdir(os.path.join(index_dir, "embedding")))):
         curr_embed = np.load(os.path.join(index_dir, "embedding", fname))
-        # index写入向量以及对应metadata写入索引号和对应的文本分片 
+        # FAISS 的内部位置是全局追加顺序；metadata 必须按完全相同的顺序写入。
+        # 例如向量位置 17 对应 metadata[17]，再由 source/index 找回 JSONL 行。
         index.add(curr_embed)
         with open(os.path.join(index_dir, "metadatas.jsonl"), 'a+') as f:
             f.write("\n".join([json.dumps({'index': i, 'source': fname.replace(".npy", "")}) for i in range(len(curr_embed))]) + '\n')
@@ -156,6 +161,7 @@ class Retriever:
                 print("Chunking the statpearls corpus...")
                 os.system("python src/data/statpearls.py")
         self.index_dir = os.path.join(self.db_dir, self.corpus_name, "index", self.retriever_name.replace("Query-Encoder", "Article-Encoder"))
+        # index_dir 按“语料库 + 文档编码器”隔离，避免不同模型的向量混用。
         # BM25 分支使用 Pyserini/Lucene 倒排索引，不需要生成 embedding。
         if "bm25" in self.retriever_name.lower():
             # LuceneSearcher是Pyserini提供的BM25搜索器封装，负责打开建立好的Lucene索引，接受字符串查询，计算相关性，返回top-k文档及其分数
@@ -165,7 +171,8 @@ class Retriever:
             if os.path.exists(self.index_dir):
                 self.index = LuceneSearcher(os.path.join(self.index_dir))
             else:
-                # 不存在引索库时就调用Lucene引索构建程序
+                # 不存在索引库时调用 Pyserini 的命令行封装构建 Lucene 索引；
+                # 我们只需理解输入/输出和检索接口，不需通读 Lucene 源码。
                 os.system("python -m pyserini.index.lucene "
                 "--collection JsonCollection "
                 "--input {:s} --index {:s} " # 读取input中的jsonl文件，并将每个chunk转换为Lucene文档，建立词项->文档倒排映射，文档频率/长度，以及BM25的引索结构
@@ -175,7 +182,7 @@ class Retriever:
         else:
             # Dense 分支读取或构建 FAISS 索引，并加载查询编码器。
             if os.path.exists(os.path.join(self.index_dir, "faiss.index")):
-                # 已有直接使用
+                # 已有索引直接加载；metadata 与 FAISS 的向量位置一一对应。
                 self.index = faiss.read_index(os.path.join(self.index_dir, "faiss.index"))
                 self.metadatas = [json.loads(line) for line in open(os.path.join(self.index_dir, "metadatas.jsonl")).read().strip().split('\n')]
             else:
@@ -235,7 +242,10 @@ class Retriever:
             indices = [{"source": '_'.join(h.docid.split('_')[:-1]), "index": eval(h.docid.split('_')[-1])} for h in hits]
         else:
             with torch.no_grad():
+                # query 必须使用与文档向量兼容的编码器和 pooling 方式。
                 query_embed = self.embedding_function.encode(question, **kwarg)
+            # FAISS search 返回 (scores/distances, indices)；这里的 indices 不是 JSONL 行号，
+            # 而是 FAISS 向量位置，必须先经过 self.metadatas 才能得到 source/index。
             res_ = self.index.search(query_embed, k=k)
             ids = ['_'.join([self.metadatas[i]["source"], str(self.metadatas[i]["index"])]) for i in res_[1][0]]
             indices = [self.metadatas[i] for i in res_[1][0]]
