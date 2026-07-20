@@ -73,7 +73,7 @@ def embed(chunk_dir, index_dir, model_name, **kwarg):
         model = CustomizeSentenceTransformer(model_name, device="cuda" if torch.cuda.is_available() else "cpu")
 
     model.eval()
-
+    # fnames为引出chunk之后的jsonl文件(其根目录在chunk_dir当中)
     fnames = sorted([fname for fname in os.listdir(chunk_dir) if fname.endswith(".jsonl")])
 
     if not os.path.exists(save_dir):
@@ -82,6 +82,7 @@ def embed(chunk_dir, index_dir, model_name, **kwarg):
     with torch.no_grad():
         for fname in tqdm.tqdm(fnames):
             fpath = os.path.join(chunk_dir, fname)
+            # save_path应为xxx.npy
             save_path = os.path.join(save_dir, fname.replace(".jsonl", ".npy"))
             if os.path.exists(save_path):
                 continue
@@ -98,7 +99,7 @@ def embed(chunk_dir, index_dir, model_name, **kwarg):
                 texts = [concat(item["title"], item["content"]) for item in texts]
             # 不同模型需要不同输入格式，但输出统一为二维 embedding 矩阵。
             embed_chunks = model.encode(texts, **kwarg)
-            np.save(save_path, embed_chunks)
+            np.save(save_path, embed_chunks) # 保存路径为index_dir/embedding/xxx.npy
         embed_chunks = model.encode([""], **kwarg)
     return embed_chunks.shape[-1]
 
@@ -111,7 +112,8 @@ def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
     
     if HNSW:
         M = M
-        # HNSW 是近似近邻索引；不启用时使用 Flat 精确扫描，适合小规模 toy 数据验证。
+        # HNSW 是近似近邻索引；不启用时使用 Flat 精确扫描，适合小规模 toy 数据验证，一种图搜索方式
+        # HMSW图快速找到候选向量，再用原始向量计算距离或者相似度，只访问部分候选节点
         # SPECTER 使用 L2；其他当前配置的 Dense 模型使用 Inner Product。
         if "specter" in model_name.lower():
             index = faiss.IndexHNSWFlat(h_dim, M)
@@ -121,8 +123,10 @@ def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
     else:
         # h_dim 必须与 embedding 的最后一维一致，否则 FAISS 无法接收向量。
         if "specter" in model_name.lower():
+            # L2精确引索，L2越小越相近
             index = faiss.IndexFlatL2(h_dim)
         else:
+            # 内积精确引索，比较内积相似度
             index = faiss.IndexFlatIP(h_dim)
 
     for fname in tqdm.tqdm(sorted(os.listdir(os.path.join(index_dir, "embedding")))):
@@ -235,9 +239,10 @@ class Retriever:
 
         # 查询阶段再次分成 BM25 与 Dense 两条路径：前者直接用词项搜索，后者先编码 query。
         if "bm25" in self.retriever_name.lower():
+            # bm25分支能从docid中直接解析出原始的Jsonl文件名+该Jsonl文件当中的行号
             res_ = [[]]
             hits = self.index.search(question[0], k=k)
-            res_[0].append(np.array([h.score for h in hits]))
+            res_[0].append(np.array([h.score for h in hits])) # h.score放入res_方便后续一共处理
             ids = [h.docid for h in hits]
             indices = [{"source": '_'.join(h.docid.split('_')[:-1]), "index": eval(h.docid.split('_')[-1])} for h in hits]
         else:
@@ -248,7 +253,7 @@ class Retriever:
             # 而是 FAISS 向量位置，必须先经过 self.metadatas 才能得到 source/index。
             res_ = self.index.search(query_embed, k=k)
             ids = ['_'.join([self.metadatas[i]["source"], str(self.metadatas[i]["index"])]) for i in res_[1][0]]
-            indices = [self.metadatas[i] for i in res_[1][0]]
+            indices = [self.metadatas[i] for i in res_[1][0]] # res_[1][0]为当前 query 的 FAISS 全局向量 ID/ res_[0][0]为当前 query 的分数或距离
 
         scores = res_[0][0].tolist()
         
