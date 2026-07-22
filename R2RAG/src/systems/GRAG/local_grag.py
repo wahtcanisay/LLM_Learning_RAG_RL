@@ -1,0 +1,582 @@
+"""
+For Local GRAG using local LLM server as many can't run vllm or slang
+"""
+from typing import AsyncGenerator, Callable, List, Dict
+import asyncio
+import re
+from openai.types.chat import ChatCompletionMessageParam
+from openai import AsyncOpenAI
+from systems.rag_interface import EvaluateRequest, RAGInterface, RunRequest, RunStreamingResponse, CitationItem
+from tools.path_utils import to_icon_url
+from tools.web_search import SearchResult, search_fineweb
+from tools.logging_utils import get_logger
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
+
+class LocalGRAG(RAGInterface):
+    def __init__(
+        self,
+        model_id: str = "qwen/qwen3-4b-thinking-2507",
+        lm_studio_base_url: str = "http://localhost:1234/v1",
+        api_key: str = "lm-studio",
+        max_tokens: int = 4096,
+        search_results_k: int = 3,
+        max_context_length: int = 3000,
+        max_sub_queries: int = 5,
+        # Model for sentence transformer reranking
+        rerank_model: str = "sentence-transformers/all-MiniLM-L6-v2",
+        rerank_top_k: int = 3,
+        # Options: "sentence_transformer", "logits"
+        reranker: str = "sentence_transformer",
+    ):
+        """
+        Initialize LocalGRAG with decomposition and reranking using LM Studio API.
+
+        Args:
+            model_id: The model ID to use (should match what's loaded in LM Studio)
+            lm_studio_base_url: Base URL for LM Studio API
+            api_key: API key for LM Studio (usually "lm-studio")
+            max_tokens: Maximum tokens to generate
+            search_results_k: Number of search results to retrieve per sub-query
+            max_context_length: Maximum length of context per sub-query
+            max_sub_queries: Maximum number of sub-queries to generate
+            rerank_model: Model name for sentence transformer reranking
+            rerank_top_k: Number of top documents to keep after reranking
+            reranker: Type of reranker to use ("sentence_transformer" or "logits")
+        """
+        self.model_id = model_id
+        self.lm_studio_base_url = lm_studio_base_url
+        self.api_key = api_key
+        self.max_tokens = max_tokens
+        self.search_results_k = search_results_k
+        self.max_context_length = max_context_length
+        self.max_sub_queries = max_sub_queries
+        self.rerank_model = rerank_model
+        self.rerank_top_k = rerank_top_k
+        self.reranker = reranker
+        self._is_processing = False
+
+        self.logger = get_logger("local_grag")
+        self.llm_client = None
+        self.rerank_model_instance = None
+
+    async def _ensure_llm_client(self):
+        if not self.llm_client:
+            self.llm_client = AsyncOpenAI(
+                base_url=self.lm_studio_base_url,
+                api_key=self.api_key
+            )
+            self.logger.info("LM Studio client initialized",
+                             base_url=self.lm_studio_base_url)
+
+    def _ensure_rerank_model(self):
+        if not self.rerank_model_instance:
+            self.logger.info("Loading reranking model",
+                             model=self.rerank_model)
+            self.rerank_model_instance = SentenceTransformer(self.rerank_model)
+
+    async def _decompose_query(self, query: str) -> List[str]:
+        """Decompose a complex query into simpler sub-queries."""
+        try:
+            self.logger.info("Decomposing query", query=query)
+            await self._ensure_llm_client()
+            if not self.llm_client:
+                raise RuntimeError("LM Studio client is not initialized.")
+
+            decomposition_prompt = f"""
+You are an expert at breaking down complex questions into simpler, focused sub-questions.
+
+Given this complex query: "{query}"
+
+Break it down into 2-5 simpler, focused sub-questions that would help answer the original query comprehensively.
+Each sub-question should be:
+- Specific and focused
+- Answerable with available information
+- Non-overlapping where possible
+- Listed as separate questions
+
+Format your response as a numbered list:
+1. First sub-question
+2. Second sub-question
+3. Third sub-question
+...
+
+Only output the numbered list, nothing else.
+"""
+
+            messages: List[ChatCompletionMessageParam] = [
+                {"role": "system", "content": "You are a helpful assistant that decomposes complex queries."},
+                {"role": "user", "content": decomposition_prompt}
+            ]
+
+            response = await self.llm_client.chat.completions.create(
+                model=self.model_id,
+                messages=messages,
+                max_tokens=self.max_tokens
+            )
+
+            response_content = response.choices[0].message.content
+
+            # Parse the numbered list
+            lines = response_content.strip().split('\n') if response_content else []
+            sub_queries = []
+            for line in lines:
+                line = line.strip()
+                if re.match(r'^\d+\.', line):
+                    # Remove the number and dot
+                    sub_query = re.sub(r'^\d+\.\s*', '', line).strip()
+                    if sub_query:
+                        sub_queries.append(sub_query)
+
+            # Limit to max_sub_queries
+            sub_queries = sub_queries[:self.max_sub_queries]
+
+            self.logger.info("Decomposed into sub-queries",
+                             count=len(sub_queries), sub_queries=sub_queries)
+            return sub_queries
+
+        except Exception as e:
+            self.logger.error("Error decomposing query", error=str(e))
+            # Fallback: return the original query as a single sub-query
+            return [query]
+
+    async def _generate_hyde_documents(self, query: str) -> List[str]:
+        """Generate hypothetical documents for the query using HyDE technique."""
+        try:
+            self.logger.info("Generating HyDE documents", query=query)
+            await self._ensure_llm_client()
+            if not self.llm_client:
+                raise RuntimeError("LM Studio client is not initialized.")
+
+            hyde_prompt = f"""
+You are an expert at generating hypothetical documents that would answer a given question.
+
+Question: {query}
+
+Generate 2-3 short, factual passages (2-3 sentences each) that would ideally answer this question.
+These passages should be written as if they come from authoritative sources.
+Focus on different aspects of the question if possible.
+
+Format your response as:
+
+Document 1: [passage 1]
+
+Document 2: [passage 2]
+
+Document 3: [passage 3]
+"""
+
+            messages: List[ChatCompletionMessageParam] = [
+                {"role": "system", "content": "You are a helpful assistant that generates hypothetical documents."},
+                {"role": "user", "content": hyde_prompt}
+            ]
+
+            response = await self.llm_client.chat.completions.create(
+                model=self.model_id,
+                messages=messages,
+                max_tokens=self.max_tokens
+            )
+
+            response_content = response.choices[0].message.content
+
+            # Parse the documents
+            hyde_docs = []
+            if response_content:
+                # Split by "Document X:" pattern
+                doc_pattern = r'Document \d+:\s*(.+?)(?=Document \d+:|$)'
+                matches = re.findall(doc_pattern, response_content, re.DOTALL)
+                for match in matches:
+                    doc = match.strip()
+                    if doc:
+                        hyde_docs.append(doc)
+
+            self.logger.info("Generated HyDE documents", count=len(hyde_docs))
+            return hyde_docs
+
+        except Exception as e:
+            self.logger.error("Error generating HyDE documents", error=str(e))
+            return []
+
+    async def _retrieve_documents(self, query: str) -> List[Dict[str, str]]:
+        """Retrieve relevant documents using FineWeb search with HyDE enhancement."""
+        try:
+            self.logger.info("Searching FineWeb with HyDE", query=query,
+                             k=self.search_results_k)
+
+            # Generate HyDE documents
+            hyde_docs = await self._generate_hyde_documents(query)
+
+            # Combine original query with HyDE documents for search
+            search_queries = [query] + hyde_docs
+
+            all_documents = []
+            for search_query in search_queries:
+                search_results = await search_fineweb(query=search_query, k=self.search_results_k)
+                search_results = [
+                    res for res in search_results if isinstance(res, SearchResult)]
+
+                for result in search_results:
+                    content = result.text
+                    url = result.url
+
+                    if content:
+                        all_documents.append({
+                            "content": content[:self.max_context_length],
+                            "url": url
+                        })
+
+            # Remove duplicates based on URL
+            unique_documents = []
+            seen_urls = set()
+            for doc in all_documents:
+                if doc["url"] not in seen_urls:
+                    unique_documents.append(doc)
+                    seen_urls.add(doc["url"])
+
+            self.logger.info("Retrieved documents",
+                             count=len(unique_documents))
+            return unique_documents
+
+        except Exception as e:
+            self.logger.error("Error retrieving documents", error=str(e))
+            return []
+
+    def _rerank_documents_sentence_transformer(self, query: str, documents: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        """Rerank documents using sentence transformers."""
+        if not documents:
+            return []
+
+        self._ensure_rerank_model()
+
+        # Encode query and documents
+        query_embedding = self.rerank_model_instance.encode([query])
+        doc_texts = [doc["content"] for doc in documents]
+        doc_embeddings = self.rerank_model_instance.encode(doc_texts)
+
+        # Calculate similarities
+        similarities = np.dot(query_embedding, doc_embeddings.T).flatten()
+
+        # Sort by similarity and take top k
+        sorted_indices = np.argsort(similarities)[::-1]
+        reranked_docs = [documents[i]
+                         for i in sorted_indices[:self.rerank_top_k]]
+
+        self.logger.info("Reranked documents using sentence transformer",
+                         original_count=len(documents), reranked_count=len(reranked_docs))
+        return reranked_docs
+
+    def _rerank_documents(self, query: str, documents: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        """Rerank documents based on the configured reranker."""
+        if self.reranker == "sentence_transformer":
+            return self._rerank_documents_sentence_transformer(query, documents)
+        else:
+            # Default: return documents as-is, limited to top_k
+            return documents[:self.rerank_top_k]
+
+    def _format_context(self, documents: List[Dict[str, str]]) -> str:
+        """Format retrieved documents into context for the prompt."""
+        if not documents:
+            return "No relevant documents found."
+
+        context_parts = []
+        for i, doc in enumerate(documents, 1):
+            content = doc.get("content", "")
+            url = doc.get("url", "")
+
+            context_part = f"[{i}]\n{content}"
+            if url:
+                context_part += f"\nSource: {url}"
+            context_parts.append(context_part)
+
+        return "\n\n".join(context_parts)
+
+    async def _answer_sub_query(self, sub_query: str, context: str) -> str:
+        """Generate an answer for a single sub-query using the provided context."""
+        try:
+            if not self.llm_client:
+                raise RuntimeError("Local LLM client is not initialized.")
+
+            system_message = (
+                "You are a helpful AI assistant. Answer the question using only the provided context. "
+                "Be concise but comprehensive. If the context doesn't contain relevant information, "
+                "say so clearly. Cite sources using document numbers [1], [2], etc. when possible."
+            )
+
+            user_message = f"Context:\n{context}\n\nQuestion: {sub_query}"
+
+            messages: List[ChatCompletionMessageParam] = [
+                {"role": "system", "content": system_message},
+                {"role": "user", "content": user_message}
+            ]
+
+            response = await self.llm_client.chat.completions.create(
+                model=self.model_id,
+                messages=messages,
+                max_tokens=self.max_tokens
+            )
+
+            return response.choices[0].message.content.strip() if response.choices[0].message.content else "No response generated"
+
+        except Exception as e:
+            self.logger.error("Error answering sub-query", error=str(e))
+            return f"Error answering sub-query: {str(e)}"
+
+    def _prepare_synthesis_messages(self, original_query: str, sub_queries: List[str], sub_answers: List[str]) -> List[ChatCompletionMessageParam]:
+        """Prepare messages for synthesizing individual sub-query answers into a comprehensive final answer."""
+        synthesis_prompt = f"""
+Original Query: {original_query}
+
+Sub-questions and their answers:
+"""
+
+        for i, (sub_query, answer) in enumerate(zip(sub_queries, sub_answers), 1):
+            synthesis_prompt += f"\n{i}. {sub_query}\nAnswer: {answer}\n"
+
+        synthesis_prompt += """
+Based on the above sub-question answers, provide a comprehensive and well-structured final answer to the original query.
+Synthesize the information coherently, avoid redundancy, and ensure the answer is complete.
+If there are any contradictions or gaps, note them clearly.
+"""
+
+        return [
+            {"role": "system", "content": "You are an expert at synthesizing information from multiple sources into coherent answers."},
+            {"role": "user", "content": synthesis_prompt}
+        ]
+
+    async def _synthesize_answers(self, original_query: str, sub_queries: List[str], sub_answers: List[str]) -> str:
+        """Synthesize individual sub-query answers into a comprehensive final answer."""
+        try:
+            if not self.llm_client:
+                raise RuntimeError("Local LLM client is not initialized.")
+
+            messages = self._prepare_synthesis_messages(
+                original_query, sub_queries, sub_answers)
+
+            response = await self.llm_client.chat.completions.create(
+                model=self.model_id,
+                messages=messages,
+                max_tokens=self.max_tokens
+            )
+
+            return response.choices[0].message.content.strip() if response.choices[0].message.content else "Answer unavailable"
+
+        except Exception as e:
+            self.logger.error("Error synthesizing answers", error=str(e))
+            # Fallback: just concatenate the answers
+            return "\n\n".join([f"Q{i+1}: {q}\nA: {a}" for i, (q, a) in enumerate(zip(sub_queries, sub_answers))])
+
+    @property
+    def name(self) -> str:
+        return "lmstudio-grag"
+
+    async def _process_sub_query(self, i: int, sub_queries: List[str], sub_query: str) -> tuple[int, str, str, List[Dict[str, str]]]:
+        self.logger.info(
+            f"Processing sub-query {i+1}/{len(sub_queries)}", sub_query=sub_query)
+
+        # Retrieve documents for this sub-query
+        documents = await self._retrieve_documents(sub_query)
+
+        # Rerank documents
+        reranked_documents = self._rerank_documents(sub_query, documents)
+
+        # Format context
+        context = self._format_context(reranked_documents)
+
+        # Generate answer for this sub-query
+        answer = await self._answer_sub_query(sub_query, context)
+
+        return i, sub_query, answer, reranked_documents
+
+    async def run_streaming(self, request: RunRequest) -> Callable[[], AsyncGenerator[RunStreamingResponse, None]]:
+        """
+        Process a streaming request using Local GRAG.
+
+        Args:
+            request: RunRequest containing the question
+
+        Returns:
+            Async generator function for streaming responses
+        """
+        async def stream():
+            self._is_processing = True
+            try:
+                yield RunStreamingResponse(
+                    intermediate_steps="Initializing LM Studio client...\n\n",
+                    is_intermediate=True,
+                    complete=False
+                )
+
+                await self._ensure_llm_client()
+                if not self.llm_client:
+                    raise RuntimeError("LM Studio client failed to initialize")
+
+                yield RunStreamingResponse(
+                    intermediate_steps="Decomposing complex query into sub-questions...\n\n",
+                    is_intermediate=True,
+                    complete=False
+                )
+
+                # Step 1: Decompose the query
+                sub_queries = await self._decompose_query(request.question)
+
+                yield RunStreamingResponse(
+                    intermediate_steps=f"Query decomposed into {len(sub_queries)} sub-questions. Processing each with HyDE enhancement...\n\n",
+                    is_intermediate=True,
+                    complete=False
+                )
+
+                # Step 2: Answer each sub-query in parallel
+                sub_answers = []
+                all_documents = []
+
+                yield RunStreamingResponse(
+                    intermediate_steps=f"Processing {len(sub_queries)} sub-questions with retrieval and reranking...\n\n",
+                    is_intermediate=True,
+                    complete=False
+                )
+
+                # Process all sub-queries concurrently
+                tasks = [self._process_sub_query(i, sub_queries, sub_query)
+                         for i, sub_query in enumerate(sub_queries)]
+
+                # Use asyncio.as_completed to show progress as tasks complete
+                completed_count = 0
+                sub_answers: List[str] = [""] * len(sub_queries)
+
+                for coro in asyncio.as_completed(tasks):
+                    try:
+                        i, sub_query, answer, documents = await coro
+                        sub_answers[i] = answer
+                        all_documents.extend(documents)
+                        completed_count += 1
+
+                        yield RunStreamingResponse(
+                            intermediate_steps=f"✓ Completed sub-question {completed_count}/{len(sub_queries)}: {sub_query}\n\n",
+                            is_intermediate=True,
+                            complete=False
+                        )
+                    except Exception as e:
+                        self.logger.error(
+                            "Error processing sub-query in streaming", error=str(e))
+                        completed_count += 1
+                        yield RunStreamingResponse(
+                            intermediate_steps=f"✗ Error in sub-question ({completed_count}/{len(sub_queries)} total)\n\n",
+                            is_intermediate=True,
+                            complete=False
+                        )
+
+                # Fill any empty values with error messages
+                for i, answer in enumerate(sub_answers):
+                    if not answer:
+                        sub_answers[i] = f"Error processing sub-query {i+1}"
+
+                yield RunStreamingResponse(
+                    intermediate_steps="Synthesizing comprehensive answer from all sub-question responses...\n\n",
+                    is_intermediate=True,
+                    complete=False
+                )
+
+                # Step 3: Synthesize final answer
+                final_answer = await self._synthesize_answers(request.question, sub_queries, sub_answers)
+
+                yield RunStreamingResponse(
+                    final_report=final_answer,
+                    is_intermediate=False,
+                    complete=False
+                )
+
+                # Extract citations
+                citations = []
+                unique_urls = set()
+                for doc in all_documents:
+                    if doc.get("url") and doc["url"] not in unique_urls:
+                        unique_urls.add(doc["url"])
+                        citations.append(CitationItem(
+                            url=doc["url"],
+                            icon_url=to_icon_url(doc["url"]),
+                            date=None,
+                            title=None,
+                            sid=None,
+                            text=None,
+                            chunk_idx=None,
+                        ))
+
+                # Final response
+                yield RunStreamingResponse(
+                    citations=citations,
+                    is_intermediate=False,
+                    complete=True
+                )
+
+            except Exception as e:
+                self.logger.error("Error in run_streaming", error=str(e))
+                yield RunStreamingResponse(
+                    final_report=f"Error processing question: {str(e)}",
+                    citations=[],
+                    is_intermediate=False,
+                    complete=True,
+                    error=str(e)
+                )
+            finally:
+                self._is_processing = False
+
+        return stream
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    async def main():
+        """Simple test execution for LocalGRAG."""
+        print("Testing LocalGRAG with Local LLM server...")
+
+        # Initialize LocalGRAG
+        rag = LocalGRAG(
+            # Should match the model loaded in Local LLM server
+            model_id="qwen/qwen3-4b-thinking-2507",
+            lm_studio_base_url="http://localhost:1234/v1",
+            api_key="lm-studio",
+            max_tokens=4096,
+            search_results_k=2,
+            max_sub_queries=3
+        )
+
+        try:
+            # Test with a complex query
+            print("\n=== Testing Evaluate Method ===")
+            eval_request = EvaluateRequest(
+                query="What are the main differences between machine learning and deep learning, and how do they relate to artificial intelligence?",
+                iid="test-001"
+            )
+
+            eval_response = await rag.evaluate(eval_request)
+            print(f"Query ID: {eval_response.query_id}")
+            print(f"Response: {eval_response.generated_response}")
+            print(f"Citations: {eval_response.citations}")
+
+            # Test streaming
+            print("\n=== Testing Streaming Method ===")
+            run_request = RunRequest(
+                question="Explain the impact of climate change on biodiversity and what measures can be taken to mitigate it."
+            )
+
+            stream_func = await rag.run_streaming(run_request)
+            print("Streaming response:")
+
+            async for response in stream_func():
+                if response.is_intermediate:
+                    if response.intermediate_steps:
+                        print(response.intermediate_steps, end="", flush=True)
+                else:
+                    if response.final_report:
+                        print(f"\n[FINAL ANSWER]\n{response.final_report}\n")
+                    if response.citations:
+                        print(f"Citations: {response.citations}")
+                    if response.error:
+                        print(f"Error: {response.error}")
+
+        except Exception as e:
+            print(f"Error during testing: {str(e)}")
+
+    asyncio.run(main())

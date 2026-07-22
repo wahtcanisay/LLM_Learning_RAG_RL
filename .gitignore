@@ -33,6 +33,13 @@ data/
 corpus/
 indexes/
 faiss_index/
+# Large local corpora downloaded for MedRAG; keep source/code, never commit data.
+MedRAG/corpus/
+R2RAG/data/
+R2RAG/models/
+R2RAG/logs/
+R2RAG/outputs/
+R2RAG/checkpoints/
 *.safetensors
 *.bin
 *.pt

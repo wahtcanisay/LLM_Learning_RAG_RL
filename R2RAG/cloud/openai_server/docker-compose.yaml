@@ -1,0 +1,23 @@
+# docker compose up -d --pull always
+services:
+  server:
+    image: 970547356481.dkr.ecr.us-east-1.amazonaws.com/neurips2025text/rmit-adms_ir:latest
+    container_name: mmu-rag-server
+    ports:
+      - "8900:8900"
+    restart: always
+    command: uv run --frozen fastapi run src/apis/openai_router.py --port 8900
+    shm_size: 16g
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8900/health')"]
+      interval: 30s
+      timeout: 30s
+      start_period: 5s
+      retries: 100

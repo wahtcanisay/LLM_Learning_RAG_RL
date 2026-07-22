@@ -128,6 +128,18 @@ Task 7 的生成链路学习顺延到语料核验完成后。
 
 当前状态：用户反馈四个独立语料源已经下载完成；本地进度文件尚未看到对应的磁盘、文件数和字段核验输出，因此 Task 7 暂不标记为完成。
 
+核验结果（2026-07-21）：`textbooks` 正常，18 个 JSONL、约 404M，首条记录包含 `id/title/content/contents` 且未发现 LFS pointer；`statpearls` 缺少 `chunk` 目录，仅约 60K；`pubmed` 有 1166 个文件但总大小约 372K，首条内容无法解析为 JSON；`wikipedia` 有 646 个文件但总大小约 236K。后两者规模明显异常，四个目录也不是 Git 仓库，不能用 `git -C ... lfs pull` 修复，需先检查文件头并重新用正确方式下载。
+
+当前进展：StatPearls 原始压缩包 `corpus/statpearls/statpearls_NBK430685.tar.gz` 正在从 NCBI 下载；文件总大小约 1.8G，用户日志显示已完成约 587.61M（32%）。下载完成前不能解压或运行 chunk 生成脚本。
+
+补充核验：用户贴出的 StatPearls 输出是 tar 解压产生的 `.nxml`、图片和视频文件列表，只能证明原始目录正在/已经展开，尚未证明 `corpus/statpearls/chunk/*.jsonl` 已生成；需要单独检查并运行 `src/data/statpearls.py`。
+
+StatPearls 最新结果（2026-07-22）：已处理 9648 个 `.nxml` 文件，生成 9646 个 `chunk/*.jsonl` 文件；脚本进度 `9648/9648` 完成。少出的 2 个文件符合 `statpearls.py` 对空 `saved_text` 文章跳过写出的逻辑，仍需抽样核验 JSONL 字段。
+
+Wikipedia 当前进展（2026-07-22）：执行 `git -C corpus/wikipedia lfs pull --include="chunk/**"`，正在下载 1165 个 LFS chunk 对象，日志显示 1033/1165（89%）、已下载约 61G。此前目录只有约 236K 是 LFS pointer 文件大小，不是实际语料大小；当前 61G 是真实 Wikipedia chunk 数据，下载完成后再核验 JSONL 和磁盘占用。
+
+最新网络结果（2026-07-22）：PubMed/Wikipedia 的 LFS 批量请求出现 `EOF`，并分别报告 `Failed to fetch some objects`；因此两者都不能标记为下载完成。下一步调整 LFS 超时和并发后逐个仓库断点续传，不并行执行两个大仓库。
+
 明天要回答：
 
 1. 四个独立语料源的目录分别是什么？`MedCorp` 为什么不需要单独下载？
@@ -137,6 +149,21 @@ Task 7 的生成链路学习顺延到语料核验完成后。
 5. 每个语料源的 JSONL 文件数、chunk 数量和磁盘占用如何记录？
 
 明天暂不下载完整语料、不运行完整 QA 生成；只使用已经生成的 toy 结果进行分析。
+
+## 2026-07-22：并行准备阶段 2——下载并阅读 R2RAG
+
+用户决定暂缓剩余 PubMed/Wikipedia 大型 LFS 语料的断点续传，先下载下一阶段 R2RAG 源码。此举是代码学习准备，不代表阶段 1 的 MedRAG 语料核验已经完成，也不提前运行 R2RAG 正式实验。
+
+- 官方仓库：`https://github.com/rmit-ir/NeurIPS-MMU-RAG`
+- 本地路径：`R2RAG/`
+- 下载提交：源码已克隆后移除嵌套 `.git` 元数据，作为主学习仓库中的普通代码目录保存。
+- 当前源码体量：约 67.5 MiB（233 个文件；不含嵌套 Git 元数据）。
+- 中文学习译注：`R2RAG/README_zh.md`
+- 核心入口：`src/systems/rag_router/rag_router_llm.py`、`src/systems/vanilla_agent/vanilla_rag.py`、`src/systems/vanilla_agent/vanilla_agent.py`、`src/systems/rag_interface.py`。
+- 代码理解：`RAGRouterLLM` 用 LLM 判断 simple/complex；简单问题进入单轮 `VanillaRAG`，复杂问题进入带查询改写、证据审查、去重、token 上限和 `max_tries` 的 `VanillaAgent`。
+- 数据边界：R2RAG 的 `data/`、`models/`、`logs/` 与 MedRAG 的 `corpus/` 均加入忽略规则，不进入主仓库提交。
+
+R2RAG 第一轮学习顺序：`RAGInterface` → `RAGRouterLLM` → `QueryComplexityLLM` → `VanillaRAG` → `VanillaAgent` 主循环 → `search_w_qv`/`GeneralReranker` → API 路由。完成代码解释后，再做不调用 LLM 的 toy 路由测试。
 
 # 待补知识
 
