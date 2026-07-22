@@ -165,6 +165,13 @@ Wikipedia 当前进展（2026-07-22）：执行 `git -C corpus/wikipedia lfs pul
 
 R2RAG 第一轮学习顺序：`RAGInterface` → `RAGRouterLLM` → `QueryComplexityLLM` → `VanillaRAG` → `VanillaAgent` 主循环 → `search_w_qv`/`GeneralReranker` → API 路由。完成代码解释后，再做不调用 LLM 的 toy 路由测试。
 
+R2RAG 核心注释准备（2026-07-22）：已为下一次阅读的四个文件补充分层中文学习注释：`rag_interface.py`、`rag_router_llm.py`、`llm_query_complexity.py`、`vanilla_rag.py`。注释覆盖统一流式协议、静态评测如何消费异步流、simple/complex 路由、LLM 分类器的延迟初始化与标签含义、单轮查询扩展、检索、重排、证据截断、流式生成和引用终止事件。
+
+- 验证命令：使用 UTF-8 读取四个文件；使用 Python `compile()` 做无导入语法检查；对 `HEAD` 与工作区源码去除 docstring 后比较 AST；运行 `git diff --check`。
+- 验证结果：`R2RAG_CORE_COMMENTS_SYNTAX_OK`；四个文件均返回 `COMMENT_ONLY_AST_OK`；`git diff --check` 无空白错误。
+- 环境边界：宿主机当前没有 `uv`，因此本次仅做不导入依赖的等价 Python 语法检查；未启动 vLLM、未调用搜索服务或 LLM、未产生实验指标。
+- 下一次唯一任务：按 `RAGInterface` → `RAGRouterLLM` → `QueryComplexityLLM` → `VanillaRAG` 阅读并回答 `R2RAG/README_zh.md` 中的前四个检查问题；`VanillaAgent` 留到下一轮。
+
 # 待补知识
 
 - `Retriever.__init__` 的下载和索引构建副作用；
