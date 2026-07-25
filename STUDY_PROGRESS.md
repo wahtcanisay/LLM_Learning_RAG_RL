@@ -267,3 +267,40 @@ R2RAG 核心注释准备（2026-07-22）：已为下一次阅读的四个文件�
 - 发现的问题：`run.py` 硬编码 `CUDA_VISIBLE_DEVICES="4"`，单卡机器正式运行前必须删除或改为参数；本次只记录，不修改官方行为。
 - 验证边界：未下载 official medical 数据、Embedding、SciSpacy 或 LLM；未安装依赖、未使用 GPU、未产生检索或 QA 指标。
 - 下一步唯一任务：从 `LinearRAG/src/ner.py` 和 `LinearRAG.index()` 开始，画出实体、句子桥接和 passage 图的离线构建链路。
+
+## 2026-07-25：LinearRAG 核心源码学习注释
+
+- 当前阶段：阶段 3，LinearRAG 图结构检索与医学迁移。
+- 完成内容：为 LinearRAG 全部 7 个 Python 文件补充中文学习注释；在 `run.py` 中展示“参数与资源 → 离线 `index()` → 在线 `qa()/retrieve()` → 保存与评测”的真实运行流向；重点解释 relation-free GraphRAG、NER、Seed Entity、Semantic Bridge、BFS-style 传播、稀疏邻接矩阵、COO、向量化图传播、Passage Prior、Personalized PageRank、Reset Vector、Damping 和 Dense Fallback。
+- 数据来源：README 指向作者发布的 Hugging Face 数据仓库 `Zly0523/linear-rag`，包含 `2wikimultihop`、`hotpotqa`、`medical`、`musique`；每个目录使用 `chunks.json` 与 `questions.json`。README 和当前数据页未明确 medical 子集最初来自哪个上游医学基准，因此不推测为 MedQA、PubMedQA 或其他数据集。
+- 核心检索链：Question NER → Question Entity 与语料 Entity 的 Embedding 对齐 → Seed Entity → Entity→Sentence→Entity 多轮传播 → Dense Passage 相似度与实体出现奖励 → PPR 重启向量 → Top-k Passage。Question NER 没有结果时回退到纯 Dense Passage Retrieval。
+- 关键代码辨析：Sentence 保存为 Embedding 和 Entity–Sentence 双向映射，在线传播时充当语义桥；当前 `add_nodes()` 只将 Entity 和 Passage 加入 igraph，因此不能把 Sentence 描述成最终图中的正式顶点。
+- 代码或日志位置：`LinearRAG/run.py`、`LinearRAG/src/{config.py,embedding_store.py,ner.py,LinearRAG.py,evaluate.py,utils.py}`。
+- 验证命令：`python -m py_compile` 检查全部 7 个 Python 文件；将工作区源码与提交 `0a9cfb5` 的同名文件解析为 AST、移除 docstring 后逐文件比较；执行 `git diff --check`。
+- 验证结果：7 个文件均通过语法检查；7 个文件均输出 `COMMENT_ONLY_AST_OK`；`git diff --check` 未报告空白错误。该结果只证明代码仍可解析且可执行 AST 未变化，不代表依赖安装、索引构建、检索或端到端 QA 已跑通。
+- 实验边界：本次只修改注释和 docstring；未下载官方数据、Embedding、SciSpaCy 或 LLM，未调用外部 API，未使用 GPU，未产生 Recall、MRR、QA Accuracy、延迟或显存指标。
+
+### 今日唯一任务
+
+沿 `LinearRAG/run.py → LinearRAG.index()` 阅读离线构图链路，自己画出 Passage、Entity、Sentence 三类数据以及最终图中的两类正式边。预计 60～90 分钟。
+
+### 完成标准
+
+- 能从入口复述 `load_dataset → LinearRAG.__init__ → index`；
+- 能解释 Passage、Entity、Sentence 各自保存在哪个 EmbeddingStore；
+- 能说明 Sentence 为什么是语义桥，以及为什么它不是最终 igraph 顶点；
+- 能说明 Entity–Passage 边和相邻 Passage 边分别如何产生；
+- 能指出 `passage_embedding.parquet`、`entity_embedding.parquet`、`sentence_embedding.parquet`、`ner_results.json` 和 `LinearRAG.graphml` 的用途；
+- 回答必须引用具体函数或变量，不能只说“看懂了”。
+
+### 今日检查题
+
+1. 为什么 LinearRAG 被称为 relation-free？它没有抽取什么，又用什么连接语料？
+2. `load_dataset()` 为什么给每个 Chunk 增加数字前缀？哪个函数会再次消费这个前缀？
+3. Sentence 为什么被称为 semantic bridge？它是否真的被 `add_nodes()` 加成 igraph 顶点？
+4. `add_entity_to_passage_edges()` 的边权分子和分母分别是什么？
+5. `passage_embedding.parquet`、`ner_results.json` 与 `LinearRAG.graphml` 分别缓存哪个阶段的结果？
+
+### 下一步
+
+只有在学习者完成上述离线构图复述和检查题后，才进入在线检索：`get_seed_entities()` → `calculate_entity_scores()` → `calculate_passage_scores()` → `run_ppr()`。

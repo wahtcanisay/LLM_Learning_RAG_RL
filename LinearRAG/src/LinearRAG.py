@@ -16,13 +16,34 @@ logger = logging.getLogger(__name__)
 
 
 class LinearRAG:
+    """LinearRAG 的离线构图器、在线检索器与问答编排器。
+
+    相对 MedRAG 的 Dense/Hybrid 检索，这个类增加了一层 GraphRAG 结构：
+
+    离线：
+        Passage → NER → Entity/Sentence 映射 → 三类 Embedding
+        → Entity–Passage 边 + 相邻 Passage 边 → igraph
+
+    在线：
+        Question → Seed Entity → Entity→Sentence→Entity 语义传播
+        → Dense Passage 先验 → Personalized PageRank → Top-k Passage
+
+    Relation-free（关系无关）表示它不让 LLM 抽取“实体—关系类型—实体”
+    三元组，而是依靠轻量 NER、同句桥接和 Passage 邻接建立可传播结构。
+
+    学习注意：当前代码虽维护 Sentence Embedding 和 Entity–Sentence 映射，
+    但最终 igraph 的正式顶点只有 Entity 与 Passage；Sentence 是在线传播桥，
+    不是 `add_nodes()` 加入的第三类图顶点。
+    """
+
     def __init__(self, global_config):
+        """初始化共享模型、三类缓存、NER 与最终无向图。"""
         self.config = global_config
         logger.info(f"Initializing LinearRAG with config: {self.config}")
         retrieval_method = "Vectorized Matrix-based" if self.config.use_vectorized_retrieval else "BFS Iteration"
         logger.info(f"Using retrieval method: {retrieval_method}")
         
-        # Setup device for GPU acceleration
+        # 向量化分支会用 GPU 稀疏矩阵做图传播；普通 BFS-style 分支主要用 NumPy。
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         if self.config.use_vectorized_retrieval:
             logger.info(f"Using device: {self.device} for vectorized retrieval")
@@ -31,14 +52,21 @@ class LinearRAG:
         self.load_embedding_store()
         self.llm_model = self.config.llm_model
         self.spacy_ner = SpacyNER(self.config.spacy_model)
+        # 图是无向的：Entity–Passage 与 Passage–Passage 连接可双向传播权重。
         self.graph = ig.Graph(directed=False)
 
     def load_embedding_store(self):
+        """为 Passage、Entity、Sentence 分别加载可增量复用的 Parquet 缓存。"""
         self.passage_embedding_store = EmbeddingStore(self.config.embedding_model, db_filename=os.path.join(self.config.working_dir,self.dataset_name, "passage_embedding.parquet"), batch_size=self.config.batch_size, namespace="passage")
         self.entity_embedding_store = EmbeddingStore(self.config.embedding_model, db_filename=os.path.join(self.config.working_dir,self.dataset_name, "entity_embedding.parquet"), batch_size=self.config.batch_size, namespace="entity")
         self.sentence_embedding_store = EmbeddingStore(self.config.embedding_model, db_filename=os.path.join(self.config.working_dir,self.dataset_name, "sentence_embedding.parquet"), batch_size=self.config.batch_size, namespace="sentence")
 
     def load_existing_data(self,passage_hash_ids):
+        """加载 NER 缓存，并找出这次真正需要做 NER 的新 Passage。
+
+        Cache reuse（缓存复用）使重复运行不必重新处理全部语料。这里以稳定的
+        Passage 内容哈希判断新旧，而不是依赖列表位置。
+        """
         self.ner_results_path = os.path.join(self.config.working_dir,self.dataset_name, "ner_results.json")
         if os.path.exists(self.ner_results_path):
             existing_ner_reuslts = json.load(open(self.ner_results_path))
@@ -51,6 +79,11 @@ class LinearRAG:
             return {}, {}, passage_hash_ids
 
     def qa(self, questions):
+        """先检索证据，再并行调用 LLM 生成答案。
+
+        检索命中与答案正确仍是两件事：本方法消费 Top-k Passage 形成 Prompt，
+        但生成模型仍可能忽略证据、推理失败或产生幻觉。
+        """
         retrieval_results = self.retrieve(questions)
         system_prompt = f"""As an advanced reading comprehension assistant, your task is to analyze text passages and corresponding questions meticulously. Your response start after "Thought: ", where you will methodically break down the reasoning process, illustrating how you arrive at conclusions. Conclude with "Answer: " to present a concise, definitive response, devoid of additional elaborations."""
         all_messages = []
@@ -58,6 +91,7 @@ class LinearRAG:
             question = retrieval_result["question"]
             sorted_passage = retrieval_result["sorted_passage"]
             prompt_user = """"""
+            # 把排好序的 Passage 原样串成上下文；当前实现没有单独的 token 截断。
             for passage in sorted_passage:
                 prompt_user += f"{passage}\n"
             prompt_user += f"Question: {question}\n Thought: "
@@ -66,6 +100,7 @@ class LinearRAG:
                 {"role": "user", "content": prompt_user}
             ]
             all_messages.append(messages)
+        # max_workers 控制并发 API 请求数，不是 GPU batch size。
         with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
             all_qa_results = list(tqdm(
                 executor.map(self.llm_model.infer, all_messages),
@@ -75,6 +110,7 @@ class LinearRAG:
 
         for qa_result,question_info in zip(all_qa_results,retrieval_results):
             try:
+                # 官方 Prompt 约定用 "Answer:" 分隔最终答案；格式不符合时保留原响应。
                 pred_ans = qa_result.split('Answer:')[1].strip()
             except:
                 pred_ans = qa_result
@@ -82,16 +118,27 @@ class LinearRAG:
         return retrieval_results
         
     def retrieve(self, questions):
+        """对每个问题执行图检索，必要时回退为纯 Dense Passage Retrieval。
+
+        在线分派：
+            Question Embedding + Question NER
+            → 有 Seed Entity：实体传播 + Passage 先验 + PPR
+            → 无 Seed Entity：直接按 Question–Passage 向量点积排序
+
+        Dense fallback（稠密回退）保证 NER 没找到实体时系统仍能返回证据。
+        """
+        # 把持久化 Store 展开为本轮批量查询可直接使用的数组和 ID 列表。
         self.entity_hash_ids = list(self.entity_embedding_store.hash_id_to_text.keys())
         self.entity_embeddings = np.array(self.entity_embedding_store.embeddings)
         self.passage_hash_ids = list(self.passage_embedding_store.hash_id_to_text.keys())
         self.passage_embeddings = np.array(self.passage_embedding_store.embeddings)
         self.sentence_hash_ids = list(self.sentence_embedding_store.hash_id_to_text.keys())
         self.sentence_embeddings = np.array(self.sentence_embedding_store.embeddings)
+        # igraph 内部使用整数顶点编号；业务层使用稳定 hash ID，故需要双向映射。
         self.node_name_to_vertex_idx = {v["name"]: v.index for v in self.graph.vs if "name" in v.attributes()}
         self.vertex_idx_to_node_name = {v.index: v["name"] for v in self.graph.vs if "name" in v.attributes()}
 
-        # Precompute sparse matrices for vectorized retrieval if needed
+        # 向量化图传播需要先把 Entity–Sentence 双向映射转换为稀疏邻接矩阵。
         if self.config.use_vectorized_retrieval:
             logger.info("Precomputing sparse adjacency matrices for vectorized retrieval...")
             self._precompute_sparse_matrices()
@@ -107,14 +154,17 @@ class LinearRAG:
         retrieval_results = []
         for question_info in tqdm(questions, desc="Retrieving"):
             question = question_info["question"]
+            # Store 中向量已归一化；问题也归一化后，点积可解释为余弦相似度。
             question_embedding = self.config.embedding_model.encode(question,normalize_embeddings=True,show_progress_bar=False,batch_size=self.config.batch_size)
             seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores = self.get_seed_entities(question)
             if len(seed_entities) != 0:
+                # 能把问题接入实体空间时，执行 LinearRAG 的核心图检索。
                 sorted_passage_hash_ids,sorted_passage_scores = self.graph_search_with_seed_entities(question,question_embedding,seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores)
                 final_passage_hash_ids = sorted_passage_hash_ids[:self.config.retrieval_top_k]
                 final_passage_scores = sorted_passage_scores[:self.config.retrieval_top_k]
                 final_passages = [self.passage_embedding_store.hash_id_to_text[passage_hash_id] for passage_hash_id in final_passage_hash_ids]
             else:
+                # NER 无结果时无法选 Seed Entity，退回与 MedRAG Dense 类似的 Passage 排序。
                 sorted_passage_indices,sorted_passage_scores = self.dense_passage_retrieval(question_embedding)
                 final_passage_indices = sorted_passage_indices[:self.config.retrieval_top_k]
                 final_passage_scores = sorted_passage_scores[:self.config.retrieval_top_k]
@@ -129,14 +179,21 @@ class LinearRAG:
         return retrieval_results
     
     def _precompute_sparse_matrices(self):
-        """
-        Precompute and cache sparse adjacency matrices for efficient vectorized retrieval using PyTorch.
-        This is called once at the beginning of retrieve() to avoid rebuilding matrices per query.
+        """预计算向量化传播使用的两张稀疏邻接矩阵。
+
+        稀疏邻接矩阵只存真实存在的边，避免为大量不存在的 Entity–Sentence
+        组合分配内存。形状分别是：
+
+            Entity-to-Sentence: [实体数, 句子数]
+            Sentence-to-Entity: [句子数, 实体数]
+
+        COO（Coordinate）格式用“非零元素的行列坐标 + 值”构造张量。
+        这一步每次 retrieve() 只做一次，而不是每个问题重建。
         """
         num_entities = len(self.entity_hash_ids)
         num_sentences = len(self.sentence_hash_ids)
         
-        # Build entity-to-sentence matrix (Mention matrix) using COO format
+        # E2S mention matrix：某实体出现在某句子中，则对应位置为 1。
         entity_to_sentence_indices = []
         entity_to_sentence_values = []
         
@@ -147,7 +204,7 @@ class LinearRAG:
                 entity_to_sentence_indices.append([entity_idx, sentence_idx])
                 entity_to_sentence_values.append(1.0)
         
-        # Build sentence-to-entity matrix
+        # S2E 是反向映射，支持从已选句子继续激活同句实体。
         sentence_to_entity_indices = []
         sentence_to_entity_values = []
         
@@ -158,7 +215,7 @@ class LinearRAG:
                 sentence_to_entity_indices.append([sentence_idx, entity_idx])
                 sentence_to_entity_values.append(1.0)
         
-        # Convert to PyTorch sparse tensors (COO format, then convert to CSR for efficiency)
+        # 转为 PyTorch COO 稀疏张量；空边集也创建合法的零非零项张量。
         if len(entity_to_sentence_indices) > 0:
             e2s_indices = torch.tensor(entity_to_sentence_indices, dtype=torch.long).t()
             e2s_values = torch.tensor(entity_to_sentence_values, dtype=torch.float32)
@@ -184,16 +241,28 @@ class LinearRAG:
             )
             
     def graph_search_with_seed_entities(self, question, question_embedding, seed_entity_indices, seed_entities, seed_entity_hash_ids, seed_entity_scores):
+        """组合两阶段检索：先激活实体，再计算 Passage 先验并运行 PPR。"""
         if self.config.use_vectorized_retrieval:
             entity_weights, actived_entities = self.calculate_entity_scores_vectorized(question_embedding,seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores)
         else:
             entity_weights, actived_entities = self.calculate_entity_scores(question_embedding,seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores)
         passage_weights = self.calculate_passage_scores(question, question_embedding, actived_entities)
+        # Entity 与 Passage 权重位于同一个“图顶点长度”的重启向量中。
         node_weights = entity_weights + passage_weights
         ppr_sorted_passage_indices,ppr_sorted_passage_scores = self.run_ppr(node_weights)
         return ppr_sorted_passage_indices,ppr_sorted_passage_scores
 
     def run_ppr(self, node_weights):        
+        """运行 Personalized PageRank，并只返回 Passage 顶点的排序。
+
+        PPR 与普通 PageRank 的差别在于 personalization/reset vector（个性化
+        重启向量）：随机游走重启时，不是均匀回到任意节点，而是更可能回到
+        与当前问题相关的 Entity/Passage。`damping` 控制继续沿边传播的概率。
+
+        这也不同于 MedRAG 的 RRF：RRF 融合多个排名列表，PPR 则沿图边扩散
+        当前问题的节点权重。
+        """
+        # NaN 或负值不能作为重启概率，统一裁成 0。
         reset_prob = np.where(np.isnan(node_weights) | (node_weights < 0), 0, node_weights)
         pagerank_scores = self.graph.personalized_pagerank(
             vertices=range(len(self.node_name_to_vertex_idx)),
@@ -204,6 +273,7 @@ class LinearRAG:
             implementation='prpack'
         )
         
+        # Entity 节点只帮助传播；最终证据必须是可放入 Prompt 的 Passage。
         doc_scores = np.array([pagerank_scores[idx] for idx in self.passage_node_indices])
         sorted_indices_in_doc_scores = np.argsort(doc_scores)[::-1]
         sorted_passage_scores = doc_scores[sorted_indices_in_doc_scores]
@@ -216,7 +286,19 @@ class LinearRAG:
         return sorted_passage_hash_ids, sorted_passage_scores.tolist()
 
     def calculate_entity_scores(self,question_embedding,seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores):
+        """用 BFS-style 循环执行 Entity → Sentence → Entity 语义传播。
+
+        术语：
+            active entity：本轮有资格继续扩展的实体；
+            tier/hop：实体距 Seed Entity 的传播轮次；
+            semantic bridge：用与问题相似的 Sentence 连接同句实体。
+
+        这不是调用标准 BFS API，而是用 `current_entities`/`new_entities`
+        实现逐层扩展。阈值负责剪枝，`top_k_sentence` 限制每个实体选几句，
+        `max_iterations` 限制最多传播多少轮。
+        """
         actived_entities = {}
+        # entity_weights 的长度等于全部 igraph 顶点数，只有 Entity 位置会在此赋值。
         entity_weights = np.zeros(len(self.graph.vs["name"]))
         for seed_entity_idx,seed_entity,seed_entity_hash_id,seed_entity_score in zip(seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores):
             actived_entities[seed_entity_hash_id] = (seed_entity_idx, seed_entity_score, 1)
@@ -228,6 +310,7 @@ class LinearRAG:
         while len(current_entities) > 0 and iteration < self.config.max_iterations:
             new_entities = {}
             for entity_hash_id, (entity_id, entity_score, tier) in current_entities.items():
+                # 低分实体不再向外扩展，减少噪声与计算。
                 if entity_score < self.config.iteration_threshold:
                     continue
                 sentence_hash_ids = [sid for sid in list(self.entity_hash_id_to_sentence_hash_ids[entity_hash_id]) if sid not in used_sentence_hash_ids]
@@ -236,6 +319,7 @@ class LinearRAG:
                 sentence_indices = [self.sentence_embedding_store.hash_id_to_idx[sid] for sid in sentence_hash_ids]
                 sentence_embeddings = self.sentence_embeddings[sentence_indices]
                 question_emb = question_embedding.reshape(-1, 1) if len(question_embedding.shape) == 1 else question_embedding
+                # 在当前实体关联的句子中，选择最符合问题语义的桥。
                 sentence_similarities = np.dot(sentence_embeddings, question_emb).flatten()
                 top_sentence_indices = np.argsort(sentence_similarities)[::-1][:self.config.top_k_sentence]
                 for top_sentence_index in top_sentence_indices:
@@ -244,6 +328,7 @@ class LinearRAG:
                     used_sentence_hash_ids.add(top_sentence_hash_id)
                     entity_hash_ids_in_sentence = self.sentence_hash_id_to_entity_hash_ids[top_sentence_hash_id]
                     for next_entity_hash_id in entity_hash_ids_in_sentence:
+                        # 传播分数 = 来路实体分数 × 问题与桥接句子的相似度。
                         next_entity_score = entity_score * top_sentence_score
                         if next_entity_score < self.config.iteration_threshold:
                             continue
@@ -256,30 +341,37 @@ class LinearRAG:
         return entity_weights, actived_entities
 
     def calculate_entity_scores_vectorized(self,question_embedding,seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores):
-        """
-        GPU-accelerated vectorized version using PyTorch sparse tensors.
-        Uses sparse representation for both matrices and entity score vectors for maximum efficiency.
-        Now includes proper dynamic pruning to match BFS behavior:
-        - Sentence deduplication (tracks used sentences)
-        - Per-entity top-k sentence selection
-        - Proper threshold-based pruning
+        """用 PyTorch 稀疏矩阵加速 Entity → Sentence → Entity 传播。
+
+        Vectorized retrieval 在这里是“图传播向量化”，不是 Dense Retrieval。
+        它试图保持 BFS-style 分支的三项语义：
+
+        - Sentence 去重：已使用的桥接句不再重复传播；
+        - 每个 active Entity 独立挑选 Top-k Sentence；
+        - 每轮对 Entity 分数做 iteration_threshold 剪枝。
+
+        矩阵乘法主链：
+            Entity score vector
+            → E2S 转成 Sentence activation
+            → 乘 Question–Sentence similarity
+            → S2E 转成下一轮 Entity score
         """
         # Initialize entity weights
         entity_weights = np.zeros(len(self.graph.vs["name"]))
         num_entities = len(self.entity_hash_ids)
         num_sentences = len(self.sentence_hash_ids)
         
-        # Compute all sentence similarities with the question at once
+        # 所有 Question–Sentence 相似度一次算完，后续各轮复用。
         question_emb = question_embedding.reshape(-1, 1) if len(question_embedding.shape) == 1 else question_embedding
         sentence_similarities_np = np.dot(self.sentence_embeddings, question_emb).flatten()
         
         # Convert to torch tensors and move to device
         sentence_similarities = torch.from_numpy(sentence_similarities_np).float().to(self.device)
         
-        # Track used sentences for deduplication (like BFS version)
+        # 布尔掩码对应 BFS 分支的 used_sentence_hash_ids 集合。
         used_sentence_mask = torch.zeros(num_sentences, dtype=torch.bool, device=self.device)
         
-        # Initialize seed entity scores as sparse tensor
+        # Seed Entity 构成第 0 层稀疏分数向量，也是传播起点。
         seed_indices = torch.tensor([[idx] for idx in seed_entity_indices], dtype=torch.long).t()
         seed_values = torch.tensor(seed_entity_scores, dtype=torch.float32)
         entity_scores_sparse = torch.sparse_coo_tensor(
@@ -302,7 +394,7 @@ class LinearRAG:
         
         current_entity_scores_sparse = entity_scores_sparse
         
-        # Iterative matrix-based propagation using sparse matrices on GPU
+        # 每次循环对应一层 hop/tier。
         for iteration in range(1, self.config.max_iterations):
             # Convert sparse tensor to dense for threshold operation
             current_entity_scores_dense = current_entity_scores_sparse.to_dense()
@@ -327,7 +419,7 @@ class LinearRAG:
                 nonzero_indices.unsqueeze(0), nonzero_values, (num_entities,), device=self.device
             ).coalesce()
             
-            # Step 1: Sparse entity scores @ Sparse E2S matrix
+            # 第一步：Entity score 经 E2S 邻接矩阵传播到 Sentence。
             # Convert sparse vector to 2D for matrix multiplication
             current_scores_2d = torch.sparse_coo_tensor(
                 torch.stack([nonzero_indices, torch.zeros_like(nonzero_indices)]),
@@ -353,7 +445,7 @@ class LinearRAG:
                 sentence_activation
             )
             
-            # Step 2: Per-entity top-k sentence selection
+            # 第二步：为每个 active Entity 单独选与问题最相似的 Top-k Sentence。
             # This matches BFS behavior: each entity independently selects its top-k sentences
             selected_sentence_indices_list = []
             
@@ -396,8 +488,7 @@ class LinearRAG:
                     # Mark selected sentences as used
                     used_sentence_mask[unique_selected_sentences] = True
                     
-                    # Compute weighted sentence scores for propagation
-                    # weighted_score = sentence_activation * sentence_similarity
+                    # 句子传播权重 = 实体侧激活 × Question–Sentence 相似度。
                     weighted_sentence_scores = sentence_activation * sentence_similarities
                     
                     # Zero out non-selected sentences
@@ -415,7 +506,7 @@ class LinearRAG:
                 # No active entities or top_k_sentence is 0
                 weighted_sentence_scores = torch.zeros(num_sentences, dtype=torch.float32, device=self.device)
             
-            # Step 3: Weighted sentences @ S2E -> propagate to next entities
+            # 第三步：加权 Sentence 经 S2E 邻接矩阵传播到下一层 Entity。
             # Convert to sparse for more efficient computation
             weighted_nonzero_mask = weighted_sentence_scores > 0
             weighted_nonzero_indices = torch.nonzero(weighted_nonzero_mask, as_tuple=False).squeeze(-1)
@@ -440,7 +531,7 @@ class LinearRAG:
             else:
                 next_entity_scores_dense = torch.zeros(num_entities, dtype=torch.float32, device=self.device)
             
-            # Update entity scores (accumulate in dense format)
+            # 同一 Entity 可被多条路径激活，最终分数累计。
             entity_scores_dense += next_entity_scores_dense
             
             # Update actived_entities dictionary (record last trigger like BFS)
@@ -479,6 +570,21 @@ class LinearRAG:
         return entity_weights, actived_entities
 
     def calculate_passage_scores(self, question, question_embedding, actived_entities):
+        """计算写入 PPR 重启向量的 Passage 先验。
+
+        核心形式：
+
+            passage_score
+              = passage_ratio × 归一化 Dense 相似度
+              + log(1 + Entity 出现奖励)
+              + 可选属性关键词奖励
+
+            Passage 顶点重启权重
+              = passage_score × passage_node_weight
+
+        Dense 部分回答“文本语义是否像问题”，Entity 奖励回答“该 Passage 是否
+        包含已沿语义桥激活的实体”。tier 越远，实体奖励除以越大的层级数。
+        """
         passage_weights = np.zeros(len(self.graph.vs["name"]))
         dpr_passage_indices, dpr_passage_scores = self.dense_passage_retrieval(question_embedding)
         dpr_passage_scores = min_max_normalize(dpr_passage_scores)
@@ -497,10 +603,12 @@ class LinearRAG:
                 entity_lower = self.entity_embedding_store.hash_id_to_text[entity_hash_id].lower()
                 entity_occurrences = passage_text_lower.count(entity_lower)
                 if entity_occurrences > 0:
+                    # Seed Entity 的 tier 可能记为 0 或 1；分母至少为 1，避免除零。
                     denom = tier if tier >= 1 else 1
                     entity_bonus = entity_score * math.log(1 + entity_occurrences) / denom
                     total_entity_bonus += entity_bonus
 
+            # log 压缩高频实体奖励，避免重复出现次数完全支配 Dense 相关性。
             passage_score = self.config.passage_ratio * dpr_passage_score + math.log(1 + total_entity_bonus)
 
             if apply_attribute_boost:
@@ -513,6 +621,11 @@ class LinearRAG:
         return passage_weights
 
     def dense_passage_retrieval(self, question_embedding):
+        """对全部归一化 Passage Embedding 做点积并降序排序。
+
+        它既是图检索中的 Passage 语义先验，也是无 Seed Entity 时的回退检索。
+        当前实现是 NumPy 全量精确计算，并未使用 FAISS 等 ANN 索引。
+        """
         question_emb = question_embedding.reshape(1, -1)
         question_passage_similarities = np.dot(self.passage_embeddings, question_emb.T).flatten()
         sorted_passage_indices = np.argsort(question_passage_similarities)[::-1]
@@ -520,10 +633,12 @@ class LinearRAG:
         return sorted_passage_indices, sorted_passage_scores
 
     def _is_attribute_query(self, question):
+        """判断问题是否含配置中的属性词，如 where、when、born。"""
         tokens = set(re.findall(r"\w+", question.lower()))
         return any(keyword in tokens for keyword in self.config.attribute_query_keywords)
 
     def _attribute_keyword_overlap(self, question_lower, passage_text_lower):
+        """统计同时出现在问题与 Passage 中的属性关键词数量。"""
         overlap = 0
         for keyword in self.config.attribute_query_keywords:
             if keyword in question_lower and keyword in passage_text_lower:
@@ -531,10 +646,24 @@ class LinearRAG:
         return overlap
     
     def get_seed_entities(self, question):
+        """把 Question Entity 语义对齐到语料 Entity，得到传播种子。
+
+        Seed Entity（种子实体）是问题进入图空间的起点。流程是：
+
+            Question NER
+            → 每个问题实体的归一化 Embedding
+            → 与全部语料 Entity Embedding 点积
+            → 为每个问题实体选分数最高的一个语料 Entity
+
+        这与 Dense Passage Retrieval 不同：这里匹配的是 Entity 空间，输出用于
+        图传播而非直接作为最终证据。当前代码没有设置最低相似度阈值，因此即使
+        最佳匹配较弱，也会选择一个 Seed Entity；这是需要后续实验验证的边界。
+        """
         question_entities = list(self.spacy_ner.question_ner(question))
         if len(question_entities) == 0:
             return [],[],[],[]
         question_entity_embeddings = self.config.embedding_model.encode(question_entities,normalize_embeddings=True,show_progress_bar=False,batch_size=self.config.batch_size)
+        # 形状：[语料 Entity 数, 问题 Entity 数]。
         similarities = np.dot(self.entity_embeddings, question_entity_embeddings.T)
         seed_entity_indices = []
         seed_entity_texts = []
@@ -553,19 +682,41 @@ class LinearRAG:
         return seed_entity_indices, seed_entity_texts, seed_entity_hash_ids, seed_entity_scores
 
     def index(self, passages):
+        """离线构建 relation-free 检索结构并保存 GraphML。
+
+        七个阶段：
+            ① 编码/持久化 Passage；
+            ② 复用 NER 缓存，只处理新 Passage；
+            ③ 整理 Entity、Sentence 与双向映射；
+            ④ 编码/持久化 Entity 和 Sentence；
+            ⑤ 把文本映射转换为稳定 hash-ID 映射；
+            ⑥ 建 Entity–Passage 与相邻 Passage 边；
+            ⑦ 添加正式图节点/边并保存 GraphML。
+        """
+        # 临时边表：外层 key 是起点 hash ID，内层保存邻点与边权。
         self.node_to_node_stats = defaultdict(dict)
         self.entity_to_sentence_stats = defaultdict(dict)
+
+        # ① Passage Store 只编码缺失文本。
         self.passage_embedding_store.insert_text(passages)
         hash_id_to_passage = self.passage_embedding_store.get_hash_id_to_text()
+
+        # ② 已有 NER JSON 可复用，只对新 Passage 调用 spaCy。
         existing_passage_hash_id_to_entities,existing_sentence_to_entities, new_passage_hash_ids = self.load_existing_data(hash_id_to_passage.keys())
         if len(new_passage_hash_ids) > 0:
             new_hash_id_to_passage = {k : hash_id_to_passage[k] for k in new_passage_hash_ids}
             new_passage_hash_id_to_entities,new_sentence_to_entities = self.spacy_ner.batch_ner(new_hash_id_to_passage, self.config.max_workers)
             self.merge_ner_results(existing_passage_hash_id_to_entities, existing_sentence_to_entities, new_passage_hash_id_to_entities, new_sentence_to_entities)
         self.save_ner_results(existing_passage_hash_id_to_entities, existing_sentence_to_entities)
+
+        # ③ 从 NER 结果得到去重节点集合和 Entity↔Sentence 文本映射。
         entity_nodes, sentence_nodes,passage_hash_id_to_entities,self.entity_to_sentence,self.sentence_to_entity = self.extract_nodes_and_edges(existing_passage_hash_id_to_entities, existing_sentence_to_entities)
+
+        # ④ Sentence 和 Entity 也各自拥有可复用的 Embedding Store。
         self.sentence_embedding_store.insert_text(list(sentence_nodes))
         self.entity_embedding_store.insert_text(list(entity_nodes))
+
+        # ⑤ 在线传播使用稳定 ID，而不是重复保存长文本。
         self.entity_hash_id_to_sentence_hash_ids = {}
         for entity, sentence in self.entity_to_sentence.items():
             entity_hash_id = self.entity_embedding_store.text_to_hash_id[entity]
@@ -574,14 +725,22 @@ class LinearRAG:
         for sentence, entities in self.sentence_to_entity.items():
             sentence_hash_id = self.sentence_embedding_store.text_to_hash_id[sentence]
             self.sentence_hash_id_to_entity_hash_ids[sentence_hash_id] = [self.entity_embedding_store.text_to_hash_id[e] for e in entities]
+        # ⑥ 当前最终图的两类边：Entity–Passage，以及按原始顺序相邻的 Passage。
         self.add_entity_to_passage_edges(passage_hash_id_to_entities)
         self.add_adjacent_passage_edges()
+
+        # ⑦ 把临时统计真正写入 igraph，并持久化为通用 GraphML 文件。
         self.augment_graph()
         output_graphml_path = os.path.join(self.config.working_dir,self.dataset_name, "LinearRAG.graphml")
         os.makedirs(os.path.dirname(output_graphml_path), exist_ok=True)   
         self.graph.write_graphml(output_graphml_path)
 
     def add_adjacent_passage_edges(self):
+        """按 `load_dataset()` 写入的数字前缀连接相邻 Passage。
+
+        这类边保存原文局部上下文顺序，权重固定为 1.0。没有数字前缀的文本不会
+        进入这条邻接边构建逻辑。
+        """
         passage_id_to_text = self.passage_embedding_store.get_hash_id_to_text()
         index_pattern = re.compile(r'^(\d+):')
         indexed_items = [
@@ -596,10 +755,16 @@ class LinearRAG:
             self.node_to_node_stats[current_node][next_node] = 1.0
 
     def augment_graph(self):
+        """先添加 Entity/Passage 顶点，再批量添加正式边。"""
         self.add_nodes()
         self.add_edges()
 
     def add_nodes(self):
+        """把 Entity 和 Passage 加为 igraph 顶点。
+
+        关键辨析：Sentence Store 没有合并进 `all_hash_id_to_text`，因此 Sentence
+        虽然在在线 Entity 传播中充当 semantic bridge，却不是最终 igraph 顶点。
+        """
         existing_nodes = {v["name"]: v for v in self.graph.vs if "name" in v.attributes()} 
         entity_hash_id_to_text = self.entity_embedding_store.get_hash_id_to_text()
         passage_hash_id_to_text = self.passage_embedding_store.get_hash_id_to_text()
@@ -619,6 +784,7 @@ class LinearRAG:
         ]
 
     def add_edges(self):
+        """把临时 `node_to_node_stats` 转成 igraph 边及 `weight` 属性。"""
         edges = []
         weights = []
         
@@ -632,6 +798,16 @@ class LinearRAG:
         self.graph.es['weight'] = weights
 
     def add_entity_to_passage_edges(self, passage_hash_id_to_entities):
+        """建立 Entity–Passage 边，并按 Passage 内实体总出现次数归一化。
+
+        对某 Passage 中的某 Entity：
+
+            edge_weight
+              = 该 Entity 在 Passage 中的字符串出现次数
+                / 所有抽取 Entity 在该 Passage 中的总出现次数
+
+        这是无需 LLM 关系抽取的共现连接，也是 relation-free 的关键组成。
+        """
         passage_to_entity_count ={} 
         passage_to_all_score = defaultdict(int)
         for passage_hash_id, entities in passage_hash_id_to_entities.items():
@@ -646,6 +822,12 @@ class LinearRAG:
             self.node_to_node_stats[passage_hash_id][entity_hash_id] = score
 
     def extract_nodes_and_edges(self, existing_passage_hash_id_to_entities, existing_sentence_to_entities):
+        """把 NER JSON 整理为集合与 Entity↔Sentence 文本映射。
+
+        函数名中的 `edges` 容易误导：此处生成的 Entity–Sentence 关系用于在线
+        语义桥接，并不会直接成为 `self.graph` 中的正式边；正式边由后续
+        `add_entity_to_passage_edges()` 和 `add_adjacent_passage_edges()` 产生。
+        """
         entity_nodes = set()
         sentence_nodes = set()
         passage_hash_id_to_entities = defaultdict(set)
@@ -663,10 +845,12 @@ class LinearRAG:
         return entity_nodes, sentence_nodes, passage_hash_id_to_entities, entity_to_sentence, sentence_to_entity
 
     def merge_ner_results(self, existing_passage_hash_id_to_entities, existing_sentence_to_entities, new_passage_hash_id_to_entities, new_sentence_to_entities):
+        """把新 Passage 的 NER 结果并入已有缓存字典。"""
         existing_passage_hash_id_to_entities.update(new_passage_hash_id_to_entities)
         existing_sentence_to_entities.update(new_sentence_to_entities)
         return existing_passage_hash_id_to_entities, existing_sentence_to_entities
 
     def save_ner_results(self, existing_passage_hash_id_to_entities, existing_sentence_to_entities):
+        """保存 NER 中间结果，供下次增量构图复用。"""
         with open(self.ner_results_path, "w") as f:
             json.dump({"passage_hash_id_to_entities": existing_passage_hash_id_to_entities, "sentence_to_entities": existing_sentence_to_entities}, f)

@@ -4,11 +4,28 @@ import pdb
 
 
 class SpacyNER:
+    """用 spaCy/SciSpaCy 把 Passage 和 Question 连接到 Entity。
+
+    NER（Named Entity Recognition，命名实体识别）用于找出人名、地点、疾病等
+    实体提及。离线阶段输出两个关键契约：
+
+        passage_hash_id_to_entities：
+            Passage 哈希 ID → 该 Passage 中去重后的 Entity 文本
+        sentence_to_entities：
+            Sentence 原文 → 同一句中出现的 Entity 文本
+
+    第二套映射让 Sentence 成为 semantic bridge（语义桥）：在线检索可以从当前
+    Entity 找到与问题相关的 Sentence，再激活同句的其他 Entity。
+    """
+
     def __init__(self,spacy_model):
         self.spacy_model = spacy.load(spacy_model)
 
     def batch_ner(self, hash_id_to_passage, max_workers):
+        """批量处理 Passage，并合并为全语料级的两套 NER 映射。"""
         passage_list = list(hash_id_to_passage.values())
+        # 学习注意：当 Passage 数少于 max_workers 时，这个整数除法可能得到 0。
+        # spaCy 是否接受该值需要用 toy 数据验证；本轮只注释，不改变官方行为。
         batch_size = len(passage_list) // max_workers
         docs_list = self.spacy_model.pipe(passage_list,batch_size=batch_size)
         passage_hash_id_to_entities = {}
@@ -24,11 +41,13 @@ class SpacyNER:
         return passage_hash_id_to_entities,sentence_to_entities
             
     def extract_entities_sentences(self, doc,passage_hash_id):
+        """从一个已解析 Doc 中提取 Passage→Entity 与 Sentence→Entity。"""
         sentence_to_entities = defaultdict(list)
         unique_entities = set()
         passage_hash_id_to_entities = {}
         # pdb.set_trace()  # 注释掉调试断点
         for ent in doc.ents:
+            # 序数和基数通常数量多、区分度低，官方实现不把它们作为图实体。
             if ent.label_ == "ORDINAL" or ent.label_ == "CARDINAL":
                 continue
             sent_text = ent.sent.text
@@ -40,6 +59,11 @@ class SpacyNER:
         return passage_hash_id_to_entities,sentence_to_entities
 
     def question_ner(self, question: str):
+        """抽取问题实体，作为在线检索寻找 Seed Entity 的起点。
+
+        返回值统一为小写以减少表面形式差异；后续并非只做字符串精确匹配，
+        而是编码这些问题实体，并在语料 Entity Embedding 中寻找最近邻。
+        """
         doc = self.spacy_model(question)
         question_entities = set()
         for ent in doc.ents:
