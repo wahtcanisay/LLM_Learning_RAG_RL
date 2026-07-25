@@ -11,6 +11,8 @@
 3. 分数、节点和边为什么这样计算；
 4. 当前步骤的输出会被哪个后续步骤消费。
 
+默认知识起点是：学习者已经阅读过 MedRAG，理解 BM25、Dense Retrieval、Embedding、Top-k、RRF、Prompt 上下文、基础 QA 生成和基础评测，但尚未系统学习 GraphRAG。
+
 ## 已批准方案
 
 采用“核心链路逐段精注、外围文件按职责精注”的方案：
@@ -123,6 +125,36 @@ Evaluator.evaluate
 - 复杂代码块前使用阶段注释，关键公式旁使用局部注释；
 - 不给显而易见的赋值和循环机械加注释；
 - 对潜在问题使用“学习注意”标记，不在注释任务中顺便修复。
+- 新术语第一次出现时解释四件事：术语定义、对应代码数据结构、为什么需要、它与 MedRAG 基础检索的区别；
+- 后续再次出现同一术语时只引用名称，不重复整段定义，避免注释淹没算法主线。
+
+## 相对 MedRAG 新增的术语
+
+以下术语需要随源码在首次出现处解释：
+
+- **GraphRAG**：先把语料组织为图，再利用图结构传播或聚合证据；区别于 MedRAG 直接对独立 Chunk 做稀疏或稠密排序；
+- **Relation-free graph（关系无关图）**：不让 LLM 抽取带类型的知识关系，而使用实体共现、句子桥接和 Passage 邻接建立连接；
+- **Entity / Sentence / Passage**：实体是概念节点，Sentence 是在线传播时的语义桥，Passage 是最终返回给生成模型的证据单元；
+- **NER（Named Entity Recognition）**：从 Passage 或 Question 中识别人名、地点、疾病等实体提及，是图构建和查询入图的入口；
+- **Semantic bridging（语义桥接）**：通过与问题语义相似的句子，从当前实体激活同句中的其他实体，从而完成多跳扩展；
+- **Seed entity（种子实体）**：从问题实体出发，在语料实体库中找到的初始激活节点；
+- **Entity activation / propagation（实体激活与传播）**：沿 Entity → Sentence → Entity 扩展候选实体并传递分数；
+- **Tier / hop（层级或跳数）**：实体距离种子实体的传播轮次，用于限制搜索和衰减远距离证据；
+- **BFS-style iteration（广度优先式迭代）**：逐轮扩展当前激活实体；代码并非调用标准 BFS API，但控制结构具有分层扩展特征；
+- **Sparse adjacency matrix（稀疏邻接矩阵）**：只保存实际存在的 Entity–Sentence 连接，用矩阵乘法并行实现传播；
+- **COO sparse tensor**：用“坐标索引 + 非零值”表示稀疏矩阵，是 PyTorch 构造稀疏张量的格式；
+- **Vectorized retrieval（向量化检索）**：这里特指把图传播改写成稀疏矩阵运算，不等同于 MedRAG 中“Dense 向量检索”；
+- **Personalized PageRank（个性化 PageRank，PPR）**：从与当前问题相关的重启分布出发，在图上扩散权重并排序 Passage；
+- **Reset vector / personalization vector（重启向量）**：PPR 每次随机重启时回到各节点的概率分布，由当前问题的 Entity 和 Passage 分数组成；
+- **Damping factor（阻尼系数）**：PPR 继续沿边传播的概率，控制局部相关性与全图扩散的平衡；
+- **Passage prior / node weight（Passage 先验或节点权重）**：把 Dense Passage 相似度及实体奖励注入 PPR 重启分布；
+- **Dense fallback（稠密回退）**：问题没有识别到实体时跳过图传播，直接使用 Dense Passage Retrieval；
+- **GraphML**：保存图节点、边和属性的通用文件格式；
+- **Content hash / namespace（内容哈希与命名空间）**：用文本内容生成稳定 ID，并用 `passage-`、`entity-`、`sentence-` 防止不同对象发生 ID 混淆；
+- **Cache reuse / incremental indexing（缓存复用与增量建索引）**：只对尚未出现的文本执行 NER 或 Embedding，复用已有 Parquet 和 JSON 结果；
+- **LLM judge**：调用模型判断答案是否与标准答案一致；它与可程序化的字符串包含指标不同，也不是检索 Recall 或 MRR。
+
+需要特别澄清：论文描述中的句子语义桥接层，在当前代码里主要保存为 Entity–Sentence 映射并参与在线传播；`add_nodes()` 实际只把 Entity 和 Passage 加入最终 igraph。注释不得把 Sentence 错写成最终图中的第三类正式顶点。
 
 ## 行为边界
 
