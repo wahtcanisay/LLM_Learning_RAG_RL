@@ -1,10 +1,14 @@
 # 当前阶段
 
-阶段 1：MedRAG 基础检索复现（Task 1～Task 6 已完成，Task 7 待开始）
+阶段 1：MedRAG 基础检索学习与语料准备已完成；原生完整建库、生成和测评按用户决策暂缓。
+阶段 2：R2RAG 已完成核心思想学习；按用户决策停止继续阅读外围工程代码。
+阶段 3：LinearRAG 图结构检索与医学迁移（当前阶段）
 
 # 当前项目
 
-MedRAG 医学 RAG 基线。当前目标是先理解代码调用链，再运行最小样例；不提前下载大规模语料或模型。
+LinearRAG 官方源码学习与最小医学数据复现。MedRAG 保留为后续医学 chunk 语料和 Dense/Hybrid 基线；R2RAG 只保留动态路由、查询改写、证据充分性和停止控制思想，不再继续阅读其 API、服务与流式展示代码。
+
+LinearRAG 第一轮只阅读关系无关 Tri-Graph、实体抽取、语义桥接、段落打分和 PPR 两阶段检索。先使用官方 medical 小数据形成可验证结果，再迁移 MedRAG 的 Textbooks/StatPearls 小子集。
 
 # 已确认的正式路线
 
@@ -12,31 +16,23 @@ MedRAG 医学 RAG 基线。当前目标是先理解代码调用链，再运行�
 - 决策：阶段 6 使用 **MedSearch-R1：基于领域微调与成本感知强化学习的医学证据搜索 Agent**，替换原阶段 6 计划。
 - 衔接关系：MedRAG/R2RAG/LinearRAG 提供医学检索与动态控制基础，MedicalGPT 提供医学领域 SFT，Search-R1 提供多轮工具调用、rollout、reward 和 GRPO，LA-CDM 仅提供假设驱动、置信度校准和成本感知思想。
 - 数据边界：不依赖 MIMIC-CDM，不模拟或编造患者临床检查；第一版使用公开、可验证的医学选择题或医学问答以及独立医学检索语料。
-- 实施顺序：当前仍处于阶段 1 MedRAG，必须完成前置阶段及真实基线后再进入组合项目，不改变今天的 Retriever 代码阅读任务。
+- 实施顺序：当前进入阶段 3 LinearRAG；R2RAG 不做完整服务复现，待 LinearRAG 和医学基线产生真实指标后，再决定是否把其控制思想接回统一 Retriever。
 - 设计文档：`docs/superpowers/specs/2026-07-18-medsearch-r1-design.md`
 
 # 本周目标
 
-完成 MedRAG 官方代码的第一轮只读调研，明确入口、检索器、语料、索引、上下文构造、生成和评测如何衔接。
+完成 LinearRAG 核心代码第一轮阅读：理解实体、句子语义桥和 passage 三层结构，区分离线构图与在线两阶段检索，并确定官方 medical 数据到 MedRAG chunk 的适配边界。
 
 # 今日唯一任务
 
-阅读并理解：
-
-- `MedRAG/src/template.py`；
-- `MedRAG/src/medrag.py` 中的 `MedRAG.__init__`；
-- `MedRAG/src/medrag.py` 中的 `medrag_answer`。
-
-今晚已完成代码阅读，检查题和调用链复述留到明天，今天不运行语料下载或大规模实验。
+获取 LinearRAG 官方源码并确认 README、`run.py` 和 `src` 下 6 个核心 Python 文件的职责与阅读顺序；不下载数据、不安装依赖、不运行模型。
 
 # 完成标准
 
-- 能解释 `rag=False` 与 `rag=True` 的区别；
-- 能指出 `MedRAG.__init__` 中可能触发检索器、语料或索引初始化的位置；
-- 能解释 `medrag_answer` 中 `snippets`、`snippets_ids` 和实际检索三种证据来源；
-- 能解释检索结果如何变成 `context`，以及为什么要做上下文截断；
-- 能解释 `general_cot` 与 `general_medrag` 模板及其占位符；
-- 能用自己的话复述目前已经读到的调用链，但不要求今晚完成。
+- 官方源码位于 `LinearRAG/`，且没有嵌套 `.git`；
+- 记录官方 commit SHA、文件数量和核心入口；
+- 能复述 `load_dataset → index → qa/retrieve → evaluate` 顶层调用链；
+- 不下载 official medical 数据、Embedding 模型或 SciSpacy 模型，不产生虚构指标。
 
 # 已完成
 
@@ -96,7 +92,35 @@ MedRAG 医学 RAG 基线。当前目标是先理解代码调用链，再运行�
 - 显存峰值：未记录 GPU 峰值；本次 toy 实验未作为 GPU 实验统计。
 - 代码或日志位置：`MedRAG/docs/task6_toy_rrf.py`、容器终端日志。
 
+- 日期：2026-07-23
+- 完成内容：完成 Task 7 四套官方 chunk 的最终核验和冗余空间清理。逐文件检查 LFS pointer，抽查首/中/末 JSONL；Textbooks、PubMed、Wikipedia 的 LFS 对象通过 `git lfs fsck`，其中 Wikipedia 的通过记录来自容器终端，Textbooks 与 PubMed 在本次检查中返回 `Git LFS fsck OK`。随后使用 `git lfs prune --force` 删除三个数据仓库中已展开到工作区、可从远端重新下载的 LFS 缓存；删除 StatPearls 已生成 chunk 后可重新下载/生成的原始压缩包和解压目录。
+- 运行命令：`git lfs fsck`；`git lfs prune --dry-run --force`；`git lfs prune --force`。JSONL 与磁盘检查由 UTF-8 Node 脚本直接读取宿主机挂载目录完成，未使用 PowerShell 读写文件。
+- 结果与指标：Textbooks 18 个 JSONL、201.76 MiB；StatPearls 9646 个 JSONL、441.54 MiB；PubMed 1166 个 JSONL、65.20 GiB；Wikipedia 646 个 JSONL、42.54 GiB。四套语料均无 LFS pointer；PubMed 的 `pubmed23n0654.jsonl` 是官方仓库中原本就存在的唯一零字节分片，不是下载失败，其他抽样分片均可解析。LFS 缓存清理后均为 0 B；StatPearls 的 1.76 GiB 压缩包和 2.35 GiB 解压原料已删除。磁盘可用空间从 123.55 GiB 增至 235.64 GiB，实际释放 112.09 GiB。
+- 结果边界：删除 LFS 缓存不会影响当前 `chunk/` 读取，但以后若执行会重建工作区文件的 `git checkout/reset`，Git LFS 需要重新从 Hugging Face 下载对象；删除 StatPearls 原料后，若要重新运行切块脚本，需要重新下载并解压 NCBI 源文件。
+- 显存峰值：本次数据核验与清理未使用 GPU。
+- 代码或日志位置：`MedRAG/corpus/{textbooks,statpearls,pubmed,wikipedia}/chunk`；本文件记录最终核验结果，语料目录由根仓库 `.gitignore` 忽略。
+
+- 日期：2026-07-23
+- 完成内容：路线调整。MedRAG 完成基础代码阅读、toy BM25/Dense/RRF 闭环、四套医学 chunk 下载核验和冗余清理；不再继续 MedRAG 原生完整索引、生成和测评。进入 R2RAG 学习，并计划把可共享的 Embedding 调用抽象为统一接口。
+- 决策依据：R2RAG 主检索默认使用 FineWeb/ClueWeb 等搜索服务；`sentence-transformers/all-MiniLM-L6-v2` 出现在 GRAG/LocalGRAG 的候选重排和 RAGAS 评测中。复杂度分类器使用训练时绑定的 BERT 特征模型，Qwen3-Reranker 是独立的重排模型，不能全部替换成一个 Embedding 模型。
+- 下一步：阅读已加注释的 `R2RAG/src/systems/rag_interface.py`、`rag_router/rag_router_llm.py`、`rag_router/llm_query_complexity.py`、`vanilla_agent/vanilla_rag.py`，先完成调用链解释，再设计 `EmbeddingProvider`，不启动 LLM 或外部搜索服务。
+
+前三个 RAG 项目的融合定位（2026-07-23）：MedRAG 作为医学语料、chunk 数据契约和基础检索底座；R2RAG 作为控制层，决定单轮/多轮、查询改写、证据审查和停止；LinearRAG 作为可插拔的结构化检索后端，通过关系无关的 Tri-Graph、实体激活、语义桥接和段落重要性聚合处理跨实体/多跳问题。目标系统暂定为 `R2-Linear-MedRAG`：R2RAG 控制器只调用统一 `Retriever.search(query, top_k)`，后端可选择 `HybridRetriever` 或 `LinearGraphRetriever`，最终统一返回 `id/source/index/title/content/score` 等字段。
+
+融合顺序：先用 toy 文档验证统一 Retriever 接口；再把 MedRAG chunk 接入 BM25/Dense/Hybrid 适配器；然后在相同 chunk 上构建 LinearRAG 图索引并验证单轮图检索；最后让 R2RAG 的 simple/complex 控制器调用这些后端。不要一开始同时改变路由、图构建、Embedding、重排和生成模型。
+
+- 日期：2026-07-24
+- 完成内容：为 `vanilla_agent.py` 的 `QueryHistoryItem`、`VanillaAgent`、`review_documents()` 和 `run_streaming()` 主循环补充中文学习注释；明确本轮候选、跨轮证据池、查询历史、查询改写、上下文预算和语义停止的关系。外围 `agent_tools.py`、`pre_flight_models()`、流式展示细节和 `__main__` 手工入口暂时跳过。
+- 运行命令：`python -m py_compile R2RAG/src/systems/vanilla_agent/vanilla_agent.py`；`git diff --check`。
+- 结果与指标：语法检查通过，差异无空白错误；本次只增加注释和文档字符串，未改变代码行为，未调用 LLM、vLLM 或外部搜索，暂无实验指标。
+- 显存峰值：未使用 GPU。
+- 代码或日志位置：`R2RAG/src/systems/vanilla_agent/vanilla_agent.py`。
+
 # 遇到的问题
+
+- 问题：`VanillaAgent` 在审查前通过 `base_count` 给候选文档的 `sid` 做跨轮偏移，但该计数按 `useful_docs` 数量推进；因此不能未经验证地把历史 `sid` 视为全局唯一。
+- 原因：`update_docs_sids()` 按当前候选列表重新编号，而累积池只统计被选中的文档；两套计数粒度不同。
+- 解决办法：本次只补充严谨注释，不改变原始逻辑；后续若迁移到统一 Retriever，再用 toy 多轮测试专门验证 ID、去重和引用映射。
 
 - 问题：初次回答时把 `rrf_k` 说成检索器参数，并把 Retriever 初始化概括成“先检查索引”。
 - 原因：尚未区分候选排名融合和原始检索分数，也没有按 `Retriever.__init__` 的实际顺序追踪副作用。
@@ -136,9 +160,13 @@ Task 7 的生成链路学习顺延到语料核验完成后。
 
 StatPearls 最新结果（2026-07-22）：已处理 9648 个 `.nxml` 文件，生成 9646 个 `chunk/*.jsonl` 文件；脚本进度 `9648/9648` 完成。少出的 2 个文件符合 `statpearls.py` 对空 `saved_text` 文章跳过写出的逻辑，仍需抽样核验 JSONL 字段。
 
-Wikipedia 当前进展（2026-07-22）：执行 `git -C corpus/wikipedia lfs pull --include="chunk/**"`，正在下载 1165 个 LFS chunk 对象，日志显示 1033/1165（89%）、已下载约 61G。此前目录只有约 236K 是 LFS pointer 文件大小，不是实际语料大小；当前 61G 是真实 Wikipedia chunk 数据，下载完成后再核验 JSONL 和磁盘占用。
+Wikipedia 完成结果（2026-07-23）：Git LFS 断点续传期间多次在 Hugging Face Batch API 出现 `EOF`，降低批量/并发压力后完成下载。`git lfs fsck` 返回 `Git LFS fsck OK`；`corpus/wikipedia/chunk` 中共有 646 个 JSONL，工作区 chunk 占用 43G，`.git/lfs/objects` 本地缓存另占 43G，`du -sh corpus/wikipedia` 实测仓库总占用 86G。两者分别是可直接读取的工作区语料和 Git LFS 内容寻址缓存，不是两套不同 Wikipedia 数据。
 
-最新网络结果（2026-07-22）：PubMed/Wikipedia 的 LFS 批量请求出现 `EOF`，并分别报告 `Failed to fetch some objects`；因此两者都不能标记为下载完成。下一步调整 LFS 超时和并发后逐个仓库断点续传，不并行执行两个大仓库。
+Wikipedia JSONL 抽样结果（2026-07-23）：首文件为 `corpus/wikipedia/chunk/wiki20220301en000.jsonl`，首条记录可按 UTF-8/JSON 正常解析，不是 LFS pointer；字段为 `content/contents/id/title/wiki_id`，其中 `id=wiki20220301en000_0`、`title=Anarchism`、`content_length=559`，脚本输出 `WIKIPEDIA_VALIDATION_OK`。Wikipedia 语料下载与基础字段核验正式标记完成。
+
+Task 7 最终状态（2026-07-23）：Textbooks、StatPearls、PubMed、Wikipedia 均已有有效 chunk，并通过文件数、pointer、UTF-8/JSON 字段和磁盘占用核验。PubMed 的 LFS 哈希检查返回 `Git LFS fsck OK`，因此 Task 7 正式完成。冗余 LFS 缓存和 StatPearls 原始中间文件已经清理，完整数据结果与恢复边界见“已完成”中的 2026-07-23 记录。
+
+当前下一次唯一核心任务：按 R2RAG 核心代码顺序完成四个文件的阅读和问题回答；MedRAG 的完整索引与 Recall@k/MRR/QA 测评暂时不安排，待统一检索接口确定后再决定是否迁移到医学语料。
 
 明天要回答：
 
@@ -172,6 +200,11 @@ R2RAG 核心注释准备（2026-07-22）：已为下一次阅读的四个文件�
 - 环境边界：宿主机当前没有 `uv`，因此本次仅做不导入依赖的等价 Python 语法检查；未启动 vLLM、未调用搜索服务或 LLM、未产生实验指标。
 - 下一次唯一任务：按 `RAGInterface` → `RAGRouterLLM` → `QueryComplexityLLM` → `VanillaRAG` 阅读并回答 `R2RAG/README_zh.md` 中的前四个检查问题；`VanillaAgent` 留到下一轮。
 
+## 当前（2026-07-24）
+
+- `VanillaAgent` 主循环已完成注释和语法验证，不再继续阅读 R2RAG 的外围服务代码。
+- 下一步唯一任务：用自己的话复述一次“简单问题单轮、复杂问题多轮”的完整调用链，并指出 `review_documents()` 的四个返回值如何改变控制状态；完成后进入 LinearRAG 的官方索引和两阶段检索核心。
+
 # 待补知识
 
 - `Retriever.__init__` 的下载和索引构建副作用；
@@ -200,3 +233,37 @@ R2RAG 核心注释准备（2026-07-22）：已为下一次阅读的四个文件�
 - 报错：`pyjnius` 报 `Exception: Unable to find javac`，随后 Pyserini 在导入 Lucene 模块时失败。
 - 初步根因：容器中有 Java runtime，但当前环境找不到 `javac`；此前安装的 `openjdk-17-jre-headless` 只提供 JRE，不保证提供 JDK 编译器。
 - 下一步：在容器中检查 `java`、`javac`、`JAVA_HOME` 和实际 JDK 路径；安装与当前 Java 主版本匹配的 headless JDK 后，再重跑 toy 建库。
+
+## 2026-07-24：暂停推进并完成新 RAG 项目选型调研
+
+- 完成内容：暂停 R2RAG 后续代码学习；筛查 GitHub 新近热门 RAG 仓库，并检查 Papernotes 的 ICLR 2026 Information Retrieval/RAG 分类页。该页面共 81 篇条目，本次深查 11 个有代表性的论文仓库。
+- 核心结论：不更换既定 LinearRAG 方向；将项目收敛为“LinearRAG 核心复现 + GraphRAG-Benchmark 医学评测”。PageIndex 作为工业侧独立小项目候选，Reranker-Guided Search 作为可选检索增强模块。
+- 跳过内容：R2RAG 的 API、服务启动和流式展示等外围工程；Youtu-GraphRAG、DeepRAG、HiPRAG、FrugalRAG、Q-RAG 等当前过重项目；GRO-RAG、SmartChunk 等尚无可核验官方实现的项目。
+- 验证依据：核对候选官方 GitHub、README、核心源码目录、OpenReview、提交活跃度、许可证和最小运行入口；未克隆新仓库、未运行模型、未产生或引用为自己的实验指标。
+- 工具问题：本机 `gh 2.96.0` 已安装，但 `gh auth status` 显示账号 `wahtcanisay` 的 token 无效；本次改用公开网页和 GitHub API 完成只读调研。后续如需用 `gh` 克隆或查询，应先运行 `gh auth login -h github.com`。
+- 详细报告：`docs/rag-project-scout-2026-07-24.md`
+- 下一步：用户确认选型后，只阅读 LinearRAG README 和 `src` 下 6 个 Python 文件，画出构图与两阶段检索调用链；不下载大数据、不运行生成模型。
+
+### GitHub 热门侧补充核验
+
+- 补充原因：上一轮最终结论以 ICLR 2026 论文仓库为主，没有单独展示 GitHub 热门项目的完整筛选结果。
+- 查询方式：使用 GitHub 官方公开 REST API，组合 `topic:rag`、`topic:retrieval-augmented-generation`、`rag in:name`、`graphrag`、2025 年后创建和 2026-04 后仍更新等条件，按 stars 排序并去重；随后读取候选 README 和递归源码树。
+- 新结论：PageIndex 是 GitHub 热门侧最符合“新、完整、核心代码小”的项目；LinearRAG 是学术侧最符合要求的项目；ViDoRAG 是多模态方向代码较简洁的备选。RAG-Anything、PixelRAG、LEANN、Memvid、Local Deep Research 和 DeepSearcher 因框架、基础设施或服务代码偏重而不作为当前主项目。
+- 当前边界：仅完成公开元数据与源码结构核验，未克隆、未安装、未运行任何候选项目，未产生实验指标。
+- 下一步候选任务：只读 PageIndex 的 README、`pageindex/page_index.py` 和 `pageindex/retrieve.py`，判断其语义树检索是否值得做成独立医学长文档 RAG 小项目。
+
+### 语料适配后的执行顺序
+
+- 决策：先学习并最小复现 LinearRAG，PageIndex 调整为第二个独立小项目。
+- 原因：现有 MedRAG 是 `id/title/content` chunk 语料，能直接适配 LinearRAG；LinearRAG 官方发布 `medical/chunks.json` 和 `medical/questions.json`，并提供 biomedical SciSpacy 配置，可以较快形成 evidence 命中和 QA 指标。PageIndex 依赖长 PDF 的页码、章节与层级，直接输入已经切平的 MedRAG JSONL 会损失其核心优势，而且官方没有配套医疗 benchmark。
+- 当前唯一下一步：只读 LinearRAG README 和 `src` 下 6 个核心 Python 文件，画出实体抽取、Tri-Graph 构建、查询激活和两阶段检索调用链；暂不下载数据、不运行模型。
+
+## 2026-07-25：正式切换到 LinearRAG
+
+- 完成内容：停止继续学习 R2RAG；下载 LinearRAG 官方 `main` 分支源码压缩包并解压到 `LinearRAG/`，未保留嵌套 `.git`。确认顶层入口为 `run.py`，核心目录包含 `config.py`、`embedding_store.py`、`evaluate.py`、`LinearRAG.py`、`ner.py`、`utils.py`。
+- 源码版本：`bcc94e66c221f798801255efba09311d6fbcd8d6`，官方仓库 `https://github.com/DEEP-PolyU/LinearRAG`。
+- 代码规模：全仓 7 个 Python 文件；`src/LinearRAG.py` 672 行，其余 5 个 `src` 文件合计 335 行，顶层 `run.py` 75 行。
+- 已确认调用链：`run.py::load_dataset()` 读取 `questions.json/chunks.json` → `LinearRAG.index()` 构建 embedding、NER 结果和图 → `LinearRAG.qa()` 调用 `retrieve()` 并生成答案 → `Evaluator.evaluate()` 评测。
+- 发现的问题：`run.py` 硬编码 `CUDA_VISIBLE_DEVICES="4"`，单卡机器正式运行前必须删除或改为参数；本次只记录，不修改官方行为。
+- 验证边界：未下载 official medical 数据、Embedding、SciSpacy 或 LLM；未安装依赖、未使用 GPU、未产生检索或 QA 指标。
+- 下一步唯一任务：从 `LinearRAG/src/ner.py` 和 `LinearRAG.index()` 开始，画出实体、句子桥接和 passage 图的离线构建链路。

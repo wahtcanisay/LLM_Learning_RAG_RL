@@ -182,7 +182,7 @@ class RAGInterface(ABC):
     @abstractmethod
     async def run_streaming(
         self, request: RunRequest
-    ) -> Callable[[], AsyncGenerator[RunStreamingResponse, None]]:
+    ) -> Callable[[], AsyncGenerator[RunStreamingResponse, None]]: #返回一个异步生成器
         """
         Process a streaming request for the /run endpoint.
 
