@@ -25,10 +25,12 @@ class EmbeddingStore:
         self.db_filename = db_filename
         self.batch_size = batch_size
         self.namespace = namespace
-        
+
+        # 三个列表存储的一个text的三种表示
         self.hash_ids = []
         self.texts = []
         self.embeddings = []
+        # 互相转换的dict
         self.hash_id_to_text = {}
         self.hash_id_to_idx = {}
         self.text_to_hash_id = {}
@@ -62,7 +64,10 @@ class EmbeddingStore:
         missing_ids = [h for h in all_hash_ids if h not in existing]      
         texts_to_encode = [nodes_dict[hash_id]["content"] for hash_id in missing_ids]
         # 向量被 L2 归一化后，两个向量的点积等价于余弦相似度。
-        all_embeddings = self.embedding_model.encode(texts_to_encode,normalize_embeddings=True, show_progress_bar=False,batch_size=self.batch_size)
+        all_embeddings = self.embedding_model.encode(texts_to_encode,
+                                                     normalize_embeddings=True, 
+                                                     show_progress_bar=False,
+                                                     batch_size=self.batch_size)
         
         self._upsert(missing_ids, texts_to_encode, all_embeddings)
 

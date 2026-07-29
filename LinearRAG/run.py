@@ -68,7 +68,7 @@ def load_dataset(dataset_name):
     # 把原始顺序写进 Passage 文本。这个前缀不仅用于展示：index() 中的
     # add_adjacent_passage_edges() 会重新解析它，从而连接相邻 Passage。
     # 注意：前缀会参与内容哈希和 Embedding，因此已成为索引文本的一部分。
-    passages = [f'{idx}:{chunk}' for idx, chunk in enumerate(chunks)]
+    passages = [f'{idx}:{chunk}' for idx, chunk in enumerate(chunks)] # 最后的passages得到字符串列表，内涵格式如：["0:chunk1"，"1:chunk2"]
     return questions, passages
 
 def load_embedding_model(embedding_model):
@@ -92,15 +92,15 @@ def main():
 
     # ③ 将入口参数集中为配置对象，再初始化三个 EmbeddingStore、NER 和无向图。
     config = LinearRAGConfig(
-        dataset_name=args.dataset_name,
+        dataset_name=args.dataset_name,         
         embedding_model=embedding_model,
         spacy_model=args.spacy_model,
         max_workers=args.max_workers,
         llm_model=llm_model,
-        max_iterations=args.max_iterations,
-        iteration_threshold=args.iteration_threshold,
-        passage_ratio=args.passage_ratio,
-        top_k_sentence=args.top_k_sentence,
+        max_iterations=args.max_iterations,             #最多进行多少层 Entity → Sentence → Entity 传播
+        iteration_threshold=args.iteration_threshold,   #实体传播分数的最低阈值
+        passage_ratio=args.passage_ratio,               #最终 Passage 打分时，直接的 Question–Passage Dense 相似度所占权重
+        top_k_sentence=args.top_k_sentence,             #每个当前实体最多选择多少个与问题最相似的句子，作为语义桥，继续寻找下一层实体
         use_vectorized_retrieval=args.use_vectorized_retrieval
     )
     rag_model = LinearRAG(global_config=config)

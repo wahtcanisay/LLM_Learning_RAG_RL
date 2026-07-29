@@ -57,8 +57,14 @@ class LinearRAG:
 
     def load_embedding_store(self):
         """为 Passage、Entity、Sentence 分别加载可增量复用的 Parquet 缓存。"""
-        self.passage_embedding_store = EmbeddingStore(self.config.embedding_model, db_filename=os.path.join(self.config.working_dir,self.dataset_name, "passage_embedding.parquet"), batch_size=self.config.batch_size, namespace="passage")
-        self.entity_embedding_store = EmbeddingStore(self.config.embedding_model, db_filename=os.path.join(self.config.working_dir,self.dataset_name, "entity_embedding.parquet"), batch_size=self.config.batch_size, namespace="entity")
+        self.passage_embedding_store = EmbeddingStore(self.config.embedding_model, 
+                                                      db_filename=os.path.join(self.config.working_dir,self.dataset_name, "passage_embedding.parquet"), 
+                                                      batch_size=self.config.batch_size, 
+                                                      namespace="passage")
+        self.entity_embedding_store = EmbeddingStore(self.config.embedding_model, 
+                                                     db_filename=os.path.join(self.config.working_dir,self.dataset_name, "entity_embedding.parquet"), 
+                                                     batch_size=self.config.batch_size, 
+                                                     namespace="entity")
         self.sentence_embedding_store = EmbeddingStore(self.config.embedding_model, db_filename=os.path.join(self.config.working_dir,self.dataset_name, "sentence_embedding.parquet"), batch_size=self.config.batch_size, namespace="sentence")
 
     def load_existing_data(self,passage_hash_ids):
