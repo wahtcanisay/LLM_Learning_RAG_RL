@@ -33,20 +33,18 @@
 ```text
 阶段 1：MedRAG 基础检索
     ↓
-阶段 2：R2RAG 动态路由与迭代检索
+阶段 2：LinearRAG 图结构检索与医学迁移
     ↓
-阶段 3：LinearRAG 图结构检索与医学迁移
+阶段 3：MedicalGPT LoRA/QLoRA SFT
     ↓
-阶段 4：MedicalGPT LoRA/QLoRA SFT
+阶段 4：Search-R1 3B 搜索强化学习
     ↓
-阶段 5：Search-R1 3B 搜索强化学习
-    ↓
-阶段 6：MedSearch-R1 医学证据搜索 Agent
+阶段 5：MedSearch-R1 医学证据搜索 Agent
 ```
 
-其中，前三个阶段共同构成一个完整的 RAG 项目：
+其中，前两个阶段共同构成一个完整的 RAG 项目：
 
-> **Medical Routing GraphRAG：以 MedRAG 为医学问答基础系统，复现 R2RAG 的动态路由与迭代检索，再将 LinearRAG 的图结构检索迁移到医学语料。**
+> **Medical GraphRAG：以 MedRAG 为医学问答基础系统，再将 LinearRAG 的图结构检索迁移到医学语料。**
 
 MedRAG 在这个项目中的定位是：
 
@@ -129,7 +127,7 @@ RerankRetriever
 
 ## 阶段完成标准
 
-只有同时满足以下条件，才能进入 R2RAG：
+只有同时满足以下条件，才能进入下一阶段（LinearRAG）：
 
 - 能独立解释 BM25、Dense、Hybrid 和 Reranker 的区别；
 - 至少四种基线能够通过统一命令运行；
@@ -140,99 +138,19 @@ RerankRetriever
 
 ---
 
-# 五、阶段 2：R2RAG 动态路由与迭代检索
+# 路线变更记录（2026-07-31）
 
-## 目标
-
-复现 R2RAG 的核心思想，学习现代 RAG 如何根据问题难度动态决定检索策略，而不是对所有问题固定检索一次或固定运行多轮 Agent。
-
-核心流程：
-
-```text
-医学问题
-   ↓
-复杂度判断
-   ├─ 简单问题：单轮检索 → 重排 → 生成
-   └─ 复杂问题：查询改写或问题分解
-                     ↓
-                  多轮检索
-                     ↓
-                证据充分性判断
-                  ├─ 不充分：继续检索
-                  └─ 充分：生成答案
-```
-
-## 复现顺序
-
-1. 先在 R2RAG 官方数据和官方配置上跑通原始流程；
-2. 理解官方代码中的 Router、Query Reformulation、Evidence Sufficiency 和 Stopping；
-3. 不改变 R2RAG 核心逻辑，先完成官方基线复现；
-4. 再将其控制逻辑迁移到 MedRAG 的医学语料和检索器；
-5. 第一版固定使用 Hybrid Retrieval，避免同时引入过多变量；
-6. 第一版 Router 可以使用 Qwen3-4B Prompt 判断，不要求立即训练分类器；
-7. 流程稳定后，再研究规则 Router、轻量分类器或 SFT Router。
-
-## MedRAG 中保留的模块
-
-- 医学语料；
-- 文档切块；
-- BM25、Dense、Hybrid 索引；
-- 医学问题数据；
-- 生成模型；
-- 基础评测代码。
-
-## 新增模块
-
-建议目录：
-
-```text
-router/
-├── complexity_classifier.py
-├── query_rewriter.py
-├── evidence_checker.py
-├── stopping_controller.py
-└── state.py
-```
-
-## 必做实验
-
-| 方法 | QA 准确率 | 平均检索轮数 | 平均召回文档数 | Token 消耗 | 平均延迟 | 停止成功率 |
-|---|---:|---:|---:|---:|---:|---:|
-| 固定单轮 MedRAG |  | 1 |  |  |  |  |
-| 固定多轮 Agent |  |  |  |  |  |  |
-| R2-MedRAG |  |  |  |  |  |  |
-
-还需要分别统计：
-
-- 简单题与复杂题表现；
-- 过早停止率；
-- 无效多轮检索率；
-- 重复查询率；
-- 证据充分性判断错误案例。
-
-## 阶段完成标准
-
-- 官方 R2RAG 流程能够运行；
-- 能用自己的话解释动态路由为什么优于固定策略；
-- R2RAG 控制器已经成功调用 MedRAG 的统一 Retriever 接口；
-- 有固定单轮、固定多轮和动态路由三组对比；
-- 能分析 R2RAG 在医学问题上失败的主要原因；
-- 不以“检索轮数更多”作为性能更好的证据，必须同时考察正确率和成本。
+R2RAG 已从学习路线剔除：Router 是 LLM 输出 yes/no 的硬编码二分类（无阈值、无校准、无学习）；VanillaAgent 多轮循环的停止/改写同样是 prompt 级字符串匹配。多轮搜索+停止控制的价值由后续 Search-R1/MedSearch-R1 的 GRPO 学习控制覆盖。剔除保留的参考点记录在 `STUDY_PROGRESS_deepseek.md`「路线变更记录」。
 
 ---
 
-# 六、阶段 3：LinearRAG 图结构检索与医学迁移
+# 五、阶段 2：LinearRAG 图结构检索与医学迁移
 
 ## 目标
 
 复现 LinearRAG 的轻量图结构检索方法，理解实体层、语义桥接层和段落层如何帮助跨文档、多实体和多跳问题召回证据，并将其迁移到医学语料。
 
-R2RAG 与 LinearRAG 的作用不同：
-
-- **R2RAG 解决什么时候检索、检索几轮、何时停止；**
-- **LinearRAG 解决知识如何组织、每轮如何召回跨实体证据。**
-
-二者可以组合，但必须先分别验证。
+LinearRAG 的核心是解决知识如何组织、如何在一轮检索中跨实体、跨文档召回证据。
 
 ## 推荐复现顺序
 
@@ -243,7 +161,7 @@ R2RAG 与 LinearRAG 的作用不同：
 5. 第一版使用官方或普通实体识别工具；
 6. 第二版尝试 scispaCy 或医学实体识别模型；
 7. 比较普通实体识别与医学实体识别对召回的影响；
-8. 先固定单轮检索验证 LinearRAG，再与 R2RAG 组合。
+8. 第一版固定单轮检索验证 LinearRAG，不引入额外控制层。
 
 ## 建议支持的医学实体
 
@@ -271,7 +189,7 @@ HybridRetriever
 LinearGraphRetriever
 ```
 
-R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检索器的内部实现。
+所有检索器只暴露统一的 `search(query, top_k)` 接口，上层 Agent 不依赖某个检索器的内部实现。
 
 ## 必做实验
 
@@ -281,8 +199,6 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 | MedRAG-Dense | Dense | 固定单轮 |  |  |  |  |  |
 | MedRAG-Hybrid | Hybrid | 固定单轮 |  |  |  |  |  |
 | Linear-MedRAG | LinearRAG | 固定单轮 |  |  |  |  |  |
-| R2-MedRAG | Hybrid | 动态多轮 |  |  |  |  |  |
-| R2-Linear-MedRAG | LinearRAG 或混合检索 | 动态多轮 |  |  |  |  |  |
 
 ## 重点分析
 
@@ -290,9 +206,8 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 - Dense 是否更适合语义表达变化的问题；
 - LinearRAG 是否更适合跨实体、多跳问题；
 - 图检索是否在简单题上引入额外延迟；
-- R2RAG 是否减少了简单题的无效多轮检索；
-- R2RAG 与 LinearRAG 组合后，性能提升来自哪里；
-- 如果组合没有提升，明确分析 Router、实体抽取、图构建、召回或生成中的瓶颈。
+- 图检索是否提升了跨实体、多跳问题的召回；
+- 如果图检索没有提升，明确分析实体抽取、图构建、召回或生成中的瓶颈。
 
 ## 阶段完成标准
 
@@ -300,7 +215,6 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 
 - 一个统一的医学 RAG 代码框架；
 - BM25、Dense、Hybrid、Reranker、LinearRAG 多种检索后端；
-- R2RAG 动态路由和迭代检索控制器；
 - 医学实体识别与图索引构建流程；
 - 完整的基线与组合实验；
 - 成功案例、失败案例和成本分析；
@@ -309,11 +223,11 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 
 项目名称暂定：
 
-> **Medical Routing GraphRAG：面向医学问答的动态路由与轻量图检索系统**
+> **Medical GraphRAG：面向医学问答的轻量图结构检索系统**
 
 ---
 
-# 七、阶段 4：MedicalGPT 的 LoRA/QLoRA SFT
+# 六、阶段 3：MedicalGPT 的 LoRA/QLoRA SFT
 
 ## 目标
 
@@ -330,7 +244,7 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 
 ---
 
-# 八、阶段 5：Search-R1 3B 搜索强化学习复现
+# 七、阶段 4：Search-R1 3B 搜索强化学习复现
 
 ## 目标
 
@@ -348,11 +262,11 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 
 ---
 
-# 九、阶段 6：MedSearch-R1 医学证据搜索 Agent
+# 八、阶段 5：MedSearch-R1 医学证据搜索 Agent
 
 ## 目标
 
-将前三阶段形成的医学检索后端、MedicalGPT 的领域 SFT 能力和 Search-R1 的多轮 GRPO 训练流程组合成一个可验证的垂直医学 Agent 项目。
+将前两阶段（MedRAG、LinearRAG）形成的医学检索后端、MedicalGPT 的领域 SFT 能力和 Search-R1 的多轮 GRPO 训练流程组合成一个可验证的垂直医学 Agent 项目。
 
 项目名称：
 
@@ -536,12 +450,10 @@ R2RAG 控制器只调用统一的 `search()` 接口，不直接依赖某个检�
 RAG 主项目最终还必须包含：
 
 - 基础检索模块；
-- 动态路由模块；
-- 迭代检索模块；
 - 图结构检索模块；
 - 医学领域迁移；
 - 检索质量、答案质量、成本和延迟四类评测；
-- BM25、Dense、Hybrid、R2RAG、LinearRAG 及组合方案的对比。
+- BM25、Dense、Hybrid、LinearRAG 及组合方案的对比。
 
 ---
 
@@ -572,7 +484,7 @@ RAG 主项目最终还必须包含：
 - 解释代码时面向初学者，但不要回避关键原理；
 - 每次最多给我一个核心任务，必要时附带两三个检查步骤；
 - 我问到陌生概念时，先结合当前代码位置解释，而不是单独给百科式定义；
-- 当我试图跳过基础步骤直接做 MedSearch-R1 时，提醒我检查 MedRAG、R2RAG、LinearRAG、MedicalGPT SFT 和 Search-R1 的对应基础是否已经完成；
+- 当我试图跳过基础步骤直接做 MedSearch-R1 时，提醒我检查 MedRAG、LinearRAG、MedicalGPT SFT 和 Search-R1 的对应基础是否已经完成；
 - 当我已经掌握某一步时，减少重复解释，直接进入实验和代码检查；
 - 当我卡住时，优先定位环境、数据、配置、显存、接口和评测中的具体问题；
 - 不要通过大量鼓励代替技术判断；

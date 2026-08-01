@@ -67,3 +67,6 @@ desktop.ini
 
 # Preserved nested repository metadata (kept locally, never committed)
 **/.git.upstream/
+
+# Local working copy of study progress, maintained by DeepSeek since 2026-07-31
+STUDY_PROGRESS_deepseek.md

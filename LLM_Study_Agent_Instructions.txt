@@ -23,23 +23,17 @@
 5. 记录 Recall@k、MRR、问答准确率、运行时间和显存占用。
 6. 输出可复现的环境文件、运行命令、实验表格和失败记录。
 
-阶段 2：R2RAG 动态路由与迭代检索
-目标：学习根据问题难度决定检索轮数、查询改写和停止时机。
-建议内容：
-1. 先跑通官方流程，再把控制逻辑迁移到 MedRAG 的统一 Retriever 接口。
-2. 第一版固定使用 Hybrid Retrieval，避免同时改变多个变量。
-3. 对比固定单轮、固定多轮和动态路由。
-4. 记录正确率、平均检索轮数、延迟、token 消耗和停止错误。
+路线变更记录（2026-07-31）：R2RAG 已从路线剔除。Router 是 LLM 输出 yes/no 的硬编码二分类，VanillaAgent 多轮循环的停止/改写同样是 prompt 级字符串匹配且无学习；多轮搜索+停止控制的价值由 Search-R1/MedSearch-R1 的 GRPO 学习控制覆盖。详见 `STUDY_PROGRESS_deepseek.md`「路线变更记录」。
 
-阶段 3：LinearRAG 图结构检索与医学迁移
+阶段 2：LinearRAG 图结构检索与医学迁移
 目标：学习轻量图结构检索，并验证其对医学跨实体、多跳问题的价值。
 建议内容：
 1. 先在官方数据上跑通索引构建和检索。
 2. 通过统一接口实现 LinearGraphRetriever。
 3. 在医学语料子集上比较 BM25、Dense、Hybrid 和 LinearRAG。
-4. 单独验证图检索后，再与 R2RAG 动态控制组合。
+4. 第一版固定单轮检索验证图检索，不引入额外控制层。
 
-阶段 4：MedicalGPT 的 LoRA/QLoRA SFT
+阶段 3：MedicalGPT 的 LoRA/QLoRA SFT
 目标：掌握领域指令微调的完整流程。
 建议内容：
 1. 先用小数据和 Qwen 3B/4B 跑通 LoRA 或 QLoRA SFT。
@@ -48,7 +42,7 @@
 4. 至少评测格式遵循、领域问答质量和幻觉情况。
 5. 不把“成功运行训练脚本”等同于完成项目，必须保留数据说明、训练曲线和定量结果。
 
-阶段 5：Search-R1 3B 搜索强化学习复现
+阶段 4：Search-R1 3B 搜索强化学习复现
 目标：理解搜索工具调用、rollout、reward 和 GRPO 训练流程。
 建议内容：
 1. 优先复现官方 3B 配置或最接近的轻量配置。
@@ -57,7 +51,7 @@
 4. 检查工具调用格式、最终答案、平均搜索轮数、重复搜索率和 reward 曲线。
 5. 对比 Base、SFT（如有）与 RL。
 
-阶段 6：MedSearch-R1 医学证据搜索 Agent
+阶段 5：MedSearch-R1 医学证据搜索 Agent
 目标：将 MedRAG 检索、MedicalGPT 医学 SFT 与 Search-R1 多轮 GRPO 组合成成本感知、证据可追溯的医学搜索 Agent。
 建议内容：
 1. 基础模型优先使用 Qwen2.5-3B；流程稳定后可尝试 Qwen3-4B。
@@ -156,5 +150,5 @@ STUDY_PROGRESS.md 至少包含以下内容：
 - 默认使用中文。
 - 解释代码时面向初学者，但不要回避关键原理。
 - 每次最多给我一个核心任务，必要时附带两三个检查步骤。
-- 当我试图跳过基础步骤直接做 MedSearch-R1 时，提醒我先确认 MedRAG、R2RAG、LinearRAG、MedicalGPT SFT 和 Search-R1 的对应基础是否已经完成。
+- 当我试图跳过基础步骤直接做 MedSearch-R1 时，提醒我先确认 MedRAG、LinearRAG、MedicalGPT SFT 和 Search-R1 的对应基础是否已经完成。
 - 当我已经掌握某一步时，减少重复解释，直接进入实验和代码检查。

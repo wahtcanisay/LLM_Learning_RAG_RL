@@ -12,7 +12,6 @@
 - MedicalGPT 提供医学领域 LoRA/QLoRA SFT 能力；
 - Search-R1 提供多轮工具交互、rollout、GRPO 和可验证奖励训练流程；
 - LA-CDM 提供假设驱动、置信度校准和成本感知决策思想；
-- R2RAG 的动态停止思想可作为后续对照或扩展，但不在第一版同时引入其全部模块。
 
 ## 2. 目标与成功标准
 
@@ -57,7 +56,7 @@
 - 不使用 MIMIC-CDM，也不伪造患者轨迹；
 - 不做多模态医学图像诊断；
 - 不训练独立 LLM Judge 或大型过程奖励模型；
-- 不同时加入 R2RAG、LinearRAG、Self-Play、Memory 等多个主要变量；
+- 不同时加入 LinearRAG、Self-Play、Memory 等多个主要变量；
 - 不对真实患者提供诊断建议，也不宣称达到临床部署标准。
 
 ## 4. 数据设计
@@ -248,14 +247,14 @@ R = R_answer
 当前仍从阶段 1 MedRAG 开始，不因最终项目设计而跳过基础阶段。建议后续路线为：
 
 ```text
-阶段 1～3：MedRAG / R2RAG / LinearRAG
+阶段 1～2：MedRAG / LinearRAG
   → 形成医学检索工具和评测基础
-阶段 4：MedicalGPT LoRA/QLoRA SFT
+阶段 3：MedicalGPT LoRA/QLoRA SFT
   → 形成医学领域初始化模型
-阶段 5：Search-R1 3B
+阶段 4：Search-R1 3B
   → 跑通搜索环境、rollout、reward 和 GRPO
-阶段 6：MedSearch-R1
+阶段 5：MedSearch-R1
   → 完成领域 SFT、医学检索与成本感知 Agentic RL 的组合实验
 ```
 
-只有在前三个来源模块分别跑通并有真实基线后，才进入组合阶段，避免无法判断最终结果来自哪个模块。
+只有在前两个来源模块分别跑通并有真实基线后，才进入组合阶段，避免无法判断最终结果来自哪个模块。

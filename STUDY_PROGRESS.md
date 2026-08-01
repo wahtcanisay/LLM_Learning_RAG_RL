@@ -1,29 +1,39 @@
+# 维护记录
+
+- 2026-07-30 及之前：由 GPT 维护本学习进度。
+- 2026-07-31：由 DeepSeek 接续维护，并完成图节点/边阅读记录与路线调整。
+- 2026-08-01 起：GPT 根据 `STUDY_PROGRESS_deepseek.md` 同步最新进度并继续维护；根目录 `STUDY_PROGRESS.md` 恢复为主进度文件。
+
 # 当前阶段
 
 - 阶段 1：MedRAG 基础代码、toy BM25/Dense/RRF 和四套语料核验已完成；正式全量索引、生成与评测暂缓。
-- 阶段 2：R2RAG 核心动态路由思想已学习；外围 API、服务和完整复现停止推进。
-- 阶段 3：LinearRAG 图结构检索与医学迁移（当前阶段）。
+- 阶段 2：LinearRAG 图结构检索与医学迁移（当前阶段）。
+- 阶段 3：MedicalGPT LoRA/QLoRA SFT。
+- 阶段 4：Search-R1 搜索强化学习。
+- 阶段 5：MedSearch-R1 医学证据搜索 Agent。
+- R2RAG 已于 2026-07-31 从路线剔除，详见“路线变更记录”。
 
 # 当前项目
 
-**Medical Routing GraphRAG**：MedRAG 提供医学语料与基础检索基线，LinearRAG 提供关系无关图检索，R2RAG 后续只作为动态路由与停止控制层。
+**Medical GraphRAG + Agent**：MedRAG 提供医学语料与基础检索基线，LinearRAG 提供关系无关图检索，MedicalGPT/Search-R1 提供领域 SFT 与搜索 RL，MedSearch-R1 组合为医学搜索 Agent。
 
 当前只学习和最小复现 LinearRAG。先使用官方 medical 小数据验证，再考虑迁移 MedRAG 的 Textbooks/StatPearls 子集。
 
 ## LinearRAG 真实学习边界
 
-- 已亲自阅读：`LinearRAG/readme.md`、`LinearRAG/run.py`、`src/config.py`、`src/embedding_store.py`、`src/utils.py::compute_mdhash_id()`、`src/LinearRAG.py` 的 `__init__()` 与 `load_embedding_store()`。
-- 尚未阅读：`src/ner.py`、`src/LinearRAG.py` 的离线建图与在线检索部分、`src/evaluate.py`、`src/utils.py` 的其余部分。
+- 已亲自阅读：`LinearRAG/readme.md`、`LinearRAG/run.py`、`src/config.py`、`src/embedding_store.py`、`src/ner.py`、`src/utils.py::compute_mdhash_id()`，以及 `src/LinearRAG.py` 中从初始化到离线 `index()` 的缓存、NER、Entity↔Sentence 映射和正式图构建（`add_entity_to_passage_edges() → add_adjacent_passage_edges() → augment_graph() → add_nodes() → add_edges()`）流程。
+- 尚未阅读：`src/LinearRAG.py` 的在线检索部分（`retrieve()`、实体传播、PPR）、`src/evaluate.py`、`src/utils.py` 的其余部分。
+- 2026-07-31 正式图节点/边任务已完成（学习者决定不再复述）。记录：Q1/Q4 确认为笔误（Entity 误写 Sentence）；Q2 正确表述为“边权是归一化比例（0～1），不是原始次数”；Q3 术语为“正则表达式”。
 - 助手添加注释、执行语法检查或检查调用链，只算材料准备，不算学习者完成。
 - LinearRAG 官方源码版本：`bcc94e66c221f798801255efba09311d6fbcd8d6`。
 
 ## 已确认的路线与边界
 
-- 顺序保持为：MedRAG → R2RAG → LinearRAG → MedicalGPT → Search-R1 → MedSearch-R1。
-- 阶段 6 使用 `MedSearch-R1`；设计文档位于 `docs/superpowers/specs/2026-07-18-medsearch-r1-design.md`。
+- 顺序保持为：MedRAG → LinearRAG → MedicalGPT → Search-R1 → MedSearch-R1。
+- 最终阶段使用 `MedSearch-R1`；设计文档位于 `docs/superpowers/specs/2026-07-18-medsearch-r1-design.md`。
 - 不依赖 MIMIC-CDM，不模拟真实临床检查，不声称提供临床诊断。
-- 暂缓：MedRAG 原生全量索引/生成/评测、R2RAG 外围工程、PageIndex 候选项目。
-- 不同时修改路由、图构建、Embedding、重排和生成模型；每次只验证一个主要变量。
+- 暂缓：MedRAG 原生全量索引/生成/评测、PageIndex 候选项目。
+- 不同时修改图构建、Embedding、重排和生成模型；每次只验证一个主要变量。
 
 # 本周目标
 
@@ -62,39 +72,29 @@
 
 # 今日唯一任务
 
-2026-07-29：阅读 Passage NER 与 Question NER 的数据契约：
+2026-08-01：在线查询入口与 Seed Entity 第一轮阅读：
 
 ```text
-SpacyNER.__init__()
-→ batch_ner()
-→ extract_entities_sentences()
-→ question_ner()
+retrieve()
+→ get_seed_entities()
 ```
 
-只查看 `LinearRAG.py` 中 `SpacyNER(...)`、`batch_ner(...)` 和 `question_ner(...)` 的调用位置，不展开阅读 `index()`、`get_seed_entities()` 或图构建逻辑。预计 45～75 分钟。
+只读默认非向量化分支；`_precompute_sparse_matrices()`、`calculate_entity_scores()`、PPR 等留到下一步。预计 45～75 分钟。
 
 # 完成标准
 
-- 能说明 `SpacyNER.__init__()` 如何从模型名或路径加载 spaCy/SciSpaCy pipeline；
-- 能写出 `batch_ner()` 的输入与两个返回映射；
-- 能解释 `extract_entities_sentences()` 如何同时生成 Passage→Entity 和 Sentence→Entity；
-- 能区分 Passage NER 与 Question NER 的大小写、去重和返回类型；
-- 能指出 `batch_size` 计算和字典顺序映射中的两个待验证边界；
-- 回答检查题并引用具体函数或变量；
-- 不下载 SciSpaCy 模型、不运行 NER、不使用 GPU、不产生实验指标。
+- 能说清 `retrieve()` 的两个分支：有 Seed Entity 走图检索，无 Seed Entity 走 Dense 回退；
+- 能解释 `get_seed_entities()` 的输入输出和“每个问题实体只选分数最高的一个语料 Entity”；
+- 能指出 `dense_passage_retrieval()` 与 `get_seed_entities()` 的匹配空间差异（Passage 空间 vs Entity 空间）；
+- 能回答 4 道检查题并引用具体函数或变量；
+- 不运行检索、不使用 GPU、不产生实验指标。
 
 ## 今日检查题
 
-1. `SpacyNER.__init__()` 接收的 `spacy_model` 是已经加载的模型对象，还是模型名/路径？
-2. `batch_ner()` 为什么接收 `hash_id_to_passage`，而不是只接收 Passage 文本列表？
-3. `passage_list` 与 `passage_hash_id` 是如何按位置重新配对的？这依赖什么顺序假设？
-4. 当 Passage 数量小于 `max_workers` 时，`batch_size` 会变成什么？为什么需要后续 toy 验证？
-5. 当前 `self.spacy_model.pipe(...)` 是否真的启用了多进程并行？请从调用参数判断。
-6. `extract_entities_sentences()` 为什么同时维护 `unique_entities` 和 `sentence_to_entities`？
-7. `ORDINAL` 与 `CARDINAL` 为什么被过滤？过滤发生在 Passage NER、Question NER，还是两者都有？
-8. Passage NER 在哪些层级去重？实体文本是否统一转为小写？
-9. `question_ner()` 与 Passage NER 在输入、输出类型、大小写处理和用途上有什么不同？
-10. 如果问题没有识别到任何实体，`question_ner()` 返回什么？今天只说明返回值，不展开后续检索分支。
+1. `retrieve()` 对每个问题先算什么，再根据什么决定走哪条检索分支？
+2. `get_seed_entities()` 的输入是什么？输出是哪些内容？没有识别到实体时返回什么？
+3. Seed Entity 是怎么“对齐”到语料 Entity 的？与 Dense Passage 检索在匹配空间上有什么区别？
+4. 无 Seed Entity 时 `retrieve()` 如何保证仍能返回证据？返回的分数是什么含义？
 
 # 已完成
 
@@ -116,11 +116,13 @@ SpacyNER.__init__()
 | PubMed | 1166 | 65.20 GiB | LFS 核验通过；官方含一个零字节分片 |
 | Wikipedia | 646 | 42.54 GiB | 字段与 LFS 核验通过 |
 
-## R2RAG（2026-07-22 至 2026-07-24）
+## 路线变更记录
 
-- 官方仓库：`https://github.com/rmit-ir/NeurIPS-MMU-RAG`；源码保存在 `R2RAG/`，未保留嵌套 `.git`。
-- 已学习 simple/complex 路由、单轮 `VanillaRAG`、多轮 `VanillaAgent`、查询改写、证据审查和停止控制的核心思想。
-- 未运行 vLLM、外部搜索或正式实验；不保留 API、服务启动和流式展示为当前任务。
+**2026-07-31：R2RAG 从学习路线剔除。**
+
+- 官方仓库：`https://github.com/rmit-ir/NeurIPS-MMU-RAG`；源码保留在 `R2RAG/`（2026-07-22 至 2026-07-24 曾学习其核心思想，未运行 vLLM、外部搜索或正式实验）。
+- 剔除判断：Router 与 `VanillaAgent` 的停止/改写决策主要依赖 prompt 输出和字符串匹配，无阈值、概率校准或可学习控制；后续 Search-R1/MedSearch-R1 将用 GRPO 学习搜索与停止策略，继续复现会重复且偏弱。
+- 保留给 MedSearch-R1 的参考点：查询变体与融合召回、压缩轮次历史避免上下文膨胀、纯 prompt 停止控制的脆弱性。
 
 ## LinearRAG（2026-07-25 至今）
 
@@ -129,23 +131,30 @@ SpacyNER.__init__()
 - 已发现 `run.py` 硬编码 `CUDA_VISIBLE_DEVICES="4"`，正式运行前必须改为单卡可配置方式。
 - 已完成 README、`run.py`、配置对象、初始化链和 `EmbeddingStore` 阅读。
 - 2026-07-28：完成 10 道初始化与缓存检查题及补答；纠正了“Parquet 会保存映射字典”和“对象类型等于 Python 数据类型”的混淆。
+- 2026-07-29：完成 Passage NER 与 Question NER 阅读。
+- 2026-07-30：阅读 `index()` 的缓存复用、NER 合并、五个节点/映射返回值和文本→hash 映射主流程；缓存覆盖、set 顺序和无显式返回等边界题按学习者决定跳过，不计为已掌握。
+- 2026-07-29：完成 `src/ner.py` 第一轮阅读，能够解释 `SpacyNER.__init__()`、`batch_ner()`、`extract_entities_sentences()` 和 `question_ner()` 的输入、输出、去重、大小写与离线/在线用途。
+- 2026-07-29：确认 `doc.ents` 的元素是实体 `Span`，不是字典；Passage→Entity 和 Sentence→Entity 都按实体文本去重，同一实体重复出现只保留一个映射项，但 Entity–Passage 边权后续会重新统计原文出现次数。
+- 2026-07-29：确认 Passage NER 保留原始大小写，Question NER 转为小写；问题无实体时 `question_ner()` 直接返回空集合 `set()`。
+- 2026-07-29：确认 `max_workers` 当前没有通过 `n_process` 启用 spaCy 多进程，只参与 `batch_size` 计算；当 Passage 数少于 `max_workers` 时存在 `batch_size == 0` 的待验证风险。
+- 2026-07-29：只读核验 MedRAG 的 Textbooks 和 StatPearls：两者均已切成带 `id/title/content/contents` 的 JSONL chunk；迁移 LinearRAG 需要转换为 `chunks.json`，并保留文档元数据以避免跨文档错误相邻边。
+- 2026-07-31：正式图节点和两类边阅读完成并标记通过（学习者决定不再复述，与 2026-07-30 缓存边界题同例）。已确认 Entity–Passage 边是归一化比例，相邻 Passage 通过数字前缀和正则表达式建立固定权重边。
 
 # 遇到的问题
 
 - LinearRAG README 只说明数据下载位置，没有完整说明 `questions.json/chunks.json` 的代码契约；以后必须区分“README 明示”和“源码确认”。
 - LinearRAG official medical 数据的上游医学基准尚未确认，不推测为 MedQA、PubMedQA 或其他数据集。
 - 当前没有 gold passage 标注，不能用只有标准答案的数据声称得到 Recall@k、MRR 或 nDCG。
-- 若未来重新接入 R2RAG，需要用 toy 多轮测试验证 `VanillaAgent` 的 `sid`、跨轮去重和引用映射。
+- R2RAG 已从主路线剔除，不再安排 `VanillaAgent` 的 `sid`、跨轮去重和引用映射验证。
 
 # 下一步
 
-完成今天的复述和检查题后，下一次进入离线索引总流程：`index() → load_existing_data() → merge_ner_results() → save_ner_results() → extract_nodes_and_edges()`。在 LinearRAG 单轮图检索产生真实指标前，不恢复 R2RAG 控制层，也不开始 PageIndex。
+完成在线入口与 Seed Entity 后，进入实体传播、Passage 先验和 PPR：`calculate_entity_scores() → dense_passage_retrieval() → calculate_passage_scores() → run_ppr()`。在 LinearRAG 单轮图检索产生真实指标前，不开始 PageIndex。
 
 # 待补知识
 
-- spaCy/SciSpaCy 的 Passage NER 与 Question NER；
-- Sentence 语义桥和 Entity→Sentence→Entity 传播；
-- Entity–Passage 与相邻 Passage 边；
+- spaCy/SciSpaCy 模型在通用实体与医学实体上的实际识别差异（待后续 toy 实验验证）；
+- Sentence 语义桥和在线 Entity→Sentence→Entity 传播（进入 `retrieve()` 后验证）；
 - Dense Passage Prior、Personalized PageRank 和 Dense fallback；
 - Recall@k、MRR、nDCG 与 QA Accuracy 的评测边界。
 
