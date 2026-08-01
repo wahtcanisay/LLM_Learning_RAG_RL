@@ -705,7 +705,7 @@ class LinearRAG:
 
         # ① Passage Store 只编码缺失文本。
         self.passage_embedding_store.insert_text(passages)
-        hash_id_to_passage = self.passage_embedding_store.get_hash_id_to_text()
+        hash_id_to_passage = self.passage_embedding_store.get_hash_id_to_text() #　hashid->passage映射
 
         # ② 已有 NER JSON 可复用，只对新 Passage 调用 spaCy。
         existing_passage_hash_id_to_entities,existing_sentence_to_entities, new_passage_hash_ids = self.load_existing_data(hash_id_to_passage.keys())
@@ -820,8 +820,8 @@ class LinearRAG:
             passage = self.passage_embedding_store.hash_id_to_text[passage_hash_id]
             for entity in entities:
                 entity_hash_id = self.entity_embedding_store.text_to_hash_id[entity]
-                count = passage.count(entity)
-                passage_to_entity_count[(passage_hash_id, entity_hash_id)] = count
+                count = passage.count(entity) # 字符串匹配entity出现次数
+                passage_to_entity_count[(passage_hash_id, entity_hash_id)] = count # set充当key来代表边
                 passage_to_all_score[passage_hash_id] += count
         for (passage_hash_id, entity_hash_id), count in passage_to_entity_count.items():
             score = count / passage_to_all_score[passage_hash_id]

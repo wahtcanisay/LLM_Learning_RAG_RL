@@ -19,26 +19,27 @@ class SpacyNER:
     """
 
     def __init__(self,spacy_model):
+        # 通过spacy.load()加载 NLP Pipeline，负责分词、分句和实体识别
         self.spacy_model = spacy.load(spacy_model)
 
     def batch_ner(self, hash_id_to_passage, max_workers):
         """批量处理 Passage，并合并为全语料级的两套 NER 映射。"""
-        passage_list = list(hash_id_to_passage.values())
+        passage_list = list(hash_id_to_passage.values()) # 得到chunk文本的list
         # 学习注意：当 Passage 数少于 max_workers 时，这个整数除法可能得到 0。
         # spaCy 是否接受该值需要用 toy 数据验证；本轮只注释，不改变官方行为。
         batch_size = len(passage_list) // max_workers
-        docs_list = self.spacy_model.pipe(passage_list,batch_size=batch_size)
+        docs_list = self.spacy_model.pipe(passage_list,batch_size=batch_size) # 返回的doc应该含有分好的entity和sentence
         passage_hash_id_to_entities = {}
         sentence_to_entities = defaultdict(list)
-        for idx,doc in enumerate(docs_list):
-            passage_hash_id = list(hash_id_to_passage.keys())[idx]
+        for idx,doc in enumerate(docs_list): # doc.ents 是一个由 spaCy Span 对象组成的序列。每个 ent 代表一次被识别出的实体提及
+            passage_hash_id = list(hash_id_to_passage.keys())[idx] # 按顺序拿到passageid
             single_passage_hash_id_to_entities,single_sentence_to_entities = self.extract_entities_sentences(doc,passage_hash_id)
             passage_hash_id_to_entities.update(single_passage_hash_id_to_entities)
             for sent, ents in single_sentence_to_entities.items():
                 for e in ents:
                     if e not in sentence_to_entities[sent]:
                         sentence_to_entities[sent].append(e)
-        return passage_hash_id_to_entities,sentence_to_entities
+        return passage_hash_id_to_entities,sentence_to_entities # 返回passagehashid->entity / sentence->entity 映射
             
     def extract_entities_sentences(self, doc,passage_hash_id):
         """从一个已解析 Doc 中提取 Passage→Entity 与 Sentence→Entity。"""
