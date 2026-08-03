@@ -48,14 +48,38 @@
       "query_id": "7482275",
       "gold_doc_id": "PMID:7482275",
       "split": "test",
+      "question": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
       "answer": "no",
+      "long_answer": "The results of this study cast doubt on the suggested advantage of HBO in reducing patient mortality and morbidity when used as adjuvant therapy for NF.",
       "context_count": 3,
+      "contexts": [
+        "The accepted treatment protocol for necrotizing fasciitis (NF) consists of extensive surgery and wide spectrum antibiotics. Hyperbaric oxygenation (HBO) has been recommended as adjuvant therapy for NF, improving patient mortality and outcome. However, the beneficial effect of HBO for NF remains controversial.",
+        "A retrospective evaluation of treatment outcome in 37 patients treated for NF between 1984 and 1993 was carried out. The mortality rate, morbidity criteria, and risk factors for grave prognosis were compared between a group of 25 patients who received HBO as part of their treatment protocol and a group of the remaining 12 patients treated by surgical excision and antibiotics alone.",
+        "The two groups were found to be similar with regard to age, gender, the incidence of individual risk factors for ominous prognosis, and the Acute Physiology and Chronic Health Evaluation (APACHE) II score for disease's severity on presentation. The mortality rate among the HBO-treated patients was 36%, as opposed to 25% in the non-HBO group. The mean number of surgical débridements required per patient was significantly higher in the HBO group: 3.3 compared with 1.5 in the non-HBO-treated patients. Although the average length of hospitalization for survivors was shorter for the HBO group, the difference between the groups did not reach statistical significance."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:7482275#0",
         "PMID:7482275#1",
         "PMID:7482275#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:7482275#0",
+          "order": 0,
+          "content": "the accepted treatment protocol for necrotizing fasciitis ( nf ) consists of extensive surgery and wide spectrum antibiotics. hyperbaric oxygenation ( hbo ) has been recommended as adjuvant therapy for nf, improving patient mortality and outcome. however, the beneficial effect of hbo for nf remains controversial."
+        },
+        {
+          "chunk_id": "PMID:7482275#1",
+          "order": 1,
+          "content": "a retrospective evaluation of treatment outcome in 37 patients treated for nf between 1984 and 1993 was carried out. the mortality rate, morbidity criteria, and risk factors for grave prognosis were compared between a group of 25 patients who received hbo as part of their treatment protocol and a group of the remaining 12 patients treated by surgical excision and antibiotics alone."
+        },
+        {
+          "chunk_id": "PMID:7482275#2",
+          "order": 2,
+          "content": "the two groups were found to be similar with regard to age, gender, the incidence of individual risk factors for ominous prognosis, and the acute physiology and chronic health evaluation ( apache ) ii score for disease ' s severity on presentation. the mortality rate among the hbo - treated patients was 36 %, as opposed to 25 % in the non - hbo group. the mean number of surgical debridements required per patient was significantly higher in the hbo group : 3. 3 compared with 1. 5 in the non - hbo - treated patients. although the average length of hospitalization for survivors was shorter for the hbo group, the difference between the groups did not reach statistical significance."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -65,8 +89,18 @@
       "query_id": "7497757",
       "gold_doc_id": "PMID:7497757",
       "split": "test",
+      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
       "answer": "no",
+      "long_answer": "The results of this study suggest that normothermic CPB does not prevent the development of the \"euthyroid sick syndrome\" during and after CPB. Despite these changes in thyroid function, most patients in both groups had a normal postoperative recovery.",
       "context_count": 6,
+      "contexts": [
+        "To determine if temperature during cardiopulmonary bypass (CPB) has an effect on perioperative and postoperative thyroid function.",
+        "Prospective study comparing thyroid function during and after hypothermic and normothermic CPB.",
+        "Cardiac surgical unit at a university-affiliated hospital.",
+        "Twelve patients scheduled to undergo cardiac operations with normothermic (n = 6) or hypothermic (n = 6) CPB.",
+        "Blood was analyzed for serum concentration of total thyroxine (TT4), total triiodothyronine (TT3), free T3 (fT3), reverse T3 (rT3), and thyroid stimulating hormone (TSH) preoperatively, 60 min after CPB was initiated, 30 min after discontinuing CPB, and on postoperative days (POD) 1, 3, and 5.",
+        "Patients who underwent either cold (26 degrees +/- 5 degrees C) or warm (35 degrees +/- 1 degree C) CPB were comparable with regard to age, body weight, duration of CPB, cross-clamp time, use of inotropes, total heparin dose, and length of hospital stay. Incidence of postoperative myocardial infarction, congestive heart failure, and death were similar. In both groups, TT4 and TT3 were reduced below baseline values beginning with CPB and persisting for up to 5 days after CPB (p<0.05), free T3 was reduced for up to 3 days after CPB (p<0.05), mean serum rT3 was elevated on POD 1 and POD 3 (p<0.05), and TSH remained unchanged."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -77,6 +111,38 @@
         "PMID:7497757#4",
         "PMID:7497757#5"
       ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:7497757#0",
+          "order": 0,
+          "content": "to determine if temperature during cardiopulmonary bypass ( cpb ) has an effect on perioperative and postoperative thyroid function."
+        },
+        {
+          "chunk_id": "PMID:7497757#1",
+          "order": 1,
+          "content": "prospective study comparing thyroid function during and after hypothermic and normothermic cpb."
+        },
+        {
+          "chunk_id": "PMID:7497757#2",
+          "order": 2,
+          "content": "cardiac surgical unit at a university - affiliated hospital."
+        },
+        {
+          "chunk_id": "PMID:7497757#3",
+          "order": 3,
+          "content": "twelve patients scheduled to undergo cardiac operations with normothermic ( n = 6 ) or hypothermic ( n = 6 ) cpb."
+        },
+        {
+          "chunk_id": "PMID:7497757#4",
+          "order": 4,
+          "content": "blood was analyzed for serum concentration of total thyroxine ( tt4 ), total triiodothyronine ( tt3 ), free t3 ( ft3 ), reverse t3 ( rt3 ), and thyroid stimulating hormone ( tsh ) preoperatively, 60 min after cpb was initiated, 30 min after discontinuing cpb, and on postoperative days ( pod ) 1, 3, and 5."
+        },
+        {
+          "chunk_id": "PMID:7497757#5",
+          "order": 5,
+          "content": "patients who underwent either cold ( 26 degrees + / - 5 degrees c ) or warm ( 35 degrees + / - 1 degree c ) cpb were comparable with regard to age, body weight, duration of cpb, cross - clamp time, use of inotropes, total heparin dose, and length of hospital stay. incidence of postoperative myocardial infarction, congestive heart failure, and death were similar. in both groups, tt4 and tt3 were reduced below baseline values beginning with cpb and persisting for up to 5 days after cpb ( p < 0. 05 ), free t3 was reduced for up to 3 days after cpb ( p < 0. 05 ), mean serum rt3 was elevated on pod 1 and pod 3 ( p < 0. 05 ), and tsh remained unchanged."
+        }
+      ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
       "passed": true
@@ -85,14 +151,38 @@
       "query_id": "7547656",
       "gold_doc_id": "PMID:7547656",
       "split": "test",
+      "question": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
       "answer": "no",
+      "long_answer": "In gravid ewes, intravenous infusion of<or = 1.67 micrograms/min epinephrine altered neither maternal hemodynamics nor uterine blood flow. To the extent that sheep data can be extrapolated to humans, these results suggest that continuous intravenous infusion of epinephrine in local anesthetic solutions is safe if the epidural catheter should enter a blood vessel during the infusion.",
       "context_count": 3,
+      "contexts": [
+        "Bolus intravenous injection of epinephrine can decrease uterine blood flow. This study examined the effects of intravenous infusion of epinephrine on uterine blood flow in the gravid ewe.",
+        "Maternal and fetal vascular catheters and a maternal electromagnetic uterine artery flow probe were implanted in 10 near-term gravid ewes. After recovery, saline, 0.125% bupivacaine, 0.125% bupivacaine with 1:200,000 epinephrine, 0.125% bupivacaine with 1:400,000 epinephrine, and 0.125% bupivacaine with 1:800,000 epinephrine were infused into the maternal superior vena cava. Drugs were infused at 10 mL/h for 30 minutes and then at 20 mL/h for an additional 30 minutes. Animals also received an intravenous bolus of epinephrine 15 micrograms. Throughout all infusions, maternal heart rate, systemic and pulmonary blood pressures, uterine blood flow, cardiac output, and acid-base balance were measured, as well as fetal heart rate, blood pressure, and acid-base balance.",
+        "Epinephrine 15 micrograms decreased uterine blood flow to 68 +/- 14% of baseline (mean +/- SD). Infusion of all solutions had no effect on any measured hemodynamic variable."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:7547656#0",
         "PMID:7547656#1",
         "PMID:7547656#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:7547656#0",
+          "order": 0,
+          "content": "bolus intravenous injection of epinephrine can decrease uterine blood flow. this study examined the effects of intravenous infusion of epinephrine on uterine blood flow in the gravid ewe."
+        },
+        {
+          "chunk_id": "PMID:7547656#1",
+          "order": 1,
+          "content": "maternal and fetal vascular catheters and a maternal electromagnetic uterine artery flow probe were implanted in 10 near - term gravid ewes. after recovery, saline, 0. 125 % bupivacaine, 0. 125 % bupivacaine with 1 : 200, 000 epinephrine, 0. 125 % bupivacaine with 1 : 400, 000 epinephrine, and 0. 125 % bupivacaine with 1 : 800, 000 epinephrine were infused into the maternal superior vena cava. drugs were infused at 10 ml / h for 30 minutes and then at 20 ml / h for an additional 30 minutes. animals also received an intravenous bolus of epinephrine 15 micrograms. throughout all infusions, maternal heart rate, systemic and pulmonary blood pressures, uterine blood flow, cardiac output, and acid - base balance were measured, as well as fetal heart rate, blood pressure, and acid - base balance."
+        },
+        {
+          "chunk_id": "PMID:7547656#2",
+          "order": 2,
+          "content": "epinephrine 15 micrograms decreased uterine blood flow to 68 + / - 14 % of baseline ( mean + / - sd ). infusion of all solutions had no effect on any measured hemodynamic variable."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -102,8 +192,18 @@
       "query_id": "7664228",
       "gold_doc_id": "PMID:7664228",
       "split": "test",
+      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
       "answer": "no",
+      "long_answer": "Improving hospital efficiency by shortening length of stay does not appear to result in increased rates of readmission or numbers of physician visits within 30 days after discharge from hospital. Research is needed to identify optimal lengths of stay and expected readmission rates.",
       "context_count": 6,
+      "contexts": [
+        "To determine whether decreasing lengths of stay over time for selected diagnostic categories were associated with increased hospital readmission rates and mean number of physician visits after discharge.",
+        "Retrospective descriptive study.",
+        "The seven large (125 beds or more) acute care hospitals in Winnipeg.",
+        "Manitoba residents admitted to any one of the seven hospitals because acute myocardial infarction (AMI), bronchitis or asthma, transurethral prostatectomy (TURP) and uterine or adnexal procedures for nonmalignant disease during the fiscal years 1989-90 to 1992-93. Patients from out of province, those who died in hospital, those with excessively long stays (more than 60 days) and those who were transferred to or from another institution were excluded.",
+        "Length of hospital stay, and rate of readmission within 30 days after discharge for all four categories and mean number of physician visits within 30 days after discharge for two categories (AMI and bronchitis or asthma.",
+        "The length of stay decreased significantly over the 4 years for all of the four categories, the smallest change being observed for patients with AMI (11.1%) and the largest for those with bronchitis or asthma (22.0%). The readmission rates for AMI, bronchitis or asthma, and TURP showed no consistent change over the 4 years. The readmission rate for uterine or adnexal procedures increased significantly between the first and second year (chi 2 = 4.28, p = 0.04) but then remained constant over the next 3 years. The mean number of physician visits increased slightly for AMI in the first year (1.92 to 2.01) and then remained virtually the same. It decreased slightly for bronchitis or asthma over the 4 years. There was no significant correlation between length of stay and readmission rates for individual hospitals in 1992-93 in any of the four categories. Also, no correlation was observed between length of stay and mean number of physician visits for individual hospitals in 1992-93 in the categories AMI and bronchitis or asthma."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -114,6 +214,38 @@
         "PMID:7664228#4",
         "PMID:7664228#5"
       ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:7664228#0",
+          "order": 0,
+          "content": "to determine whether decreasing lengths of stay over time for selected diagnostic categories were associated with increased hospital readmission rates and mean number of physician visits after discharge."
+        },
+        {
+          "chunk_id": "PMID:7664228#1",
+          "order": 1,
+          "content": "retrospective descriptive study."
+        },
+        {
+          "chunk_id": "PMID:7664228#2",
+          "order": 2,
+          "content": "the seven large ( 125 beds or more ) acute care hospitals in winnipeg."
+        },
+        {
+          "chunk_id": "PMID:7664228#3",
+          "order": 3,
+          "content": "manitoba residents admitted to any one of the seven hospitals because acute myocardial infarction ( ami ), bronchitis or asthma, transurethral prostatectomy ( turp ) and uterine or adnexal procedures for nonmalignant disease during the fiscal years 1989 - 90 to 1992 - 93. patients from out of province, those who died in hospital, those with excessively long stays ( more than 60 days ) and those who were transferred to or from another institution were excluded."
+        },
+        {
+          "chunk_id": "PMID:7664228#4",
+          "order": 4,
+          "content": "length of hospital stay, and rate of readmission within 30 days after discharge for all four categories and mean number of physician visits within 30 days after discharge for two categories ( ami and bronchitis or asthma."
+        },
+        {
+          "chunk_id": "PMID:7664228#5",
+          "order": 5,
+          "content": "the length of stay decreased significantly over the 4 years for all of the four categories, the smallest change being observed for patients with ami ( 11. 1 % ) and the largest for those with bronchitis or asthma ( 22. 0 % ). the readmission rates for ami, bronchitis or asthma, and turp showed no consistent change over the 4 years. the readmission rate for uterine or adnexal procedures increased significantly between the first and second year ( chi 2 = 4. 28, p = 0. 04 ) but then remained constant over the next 3 years. the mean number of physician visits increased slightly for ami in the first year ( 1. 92 to 2. 01 ) and then remained virtually the same. it decreased slightly for bronchitis or asthma over the 4 years. there was no significant correlation between length of stay and readmission rates for individual hospitals in 1992 - 93 in any of the four categories. also, no correlation was observed between length of stay and mean number of physician visits for individual hospitals in 1992 - 93 in the categories ami and bronchitis or asthma."
+        }
+      ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
       "passed": true
@@ -122,8 +254,16 @@
       "query_id": "7860319",
       "gold_doc_id": "PMID:7860319",
       "split": "test",
+      "question": "Measuring hospital mortality rates: are 30-day data enough?",
       "answer": "yes",
+      "long_answer": "Using data on cumulative hospital mortality from 180 days postadmission does not yield a different perspective from using data from 30 days postadmission for the conditions we studied.",
       "context_count": 4,
+      "contexts": [
+        "We compare 30-day and 180-day postadmission hospital mortality rates for all Medicare patients and those in three categories of cardiac care: coronary artery bypass graft surgery, acute myocardial infarction, and congestive heart failure. DATA SOURCES/",
+        "Health Care Financing Administration (HCFA) hospital mortality data for FY 1989.",
+        "Using hospital level public use files of actual and predicted mortality at 30 and 180 days, we constructed residual mortality measures for each hospital. We ranked hospitals and used receiver operating characteristic (ROC) curves to compare 0-30, 31-180, and 0-180-day postadmission mortality.",
+        "For the admissions we studied, we found a broad range of hospital performance when we ranked hospitals using the 30-day data; some hospitals had much lower than predicted 30-day mortality rates, while others had much higher than predicted mortality rates. Data from the time period 31-180 days postadmission yield results that corroborate the 0-30 day postadmission data. Moreover, we found evidence that hospital performance on one condition is related to performance on the other conditions, but that the correlation is much weaker in the 31-180-day interval than in the 0-30-day period. Using ROC curves, we found that the 30-day data discriminated the top and bottom fifths of the 180-day data extremely well, especially for AMI outcomes."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -131,6 +271,28 @@
         "PMID:7860319#1",
         "PMID:7860319#2",
         "PMID:7860319#3"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:7860319#0",
+          "order": 0,
+          "content": "we compare 30 - day and 180 - day postadmission hospital mortality rates for all medicare patients and those in three categories of cardiac care : coronary artery bypass graft surgery, acute myocardial infarction, and congestive heart failure. data sources /"
+        },
+        {
+          "chunk_id": "PMID:7860319#1",
+          "order": 1,
+          "content": "health care financing administration ( hcfa ) hospital mortality data for fy 1989."
+        },
+        {
+          "chunk_id": "PMID:7860319#2",
+          "order": 2,
+          "content": "using hospital level public use files of actual and predicted mortality at 30 and 180 days, we constructed residual mortality measures for each hospital. we ranked hospitals and used receiver operating characteristic ( roc ) curves to compare 0 - 30, 31 - 180, and 0 - 180 - day postadmission mortality."
+        },
+        {
+          "chunk_id": "PMID:7860319#3",
+          "order": 3,
+          "content": "for the admissions we studied, we found a broad range of hospital performance when we ranked hospitals using the 30 - day data ; some hospitals had much lower than predicted 30 - day mortality rates, while others had much higher than predicted mortality rates. data from the time period 31 - 180 days postadmission yield results that corroborate the 0 - 30 day postadmission data. moreover, we found evidence that hospital performance on one condition is related to performance on the other conditions, but that the correlation is much weaker in the 31 - 180 - day interval than in the 0 - 30 - day period. using roc curves, we found that the 30 - day data discriminated the top and bottom fifths of the 180 - day data extremely well, especially for ami outcomes."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -140,14 +302,38 @@
       "query_id": "8165771",
       "gold_doc_id": "PMID:8165771",
       "split": "test",
+      "question": "Ultrasound in squamous cell carcinoma of the penis; a useful addition to clinical staging?",
       "answer": "yes",
+      "long_answer": "While ultrasound examination is inexpensive and easily done, it is not accurate enough for staging small penile cancers located at the glans penis. However, for larger tumors ultrasound can be a useful addition to physical examination by delineating reliably the anatomic relations of the tumor to structures such as the tunica albuginea, corpus cavernosum, and urethra.",
       "context_count": 3,
+      "contexts": [
+        "As part of the staging procedure in squamous cell carcinoma of the penis, we assessed the role of ultrasound examination, in particular its role in assessing the extent and the invasion into the corpora.",
+        "From 1988 until 1992, all patients referred for primary treatment underwent ultrasound assessment with a 7.5 MHz linear array small parts transducer as part of the clinical workup. All ultrasound images were reviewed by one radiologist, without knowledge of the clinical outcome and were compared with the results obtained at histopathologic examination.",
+        "In 16 patients the primary tumor and in 1 patient a recurrent cancer after primary therapy were examined. All tumors were identified as hypoechoic lesions. Ultrasound examination in the region of the glans was not able to differentiate between invasion of the subepithelial tissue and invasion into the corpus spongiosum, but absence or presence of invasion into the tunica albuginea of the corpus cavernosum was clearly demonstrated. Accurate measurement by ultrasound of maximum tumor thickness was seen in seven of sixteen examinations."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8165771#0",
         "PMID:8165771#1",
         "PMID:8165771#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8165771#0",
+          "order": 0,
+          "content": "as part of the staging procedure in squamous cell carcinoma of the penis, we assessed the role of ultrasound examination, in particular its role in assessing the extent and the invasion into the corpora."
+        },
+        {
+          "chunk_id": "PMID:8165771#1",
+          "order": 1,
+          "content": "from 1988 until 1992, all patients referred for primary treatment underwent ultrasound assessment with a 7. 5 mhz linear array small parts transducer as part of the clinical workup. all ultrasound images were reviewed by one radiologist, without knowledge of the clinical outcome and were compared with the results obtained at histopathologic examination."
+        },
+        {
+          "chunk_id": "PMID:8165771#2",
+          "order": 2,
+          "content": "in 16 patients the primary tumor and in 1 patient a recurrent cancer after primary therapy were examined. all tumors were identified as hypoechoic lesions. ultrasound examination in the region of the glans was not able to differentiate between invasion of the subepithelial tissue and invasion into the corpus spongiosum, but absence or presence of invasion into the tunica albuginea of the corpus cavernosum was clearly demonstrated. accurate measurement by ultrasound of maximum tumor thickness was seen in seven of sixteen examinations."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -157,8 +343,18 @@
       "query_id": "8199520",
       "gold_doc_id": "PMID:8199520",
       "split": "test",
+      "question": "Are physicians meeting the needs of family caregivers of the frail elderly?",
       "answer": "no",
+      "long_answer": "Hypotheses for this discontent are presented. Physicians may be uninterested in helping caregivers; even if they were receptive to counseling caregivers, they could be poorly remunerated for the types of counseling sessions that are usual for caregivers; and being a professional caregiver to family caregivers is demanding in itself.",
       "context_count": 6,
+      "contexts": [
+        "To explore expressed needs, both formal and informal, of family caregivers of frail elderly. To evaluate roles of physicians.",
+        "Questionnaire survey of members of the Montreal Jewish community providing care for frail elderly family members.",
+        "Jewish community of Montreal.",
+        "Volunteer caregivers who were caring for a family member or friend 60 years or older, who had greatest responsibility for providing physical or emotional support to an elderly person, who saw themselves as caregivers, and who could speak English or French were studied. Of 118 volunteers, 32 were excluded because they withdrew for personal reasons or because they did not meet study criteria.",
+        "Demographic variables, functional status of the care receiver, use of home care services, and needs assessment to identify additional services.",
+        "An average of 75.4% respondents did not use formal support services. Just under half of caregivers were dissatisfied with the attention they received from the health care system, and more than one third expressed feelings of stress, depression, guilt, and isolation."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -169,6 +365,38 @@
         "PMID:8199520#4",
         "PMID:8199520#5"
       ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8199520#0",
+          "order": 0,
+          "content": "to explore expressed needs, both formal and informal, of family caregivers of frail elderly. to evaluate roles of physicians."
+        },
+        {
+          "chunk_id": "PMID:8199520#1",
+          "order": 1,
+          "content": "questionnaire survey of members of the montreal jewish community providing care for frail elderly family members."
+        },
+        {
+          "chunk_id": "PMID:8199520#2",
+          "order": 2,
+          "content": "jewish community of montreal."
+        },
+        {
+          "chunk_id": "PMID:8199520#3",
+          "order": 3,
+          "content": "volunteer caregivers who were caring for a family member or friend 60 years or older, who had greatest responsibility for providing physical or emotional support to an elderly person, who saw themselves as caregivers, and who could speak english or french were studied. of 118 volunteers, 32 were excluded because they withdrew for personal reasons or because they did not meet study criteria."
+        },
+        {
+          "chunk_id": "PMID:8199520#4",
+          "order": 4,
+          "content": "demographic variables, functional status of the care receiver, use of home care services, and needs assessment to identify additional services."
+        },
+        {
+          "chunk_id": "PMID:8199520#5",
+          "order": 5,
+          "content": "an average of 75. 4 % respondents did not use formal support services. just under half of caregivers were dissatisfied with the attention they received from the health care system, and more than one third expressed feelings of stress, depression, guilt, and isolation."
+        }
+      ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
       "passed": true
@@ -177,14 +405,38 @@
       "query_id": "8375607",
       "gold_doc_id": "PMID:8375607",
       "split": "test",
+      "question": "Is the breast best for children with a family history of atopy?",
       "answer": "yes",
+      "long_answer": "Our results suggest a protective effect of breast-feeding among children with a family history of atopy that is not confined to the period of breast-feeding but continues during the first three years of life. Breast-feeding should be promoted in children with a family history of atopy.",
       "context_count": 3,
+      "contexts": [
+        "Previous studies reported that breast-feeding protects children against a variety of diseases, but these studies were generally conducted on \"high-risk\" or hospitalized children. This paper describes the results of our study on the effects of breast-feeding on rate of illness in normal children with a family history of atopy.",
+        "A historic cohort approach of 794 children with a family history of atopy was used to assess the effects of breast-feeding on illness rates. Family history of atopy was based on allergic diseases in family members as registered by the family physician. Illness data from birth onwards were available from the Continuous Morbidity Registration of the Department of Family Medicine. Information on breast-feeding was collected by postal questionnaire. We then compared rates of illness between children with a family history of atopy who were and who were not breast-fed.",
+        "Breast-feeding was related to lower levels of childhood illness both in the first and the first three years of life. In the first year of life they had fewer episodes of gastroenteritis, lower respiratory tract infections, and digestive tract disorders. Over the next three years of life they had fewer respiratory tract infections and skin infections."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8375607#0",
         "PMID:8375607#1",
         "PMID:8375607#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8375607#0",
+          "order": 0,
+          "content": "previous studies reported that breast - feeding protects children against a variety of diseases, but these studies were generally conducted on \" high - risk \" or hospitalized children. this paper describes the results of our study on the effects of breast - feeding on rate of illness in normal children with a family history of atopy."
+        },
+        {
+          "chunk_id": "PMID:8375607#1",
+          "order": 1,
+          "content": "a historic cohort approach of 794 children with a family history of atopy was used to assess the effects of breast - feeding on illness rates. family history of atopy was based on allergic diseases in family members as registered by the family physician. illness data from birth onwards were available from the continuous morbidity registration of the department of family medicine. information on breast - feeding was collected by postal questionnaire. we then compared rates of illness between children with a family history of atopy who were and who were not breast - fed."
+        },
+        {
+          "chunk_id": "PMID:8375607#2",
+          "order": 2,
+          "content": "breast - feeding was related to lower levels of childhood illness both in the first and the first three years of life. in the first year of life they had fewer episodes of gastroenteritis, lower respiratory tract infections, and digestive tract disorders. over the next three years of life they had fewer respiratory tract infections and skin infections."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -194,13 +446,31 @@
       "query_id": "8521557",
       "gold_doc_id": "PMID:8521557",
       "split": "test",
+      "question": "The insertion allele of the ACE gene I/D polymorphism. A candidate gene for insulin resistance?",
       "answer": "no",
+      "long_answer": "We conclude that increased cardiovascular risk of the DD genotype is not mediated through insulin resistance or abnormalities in fibrinolysis. Conversely, we report an increased sensitivity in NIDDM subjects with the ACE DD genotype.",
       "context_count": 2,
+      "contexts": [
+        "The insertion/deletion (ID) polymorphism of the angiotensin-converting enzyme (ACE) gene has been associated with increased coronary heart disease (CHD), although the mechanism of this association is not apparent. We tested the hypothesis that the deletion allele of the ACE gene is associated with insulin resistance.",
+        "We related ACE genotype to components of the insulin-resistance syndrome in 103 non-insulin-dependent diabetic (NIDDM) and 533 nondiabetic white subjects. NIDDM subjects with the DD genotype had significantly lower levels of specific insulin (DD 38.6, ID 57.1, and II 87.4 pmol.L-1 by ANOVA, P = .011). Non-insulin-treated subjects with the DD genotype had increased insulin sensitivity by HOMA % (DD 56.4%, II 29.4%, P = .027) and lower levels of des 31,32 proinsulin (DD 3.3, II 7.6 pmol.L-1, P = .012) compared with II subjects. There were no differences in prevalence of CHD or levels of blood pressure, serum lipids, or plasminogen activator inhibitor-1 (PAI-1) activity between the three ACE genotypes. In nondiabetic subjects there were no differences in insulin sensitivity, levels of insulin-like molecules, blood pressure, PAI-1, serum lipids, or CHD prevalence between the three ACE genotypes."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8521557#0",
         "PMID:8521557#1"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8521557#0",
+          "order": 0,
+          "content": "the insertion / deletion ( id ) polymorphism of the angiotensin - converting enzyme ( ace ) gene has been associated with increased coronary heart disease ( chd ), although the mechanism of this association is not apparent. we tested the hypothesis that the deletion allele of the ace gene is associated with insulin resistance."
+        },
+        {
+          "chunk_id": "PMID:8521557#1",
+          "order": 1,
+          "content": "we related ace genotype to components of the insulin - resistance syndrome in 103 non - insulin - dependent diabetic ( niddm ) and 533 nondiabetic white subjects. niddm subjects with the dd genotype had significantly lower levels of specific insulin ( dd 38. 6, id 57. 1, and ii 87. 4 pmol. l - 1 by anova, p =. 011 ). non - insulin - treated subjects with the dd genotype had increased insulin sensitivity by homa % ( dd 56. 4 %, ii 29. 4 %, p =. 027 ) and lower levels of des 31, 32 proinsulin ( dd 3. 3, ii 7. 6 pmol. l - 1, p =. 012 ) compared with ii subjects. there were no differences in prevalence of chd or levels of blood pressure, serum lipids, or plasminogen activator inhibitor - 1 ( pai - 1 ) activity between the three ace genotypes. in nondiabetic subjects there were no differences in insulin sensitivity, levels of insulin - like molecules, blood pressure, pai - 1, serum lipids, or chd prevalence between the three ace genotypes."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -210,8 +480,16 @@
       "query_id": "8566975",
       "gold_doc_id": "PMID:8566975",
       "split": "test",
+      "question": "Serovar specific immunity to Neisseria gonorrhoeae: does it exist?",
       "answer": "no",
+      "long_answer": "We found no evidence of serovar specific immunity in our population. It remains possible that populations with a higher prevalence of gonorrhoea and more frequent infections may have a quantitatively greater immune response.",
       "context_count": 4,
+      "contexts": [
+        "To determine whether the host immune response to gonorrhoea provides limited serovar specific protection from reinfection.",
+        "508 episodes of gonorrhoea diagnosed at a city centre genitourinary medicine clinic including 22 patients with multiple infections over a 4 year period.",
+        "Patients with recurrent gonococcal infection were analysed with respect to the initial and subsequent serovars isolated.",
+        "No significant difference was seen in the prevalence of serovars isolated following a repeat infection compared with those without repeat infections. The site of the initial infection did not appear to influence the subsequent serovar isolated."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -219,6 +497,28 @@
         "PMID:8566975#1",
         "PMID:8566975#2",
         "PMID:8566975#3"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8566975#0",
+          "order": 0,
+          "content": "to determine whether the host immune response to gonorrhoea provides limited serovar specific protection from reinfection."
+        },
+        {
+          "chunk_id": "PMID:8566975#1",
+          "order": 1,
+          "content": "508 episodes of gonorrhoea diagnosed at a city centre genitourinary medicine clinic including 22 patients with multiple infections over a 4 year period."
+        },
+        {
+          "chunk_id": "PMID:8566975#2",
+          "order": 2,
+          "content": "patients with recurrent gonococcal infection were analysed with respect to the initial and subsequent serovars isolated."
+        },
+        {
+          "chunk_id": "PMID:8566975#3",
+          "order": 3,
+          "content": "no significant difference was seen in the prevalence of serovars isolated following a repeat infection compared with those without repeat infections. the site of the initial infection did not appear to influence the subsequent serovar isolated."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -228,14 +528,38 @@
       "query_id": "8738894",
       "gold_doc_id": "PMID:8738894",
       "split": "test",
+      "question": "Diabetes mellitus among Swedish art glass workers--an effect of arsenic exposure?",
       "answer": "no",
+      "long_answer": "The observations from this study provide limited support for the possibility that occupational arsenic exposure could play a role in the development of diabetes mellitus. Many other metallic compounds are also used in art glass production, however, and there is a possibility of confounding.",
       "context_count": 3,
+      "contexts": [
+        "The purpose of this study was to search for evidence of an association between occupational arsenic exposure and diabetes mellitus, as implied by the relation of this disease to arsenic in drinking water in a recent study from Taiwan.",
+        "A case-referent analysis on death records of 5498 individuals in the art glass producing part of southeastern Sweden was performed. Out of all the enrolled subjects, 888 were glass workers. According to occupational title, glassblowers, foundry workers, and unspecified workers were regarded as potentially exposed to arsenic. Persons with a diagnosis of diabetes mellitus either as an underlying or contributing cause of death were considered cases. Referents were decedents without any indication of cancer, cardiovascular disease, or diabetes.",
+        "A slightly elevated risk [Mantel-Haenszel odds ratio (MH-OR) 1.2, 95% confidence interval (95% CI) 0.82-1.8] was found for diabetes mellitus among the glassworks employees, especially in combination with cardiovascular disease (MH-OR 1.4, 95% CI 0.81-2.3). For the glassblowers, other foundry workers and unspecified glassworkers probably exposed to arsenic, the M-H odds ratio was 1.4 (95% CI 0.92-2.2). Unspecified glass workers, who probably included persons with high exposure, carried the higher risk (MH-OR 1.8, 95% CI 1.1-2.8)."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8738894#0",
         "PMID:8738894#1",
         "PMID:8738894#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8738894#0",
+          "order": 0,
+          "content": "the purpose of this study was to search for evidence of an association between occupational arsenic exposure and diabetes mellitus, as implied by the relation of this disease to arsenic in drinking water in a recent study from taiwan."
+        },
+        {
+          "chunk_id": "PMID:8738894#1",
+          "order": 1,
+          "content": "a case - referent analysis on death records of 5498 individuals in the art glass producing part of southeastern sweden was performed. out of all the enrolled subjects, 888 were glass workers. according to occupational title, glassblowers, foundry workers, and unspecified workers were regarded as potentially exposed to arsenic. persons with a diagnosis of diabetes mellitus either as an underlying or contributing cause of death were considered cases. referents were decedents without any indication of cancer, cardiovascular disease, or diabetes."
+        },
+        {
+          "chunk_id": "PMID:8738894#2",
+          "order": 2,
+          "content": "a slightly elevated risk [ mantel - haenszel odds ratio ( mh - or ) 1. 2, 95 % confidence interval ( 95 % ci ) 0. 82 - 1. 8 ] was found for diabetes mellitus among the glassworks employees, especially in combination with cardiovascular disease ( mh - or 1. 4, 95 % ci 0. 81 - 2. 3 ). for the glassblowers, other foundry workers and unspecified glassworkers probably exposed to arsenic, the m - h odds ratio was 1. 4 ( 95 % ci 0. 92 - 2. 2 ). unspecified glass workers, who probably included persons with high exposure, carried the higher risk ( mh - or 1. 8, 95 % ci 1. 1 - 2. 8 )."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -245,14 +569,38 @@
       "query_id": "8847047",
       "gold_doc_id": "PMID:8847047",
       "split": "test",
+      "question": "Prognosis of well differentiated small hepatocellular carcinoma--is well differentiated hepatocellular carcinoma clinically early cancer?",
       "answer": "no",
+      "long_answer": "W-d HCCs were clinically demonstrated not to be early cancer, because there was no significant difference in disease free survival between the patients with w-d and l-d HCCs.",
       "context_count": 3,
+      "contexts": [
+        "The purpose of this study is to examine whether or not well differentiated (w-d) hepatocellular carcinoma (HCC) is indeed clinically early cancer.",
+        "Seventy six patients with solitary small HCCs up to 3 cm in diameter, who underwent hepatectomy, were observed for at least 2 years for possible recurrence. These patients were divided into two groups: 10 patients with w-d HCCs (Edmondson and Steiner's grade I) and 66 patients with less differentiated (l-d) HCCs (Edmondson and Steiner's grade I-II, II-III, and III).",
+        "The histological analysis revealed that w-d HCCs had lower incidences of fibrous capsule formation (P<0.01), when compared to l-d HCCs. There were no significant differences in the incidence of intrahepatic metastasis, or portal vein invasion. In a resected specimen of w-d HCC, barium sulfate and gelatin were injected into portal vein and a transparent specimen was made. The transparent specimen showed that the portal vein in the tumor seemed to be intact. Microscopically, cancer cell infiltration into the fibrous frame of the portal tract was present. There were no significant differences in the disease free survival between the two groups. An analysis of tumor volume doubling time in recurrent foci suggested that minute cancerous foci had been present at the time of operation."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8847047#0",
         "PMID:8847047#1",
         "PMID:8847047#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8847047#0",
+          "order": 0,
+          "content": "the purpose of this study is to examine whether or not well differentiated ( w - d ) hepatocellular carcinoma ( hcc ) is indeed clinically early cancer."
+        },
+        {
+          "chunk_id": "PMID:8847047#1",
+          "order": 1,
+          "content": "seventy six patients with solitary small hccs up to 3 cm in diameter, who underwent hepatectomy, were observed for at least 2 years for possible recurrence. these patients were divided into two groups : 10 patients with w - d hccs ( edmondson and steiner ' s grade i ) and 66 patients with less differentiated ( l - d ) hccs ( edmondson and steiner ' s grade i - ii, ii - iii, and iii )."
+        },
+        {
+          "chunk_id": "PMID:8847047#2",
+          "order": 2,
+          "content": "the histological analysis revealed that w - d hccs had lower incidences of fibrous capsule formation ( p < 0. 01 ), when compared to l - d hccs. there were no significant differences in the incidence of intrahepatic metastasis, or portal vein invasion. in a resected specimen of w - d hcc, barium sulfate and gelatin were injected into portal vein and a transparent specimen was made. the transparent specimen showed that the portal vein in the tumor seemed to be intact. microscopically, cancer cell infiltration into the fibrous frame of the portal tract was present. there were no significant differences in the disease free survival between the two groups. an analysis of tumor volume doubling time in recurrent foci suggested that minute cancerous foci had been present at the time of operation."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -262,14 +610,38 @@
       "query_id": "8910148",
       "gold_doc_id": "PMID:8910148",
       "split": "test",
+      "question": "Transesophageal echocardiographic assessment of left ventricular function in brain-dead patients: are marginally acceptable hearts suitable for transplantation?",
       "answer": "yes",
+      "long_answer": "TEE is useful to assess left ventricular function in potential brain-dead donors. An FAC less than 50% is present in 36% of potential heart donors. Because left ventricular dysfunction is often reversible shortly after transplantation, an FAC below 50% may not necessarily preclude the use of hearts for transplantation.",
       "context_count": 3,
+      "contexts": [
+        "The brain-dead donor supply has become one of the criteria limiting the performance of heart transplantation. Conventional screening criteria are too limiting and exclude suitable heart donors. Echocardiography is now widely available and is a reliable tool to assess left ventricular dysfunction in brain-dead donors. Yet few data are available on the degree of left ventricular dysfunction where a transplantation is possible.",
+        "Fifty-five potential brain-dead heart donors (age 38 +/- 11 years) were prospectively evaluated by transesophageal echocardiography (TEE) before harvesting. Fractional area change (FAC) was used to assess left ventricular function in potential brain-dead donors. Transplanted hearts were evaluated on the fifth postoperative day. The transplantation was considered a success if the recipient was alive, not retransplanted, without an assistance device or an epinephrine infusion of more than 1 mg/h and showed an ejection fraction above 40%.",
+        "Of the 55 potential heart donors, 20 exhibited an FAC of less than 50%. Forty hearts were harvested, 36 of which were successfully transplanted. Nine patients had an FAC below 50% (group H2) and 27 had an FAC over 50% (group H1). Four patients died: 2 from hemorrhage (FAC>50% in donors); 1 from right and one from left ventricular dysfunction (FAC<50% in donors). The FAC increased significantly from 51 +/- 15% to 57 +/- 11% in 18 hearts that underwent TEE in donors and afterwards in recipients. Overall actuarial survival was 86.2% versus 64.6% at 1 and 2 years in group H1 and group H2, respectively (p = NS)."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8910148#0",
         "PMID:8910148#1",
         "PMID:8910148#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8910148#0",
+          "order": 0,
+          "content": "the brain - dead donor supply has become one of the criteria limiting the performance of heart transplantation. conventional screening criteria are too limiting and exclude suitable heart donors. echocardiography is now widely available and is a reliable tool to assess left ventricular dysfunction in brain - dead donors. yet few data are available on the degree of left ventricular dysfunction where a transplantation is possible."
+        },
+        {
+          "chunk_id": "PMID:8910148#1",
+          "order": 1,
+          "content": "fifty - five potential brain - dead heart donors ( age 38 + / - 11 years ) were prospectively evaluated by transesophageal echocardiography ( tee ) before harvesting. fractional area change ( fac ) was used to assess left ventricular function in potential brain - dead donors. transplanted hearts were evaluated on the fifth postoperative day. the transplantation was considered a success if the recipient was alive, not retransplanted, without an assistance device or an epinephrine infusion of more than 1 mg / h and showed an ejection fraction above 40 %."
+        },
+        {
+          "chunk_id": "PMID:8910148#2",
+          "order": 2,
+          "content": "of the 55 potential heart donors, 20 exhibited an fac of less than 50 %. forty hearts were harvested, 36 of which were successfully transplanted. nine patients had an fac below 50 % ( group h2 ) and 27 had an fac over 50 % ( group h1 ). four patients died : 2 from hemorrhage ( fac > 50 % in donors ) ; 1 from right and one from left ventricular dysfunction ( fac < 50 % in donors ). the fac increased significantly from 51 + / - 15 % to 57 + / - 11 % in 18 hearts that underwent tee in donors and afterwards in recipients. overall actuarial survival was 86. 2 % versus 64. 6 % at 1 and 2 years in group h1 and group h2, respectively ( p = ns )."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -279,8 +651,18 @@
       "query_id": "8916748",
       "gold_doc_id": "PMID:8916748",
       "split": "test",
+      "question": "Do socioeconomic differences in mortality persist after retirement?",
       "answer": "yes",
+      "long_answer": "Socioeconomic differences in mortality persist beyond retirement age and in magnitude increase with age. Social differentials in mortality based on an occupational status measure seem to decrease to a greater degree after retirement than those based on a non-work measure. This suggests that alongside other socioeconomic factors work itself may play an important part in generating social inequalities in health in men of working age.",
       "context_count": 6,
+      "contexts": [
+        "To assess the risk of death associated with work based and non-work based measures of socioeconomic status before and after retirement age.",
+        "Follow up study of mortality in relation to employment grade and car ownership over 25 years.",
+        "The first Whitehall study.",
+        "18,133 male civil servants aged 40-69 years who attended a screening examination between 1967 and 1970.",
+        "Death.",
+        "Grade of employment was a strong predictor of mortality before retirement. For men dying at ages 40-64 the lowest employment grade had 3.12 times the mortality of the highest grade (95% confidence interval 2.4 to 4.1). After retirement the ability of grade to predict mortality declined (rate ratio 1.86; 1.6 to 2.2). A non-work based measure of socioeconomic status (car ownership) predicted mortality less well than employment grade before retirement but its ability to predict mortality declined less after retirement. Using a relative index of inequality that was sensitive to the distribution among socioeconomic groups showed employment grade and car ownership to have independent associations with mortality that were of equal magnitude after retirement. The absolute difference in death rates between the lowest and highest employment grades increased with age from 12.9 per 1000 person years at ages 40-64 to 38.3 per 1000 at ages 70-89."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -291,6 +673,38 @@
         "PMID:8916748#4",
         "PMID:8916748#5"
       ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8916748#0",
+          "order": 0,
+          "content": "to assess the risk of death associated with work based and non - work based measures of socioeconomic status before and after retirement age."
+        },
+        {
+          "chunk_id": "PMID:8916748#1",
+          "order": 1,
+          "content": "follow up study of mortality in relation to employment grade and car ownership over 25 years."
+        },
+        {
+          "chunk_id": "PMID:8916748#2",
+          "order": 2,
+          "content": "the first whitehall study."
+        },
+        {
+          "chunk_id": "PMID:8916748#3",
+          "order": 3,
+          "content": "18, 133 male civil servants aged 40 - 69 years who attended a screening examination between 1967 and 1970."
+        },
+        {
+          "chunk_id": "PMID:8916748#4",
+          "order": 4,
+          "content": "death."
+        },
+        {
+          "chunk_id": "PMID:8916748#5",
+          "order": 5,
+          "content": "grade of employment was a strong predictor of mortality before retirement. for men dying at ages 40 - 64 the lowest employment grade had 3. 12 times the mortality of the highest grade ( 95 % confidence interval 2. 4 to 4. 1 ). after retirement the ability of grade to predict mortality declined ( rate ratio 1. 86 ; 1. 6 to 2. 2 ). a non - work based measure of socioeconomic status ( car ownership ) predicted mortality less well than employment grade before retirement but its ability to predict mortality declined less after retirement. using a relative index of inequality that was sensitive to the distribution among socioeconomic groups showed employment grade and car ownership to have independent associations with mortality that were of equal magnitude after retirement. the absolute difference in death rates between the lowest and highest employment grades increased with age from 12. 9 per 1000 person years at ages 40 - 64 to 38. 3 per 1000 at ages 70 - 89."
+        }
+      ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
       "passed": true
@@ -299,14 +713,38 @@
       "query_id": "8921484",
       "gold_doc_id": "PMID:8921484",
       "split": "test",
+      "question": "Does gestational age misclassification explain the difference in birthweights for Australian aborigines and whites?",
       "answer": "no",
+      "long_answer": "Gestational age misclassification is an unlikely explanation for the reported divergence in average birth-weights for Aborigines and whites. The results might help with the interpretation of other between-population comparisons.",
       "context_count": 3,
+      "contexts": [
+        "After 34 weeks gestation, summary measures of location for birthweight (e.g means and centiles) increase more slowly for Australian Aborigines than for whites. A similar pattern has been observed for blacks in the US. This study tests whether the reported pattern is due to differential misclassification of gestational age.",
+        "Simulation was used to measure the potential effect of differential misclassification of gestational age. Reported gestational age data were obtained from Queensland Perinatal Data Collection (QPDC). Estimates of the true distributions of gestational age were obtained by assuming various (plausible) types of misclassification and applying these to the reported distributions. Previous studies and data from the QPDC were used to help specify the birthweight distributions used in the simulations.",
+        "At full term, the parameters of the birthweight distributions were robust to gestational age misclassification. At preterm, the 10th centiles were robust to misclassification. In contrast, the 90th centiles were sensitive to even minor misclassification. Extreme types of misclassification were required to remove the divergence in median birthweights for Aborigines and whites."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:8921484#0",
         "PMID:8921484#1",
         "PMID:8921484#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:8921484#0",
+          "order": 0,
+          "content": "after 34 weeks gestation, summary measures of location for birthweight ( e. g means and centiles ) increase more slowly for australian aborigines than for whites. a similar pattern has been observed for blacks in the us. this study tests whether the reported pattern is due to differential misclassification of gestational age."
+        },
+        {
+          "chunk_id": "PMID:8921484#1",
+          "order": 1,
+          "content": "simulation was used to measure the potential effect of differential misclassification of gestational age. reported gestational age data were obtained from queensland perinatal data collection ( qpdc ). estimates of the true distributions of gestational age were obtained by assuming various ( plausible ) types of misclassification and applying these to the reported distributions. previous studies and data from the qpdc were used to help specify the birthweight distributions used in the simulations."
+        },
+        {
+          "chunk_id": "PMID:8921484#2",
+          "order": 2,
+          "content": "at full term, the parameters of the birthweight distributions were robust to gestational age misclassification. at preterm, the 10th centiles were robust to misclassification. in contrast, the 90th centiles were sensitive to even minor misclassification. extreme types of misclassification were required to remove the divergence in median birthweights for aborigines and whites."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -316,14 +754,38 @@
       "query_id": "9100537",
       "gold_doc_id": "PMID:9100537",
       "split": "test",
+      "question": "Can nonproliferative breast disease and proliferative breast disease without atypia be distinguished by fine-needle aspiration cytology?",
       "answer": "no",
+      "long_answer": "Because there is significant overlap in cytologic features between NPBD and PBD, the distinction between the two entities is difficult in cytologic sampling.",
       "context_count": 3,
+      "contexts": [
+        "Cytologic criteria reported to be helpful in the distinction of proliferative breast disease without atypia (PBD) from nonproliferative breast disease (NPBD) have not been rigorously tested.",
+        "Fifty-one air-dried, Diff-Quik-stained fine-needle aspirates (FNA) of palpable breast lesions with biopsy-proven diagnoses of NPBD (34 cases) or PBD (17 cases) were reviewed. The smears were evaluated for the cellularity, size, and architectural arrangement of the epithelial groups; the presence of single epithelial cells and myoepithelial cells; and nuclear characteristics.",
+        "The only cytologic feature found to be significantly different between PBD and NPBD was a swirling pattern of epithelial cells. A swirling pattern was noted in 13 of 17 PBD cases (76%) and 12 of 34 NPBD cases (35%) (P = 0.008)."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:9100537#0",
         "PMID:9100537#1",
         "PMID:9100537#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:9100537#0",
+          "order": 0,
+          "content": "cytologic criteria reported to be helpful in the distinction of proliferative breast disease without atypia ( pbd ) from nonproliferative breast disease ( npbd ) have not been rigorously tested."
+        },
+        {
+          "chunk_id": "PMID:9100537#1",
+          "order": 1,
+          "content": "fifty - one air - dried, diff - quik - stained fine - needle aspirates ( fna ) of palpable breast lesions with biopsy - proven diagnoses of npbd ( 34 cases ) or pbd ( 17 cases ) were reviewed. the smears were evaluated for the cellularity, size, and architectural arrangement of the epithelial groups ; the presence of single epithelial cells and myoepithelial cells ; and nuclear characteristics."
+        },
+        {
+          "chunk_id": "PMID:9100537#2",
+          "order": 2,
+          "content": "the only cytologic feature found to be significantly different between pbd and npbd was a swirling pattern of epithelial cells. a swirling pattern was noted in 13 of 17 pbd cases ( 76 % ) and 12 of 34 npbd cases ( 35 % ) ( p = 0. 008 )."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -333,8 +795,17 @@
       "query_id": "9142039",
       "gold_doc_id": "PMID:9142039",
       "split": "test",
+      "question": "Does pediatric housestaff experience influence tests ordered for infants in the neonatal intensive care unit?",
       "answer": "yes",
+      "long_answer": "Interns order significantly more arterial blood gases per infant than junior and senior residents on-call in the neonatal ICU. Additional study is required to see if the experience of housestaff is associated with a broader array of neonatal outcomes, such as morbidity and mortality.",
       "context_count": 5,
+      "contexts": [
+        "To assess the relationship between the experience of pediatric housestaff and tests ordered on infants in the neonatal intensive care unit (ICU).",
+        "Prospective, cohort study over one full academic year.",
+        "One academic Level III neonatal intensive care nursery.",
+        "Data were collected prospectively on all 785 infants admitted to the neonatal ICU from July 1993 to June 1994. These infants were cared for by 14 different categorical pediatric housestaff.",
+        "Our neonatal ICU has either a resident or an intern on-call by himself/herself at night, affording us a natural setting to compare intern vs. resident test ordering. The outcomes of interest were number of arterial blood gases, radiographs, and electrolytes ordered per infant by the on-call pediatric houseofficer, as tabulated the morning after the call night. Control variables included the severity-of-illness of the individual infant (using the Neonatal Therapeutic Intervention Scoring System), the workload of the houseofficer (number of patients, number of admissions), and supervision (rounding frequency and on-call attending). Controlling for the severity-of-illness of the infant, the workload on the call night, and supervision with multiple linear regression, we found that interns ordered significantly (p = .02) greater numbers of arterial blood gases per infant than residents, amounting to some 0.33 blood gases per infant per call night (3.22 vs. 2.89 arterial blood gases per infant per night). This increase of 0.33 blood gases per infant amounts to interns ordering $169 more arterial blood gases per call night at our institution. There was no difference between interns and residents in ordering radiographs or electrolytes."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
@@ -344,6 +815,33 @@
         "PMID:9142039#3",
         "PMID:9142039#4"
       ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:9142039#0",
+          "order": 0,
+          "content": "to assess the relationship between the experience of pediatric housestaff and tests ordered on infants in the neonatal intensive care unit ( icu )."
+        },
+        {
+          "chunk_id": "PMID:9142039#1",
+          "order": 1,
+          "content": "prospective, cohort study over one full academic year."
+        },
+        {
+          "chunk_id": "PMID:9142039#2",
+          "order": 2,
+          "content": "one academic level iii neonatal intensive care nursery."
+        },
+        {
+          "chunk_id": "PMID:9142039#3",
+          "order": 3,
+          "content": "data were collected prospectively on all 785 infants admitted to the neonatal icu from july 1993 to june 1994. these infants were cared for by 14 different categorical pediatric housestaff."
+        },
+        {
+          "chunk_id": "PMID:9142039#4",
+          "order": 4,
+          "content": "our neonatal icu has either a resident or an intern on - call by himself / herself at night, affording us a natural setting to compare intern vs. resident test ordering. the outcomes of interest were number of arterial blood gases, radiographs, and electrolytes ordered per infant by the on - call pediatric houseofficer, as tabulated the morning after the call night. control variables included the severity - of - illness of the individual infant ( using the neonatal therapeutic intervention scoring system ), the workload of the houseofficer ( number of patients, number of admissions ), and supervision ( rounding frequency and on - call attending ). controlling for the severity - of - illness of the infant, the workload on the call night, and supervision with multiple linear regression, we found that interns ordered significantly ( p =. 02 ) greater numbers of arterial blood gases per infant than residents, amounting to some 0. 33 blood gases per infant per call night ( 3. 22 vs. 2. 89 arterial blood gases per infant per night ). this increase of 0. 33 blood gases per infant amounts to interns ordering $ 169 more arterial blood gases per call night at our institution. there was no difference between interns and residents in ordering radiographs or electrolytes."
+        }
+      ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
       "passed": true
@@ -352,14 +850,38 @@
       "query_id": "9199905",
       "gold_doc_id": "PMID:9199905",
       "split": "test",
+      "question": "Vertical lines in distal esophageal mucosa (VLEM): a true endoscopic manifestation of esophagitis in children?",
       "answer": "yes",
+      "long_answer": "Histology usually demonstrated moderate to severe inflammation when VLEM were present. VLEM may be a highly specific endoscopic feature of esophagitis in children.",
       "context_count": 3,
+      "contexts": [
+        "We observed an endoscopic abnormally in a group of children with histological esophagitis. We termed this finding \"vertical lines in esophageal mucosa\" (VLEM). We examined the relationship between the presence of VLEM and significant histologic changes in esophageal mucosal biopsies.",
+        "Between January 1, 1992, and August 31, 1994, the senior author (JFF) performed 255 esophageal biopsies. The procedure reports, available endoscopic photographs, and histology reports were reviewed to establish the endoscopic and histologic appearance of the esophageal mucosa. Intraepithelial cells were counted in a blind review of 42 randomly selected biopsies.",
+        "The esophageal mucosa had a normal appearance on 160 endoscopic studies (Group 1) and VLEM were the only mucosal abnormalities in 41 endoscopies (Group 2). Histology was normal in 92 of 160 biopsies (57.5%) from Group 1, and 1 of 41 biopsies (2.4%) from Group 2. Most patients in Group 2 had eosinophilic esophagitis (34 of 41, 83%, specificity 0.85, sensitivity 0.5, p>0.001) which was of moderate to severe intensity (31 of 34, 91.2%, specificity 0.88, sensitivity 0.73, p<0.001)."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:9199905#0",
         "PMID:9199905#1",
         "PMID:9199905#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:9199905#0",
+          "order": 0,
+          "content": "we observed an endoscopic abnormally in a group of children with histological esophagitis. we termed this finding \" vertical lines in esophageal mucosa \" ( vlem ). we examined the relationship between the presence of vlem and significant histologic changes in esophageal mucosal biopsies."
+        },
+        {
+          "chunk_id": "PMID:9199905#1",
+          "order": 1,
+          "content": "between january 1, 1992, and august 31, 1994, the senior author ( jff ) performed 255 esophageal biopsies. the procedure reports, available endoscopic photographs, and histology reports were reviewed to establish the endoscopic and histologic appearance of the esophageal mucosa. intraepithelial cells were counted in a blind review of 42 randomly selected biopsies."
+        },
+        {
+          "chunk_id": "PMID:9199905#2",
+          "order": 2,
+          "content": "the esophageal mucosa had a normal appearance on 160 endoscopic studies ( group 1 ) and vlem were the only mucosal abnormalities in 41 endoscopies ( group 2 ). histology was normal in 92 of 160 biopsies ( 57. 5 % ) from group 1, and 1 of 41 biopsies ( 2. 4 % ) from group 2. most patients in group 2 had eosinophilic esophagitis ( 34 of 41, 83 %, specificity 0. 85, sensitivity 0. 5, p > 0. 001 ) which was of moderate to severe intensity ( 31 of 34, 91. 2 %, specificity 0. 88, sensitivity 0. 73, p < 0. 001 )."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -369,14 +891,38 @@
       "query_id": "9363244",
       "gold_doc_id": "PMID:9363244",
       "split": "test",
+      "question": "Does occupational nuclear power plant radiation affect conception and pregnancy?",
       "answer": "yes",
+      "long_answer": "The data suggest that occupational exposure due to ionizing radiation should be investigated as a possible cause for involuntary temporary sterility and as a risk factor for early pregnancy disorders.",
       "context_count": 3,
+      "contexts": [
+        "To determine the effect of occupational exposure in a nuclear power plant in Griefswald, Germany on male and female fecundity.",
+        "The frequency of men and women exposed to ionizing radiation through work in a nuclear power plant among 270 infertile couples was retrospectively compared to a control fertile population using a pair-matched analysis. The total cumulative equivalent radiation dose was determined. In addition, the spermiograms of the male partners in both groups were compared and correlated to the degree of exposure.",
+        "No differences were noted in the frequency of nuclear power plant exposure between sterile and fertile groups. There was a higher rate of anomalous spermiograms in nuclear power plant workers. However, abnormalities were temporary. No correlation was found between the cumulative equivalent radiation dose and abnormal spermiograms."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:9363244#0",
         "PMID:9363244#1",
         "PMID:9363244#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:9363244#0",
+          "order": 0,
+          "content": "to determine the effect of occupational exposure in a nuclear power plant in griefswald, germany on male and female fecundity."
+        },
+        {
+          "chunk_id": "PMID:9363244#1",
+          "order": 1,
+          "content": "the frequency of men and women exposed to ionizing radiation through work in a nuclear power plant among 270 infertile couples was retrospectively compared to a control fertile population using a pair - matched analysis. the total cumulative equivalent radiation dose was determined. in addition, the spermiograms of the male partners in both groups were compared and correlated to the degree of exposure."
+        },
+        {
+          "chunk_id": "PMID:9363244#2",
+          "order": 2,
+          "content": "no differences were noted in the frequency of nuclear power plant exposure between sterile and fertile groups. there was a higher rate of anomalous spermiograms in nuclear power plant workers. however, abnormalities were temporary. no correlation was found between the cumulative equivalent radiation dose and abnormal spermiograms."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,
@@ -386,14 +932,38 @@
       "query_id": "9427037",
       "gold_doc_id": "PMID:9427037",
       "split": "test",
+      "question": "Are endothelial cell patterns of astrocytomas indicative of grade?",
       "answer": "yes",
+      "long_answer": "Evaluation of astrocytomas utilizing antibody to vWF and confocal microscopy aids in the grading of these neoplasms.",
       "context_count": 3,
+      "contexts": [
+        "The most common primary brain tumors in children and adults are of astrocytic origin. Classic histologic grading schemes for astrocytomas have included evaluating the presence or absence of nuclear abnormalities, mitoses, vascular endothelial proliferation, and tumor necrosis.",
+        "We evaluated the vascular pattern of 17 astrocytoma surgical specimens (seven from children and 10 from adults), and four normal brains obtained at autopsy, utilizing antibody to glial fibrillary acidic protein (GFAP) and von Willebrand factor (vWF) utilizing confocal microscopy. A modified WHO classification was used.",
+        "All tumor cases showed cells positive for GFAP. Control tissues showed a few, widely separated vessels. Pilocytic astrocytomas (four cases) showed lacy clusters of small-to-medium sized vessels, with intact vessel wall integrity. Diffuse, low grade astrocytoma (three cases) showed a staining pattern similar to control tissue; intermediate grade (one case), anaplastic astrocytoma (three cases) and gliobastoma multiforme (six cases) showed an increased vessel density with multiple small vessels (glomeruloid clusters), some with prominent intimal hyperplasia, loss of vessel wall integrity, and with numerous vWF-positive single cells/microvessels within the tumor substance."
+      ],
       "context_nonempty": true,
       "qrel_count": 1,
       "chunk_ids": [
         "PMID:9427037#0",
         "PMID:9427037#1",
         "PMID:9427037#2"
+      ],
+      "gold_chunks": [
+        {
+          "chunk_id": "PMID:9427037#0",
+          "order": 0,
+          "content": "the most common primary brain tumors in children and adults are of astrocytic origin. classic histologic grading schemes for astrocytomas have included evaluating the presence or absence of nuclear abnormalities, mitoses, vascular endothelial proliferation, and tumor necrosis."
+        },
+        {
+          "chunk_id": "PMID:9427037#1",
+          "order": 1,
+          "content": "we evaluated the vascular pattern of 17 astrocytoma surgical specimens ( seven from children and 10 from adults ), and four normal brains obtained at autopsy, utilizing antibody to glial fibrillary acidic protein ( gfap ) and von willebrand factor ( vwf ) utilizing confocal microscopy. a modified who classification was used."
+        },
+        {
+          "chunk_id": "PMID:9427037#2",
+          "order": 2,
+          "content": "all tumor cases showed cells positive for gfap. control tissues showed a few, widely separated vessels. pilocytic astrocytomas ( four cases ) showed lacy clusters of small - to - medium sized vessels, with intact vessel wall integrity. diffuse, low grade astrocytoma ( three cases ) showed a staining pattern similar to control tissue ; intermediate grade ( one case ), anaplastic astrocytoma ( three cases ) and gliobastoma multiforme ( six cases ) showed an increased vessel density with multiple small vessels ( glomeruloid clusters ), some with prominent intimal hyperplasia, loss of vessel wall integrity, and with numerous vwf - positive single cells / microvessels within the tumor substance."
+        }
       ],
       "title_leak_risk": true,
       "duplicate_with_distractor": false,

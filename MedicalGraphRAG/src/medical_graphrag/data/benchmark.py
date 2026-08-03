@@ -49,12 +49,18 @@ def validate_records(
 ) -> None:
     query_ids = [item.query_id for item in questions]
     doc_ids = [item.doc_id for item in documents]
+    if len(questions) != gold_count:
+        raise ValueError("unexpected question count")
     if len(set(query_ids)) != len(query_ids):
         raise ValueError("duplicate query_id")
     if len(set(doc_ids)) != len(doc_ids):
         raise ValueError("duplicate doc_id")
     if len(documents) != gold_count + distractor_count:
         raise ValueError("unexpected document count")
+    source_counts = Counter(item.source for item in documents)
+    expected_sources = Counter({"pubmedqa": gold_count, "medrag_pubmed": distractor_count})
+    if source_counts != expected_sources:
+        raise ValueError(f"unexpected document source counts: {dict(source_counts)}")
     qrel_counts = Counter(item.query_id for item in qrels)
     if set(qrel_counts) != set(query_ids) or any(value != 1 for value in qrel_counts.values()):
         raise ValueError("each query must have exactly one qrel")
@@ -188,8 +194,14 @@ def audit_benchmark(
     )
     gold_by_id = {document.doc_id: document for document in gold_documents}
     chunk_ids = {document.doc_id: [] for document in gold_documents}
+    gold_chunks: dict[str, list[dict[str, object]]] = {
+        document.doc_id: [] for document in gold_documents
+    }
     for chunk in chunks:
         chunk_ids[chunk.doc_id].append(chunk.chunk_id)
+        gold_chunks[chunk.doc_id].append(
+            {"chunk_id": chunk.chunk_id, "order": chunk.order, "content": chunk.content}
+        )
 
     distractor_hashes = {content_hash(item.title, item.content) for item in distractors}
     items: list[dict[str, object]] = []
@@ -203,11 +215,15 @@ def audit_benchmark(
                 "query_id": record.pmid,
                 "gold_doc_id": gold_doc_id,
                 "split": record.split,
+                "question": record.question,
                 "answer": record.answer,
+                "long_answer": record.long_answer,
                 "context_count": len(record.contexts),
+                "contexts": list(record.contexts),
                 "context_nonempty": all(bool(value.strip()) for value in record.contexts),
                 "qrel_count": qrel_count,
                 "chunk_ids": chunk_ids[gold_doc_id],
+                "gold_chunks": gold_chunks[gold_doc_id],
                 "title_leak_risk": normalize_text(record.question)
                 == normalize_text(gold_by_id[gold_doc_id].title),
                 "duplicate_with_distractor": duplicate,

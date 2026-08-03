@@ -1,6 +1,7 @@
 import json
 import shutil
 import sys
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -106,6 +107,28 @@ def test_validate_records_rejects_duplicate_qrel() -> None:
         )
 
 
+def test_validate_records_checks_expected_question_and_source_counts() -> None:
+    pubmedqa, distractors = _fixture_records()
+    questions, documents, qrels = assemble_records(pubmedqa, distractors)
+    with pytest.raises(ValueError, match="question count"):
+        validate_records(
+            questions[1:],
+            documents,
+            qrels[1:],
+            gold_count=2,
+            distractor_count=2,
+        )
+    corrupted = [replace(documents[0], source="medrag_pubmed"), *documents[1:]]
+    with pytest.raises(ValueError, match="source counts"):
+        validate_records(
+            questions,
+            corrupted,
+            qrels,
+            gold_count=2,
+            distractor_count=2,
+        )
+
+
 def test_fixture_audit_and_build_write_valid_artifacts(tmp_path: Path) -> None:
     config_path = _fixture_config(tmp_path)
     pubmedqa_dir = _fixture_pubmedqa(tmp_path)
@@ -129,6 +152,9 @@ def test_fixture_audit_and_build_write_valid_artifacts(tmp_path: Path) -> None:
 
     assert report["passed"] is True
     assert len(report["items"]) == 1
+    assert report["items"][0]["question"] == "Is exposure safe?"
+    assert report["items"][0]["contexts"] == ["Observed adverse events."]
+    assert report["items"][0]["gold_chunks"][0]["content"] == "Obser"
     assert manifest["counts"]["questions"] == 2
     assert manifest["counts"]["documents"] == 4
     assert manifest["counts"]["qrels"] == 2
