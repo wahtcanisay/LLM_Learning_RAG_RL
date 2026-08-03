@@ -11,6 +11,16 @@
 
 第一版只验证单跳文档检索，不把它包装成多跳医学 GraphRAG 结论。LinearRAG 的医学图结构价值将在后续带多证据 qrels 的数据上单独验证。
 
+### 1.1 项目目录边界
+
+所有新代码、配置、测试和生成数据统一放在根仓库的 `MedicalGraphRAG/` 目录。该目录与现有 `MedRAG/`、`LinearRAG/` 并列，但不单独执行 `git init`，继续由根仓库统一版本控制。
+
+- `MedRAG/`：只读数据源与 BM25/Dense/RRF 参考实现；
+- `LinearRAG/`：只读图检索参考实现与官方 medical 冒烟入口；
+- `MedicalGraphRAG/`：新的可维护项目，承载清洗、统一检索接口、评测和后续医学迁移。
+
+重构不复制两套官方仓库的全部源码，也不在其中继续加入项目功能。确需复用的算法应通过清晰接口重新实现，并以测试验证行为。
+
 ## 2. 已确认的数据事实
 
 ### 2.1 PubMedQA
@@ -314,23 +324,30 @@ document_score = max(score of retrieved chunks belonging to the document)
 
 ## 10. 产物目录
 
-建议目录：
+项目内数据目录：
 
 ```text
-LinearRAG/dataset/pubmedqa_hard_v1/
-├── raw/
-│   ├── ori_pqal.json
-│   └── test_ground_truth.json
-├── questions.jsonl
-├── documents.jsonl
-├── chunks.jsonl
-├── qrels.tsv
-├── manifest.json
-├── audit_20.json
+MedicalGraphRAG/
+├── data/
+│   ├── raw/pubmedqa/
+│   │   ├── ori_pqal.json
+│   │   └── test_ground_truth.json
+│   └── processed/pubmedqa_hard_v1/
+│       ├── questions.jsonl
+│       ├── documents.jsonl
+│       ├── chunks.jsonl
+│       ├── qrels.tsv
+│       ├── manifest.json
+│       ├── audit_20.json
+│       └── README.md
+├── src/medical_graphrag/
+├── tests/
+├── configs/
+├── pyproject.toml
 └── README.md
 ```
 
-`raw/` 是否纳入 Git 由原始数据许可和仓库大小决定；生成脚本、manifest、README 和小型审计结果应进入版本控制。大数据产物默认通过 `.gitignore` 排除，但必须可由记录的命令确定性重建。
+规范的第一版输出目录为 `MedicalGraphRAG/data/processed/pubmedqa_hard_v1/`。`MedicalGraphRAG/data/raw/` 和大规模 `processed/` 产物默认通过项目 `.gitignore` 排除；生成脚本、配置、数据说明和小型审计结果应进入版本控制。所有被忽略的数据必须可由 manifest 记录的来源、参数和命令确定性重建。默认 MedRAG 干扰语料路径为 `../MedRAG/corpus/pubmed/chunk`，但必须可通过 CLI 参数覆盖。
 
 ## 11. 分阶段完成标准
 
