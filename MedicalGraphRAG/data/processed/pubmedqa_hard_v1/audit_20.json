@@ -1,0 +1,403 @@
+{
+  "passed": true,
+  "audit_query_count": 20,
+  "selected_shards": [
+    "pubmed23n0615.jsonl",
+    "pubmed23n0562.jsonl",
+    "pubmed23n0660.jsonl",
+    "pubmed23n0675.jsonl",
+    "pubmed23n0431.jsonl",
+    "pubmed23n0869.jsonl",
+    "pubmed23n0373.jsonl",
+    "pubmed23n1097.jsonl",
+    "pubmed23n0120.jsonl",
+    "pubmed23n0148.jsonl",
+    "pubmed23n0875.jsonl",
+    "pubmed23n0275.jsonl",
+    "pubmed23n1133.jsonl",
+    "pubmed23n0622.jsonl",
+    "pubmed23n0460.jsonl",
+    "pubmed23n0412.jsonl",
+    "pubmed23n0991.jsonl",
+    "pubmed23n0008.jsonl",
+    "pubmed23n0548.jsonl",
+    "pubmed23n0526.jsonl",
+    "pubmed23n0885.jsonl",
+    "pubmed23n0962.jsonl",
+    "pubmed23n0553.jsonl",
+    "pubmed23n0310.jsonl",
+    "pubmed23n0072.jsonl",
+    "pubmed23n0430.jsonl",
+    "pubmed23n0968.jsonl",
+    "pubmed23n0552.jsonl",
+    "pubmed23n0154.jsonl",
+    "pubmed23n0503.jsonl",
+    "pubmed23n1141.jsonl",
+    "pubmed23n0462.jsonl",
+    "pubmed23n0255.jsonl",
+    "pubmed23n0200.jsonl",
+    "pubmed23n0202.jsonl",
+    "pubmed23n0547.jsonl",
+    "pubmed23n0595.jsonl",
+    "pubmed23n0794.jsonl",
+    "pubmed23n0515.jsonl",
+    "pubmed23n0294.jsonl"
+  ],
+  "items": [
+    {
+      "query_id": "7482275",
+      "gold_doc_id": "PMID:7482275",
+      "split": "test",
+      "answer": "no",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:7482275#0",
+        "PMID:7482275#1",
+        "PMID:7482275#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "7497757",
+      "gold_doc_id": "PMID:7497757",
+      "split": "test",
+      "answer": "no",
+      "context_count": 6,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:7497757#0",
+        "PMID:7497757#1",
+        "PMID:7497757#2",
+        "PMID:7497757#3",
+        "PMID:7497757#4",
+        "PMID:7497757#5"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "7547656",
+      "gold_doc_id": "PMID:7547656",
+      "split": "test",
+      "answer": "no",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:7547656#0",
+        "PMID:7547656#1",
+        "PMID:7547656#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "7664228",
+      "gold_doc_id": "PMID:7664228",
+      "split": "test",
+      "answer": "no",
+      "context_count": 6,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:7664228#0",
+        "PMID:7664228#1",
+        "PMID:7664228#2",
+        "PMID:7664228#3",
+        "PMID:7664228#4",
+        "PMID:7664228#5"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "7860319",
+      "gold_doc_id": "PMID:7860319",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 4,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:7860319#0",
+        "PMID:7860319#1",
+        "PMID:7860319#2",
+        "PMID:7860319#3"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8165771",
+      "gold_doc_id": "PMID:8165771",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8165771#0",
+        "PMID:8165771#1",
+        "PMID:8165771#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8199520",
+      "gold_doc_id": "PMID:8199520",
+      "split": "test",
+      "answer": "no",
+      "context_count": 6,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8199520#0",
+        "PMID:8199520#1",
+        "PMID:8199520#2",
+        "PMID:8199520#3",
+        "PMID:8199520#4",
+        "PMID:8199520#5"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8375607",
+      "gold_doc_id": "PMID:8375607",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8375607#0",
+        "PMID:8375607#1",
+        "PMID:8375607#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8521557",
+      "gold_doc_id": "PMID:8521557",
+      "split": "test",
+      "answer": "no",
+      "context_count": 2,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8521557#0",
+        "PMID:8521557#1"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8566975",
+      "gold_doc_id": "PMID:8566975",
+      "split": "test",
+      "answer": "no",
+      "context_count": 4,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8566975#0",
+        "PMID:8566975#1",
+        "PMID:8566975#2",
+        "PMID:8566975#3"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8738894",
+      "gold_doc_id": "PMID:8738894",
+      "split": "test",
+      "answer": "no",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8738894#0",
+        "PMID:8738894#1",
+        "PMID:8738894#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8847047",
+      "gold_doc_id": "PMID:8847047",
+      "split": "test",
+      "answer": "no",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8847047#0",
+        "PMID:8847047#1",
+        "PMID:8847047#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8910148",
+      "gold_doc_id": "PMID:8910148",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8910148#0",
+        "PMID:8910148#1",
+        "PMID:8910148#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8916748",
+      "gold_doc_id": "PMID:8916748",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 6,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8916748#0",
+        "PMID:8916748#1",
+        "PMID:8916748#2",
+        "PMID:8916748#3",
+        "PMID:8916748#4",
+        "PMID:8916748#5"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "8921484",
+      "gold_doc_id": "PMID:8921484",
+      "split": "test",
+      "answer": "no",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:8921484#0",
+        "PMID:8921484#1",
+        "PMID:8921484#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "9100537",
+      "gold_doc_id": "PMID:9100537",
+      "split": "test",
+      "answer": "no",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:9100537#0",
+        "PMID:9100537#1",
+        "PMID:9100537#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "9142039",
+      "gold_doc_id": "PMID:9142039",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 5,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:9142039#0",
+        "PMID:9142039#1",
+        "PMID:9142039#2",
+        "PMID:9142039#3",
+        "PMID:9142039#4"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "9199905",
+      "gold_doc_id": "PMID:9199905",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:9199905#0",
+        "PMID:9199905#1",
+        "PMID:9199905#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "9363244",
+      "gold_doc_id": "PMID:9363244",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:9363244#0",
+        "PMID:9363244#1",
+        "PMID:9363244#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    },
+    {
+      "query_id": "9427037",
+      "gold_doc_id": "PMID:9427037",
+      "split": "test",
+      "answer": "yes",
+      "context_count": 3,
+      "context_nonempty": true,
+      "qrel_count": 1,
+      "chunk_ids": [
+        "PMID:9427037#0",
+        "PMID:9427037#1",
+        "PMID:9427037#2"
+      ],
+      "title_leak_risk": true,
+      "duplicate_with_distractor": false,
+      "passed": true
+    }
+  ]
+}

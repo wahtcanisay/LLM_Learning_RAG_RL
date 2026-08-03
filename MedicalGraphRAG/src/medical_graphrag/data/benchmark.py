@@ -160,7 +160,7 @@ def _resolve_tokenizer(config: dict[str, Any], tokenizer: Tokenizer | None) -> T
         return tokenizer
     from transformers import AutoTokenizer
 
-    return AutoTokenizer.from_pretrained(str(config["tokenizer"]))
+    return AutoTokenizer.from_pretrained(str(config["tokenizer"]), local_files_only=True)
 
 
 def audit_benchmark(

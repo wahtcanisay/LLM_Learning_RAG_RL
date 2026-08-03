@@ -1,10 +1,13 @@
 import json
 import shutil
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from medical_graphrag.data.benchmark import (
+    _resolve_tokenizer,
     assemble_records,
     audit_benchmark,
     build_benchmark,
@@ -137,3 +140,17 @@ def test_fixture_audit_and_build_write_valid_artifacts(tmp_path: Path) -> None:
     }
     assert (output_dir / "audit_20.json").exists()
     assert (output_dir / "manifest.json").exists()
+
+
+def test_resolve_tokenizer_never_checks_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls: list[tuple[str, dict[str, object]]] = []
+
+    class FakeAutoTokenizer:
+        @staticmethod
+        def from_pretrained(name: str, **kwargs: object) -> object:
+            calls.append((name, kwargs))
+            return object()
+
+    monkeypatch.setitem(sys.modules, "transformers", SimpleNamespace(AutoTokenizer=FakeAutoTokenizer))
+    _resolve_tokenizer({"tokenizer": "fixture-tokenizer"}, None)
+    assert calls == [("fixture-tokenizer", {"local_files_only": True})]
