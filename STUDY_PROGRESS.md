@@ -72,29 +72,29 @@
 
 # 今日唯一任务
 
-2026-08-01：在线查询入口与 Seed Entity 第一轮阅读：
+2026-08-02：Seed Entity 的 BFS-style 实体传播（已完成）：
 
 ```text
-retrieve()
-→ get_seed_entities()
+graph_search_with_seed_entities()
+→ calculate_entity_scores()
 ```
 
-只读默认非向量化分支；`_precompute_sparse_matrices()`、`calculate_entity_scores()`、PPR 等留到下一步。预计 45～75 分钟。
+只读默认非向量化分支；向量化实现、Passage 权重和 PPR 留到后续任务。
 
 # 完成标准
 
-- 能说清 `retrieve()` 的两个分支：有 Seed Entity 走图检索，无 Seed Entity 走 Dense 回退；
-- 能解释 `get_seed_entities()` 的输入输出和“每个问题实体只选分数最高的一个语料 Entity”；
-- 能指出 `dense_passage_retrieval()` 与 `get_seed_entities()` 的匹配空间差异（Passage 空间 vs Entity 空间）；
-- 能回答 4 道检查题并引用具体函数或变量；
+- 能解释 `actived_entities`、`current_entities`、`new_entities` 和 `entity_weights` 的职责；
+- 能复述 `Seed Entity → Sentence Top-k → 下一层 Entity` 的传播流程；
+- 能解释 Sentence 去重、两次阈值剪枝及多轮终止条件；
+- 能区分 `entity_weights` 的分数累加与 `new_entities` 的字典覆盖；
 - 不运行检索、不使用 GPU、不产生实验指标。
 
 ## 今日检查题
 
-1. `retrieve()` 对每个问题先算什么，再根据什么决定走哪条检索分支？
-2. `get_seed_entities()` 的输入是什么？输出是哪些内容？没有识别到实体时返回什么？
-3. Seed Entity 是怎么“对齐”到语料 Entity 的？与 Dense Passage 检索在匹配空间上有什么区别？
-4. 无 Seed Entity 时 `retrieve()` 如何保证仍能返回证据？返回的分数是什么含义？
+1. Seed Entity 初始化时进入哪些状态结构？
+2. 当前 Entity 如何找到、筛选并去重桥接 Sentence？
+3. 新 Entity 的传播分数如何计算，两次阈值剪枝在哪里？
+4. 多轮传播何时停止，同一 Entity 被多条路径找到时如何处理？
 
 # 已完成
 
@@ -139,6 +139,8 @@ retrieve()
 - 2026-07-29：确认 `max_workers` 当前没有通过 `n_process` 启用 spaCy 多进程，只参与 `batch_size` 计算；当 Passage 数少于 `max_workers` 时存在 `batch_size == 0` 的待验证风险。
 - 2026-07-29：只读核验 MedRAG 的 Textbooks 和 StatPearls：两者均已切成带 `id/title/content/contents` 的 JSONL chunk；迁移 LinearRAG 需要转换为 `chunks.json`，并保留文档元数据以避免跨文档错误相邻边。
 - 2026-07-31：正式图节点和两类边阅读完成并标记通过（学习者决定不再复述，与 2026-07-30 缓存边界题同例）。已确认 Entity–Passage 边是归一化比例，相邻 Passage 通过数字前缀和正则表达式建立固定权重边。
+- 2026-08-01：完成 `retrieve() → get_seed_entities()` 默认非向量化分支阅读。能够解释有 Seed Entity 时进入图检索、无 Seed Entity 时回退 Dense Passage；确认 Seed 匹配位于 Question Entity–Corpus Entity 空间，Dense 回退位于 Question–Passage 空间；每个问题实体各执行一次 `argmax`，不同问题实体可以映射到同一个语料 Entity，当前实现没有最低相似度阈值。
+- 2026-08-02：完成 `graph_search_with_seed_entities() → calculate_entity_scores()` 默认 BFS-style 分支阅读。能够解释逐层状态、Entity→Sentence→Entity 传播、Sentence Top-k 与全局去重、传播分数乘法、两次阈值剪枝和两个终止条件；确认同一 Entity 的图节点权重按路径累加，而 `new_entities` 只保留最后一次字典赋值。数值检查中明确：若两条路径产生的传播后分数为 0.6 和 0.7，则累计权重增加 1.3。
 
 # 遇到的问题
 
@@ -149,12 +151,12 @@ retrieve()
 
 # 下一步
 
-完成在线入口与 Seed Entity 后，进入实体传播、Passage 先验和 PPR：`calculate_entity_scores() → dense_passage_retrieval() → calculate_passage_scores() → run_ppr()`。在 LinearRAG 单轮图检索产生真实指标前，不开始 PageIndex。
+下一次只阅读 `calculate_passage_scores()`：追踪 Dense Passage 排名归一化、激活实体出现奖励、tier 衰减和 Passage 节点权重写入。暂不阅读属性关键词增强和 `run_ppr()`；在 LinearRAG 单轮图检索产生真实指标前，不开始 PageIndex。
 
 # 待补知识
 
 - spaCy/SciSpaCy 模型在通用实体与医学实体上的实际识别差异（待后续 toy 实验验证）；
-- Sentence 语义桥和在线 Entity→Sentence→Entity 传播（进入 `retrieve()` 后验证）；
+- Dense Passage 先验、激活实体奖励与 tier 衰减；
 - Dense Passage Prior、Personalized PageRank 和 Dense fallback；
 - Recall@k、MRR、nDCG 与 QA Accuracy 的评测边界。
 
