@@ -6,8 +6,8 @@
 
 # 当前阶段
 
-- 阶段 1：MedRAG 基础代码、toy BM25/Dense/RRF 和四套语料核验已完成；正式全量索引、生成与评测暂缓。
-- 阶段 2：LinearRAG 图结构检索与医学迁移（当前阶段）。
+- 阶段 1：MedRAG 基础代码、toy BM25/Dense/RRF 和四套语料核验已完成；当前回到阶段 1，使用 `MedicalGraphRAG/pubmedqa_hard_v1` 补齐正式 BM25 检索硬指标。
+- 阶段 2：LinearRAG 默认主干代码第一轮阅读已完成；图检索端到端实验与医学迁移尚未开始。
 - 阶段 3：MedicalGPT LoRA/QLoRA SFT。
 - 阶段 4：Search-R1 搜索强化学习。
 - 阶段 5：MedSearch-R1 医学证据搜索 Agent。
@@ -19,10 +19,14 @@
 
 当前只学习和最小复现 LinearRAG。先使用官方 medical 小数据验证，再考虑迁移 MedRAG 的 Textbooks/StatPearls 子集。
 
+## 当前执行焦点（2026-08-03）
+
+新项目目录为 `MedicalGraphRAG/`，与 `MedRAG/`、`LinearRAG/` 平级。当前先补齐阶段 1 的可比较基线：使用 PubMedQA PQA-L 的 1,000 个 gold documents、4,000 个确定性 MedRAG PubMed distractors 和 document-level qrels，运行 BM25 并产出 Recall@1/5/10、MRR@10、nDCG@10。BM25 完成前，不启动 LinearRAG 医学迁移实验。
+
 ## LinearRAG 真实学习边界
 
-- 已亲自阅读：`LinearRAG/readme.md`、`LinearRAG/run.py`、`src/config.py`、`src/embedding_store.py`、`src/ner.py`、`src/utils.py::compute_mdhash_id()`，以及 `src/LinearRAG.py` 中从初始化到离线 `index()` 的缓存、NER、Entity↔Sentence 映射和正式图构建（`add_entity_to_passage_edges() → add_adjacent_passage_edges() → augment_graph() → add_nodes() → add_edges()`）流程。
-- 尚未阅读：`src/LinearRAG.py` 的在线检索部分（`retrieve()`、实体传播、PPR）、`src/evaluate.py`、`src/utils.py` 的其余部分。
+- 已亲自阅读：`LinearRAG/readme.md`、`LinearRAG/run.py`、`src/config.py`、`src/embedding_store.py`、`src/ner.py`、`src/evaluate.py`、`src/utils.py` 的相关辅助函数，以及 `src/LinearRAG.py` 默认非向量化主干：初始化、离线 `index()`、正式图构建、在线 `retrieve()`、Seed Entity、实体传播、Passage 先验、PPR、Top-k 与 `qa()`。
+- 尚未验证：官方 medical 数据上的端到端最小运行、真实耗时/显存/指标；向量化实体传播和属性关键词增强属于可选支线，暂不计入默认主干完成条件。
 - 2026-07-31 正式图节点/边任务已完成（学习者决定不再复述）。记录：Q1/Q4 确认为笔误（Entity 误写 Sentence）；Q2 正确表述为“边权是归一化比例（0～1），不是原始次数”；Q3 术语为“正则表达式”。
 - 助手添加注释、执行语法检查或检查调用链，只算材料准备，不算学习者完成。
 - LinearRAG 官方源码版本：`bcc94e66c221f798801255efba09311d6fbcd8d6`。
@@ -37,7 +41,7 @@
 
 # 本周目标
 
-完成 LinearRAG 核心代码第一轮阅读，能够区分：
+本周先完成 `pubmedqa_hard_v1` 的 BM25 正式基线，再回到 LinearRAG 官方 medical 小数据端到端运行。当前已经能够区分：
 
 1. 对象初始化与 Embedding 缓存；
 2. NER 和离线建图；
@@ -72,31 +76,49 @@
 
 # 今日唯一任务
 
-2026-08-02：Seed Entity 的 BFS-style 实体传播（已完成）：
+2026-08-03：运行 `pubmedqa_hard_v1` 的正式 BM25 检索基线（进行中）：
 
 ```text
-graph_search_with_seed_entities()
-→ calculate_entity_scores()
+7,562 chunks
+→ Pyserini/Lucene BM25
+→ 每题 Top-100 chunks
+→ 同 doc_id 取最高 BM25 分数
+→ document Top-k
+→ Recall@1/5/10、MRR@10、nDCG@10
 ```
 
-只读默认非向量化分支；向量化实现、Passage 权重和 PPR 留到后续任务。
+主设置只索引 chunk `content`（`abstract_only`）；`title_abstract` 只作为后续泄漏对照，不混入主结果。
 
 # 完成标准
 
-- 能解释 `actived_entities`、`current_entities`、`new_entities` 和 `entity_weights` 的职责；
-- 能复述 `Seed Entity → Sentence Top-k → 下一层 Entity` 的传播流程；
-- 能解释 Sentence 去重、两次阈值剪枝及多轮终止条件；
-- 能区分 `entity_weights` 的分数累加与 `new_entities` 的字典覆盖；
-- 不运行检索、不使用 GPU、不产生实验指标。
+- Pyserini collection 与 Lucene index 能成功生成，并记录真实命令和索引时间；
+- 1,000 个问题全部产生 chunk 排名与折叠后的 document 排名；
+- 评测脚本真实输出 Recall@1/5/10、MRR@10、nDCG@10 和平均查询延迟；
+- 保存配置、manifest、结果 JSON、失败问题和 Git commit；
+- 能解释为什么 chunk 排名需要按 `doc_id` 折叠，以及为什么使用最高 BM25 分数；
+- 不生成答案、不调用 GPU，不把检索命中率写成 QA Accuracy。
 
 ## 今日检查题
 
-1. Seed Entity 初始化时进入哪些状态结构？
-2. 当前 Entity 如何找到、筛选并去重桥接 Sentence？
-3. 新 Entity 的传播分数如何计算，两次阈值剪枝在哪里？
-4. 多轮传播何时停止，同一 Entity 被多条路径找到时如何处理？
+1. Pyserini 的 `id/contents` 与我们的 `chunk_id/doc_id/content` 如何映射？
+2. 为什么不能直接拿 chunk 排名与 document-level qrels 比较？
+3. Top-100 chunks 折叠后如何得到唯一 document 排名？
+4. Recall@k、MRR@10、nDCG@10 分别回答什么问题？
 
 # 已完成
+
+## MedicalGraphRAG（2026-08-03）
+
+- 新建独立项目 `MedicalGraphRAG/`；实现 PubMedQA 加载、MedRAG PubMed 确定性干扰采样、文档边界安全切块、questions/documents/chunks/qrels 组装、原子 I/O、manifest、审计和检索硬指标函数。
+- 测试：`cd MedicalGraphRAG && python -m pytest -q`，真实结果为 `25 passed`。
+- 20 题人工审计门禁：20/20 通过，0 空 context、0 exact duplicate gold/distractor，涉及 40 个确定性 PubMed 分片和 75 个 gold chunks；证据位于 `MedicalGraphRAG/data/processed/pubmedqa_hard_v1/audit_20.json`。
+- 完整数据构建命令：`python -m medical_graphrag.cli build --config configs/pubmedqa_hard_v1.json --pubmedqa-dir data/raw/pubmedqa --medrag-pubmed-dir ../MedRAG/corpus/pubmed/chunk --output-dir data/processed/pubmedqa_hard_v1`。
+- 完整数据真实结果：1,000 questions、5,000 documents（1,000 gold + 4,000 distractors）、7,562 chunks、1,000 qrels；500 dev + 500 official test；构建耗时 13.18 秒。
+- 数据配置：seed `20260803`，tokenizer `sentence-transformers/all-mpnet-base-v2`，max tokens `512`，overlap `64`，主检索文本 `abstract_only`。
+- manifest：`MedicalGraphRAG/data/processed/pubmedqa_hard_v1/manifest.json`，SHA-256 为 `cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；四个数据产物哈希均已独立复核。
+- BM25 环境：WSL2 `LLM-Ubuntu-22.04`，Docker 容器 `llm-pytorch`，Pyserini `0.22.1`；旧 toy Lucene index `/tmp/medrag_task4_index` 仍可读取。
+- 当前相关提交：`bfa33d8`（可人工审阅 audit）、`ec813a5`（完整 benchmark manifest）。
+- 本阶段尚未产生正式 BM25 Recall/MRR/nDCG、QA Accuracy 或 GPU 指标。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
 
@@ -141,6 +163,7 @@ graph_search_with_seed_entities()
 - 2026-07-31：正式图节点和两类边阅读完成并标记通过（学习者决定不再复述，与 2026-07-30 缓存边界题同例）。已确认 Entity–Passage 边是归一化比例，相邻 Passage 通过数字前缀和正则表达式建立固定权重边。
 - 2026-08-01：完成 `retrieve() → get_seed_entities()` 默认非向量化分支阅读。能够解释有 Seed Entity 时进入图检索、无 Seed Entity 时回退 Dense Passage；确认 Seed 匹配位于 Question Entity–Corpus Entity 空间，Dense 回退位于 Question–Passage 空间；每个问题实体各执行一次 `argmax`，不同问题实体可以映射到同一个语料 Entity，当前实现没有最低相似度阈值。
 - 2026-08-02：完成 `graph_search_with_seed_entities() → calculate_entity_scores()` 默认 BFS-style 分支阅读。能够解释逐层状态、Entity→Sentence→Entity 传播、Sentence Top-k 与全局去重、传播分数乘法、两次阈值剪枝和两个终止条件；确认同一 Entity 的图节点权重按路径累加，而 `new_entities` 只保留最后一次字典赋值。数值检查中明确：若两条路径产生的传播后分数为 0.6 和 0.7，则累计权重增加 1.3。
+- 2026-08-03：完成 `calculate_passage_scores() → run_ppr() → retrieve() Top-k → qa() → Evaluator.evaluate()` 默认主干阅读。能够解释 Passage 先验由归一化 Dense 分数和带 tier 衰减的激活 Entity 奖励组成；确认 Node 权重负责问题相关的 PPR 重启位置，Edge 权重负责沿图传播的路线与比例，`damping` 平衡沿边传播和重启。PPR 对全部图节点打分后只保留 Passage，Top-k Passage 先进入生成 LLM 得到 `pred_answer`，随后 Evaluator 才使用 LLM Judge 和标准化包含指标比较 gold answer；二者均不是检索指标。
 
 # 遇到的问题
 
@@ -148,17 +171,20 @@ graph_search_with_seed_entities()
 - LinearRAG official medical 数据的上游医学基准尚未确认，不推测为 MedQA、PubMedQA 或其他数据集。
 - 当前没有 gold passage 标注，不能用只有标准答案的数据声称得到 Recall@k、MRR 或 nDCG。
 - R2RAG 已从主路线剔除，不再安排 `VanillaAgent` 的 `sid`、跨轮去重和引用映射验证。
+- 根 `.gitignore` 的通用 `data/` 规则一度误伤 `MedicalGraphRAG/src/medical_graphrag/data/` 和 compact manifest；已用白名单与 5 项 Git 跟踪回归测试修复，大型 JSONL/TSV 仍保持忽略。
+- tokenizer 对超过 512 tokens 的文本发出长度警告；当前切块器会在编码后按 512 tokens 滑窗，不把完整长序列送入模型。该警告不影响本次数据产物，但后续可单独抑制日志噪声。
 
 # 下一步
 
-下一次只阅读 `calculate_passage_scores()`：追踪 Dense Passage 排名归一化、激活实体出现奖励、tier 衰减和 Passage 节点权重写入。暂不阅读属性关键词增强和 `run_ppr()`；在 LinearRAG 单轮图检索产生真实指标前，不开始 PageIndex。
+下一步只实现并运行 BM25 主基线：将 `chunks.jsonl` 转换为 Pyserini `id/contents` collection，在现有 `llm-pytorch` 容器内构建 Lucene index；每题检索 Top-100 chunks，按 `doc_id` 取最高分折叠为 document ranking，再运行硬指标脚本。完成并分析 BM25 失败案例后，才进入 Dense 和 LinearRAG 对比。
 
 # 待补知识
 
 - spaCy/SciSpaCy 模型在通用实体与医学实体上的实际识别差异（待后续 toy 实验验证）；
-- Dense Passage 先验、激活实体奖励与 tier 衰减；
-- Dense Passage Prior、Personalized PageRank 和 Dense fallback；
+- 官方 medical 数据的真实来源、字段契约和最小样本规模；
+- 向量化传播与默认 BFS-style 分支的一致性（可选，端到端主干跑通后再验证）；
 - Recall@k、MRR、nDCG 与 QA Accuracy 的评测边界。
+- chunk-level ranking 到 document-level ranking 的聚合偏差，以及 Top-100 candidate depth 对 Recall@10 的影响。
 
 # 实验结果总表
 
@@ -172,6 +198,14 @@ graph_search_with_seed_entities()
 
 正式 Recall@5、Recall@10、MRR、QA Accuracy、延迟和显存峰值均尚未实验。
 
+### MedicalGraphRAG 正式数据构建（尚未运行检索）
+
+| 数据版本 | Questions | Documents | Chunks | Qrels | 构建耗时 | 状态 |
+|---|---:|---:|---:|---:|---:|---|
+| `pubmedqa_hard_v1` | 1,000 | 5,000 | 7,562 | 1,000 | 13.18 秒 | manifest 与哈希核验通过 |
+
+BM25 正式 Recall@1/5/10、MRR@10、nDCG@10 和平均查询延迟仍为空，必须等待容器内真实脚本输出。
+
 # 失败案例
 
 | 日期 | 问题 | 根因 | 处理结果 |
@@ -179,5 +213,6 @@ graph_search_with_seed_entities()
 | 2026-07-20 | Pyserini 导入时报 `Unable to find javac` | 环境只有 JRE，缺少 JDK 编译器 | 补齐 JDK 后 toy BM25 建库成功 |
 | 2026-07-20 | `task6_toy_rrf.py` 找不到 `src` | 从 `docs/` 直接运行时项目根目录不在 `sys.path` | 根据 `__file__` 加入项目根目录后成功 |
 | 2026-07-23 | Wikipedia Git LFS 多次出现 `EOF` | Hugging Face Batch API/并发压力 | 降低批量与并发后完成，`git lfs fsck` 通过 |
+| 2026-08-03 | 根 `data/` 忽略规则隐藏源码包与 compact manifest | 通用 Git pattern 同时匹配源码目录和生成数据目录 | 添加 MedicalGraphRAG 精确白名单及回归测试，大型产物继续忽略 |
 
 已解决失败只保留根因和最终处理；后续新增失败必须附真实日志或可核验输出。
