@@ -73,7 +73,6 @@ def test_evaluation_reports_splits_separately(tmp_path: Path) -> None:
         metadata,
         rankings,
         output,
-        min_unique_docs=2,
         run_context={"git_commit": "abc", "index": {"elapsed_seconds": 1.0}},
     )
 

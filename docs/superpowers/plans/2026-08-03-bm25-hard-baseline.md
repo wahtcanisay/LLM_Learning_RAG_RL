@@ -10,6 +10,10 @@
 
 ---
 
+## 执行期实测修订（2026-08-03）
+
+真实全量运行发现，Pyserini/Lucene 对 995/1,000 个 query 返回 100 hits，另 5 个稀有词 query 返回 3、29、58、71、72 hits。Lucene 不返回完全没有词项匹配的文档，因此下文早期步骤中的“每题恰好 100 hits”与“聚合后不足 10 个文档即失败”被以下规则取代：请求最多 Top-100；短排名原样参加指标；不补齐零分文档；`search_run.json` 保存 hit count histogram 与 short ranking count。本修订来自真实输出，不改变 BM25 参数、语料或 qrels。
+
 ## 文件结构
 
 - Create: `MedicalGraphRAG/src/medical_graphrag/retrieval/__init__.py` — 检索包入口。

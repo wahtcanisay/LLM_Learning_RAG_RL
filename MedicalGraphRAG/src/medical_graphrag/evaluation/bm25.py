@@ -42,7 +42,7 @@ def evaluate_bm25_run(
     rankings_path: Path,
     output_dir: Path,
     *,
-    min_unique_docs: int = 10,
+    min_unique_docs: int = 0,
     run_context: dict[str, Any],
 ) -> dict[str, Any]:
     questions = {

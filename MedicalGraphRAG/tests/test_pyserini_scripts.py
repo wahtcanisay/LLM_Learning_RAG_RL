@@ -86,3 +86,21 @@ def test_search_jsonl_reader_preserves_unicode_paragraph_separator(tmp_path: Pat
     rows = module._read_jsonl(path)
 
     assert rows == [{"chunk_id": "c1", "title": "alpha\u2029beta"}]
+
+
+def test_search_summary_records_rankings_shorter_than_requested_top_k() -> None:
+    module = _load("search_pyserini_bm25")
+    rows = [
+        {"hits": [{"chunk_id": "c1"}] * 100},
+        {"hits": [{"chunk_id": "c2"}] * 3},
+    ]
+
+    summary = module.summarize_hit_counts(rows, requested_top_k=100)
+
+    assert summary == {
+        "requested_top_k": 100,
+        "min_hits": 3,
+        "max_hits": 100,
+        "short_ranking_count": 1,
+        "hit_count_histogram": {"3": 1, "100": 1},
+    }

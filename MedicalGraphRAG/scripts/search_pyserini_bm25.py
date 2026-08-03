@@ -2,6 +2,7 @@ import argparse
 import json
 import sys
 import time
+from collections import Counter
 from collections.abc import Callable, Mapping
 from importlib.metadata import version as distribution_version
 from pathlib import Path
@@ -18,6 +19,24 @@ def package_version(
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     with path.open(encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
+
+
+def summarize_hit_counts(
+    rows: list[dict[str, object]],
+    *,
+    requested_top_k: int,
+) -> dict[str, object]:
+    counts = [len(row["hits"]) for row in rows]
+    histogram = Counter(counts)
+    return {
+        "requested_top_k": requested_top_k,
+        "min_hits": min(counts),
+        "max_hits": max(counts),
+        "short_ranking_count": sum(count < requested_top_k for count in counts),
+        "hit_count_histogram": {
+            str(count): frequency for count, frequency in sorted(histogram.items())
+        },
+    }
 
 
 def search_one(
@@ -72,8 +91,7 @@ def main() -> int:
     rows = [search_one(searcher, row, chunk_to_doc, args.top_k) for row in questions]
     if len({row["query_id"] for row in rows}) != len(rows):
         raise ValueError("duplicate query_id in search output")
-    if any(len(row["hits"]) != args.top_k for row in rows):
-        raise ValueError(f"every query must return exactly {args.top_k} hits")
+    hit_summary = summarize_hit_counts(rows, requested_top_k=args.top_k)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
@@ -86,7 +104,7 @@ def main() -> int:
             {
                 "command": sys.argv,
                 "query_count": len(rows),
-                "top_k": args.top_k,
+                **hit_summary,
                 "k1": args.k1,
                 "b": args.b,
                 "pyserini_version": package_version("pyserini"),

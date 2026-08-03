@@ -101,8 +101,8 @@ manifest is versioned. Retrieval metrics are still pending the BM25 run.
 
 ## BM25 hard retrieval baseline
 
-The primary BM25 run indexes only chunk `content` (`abstract_only`). It retrieves
-Top-100 chunks with Pyserini 0.22.1 using explicit `k1=0.9` and `b=0.4`, then
+The primary BM25 run indexes only chunk `content` (`abstract_only`). It requests
+up to 100 chunks with Pyserini 0.22.1 using explicit `k1=0.9` and `b=0.4`, then
 collapses chunks into unique documents with `max(chunk_score)`. The 500-question
 dev split is for debugging; the 500-question official test split is the primary
 report. Never merge them into one 1,000-question headline metric.
@@ -156,3 +156,7 @@ python -m medical_graphrag.cli evaluate-bm25 `
 The tracked result contains Recall@1/5/10, MRR@10, binary nDCG@10,
 mean/P50/P95 search latency, index time and index size. BM25/Lucene runs on CPU,
 so GPU peak memory is recorded as not applicable rather than estimated.
+Lucene returns only documents with at least one matching query term, so rare-term
+queries may produce fewer than 100 hits. Those short rankings remain in the
+evaluation without fabricated zero-score padding, and `search_run.json` records
+their complete hit-count distribution.

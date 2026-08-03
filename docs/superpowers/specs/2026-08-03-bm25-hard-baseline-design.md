@@ -101,7 +101,7 @@ dev metrics + official test metrics + cases
 
 第一版在查询脚本中显式调用 `LuceneSearcher.set_bm25(k1=0.9, b=0.4)`。这两个值已经从容器内 Pyserini 0.22.1 的实际函数签名与源码确认，也是该版本的默认值；显式设置可避免后续升级造成默认值漂移。任何参数调整只能依据 dev 集，且必须形成新的实验配置。
 
-每个 query 请求 Top-100 chunk。文档聚合规则固定为：
+每个 query 请求最多 Top-100 chunk。Lucene BM25 只返回至少包含一个匹配词项的文档，因此稀有词 query 可能得到少于 100 个 hit；这种短排名必须原样参与指标，未返回文档视为未命中，禁止用零分文档补齐。运行报告必须保存实际 hit 数分布和短排名问题数。文档聚合规则固定为：
 
 ```text
 document_score = max(score of retrieved chunks with the same doc_id)
@@ -113,7 +113,7 @@ document_score = max(score of retrieved chunks with the same doc_id)
 2. 该文档最佳 chunk 的原始排名升序；
 3. `doc_id` 字典序升序。
 
-这保证重复文档只保留一次，且分数并列时结果可重现。每题聚合后必须至少有 10 个唯一文档，否则该题标记为运行错误，不能用较短排名悄悄参与 Recall@10。
+这保证重复文档只保留一次，且分数并列时结果可重现。短于 10 个唯一文档的合法 BM25 排名仍参与 Recall@10；报告必须显式暴露其长度，不能丢弃该题或伪造无词项匹配的候选。
 
 原始排名每行至少保存：
 
@@ -180,7 +180,7 @@ dev 与 test 共用冻结语料和索引，但必须单独报告：
 - query、chunk 或 qrel ID 重复；
 - qrel 指向不存在的文档；
 - Pyserini 返回未知 chunk ID；
-- 任一问题缺少检索结果或聚合后不足 10 个唯一文档；
+- 任一问题缺少排名记录，或短排名数量分布未写入 search report；
 - dev/test 交集非空；
 - 排名文件 query 集合与目标 split 不一致；
 - 指标或延迟出现 NaN、负值；
@@ -196,7 +196,7 @@ dev 与 test 共用冻结语料和索引，但必须单独报告：
 2. collection/metadata ID 一一对应；
 3. 同一文档多个 chunk 采用最大分数；
 4. 相同分数按最佳 chunk rank、doc ID 稳定排序；
-5. 不足 10 个唯一文档时失败；
+5. 少于请求 Top-k 的合法 Lucene 排名被保留并写入分布统计；
 6. dev/test qrels 严格分离；
 7. 已知小排名的 Recall、MRR、nDCG 精确值；
 8. CLI 参数、输出目录与错误码；
@@ -209,7 +209,7 @@ dev 与 test 共用冻结语料和索引，但必须单独报告：
 只有同时满足以下条件，BM25 硬基线才算完成：
 
 - 7,562 个 chunk 成功建立可复现 Lucene 索引；
-- dev/test 各 500 题均产生 Top-100 chunk 和唯一文档排名；
+- dev/test 各 500 题均产生最多 Top-100 chunk 和唯一文档排名，短排名分布可审计；
 - pytest 全部通过，容器集成冒烟通过；
 - 真实输出 Recall@1/5/10、MRR@10、nDCG@10、mean/P50/P95 延迟；
 - 记录索引时间、空间、版本、命令、Git commit 与输入/输出哈希；
