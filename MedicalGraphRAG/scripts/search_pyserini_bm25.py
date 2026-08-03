@@ -3,8 +3,16 @@ import json
 import sys
 import time
 from collections.abc import Callable, Mapping
+from importlib.metadata import version as distribution_version
 from pathlib import Path
 from typing import Any
+
+
+def package_version(
+    package: str,
+    resolver: Callable[[str], str] = distribution_version,
+) -> str:
+    return resolver(package)
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -54,7 +62,6 @@ def main() -> int:
     parser.add_argument("--b", type=float, default=0.4)
     args = parser.parse_args()
 
-    import pyserini
     from pyserini.search.lucene import LuceneSearcher
 
     searcher = LuceneSearcher(args.index)
@@ -82,7 +89,7 @@ def main() -> int:
                 "top_k": args.top_k,
                 "k1": args.k1,
                 "b": args.b,
-                "pyserini_version": pyserini.__version__,
+                "pyserini_version": package_version("pyserini"),
             },
             indent=2,
         )

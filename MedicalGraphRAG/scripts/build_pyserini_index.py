@@ -4,7 +4,16 @@ import platform
 import subprocess
 import sys
 import time
+from collections.abc import Callable
+from importlib.metadata import version as distribution_version
 from pathlib import Path
+
+
+def package_version(
+    package: str,
+    resolver: Callable[[str], str] = distribution_version,
+) -> str:
+    return resolver(package)
 
 
 def build_command(collection: Path, index: Path, threads: int) -> list[str]:
@@ -41,8 +50,6 @@ def main() -> int:
     elapsed = time.perf_counter() - started
     size = sum(path.stat().st_size for path in args.index.rglob("*") if path.is_file())
 
-    import pyserini
-
     java_version = subprocess.run(
         ["java", "-version"],
         text=True,
@@ -52,7 +59,7 @@ def main() -> int:
     report = {
         "elapsed_seconds": elapsed,
         "index_bytes": size,
-        "pyserini_version": pyserini.__version__,
+        "pyserini_version": package_version("pyserini"),
         "python_version": platform.python_version(),
         "java_version": java_version,
         "threads": args.threads,

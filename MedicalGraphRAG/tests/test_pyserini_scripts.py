@@ -35,6 +35,19 @@ def test_index_command_is_fixed() -> None:
     ]
 
 
+def test_scripts_read_pyserini_version_from_distribution_metadata() -> None:
+    for name in ("build_pyserini_index", "search_pyserini_bm25"):
+        module = _load(name)
+        requested = []
+
+        def resolver(package: str) -> str:
+            requested.append(package)
+            return "0.22.1"
+
+        assert module.package_version("pyserini", resolver=resolver) == "0.22.1"
+        assert requested == ["pyserini"]
+
+
 def test_search_one_query_records_rank_score_and_doc_id() -> None:
     module = _load("search_pyserini_bm25")
 
