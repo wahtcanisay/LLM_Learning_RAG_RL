@@ -1,0 +1,15 @@
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+data/raw/*
+!data/raw/README.md
+
+data/processed/*
+!data/processed/README.md
+!data/processed/pubmedqa_hard_v1/
+data/processed/pubmedqa_hard_v1/*
+!data/processed/pubmedqa_hard_v1/README.md
+!data/processed/pubmedqa_hard_v1/audit_20.json
+!data/processed/pubmedqa_hard_v1/manifest.json
