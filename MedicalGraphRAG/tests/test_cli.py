@@ -10,6 +10,5 @@ def test_cli_lists_pipeline_commands() -> None:
         check=False,
     )
     assert result.returncode == 0
-    assert "fetch-pubmedqa" in result.stdout
-    assert "audit" in result.stdout
-    assert "build" in result.stdout
+    for command in ("fetch-pubmedqa", "audit", "build", "export-pyserini", "evaluate-bm25"):
+        assert command in result.stdout
