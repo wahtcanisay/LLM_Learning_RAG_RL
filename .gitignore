@@ -33,6 +33,8 @@ datasets/
 data/
 !MedicalGraphRAG/src/medical_graphrag/data/
 !MedicalGraphRAG/src/medical_graphrag/data/**
+!MedicalGraphRAG/data/
+!MedicalGraphRAG/data/**
 corpus/
 indexes/
 faiss_index/

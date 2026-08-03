@@ -84,3 +84,17 @@ the generated qrels.
 
 These are data-integrity results, not retrieval metrics. Recall, MRR, nDCG, QA
 accuracy, latency, and GPU memory remain unreported until their scripts run.
+
+## Verified full build evidence (2026-08-03)
+
+- Build time: 13.18 seconds on this machine with the tokenizer already cached.
+- Output counts: 1,000 questions, 5,000 documents, 7,562 chunks, 1,000 qrels.
+- Split counts: 500 dev and 500 official test questions.
+- Source counts: 1,000 PubMedQA gold documents and 4,000 MedRAG PubMed distractors.
+- All query, document, and chunk identifiers are unique; every qrel resolves to
+  its expected `PMID:<query_id>` document; all artifact hashes match the manifest.
+- `manifest.json` SHA-256:
+  `cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`.
+
+The generated JSONL/TSV artifacts remain local and ignored. Only the compact
+manifest is versioned. Retrieval metrics are still pending the BM25 run.
