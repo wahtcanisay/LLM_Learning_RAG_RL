@@ -1,5 +1,5 @@
 {
-  "git_commit": "2c7bcbcb5e62b96762c7d7f0f99dfa6583d67d2f",
+  "git_commit": "49f655e762436e68988aaa7d52ff7e9703de29dc",
   "host_platform": "Windows-10-10.0.22621-SP0",
   "host_python_version": "3.11.4",
   "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
@@ -19,7 +19,7 @@
     "--output-dir",
     "experiments\\pubmedqa_hard_v1\\bm25_abstract_only",
     "--git-commit",
-    "2c7bcbcb5e62b96762c7d7f0f99dfa6583d67d2f",
+    "49f655e762436e68988aaa7d52ff7e9703de29dc",
     "--docker-image",
     "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
   ],
@@ -104,7 +104,9 @@
     "metadata_sha256": "7c664c2c94fa7ab9aaf497716cbe40be71c53aa3e2ec957c90029d5dadb7649f",
     "index_sha256": "24d98c4f6ce12c6aba2e8f7e7aa34c9b5594b92c0caca7a67c122b70f927a274",
     "index_report_sha256": "414069fa80d54ec17f49fb0163d1ce437d406ede5460a1cef816133720a859b0",
-    "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa"
+    "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
+    "questions_sha256": "cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982",
+    "rankings_sha256": "3c2376b93f9c7982c28e2d706d942da0e3390c27e1fa9d9e092c09639aa28487"
   },
   "index_report_sha256": "414069fa80d54ec17f49fb0163d1ce437d406ede5460a1cef816133720a859b0",
   "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
@@ -114,8 +116,8 @@
     "chunks.jsonl": "51d2757a1bf09328463a4c0363217d425883e132c550f05916d6d7130bdb0309",
     "qrels.tsv": "96b87dbb46cd68fb92cabc4d6ce55ce5c41dc535d7a7b4fe77094957eae55a0a"
   },
-  "generated_at_utc": "2026-08-03T11:48:29.577037+00:00",
-  "rankings_sha256": "a20f2ce669ec23063c27a858c0913aef5b9ef7a931376d06038b5d96c11bba78",
+  "generated_at_utc": "2026-08-03T11:55:33.454775+00:00",
+  "rankings_sha256": "3c2376b93f9c7982c28e2d706d942da0e3390c27e1fa9d9e092c09639aa28487",
   "question_count": 1000,
   "document_count": 5000,
   "chunk_metadata_count": 7562,

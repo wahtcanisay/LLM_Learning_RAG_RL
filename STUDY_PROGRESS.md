@@ -122,14 +122,14 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - 正式 BM25 参数：`abstract_only`、Porter stemmer、移除 stopwords、`k1=0.9`、`b=0.4`、请求最多 100 chunks、按 `doc_id` 取最大 chunk score。
 - 正式索引（审计重跑）：7,562 chunks，耗时 `2.580839597` 秒，空间 `1,254,677` bytes；容器 Python 3.12.3、Java 21.0.11、Pyserini 0.22.1。
 - 正式检索：1,000/1,000 query 完成；995 题返回 100 hits，5 题为短排名，最少 3 hits；短排名分布已写入 `search_run.json`。
-- dev（500 题）：Recall@1 `0.920`、Recall@5 `0.972`、Recall@10 `0.978`、MRR@10 `0.943250`、nDCG@10 `0.951905`；审计重跑 mean/P50/P95 延迟 `1.358/1.136/2.171 ms`。
-- official test（500 题，主结果）：Recall@1 `0.926`、Recall@5 `0.974`、Recall@10 `0.984`、MRR@10 `0.945825`、nDCG@10 `0.955147`；审计重跑 mean/P50/P95 延迟 `1.355/1.150/2.919 ms`。
+- dev（500 题）：Recall@1 `0.920`、Recall@5 `0.972`、Recall@10 `0.978`、MRR@10 `0.943250`、nDCG@10 `0.951905`；最终审计重跑 mean/P50/P95 延迟 `1.394/1.143/2.431 ms`。
+- official test（500 题，主结果）：Recall@1 `0.926`、Recall@5 `0.974`、Recall@10 `0.984`、MRR@10 `0.945825`、nDCG@10 `0.955147`；最终审计重跑 mean/P50/P95 延迟 `1.359/1.179/2.247 ms`。
 - 独立复算：直接从 raw hits、metadata 和 qrels 重新聚合，dev/test 五项检索指标与 `metrics.json` 在 `1e-12` 绝对误差内逐项一致。
 - 显存峰值：不适用；本实验是 CPU Lucene BM25，没有调用 GPU。QA Accuracy：未评测，不能由检索指标推断。
 - 结果位置：`MedicalGraphRAG/experiments/pubmedqa_hard_v1/bm25_abstract_only/`；raw rankings、collection、index 位于 ignored `outputs/`、`indexes/`。
-- 审计重跑代码 commit：`2c7bcbcb5e62b96762c7d7f0f99dfa6583d67d2f`；数据 manifest SHA-256：`cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；collection SHA-256：`8651101da23e625c4324e6e0d97018039c2cefd97f539c74bfd69d7fb202360c`；index SHA-256：`24d98c4f6ce12c6aba2e8f7e7aa34c9b5594b92c0caca7a67c122b70f927a274`；raw rankings SHA-256：`a20f2ce669ec23063c27a858c0913aef5b9ef7a931376d06038b5d96c11bba78`。
+- 最终审计重跑代码 commit：`49f655e`；数据 manifest SHA-256：`cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；questions SHA-256：`cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982`；collection SHA-256：`8651101da23e625c4324e6e0d97018039c2cefd97f539c74bfd69d7fb202360c`；index SHA-256：`24d98c4f6ce12c6aba2e8f7e7aa34c9b5594b92c0caca7a67c122b70f927a274`；raw rankings SHA-256：`3c2376b93f9c7982c28e2d706d942da0e3390c27e1fa9d9e092c09639aa28487`。
 - 审计链：导出、建索引、搜索、评测逐级校验 frozen dataset、collection、metadata、index 与前序报告哈希；评测同时复算 query 数、命中数量分布、短排名数量，并从已验证搜索报告读取 Top-k、k1、b 和 text mode，不再硬编码实验标签。
-- 当前完整测试：`45 passed`。
+- 当前完整测试：`47 passed`。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
 
@@ -221,8 +221,8 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 
 | 方法 | Split | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 | Mean latency |
 |---|---|---:|---:|---:|---:|---:|---:|
-| BM25 abstract-only | dev (500) | 0.920 | 0.972 | 0.978 | 0.943250 | 0.951905 | 1.358 ms |
-| BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.355 ms |
+| BM25 abstract-only | dev (500) | 0.920 | 0.972 | 0.978 | 0.943250 | 0.951905 | 1.394 ms |
+| BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.359 ms |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 
