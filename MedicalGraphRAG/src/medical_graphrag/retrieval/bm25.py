@@ -1,4 +1,5 @@
 import json
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -6,6 +7,49 @@ from medical_graphrag.data.io import sha256_file, write_jsonl
 
 
 ARTIFACT_NAMES = ("questions.jsonl", "documents.jsonl", "chunks.jsonl", "qrels.tsv")
+
+
+def collapse_chunk_hits(
+    hits: Sequence[Mapping[str, object]],
+    metadata: Mapping[str, Mapping[str, object]],
+    *,
+    min_unique_docs: int = 10,
+) -> list[dict[str, object]]:
+    best: dict[str, dict[str, object]] = {}
+    for hit in hits:
+        chunk_id = str(hit["chunk_id"])
+        if chunk_id not in metadata:
+            raise ValueError(f"unknown chunk_id: {chunk_id}")
+        doc_id = str(metadata[chunk_id]["doc_id"])
+        candidate: dict[str, object] = {
+            "doc_id": doc_id,
+            "score": float(hit["score"]),
+            "best_chunk_id": chunk_id,
+            "best_chunk_rank": int(hit["chunk_rank"]),
+        }
+        current = best.get(doc_id)
+        if current is None or (
+            -float(candidate["score"]), int(candidate["best_chunk_rank"]), chunk_id
+        ) < (
+            -float(current["score"]),
+            int(current["best_chunk_rank"]),
+            str(current["best_chunk_id"]),
+        ):
+            best[doc_id] = candidate
+
+    ranking = sorted(
+        best.values(),
+        key=lambda item: (
+            -float(item["score"]),
+            int(item["best_chunk_rank"]),
+            str(item["doc_id"]),
+        ),
+    )
+    if len(ranking) < min_unique_docs:
+        raise ValueError(
+            f"expected at least {min_unique_docs} unique documents, got {len(ranking)}"
+        )
+    return ranking
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
