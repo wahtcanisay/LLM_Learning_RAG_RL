@@ -30,7 +30,7 @@ ENV/
 models/
 checkpoints/
 datasets/
-data/
+/data/
 corpus/
 indexes/
 faiss_index/
