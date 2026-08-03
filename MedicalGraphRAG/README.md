@@ -98,3 +98,61 @@ accuracy, latency, and GPU memory remain unreported until their scripts run.
 
 The generated JSONL/TSV artifacts remain local and ignored. Only the compact
 manifest is versioned. Retrieval metrics are still pending the BM25 run.
+
+## BM25 hard retrieval baseline
+
+The primary BM25 run indexes only chunk `content` (`abstract_only`). It retrieves
+Top-100 chunks with Pyserini 0.22.1 using explicit `k1=0.9` and `b=0.4`, then
+collapses chunks into unique documents with `max(chunk_score)`. The 500-question
+dev split is for debugging; the 500-question official test split is the primary
+report. Never merge them into one 1,000-question headline metric.
+
+Run the export from `MedicalGraphRAG/`:
+
+```powershell
+python -m medical_graphrag.cli export-pyserini `
+  --dataset-dir data/processed/pubmedqa_hard_v1 `
+  --output-dir outputs/pubmedqa_hard_v1/bm25_abstract_only
+```
+
+Build the Lucene index in the existing `llm-pytorch` container. The repository
+is mounted from `/mnt/d/code_list` to `/workspace/code_list`:
+
+```powershell
+docker exec llm-pytorch python "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/scripts/build_pyserini_index.py" `
+  --collection "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/collection" `
+  --index "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only" `
+  --report "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/index_build.json" `
+  --threads 8
+```
+
+Search all questions and retain the raw Top-100 chunk hits:
+
+```powershell
+docker exec llm-pytorch python "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/scripts/search_pyserini_bm25.py" `
+  --index "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only" `
+  --questions "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/pubmedqa_hard_v1/questions.jsonl" `
+  --metadata "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/chunk_metadata.jsonl" `
+  --output "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/raw_rankings.jsonl" `
+  --report "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/search_run.json" `
+  --top-k 100 --k1 0.9 --b 0.4
+```
+
+Evaluate document rankings and write the compact experiment record:
+
+```powershell
+$commit = git rev-parse HEAD
+python -m medical_graphrag.cli evaluate-bm25 `
+  --dataset-dir data/processed/pubmedqa_hard_v1 `
+  --metadata outputs/pubmedqa_hard_v1/bm25_abstract_only/chunk_metadata.jsonl `
+  --rankings outputs/pubmedqa_hard_v1/bm25_abstract_only/raw_rankings.jsonl `
+  --index-report outputs/pubmedqa_hard_v1/bm25_abstract_only/index_build.json `
+  --search-report outputs/pubmedqa_hard_v1/bm25_abstract_only/search_run.json `
+  --output-dir experiments/pubmedqa_hard_v1/bm25_abstract_only `
+  --git-commit $commit `
+  --docker-image pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel
+```
+
+The tracked result contains Recall@1/5/10, MRR@10, binary nDCG@10,
+mean/P50/P95 search latency, index time and index size. BM25/Lucene runs on CPU,
+so GPU peak memory is recorded as not applicable rather than estimated.

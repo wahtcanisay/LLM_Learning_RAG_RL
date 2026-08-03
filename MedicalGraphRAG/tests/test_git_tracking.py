@@ -4,6 +4,31 @@ from pathlib import Path
 import pytest
 
 
+def _is_ignored(path: str) -> bool:
+    repository_root = Path(__file__).resolve().parents[2]
+    result = subprocess.run(
+        ["git", "check-ignore", "--no-index", "-q", path],
+        cwd=repository_root,
+        check=False,
+    )
+    return result.returncode == 0
+
+
+def test_bm25_experiment_json_is_trackable() -> None:
+    assert not _is_ignored(
+        "MedicalGraphRAG/experiments/pubmedqa_hard_v1/bm25_abstract_only/metrics.json"
+    )
+
+
+def test_bm25_large_outputs_stay_ignored() -> None:
+    assert _is_ignored(
+        "MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only/segments_1"
+    )
+    assert _is_ignored(
+        "MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/raw_rankings.jsonl"
+    )
+
+
 @pytest.mark.parametrize(
     "tracked_path",
     [
