@@ -120,15 +120,16 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - manifest：`MedicalGraphRAG/data/processed/pubmedqa_hard_v1/manifest.json`，SHA-256 为 `cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；四个数据产物哈希均已独立复核。
 - BM25 环境：WSL2 `LLM-Ubuntu-22.04`，Docker 容器 `llm-pytorch`，Pyserini `0.22.1`；旧 toy Lucene index `/tmp/medrag_task4_index` 仍可读取。
 - 正式 BM25 参数：`abstract_only`、Porter stemmer、移除 stopwords、`k1=0.9`、`b=0.4`、请求最多 100 chunks、按 `doc_id` 取最大 chunk score。
-- 正式索引：7,562 chunks，耗时 `2.942967939` 秒，空间 `1,254,677` bytes；容器 Python 3.12.3、Java 21.0.11、Pyserini 0.22.1。
+- 正式索引（审计重跑）：7,562 chunks，耗时 `2.580839597` 秒，空间 `1,254,677` bytes；容器 Python 3.12.3、Java 21.0.11、Pyserini 0.22.1。
 - 正式检索：1,000/1,000 query 完成；995 题返回 100 hits，5 题为短排名，最少 3 hits；短排名分布已写入 `search_run.json`。
-- dev（500 题）：Recall@1 `0.920`、Recall@5 `0.972`、Recall@10 `0.978`、MRR@10 `0.943250`、nDCG@10 `0.951905`；mean/P50/P95 延迟 `1.565/1.224/2.724 ms`。
-- official test（500 题，主结果）：Recall@1 `0.926`、Recall@5 `0.974`、Recall@10 `0.984`、MRR@10 `0.945825`、nDCG@10 `0.955147`；mean/P50/P95 延迟 `1.479/1.275/2.766 ms`。
+- dev（500 题）：Recall@1 `0.920`、Recall@5 `0.972`、Recall@10 `0.978`、MRR@10 `0.943250`、nDCG@10 `0.951905`；审计重跑 mean/P50/P95 延迟 `1.358/1.136/2.171 ms`。
+- official test（500 题，主结果）：Recall@1 `0.926`、Recall@5 `0.974`、Recall@10 `0.984`、MRR@10 `0.945825`、nDCG@10 `0.955147`；审计重跑 mean/P50/P95 延迟 `1.355/1.150/2.919 ms`。
 - 独立复算：直接从 raw hits、metadata 和 qrels 重新聚合，dev/test 五项检索指标与 `metrics.json` 在 `1e-12` 绝对误差内逐项一致。
 - 显存峰值：不适用；本实验是 CPU Lucene BM25，没有调用 GPU。QA Accuracy：未评测，不能由检索指标推断。
 - 结果位置：`MedicalGraphRAG/experiments/pubmedqa_hard_v1/bm25_abstract_only/`；raw rankings、collection、index 位于 ignored `outputs/`、`indexes/`。
-- 正式结果代码 commit：`ec7f3cf`；数据 manifest SHA-256：`cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；raw rankings SHA-256：`0d32b54d4c72761eab6a58a0feb70f0e9cf6e176c8fd0154ebdf7cc40f033386`。
-- 当前完整测试：`39 passed`。
+- 审计重跑代码 commit：`2c7bcbcb5e62b96762c7d7f0f99dfa6583d67d2f`；数据 manifest SHA-256：`cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；collection SHA-256：`8651101da23e625c4324e6e0d97018039c2cefd97f539c74bfd69d7fb202360c`；index SHA-256：`24d98c4f6ce12c6aba2e8f7e7aa34c9b5594b92c0caca7a67c122b70f927a274`；raw rankings SHA-256：`a20f2ce669ec23063c27a858c0913aef5b9ef7a931376d06038b5d96c11bba78`。
+- 审计链：导出、建索引、搜索、评测逐级校验 frozen dataset、collection、metadata、index 与前序报告哈希；评测同时复算 query 数、命中数量分布、短排名数量，并从已验证搜索报告读取 Top-k、k1、b 和 text mode，不再硬编码实验标签。
+- 当前完整测试：`45 passed`。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
 
@@ -186,6 +187,7 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - metadata 第 5,862 条 title 含 Unicode U+2029；`str.splitlines()` 会错误拆分合法 JSONL。搜索脚本与 evaluator 已改为文件对象逐行读取，并加入回归测试。
 - `pyserini` 顶层模块没有 `__version__`；审计脚本已改用 `importlib.metadata.version("pyserini")`，索引报告成功记录 0.22.1。
 - 5 个稀有词 query 的 Lucene 命中少于 100。原因是 BM25 不返回零词项匹配文档；当前保留短排名并记录完整分布，不做无依据补齐。
+- 首次审计重跑时，容器直接执行脚本无法导入 `medical_graphrag`。原因是容器未安装当前 worktree 包；已让两个独立 Pyserini 脚本按 `__file__` 加入项目 `src/`，并以回归测试覆盖，随后真实索引与搜索成功。
 
 # 下一步
 
@@ -219,8 +221,8 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 
 | 方法 | Split | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 | Mean latency |
 |---|---|---:|---:|---:|---:|---:|---:|
-| BM25 abstract-only | dev (500) | 0.920 | 0.972 | 0.978 | 0.943250 | 0.951905 | 1.565 ms |
-| BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.479 ms |
+| BM25 abstract-only | dev (500) | 0.920 | 0.972 | 0.978 | 0.943250 | 0.951905 | 1.358 ms |
+| BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.355 ms |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 
