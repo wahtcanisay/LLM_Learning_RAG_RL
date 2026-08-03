@@ -8,6 +8,10 @@ from collections.abc import Callable
 from importlib.metadata import version as distribution_version
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(ROOT / "src"))
+
 from medical_graphrag.data.io import sha256_directory, sha256_file
 
 

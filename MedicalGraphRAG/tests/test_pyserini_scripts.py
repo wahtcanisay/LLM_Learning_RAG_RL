@@ -40,6 +40,12 @@ def test_index_command_is_fixed() -> None:
     ]
 
 
+def test_standalone_scripts_add_project_src_to_import_path() -> None:
+    for name in ("build_pyserini_index", "search_pyserini_bm25"):
+        module = _load(name)
+        assert str(ROOT / "src") in module.sys.path
+
+
 def test_scripts_read_pyserini_version_from_distribution_metadata() -> None:
     for name in ("build_pyserini_index", "search_pyserini_bm25"):
         module = _load(name)
