@@ -1,5 +1,10 @@
 import importlib.util
+import json
 from pathlib import Path
+
+import pytest
+
+from medical_graphrag.data.io import sha256_directory, sha256_file
 
 
 ROOT = Path(__file__).parents[1]
@@ -104,3 +109,49 @@ def test_search_summary_records_rankings_shorter_than_requested_top_k() -> None:
         "short_ranking_count": 1,
         "hit_count_histogram": {"3": 1, "100": 1},
     }
+
+
+def test_index_input_validation_rejects_collection_from_another_export(tmp_path: Path) -> None:
+    module = _load("build_pyserini_index")
+    collection = tmp_path / "collection"
+    collection.mkdir()
+    chunks = collection / "chunks.jsonl"
+    chunks.write_text('{"id":"c1","contents":"alpha"}\n', encoding="utf-8")
+    report = tmp_path / "export_report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "text_mode": "abstract_only",
+                "chunk_count": 1,
+                "collection_sha256": "0" * 64,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="collection SHA-256 mismatch"):
+        module.validate_export(collection, report)
+
+
+def test_search_input_validation_rejects_modified_index(tmp_path: Path) -> None:
+    module = _load("search_pyserini_bm25")
+    index = tmp_path / "index"
+    index.mkdir()
+    (index / "segments_1").write_bytes(b"index")
+    metadata = tmp_path / "metadata.jsonl"
+    metadata.write_text('{"chunk_id":"c1","doc_id":"d1"}\n', encoding="utf-8")
+    report = tmp_path / "index_report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "index_sha256": sha256_directory(index),
+                "metadata_sha256": sha256_file(metadata),
+                "text_mode": "abstract_only",
+            }
+        ),
+        encoding="utf-8",
+    )
+    (index / "segments_1").write_bytes(b"tampered")
+
+    with pytest.raises(ValueError, match="index SHA-256 mismatch"):
+        module.validate_index(index, metadata, report)

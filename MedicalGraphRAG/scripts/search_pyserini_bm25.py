@@ -8,6 +8,8 @@ from importlib.metadata import version as distribution_version
 from pathlib import Path
 from typing import Any
 
+from medical_graphrag.data.io import sha256_directory, sha256_file
+
 
 def package_version(
     package: str,
@@ -37,6 +39,17 @@ def summarize_hit_counts(
             str(count): frequency for count, frequency in sorted(histogram.items())
         },
     }
+
+
+def validate_index(index: Path, metadata: Path, report_path: Path) -> dict[str, object]:
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if report.get("text_mode") != "abstract_only":
+        raise ValueError("index must use abstract_only text mode")
+    if sha256_directory(index) != report.get("index_sha256"):
+        raise ValueError("index SHA-256 mismatch")
+    if sha256_file(metadata) != report.get("metadata_sha256"):
+        raise ValueError("metadata SHA-256 mismatch")
+    return report
 
 
 def search_one(
@@ -76,10 +89,14 @@ def main() -> int:
     parser.add_argument("--metadata", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--index-report", type=Path, required=True)
     parser.add_argument("--top-k", type=int, default=100)
     parser.add_argument("--k1", type=float, default=0.9)
     parser.add_argument("--b", type=float, default=0.4)
     args = parser.parse_args()
+
+    index_path = Path(args.index)
+    index_report = validate_index(index_path, args.metadata, args.index_report)
 
     from pyserini.search.lucene import LuceneSearcher
 
@@ -108,6 +125,11 @@ def main() -> int:
                 "k1": args.k1,
                 "b": args.b,
                 "pyserini_version": package_version("pyserini"),
+                "text_mode": index_report["text_mode"],
+                "metadata_sha256": index_report["metadata_sha256"],
+                "index_sha256": index_report["index_sha256"],
+                "index_report_sha256": sha256_file(args.index_report),
+                "dataset_manifest_sha256": index_report["dataset_manifest_sha256"],
             },
             indent=2,
         )

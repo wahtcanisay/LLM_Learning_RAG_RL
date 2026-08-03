@@ -121,6 +121,7 @@ is mounted from `/mnt/d/code_list` to `/workspace/code_list`:
 ```powershell
 docker exec llm-pytorch python "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/scripts/build_pyserini_index.py" `
   --collection "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/collection" `
+  --export-report "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/export_report.json" `
   --index "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only" `
   --report "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/index_build.json" `
   --threads 8
@@ -131,6 +132,7 @@ Search all questions and retain the raw Top-100 chunk hits:
 ```powershell
 docker exec llm-pytorch python "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/scripts/search_pyserini_bm25.py" `
   --index "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only" `
+  --index-report "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/index_build.json" `
   --questions "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/pubmedqa_hard_v1/questions.jsonl" `
   --metadata "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/chunk_metadata.jsonl" `
   --output "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/raw_rankings.jsonl" `
@@ -159,4 +161,7 @@ so GPU peak memory is recorded as not applicable rather than estimated.
 Lucene returns only documents with at least one matching query term, so rare-term
 queries may produce fewer than 100 hits. Those short rankings remain in the
 evaluation without fabricated zero-score padding, and `search_run.json` records
-their complete hit-count distribution.
+their complete hit-count distribution. Each stage also validates the frozen
+dataset, collection, metadata, index, and preceding report SHA-256 values before
+it runs; the final manifest therefore carries an auditable export-to-evaluation
+provenance chain.

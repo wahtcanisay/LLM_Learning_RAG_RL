@@ -95,6 +95,7 @@ def main() -> int:
                 "evaluation_command": sys.argv,
                 "index": index_report,
                 "search": search_report,
+                "index_report_sha256": sha256_file(args.index_report),
                 "dataset_manifest_sha256": sha256_file(
                     args.dataset_dir / "manifest.json"
                 ),

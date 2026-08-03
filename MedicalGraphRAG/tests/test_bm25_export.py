@@ -56,6 +56,12 @@ def test_export_uses_content_only_and_keeps_metadata_separate(tmp_path: Path) ->
     assert metadata["chunk_id"] == collection["id"]
     assert metadata["doc_id"] == "d1"
     assert summary["chunk_count"] == 1
+    assert summary["text_mode"] == "abstract_only"
+    assert summary["dataset_manifest_sha256"] == _sha(dataset / "manifest.json")
+    assert summary["dataset_artifact_hashes"] == json.loads(
+        (dataset / "manifest.json").read_text(encoding="utf-8")
+    )["artifact_hashes"]
+    assert json.loads((output / "export_report.json").read_text(encoding="utf-8")) == summary
 
 
 def test_export_rejects_tampered_artifact(tmp_path: Path) -> None:
@@ -79,4 +85,30 @@ def test_export_rejects_duplicate_chunk_ids(tmp_path: Path) -> None:
     (dataset / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     with pytest.raises(ValueError, match="duplicate chunk_id: c1"):
+        export_pyserini_collection(dataset, tmp_path / "output")
+
+
+def test_export_rejects_duplicate_question_ids(tmp_path: Path) -> None:
+    dataset = tmp_path / "dataset"
+    _write_dataset(dataset)
+    questions = dataset / "questions.jsonl"
+    row = questions.read_text(encoding="utf-8")
+    questions.write_text(row + row, encoding="utf-8")
+    manifest = json.loads((dataset / "manifest.json").read_text(encoding="utf-8"))
+    manifest["counts"]["questions"] = 2
+    manifest["artifact_hashes"]["questions.jsonl"] = _sha(questions)
+    (dataset / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate query_id: q1"):
+        export_pyserini_collection(dataset, tmp_path / "output")
+
+
+def test_export_rejects_manifest_count_mismatch(tmp_path: Path) -> None:
+    dataset = tmp_path / "dataset"
+    _write_dataset(dataset)
+    manifest = json.loads((dataset / "manifest.json").read_text(encoding="utf-8"))
+    manifest["counts"]["documents"] = 2
+    (dataset / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="document count does not match manifest"):
         export_pyserini_collection(dataset, tmp_path / "output")

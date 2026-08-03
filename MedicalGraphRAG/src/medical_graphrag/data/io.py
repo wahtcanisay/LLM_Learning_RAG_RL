@@ -13,6 +13,18 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def sha256_directory(path: Path) -> str:
+    """Hash file names and bytes in a directory using a stable sorted traversal."""
+    digest = hashlib.sha256()
+    files = sorted(item for item in path.rglob("*") if item.is_file())
+    for item in files:
+        relative = item.relative_to(path).as_posix().encode("utf-8")
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(bytes.fromhex(sha256_file(item)))
+    return digest.hexdigest()
+
+
 def _atomic_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(path.suffix + ".tmp")
