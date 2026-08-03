@@ -146,12 +146,15 @@ def test_search_input_validation_rejects_modified_index(tmp_path: Path) -> None:
     (index / "segments_1").write_bytes(b"index")
     metadata = tmp_path / "metadata.jsonl"
     metadata.write_text('{"chunk_id":"c1","doc_id":"d1"}\n', encoding="utf-8")
+    questions = tmp_path / "questions.jsonl"
+    questions.write_text('{"query_id":"q1","question":"alpha"}\n', encoding="utf-8")
     report = tmp_path / "index_report.json"
     report.write_text(
         json.dumps(
             {
                 "index_sha256": sha256_directory(index),
                 "metadata_sha256": sha256_file(metadata),
+                "dataset_artifact_hashes": {"questions.jsonl": sha256_file(questions)},
                 "text_mode": "abstract_only",
             }
         ),
@@ -160,4 +163,30 @@ def test_search_input_validation_rejects_modified_index(tmp_path: Path) -> None:
     (index / "segments_1").write_bytes(b"tampered")
 
     with pytest.raises(ValueError, match="index SHA-256 mismatch"):
-        module.validate_index(index, metadata, report)
+        module.validate_index(index, metadata, questions, report)
+
+
+def test_search_input_validation_rejects_questions_from_another_dataset(tmp_path: Path) -> None:
+    module = _load("search_pyserini_bm25")
+    index = tmp_path / "index"
+    index.mkdir()
+    (index / "segments_1").write_bytes(b"index")
+    metadata = tmp_path / "metadata.jsonl"
+    metadata.write_text('{"chunk_id":"c1","doc_id":"d1"}\n', encoding="utf-8")
+    questions = tmp_path / "questions.jsonl"
+    questions.write_text('{"query_id":"q1","question":"changed"}\n', encoding="utf-8")
+    report = tmp_path / "index_report.json"
+    report.write_text(
+        json.dumps(
+            {
+                "index_sha256": sha256_directory(index),
+                "metadata_sha256": sha256_file(metadata),
+                "text_mode": "abstract_only",
+                "dataset_artifact_hashes": {"questions.jsonl": "0" * 64},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="questions SHA-256 mismatch"):
+        module.validate_index(index, metadata, questions, report)

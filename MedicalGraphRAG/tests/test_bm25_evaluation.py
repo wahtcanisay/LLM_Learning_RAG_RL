@@ -111,6 +111,8 @@ def test_evaluation_reports_splits_separately(tmp_path: Path) -> None:
         "index_sha256": "a" * 64,
         "index_report_sha256": "b" * 64,
         "dataset_manifest_sha256": _sha(dataset / "manifest.json"),
+        "questions_sha256": artifact_hashes["questions.jsonl"],
+        "rankings_sha256": _sha(rankings),
     }
     result = evaluate_bm25_run(
         dataset,
@@ -186,8 +188,61 @@ def test_evaluation_rejects_search_report_that_mislabels_raw_rankings(tmp_path: 
             "index_sha256": "a" * 64,
             "index_report_sha256": "b" * 64,
             "dataset_manifest_sha256": _sha(dataset / "manifest.json"),
+            "questions_sha256": artifact_hashes["questions.jsonl"],
+            "rankings_sha256": _sha(rankings),
         },
     }
 
     with pytest.raises(ValueError, match="search report hit summary mismatch"):
+        evaluate_bm25_run(dataset, metadata, rankings, tmp_path / "out", run_context=context)
+
+
+def test_evaluation_rejects_rankings_replaced_after_search_report(tmp_path: Path) -> None:
+    dataset = tmp_path / "dataset"
+    dataset.mkdir()
+    (dataset / "questions.jsonl").write_text(
+        '{"query_id":"q1","question":"a","split":"dev"}\n', encoding="utf-8"
+    )
+    (dataset / "documents.jsonl").write_text(
+        '{"doc_id":"d1","title":"one","content":"a"}\n', encoding="utf-8"
+    )
+    (dataset / "chunks.jsonl").write_text(
+        '{"chunk_id":"c1","doc_id":"d1","content":"a"}\n', encoding="utf-8"
+    )
+    (dataset / "qrels.tsv").write_text(
+        "query_id\tdoc_id\trelevance\nq1\td1\t1\n", encoding="utf-8"
+    )
+    artifact_hashes = _write_manifest(dataset)
+    metadata = tmp_path / "metadata.jsonl"
+    metadata.write_text('{"chunk_id":"c1","doc_id":"d1"}\n', encoding="utf-8")
+    rankings = tmp_path / "rankings.jsonl"
+    rankings.write_text(
+        '{"query_id":"q1","split":"dev","latency_ms":1,"hits":[{"chunk_id":"c1","doc_id":"d1","chunk_rank":1,"score":1}]}\n',
+        encoding="utf-8",
+    )
+    original_sha = _sha(rankings)
+    context = {
+        "index_report_sha256": "b" * 64,
+        "index": {
+            "index_sha256": "a" * 64,
+            "dataset_manifest_sha256": _sha(dataset / "manifest.json"),
+            "dataset_artifact_hashes": artifact_hashes,
+        },
+        "search": {
+            "query_count": 1, "requested_top_k": 1, "min_hits": 1, "max_hits": 1,
+            "short_ranking_count": 0, "hit_count_histogram": {"1": 1},
+            "k1": 0.9, "b": 0.4, "metadata_sha256": _sha(metadata),
+            "text_mode": "abstract_only", "index_sha256": "a" * 64,
+            "index_report_sha256": "b" * 64,
+            "dataset_manifest_sha256": _sha(dataset / "manifest.json"),
+            "questions_sha256": artifact_hashes["questions.jsonl"],
+            "rankings_sha256": original_sha,
+        },
+    }
+    rankings.write_text(
+        '{"query_id":"q1","split":"dev","latency_ms":1,"hits":[{"chunk_id":"c1","doc_id":"d1","chunk_rank":1,"score":2}]}\n',
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="rankings SHA-256 mismatch"):
         evaluate_bm25_run(dataset, metadata, rankings, tmp_path / "out", run_context=context)

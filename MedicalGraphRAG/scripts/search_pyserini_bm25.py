@@ -45,7 +45,9 @@ def summarize_hit_counts(
     }
 
 
-def validate_index(index: Path, metadata: Path, report_path: Path) -> dict[str, object]:
+def validate_index(
+    index: Path, metadata: Path, questions: Path, report_path: Path
+) -> dict[str, object]:
     report = json.loads(report_path.read_text(encoding="utf-8"))
     if report.get("text_mode") != "abstract_only":
         raise ValueError("index must use abstract_only text mode")
@@ -53,6 +55,11 @@ def validate_index(index: Path, metadata: Path, report_path: Path) -> dict[str, 
         raise ValueError("index SHA-256 mismatch")
     if sha256_file(metadata) != report.get("metadata_sha256"):
         raise ValueError("metadata SHA-256 mismatch")
+    expected_questions = report.get("dataset_artifact_hashes", {}).get(
+        "questions.jsonl"
+    )
+    if sha256_file(questions) != expected_questions:
+        raise ValueError("questions SHA-256 mismatch")
     return report
 
 
@@ -100,7 +107,9 @@ def main() -> int:
     args = parser.parse_args()
 
     index_path = Path(args.index)
-    index_report = validate_index(index_path, args.metadata, args.index_report)
+    index_report = validate_index(
+        index_path, args.metadata, args.questions, args.index_report
+    )
 
     from pyserini.search.lucene import LuceneSearcher
 
@@ -119,6 +128,7 @@ def main() -> int:
         "".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows),
         encoding="utf-8",
     )
+    rankings_sha256 = sha256_file(args.output)
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(
         json.dumps(
@@ -134,6 +144,8 @@ def main() -> int:
                 "index_sha256": index_report["index_sha256"],
                 "index_report_sha256": sha256_file(args.index_report),
                 "dataset_manifest_sha256": index_report["dataset_manifest_sha256"],
+                "questions_sha256": sha256_file(args.questions),
+                "rankings_sha256": rankings_sha256,
             },
             indent=2,
         )

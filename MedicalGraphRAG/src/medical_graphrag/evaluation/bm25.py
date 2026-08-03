@@ -41,6 +41,7 @@ def _validate_run_context(
     run_context: dict[str, Any],
     raw_rows: list[dict[str, Any]],
     metadata_path: Path,
+    rankings_path: Path,
     dataset_manifest_sha256: str,
     dataset_artifact_hashes: dict[str, str],
 ) -> dict[str, Any]:
@@ -62,6 +63,12 @@ def _validate_run_context(
         raise ValueError("index report does not match frozen dataset artifacts")
     if search_report.get("metadata_sha256") != sha256_file(metadata_path):
         raise ValueError("search report metadata SHA-256 mismatch")
+    if search_report.get("questions_sha256") != dataset_artifact_hashes.get(
+        "questions.jsonl"
+    ):
+        raise ValueError("search report questions SHA-256 mismatch")
+    if search_report.get("rankings_sha256") != sha256_file(rankings_path):
+        raise ValueError("search report rankings SHA-256 mismatch")
     if search_report.get("text_mode") != "abstract_only":
         raise ValueError("search report must use abstract_only text mode")
     requested_top_k = int(search_report["requested_top_k"])
@@ -121,6 +128,7 @@ def evaluate_bm25_run(
         run_context,
         raw_rows,
         metadata_path,
+        rankings_path,
         dataset_manifest_sha256,
         dataset_manifest["artifact_hashes"],
     )
@@ -141,6 +149,12 @@ def evaluate_bm25_run(
         latency = float(row["latency_ms"])
         if not math.isfinite(latency) or latency < 0:
             raise ValueError(f"invalid latency for {query_id}")
+        for hit in row["hits"]:
+            chunk_id = str(hit["chunk_id"])
+            if chunk_id in metadata and str(hit["doc_id"]) != str(
+                metadata[chunk_id]["doc_id"]
+            ):
+                raise ValueError(f"raw hit doc_id mismatch for {chunk_id}")
         ranking = collapse_chunk_hits(
             row["hits"], metadata, min_unique_docs=min_unique_docs
         )

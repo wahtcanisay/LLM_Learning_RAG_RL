@@ -72,6 +72,8 @@ def _unique_ids(
 ) -> set[str]:
     values: set[str] = set()
     for row in rows:
+        if row.get(field) is None:
+            raise ValueError(f"{label} must not be empty")
         value = str(row[field]).strip()
         if not value:
             raise ValueError(f"{label} must not be empty")
