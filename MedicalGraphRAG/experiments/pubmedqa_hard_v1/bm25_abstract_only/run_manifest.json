@@ -1,0 +1,112 @@
+{
+  "git_commit": "ec7f3cf",
+  "host_platform": "Windows-10-10.0.22621-SP0",
+  "host_python_version": "3.11.4",
+  "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
+  "evaluation_command": [
+    "D:\\code_list\\some tricks\\LLMLeanring\\.worktrees\\bm25-hard-baseline\\MedicalGraphRAG\\src\\medical_graphrag\\cli.py",
+    "evaluate-bm25",
+    "--dataset-dir",
+    "D:\\code_list\\some tricks\\LLMLeanring\\MedicalGraphRAG\\data\\processed\\pubmedqa_hard_v1",
+    "--metadata",
+    "outputs\\pubmedqa_hard_v1\\bm25_abstract_only\\chunk_metadata.jsonl",
+    "--rankings",
+    "outputs\\pubmedqa_hard_v1\\bm25_abstract_only\\raw_rankings.jsonl",
+    "--index-report",
+    "outputs\\pubmedqa_hard_v1\\bm25_abstract_only\\index_build.json",
+    "--search-report",
+    "outputs\\pubmedqa_hard_v1\\bm25_abstract_only\\search_run.json",
+    "--output-dir",
+    "experiments\\pubmedqa_hard_v1\\bm25_abstract_only",
+    "--git-commit",
+    "ec7f3cf",
+    "--docker-image",
+    "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
+  ],
+  "index": {
+    "elapsed_seconds": 2.942967939074151,
+    "index_bytes": 1254677,
+    "pyserini_version": "0.22.1",
+    "python_version": "3.12.3",
+    "java_version": "openjdk version \"21.0.11\" 2026-04-21",
+    "threads": 8,
+    "stemmer": "porter",
+    "command": [
+      "/usr/bin/python",
+      "-m",
+      "pyserini.index.lucene",
+      "--collection",
+      "JsonCollection",
+      "--input",
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/collection",
+      "--index",
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only",
+      "--generator",
+      "DefaultLuceneDocumentGenerator",
+      "--threads",
+      "8",
+      "--stemmer",
+      "porter"
+    ]
+  },
+  "search": {
+    "command": [
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/scripts/search_pyserini_bm25.py",
+      "--index",
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/indexes/pubmedqa_hard_v1/bm25_abstract_only",
+      "--questions",
+      "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/pubmedqa_hard_v1/questions.jsonl",
+      "--metadata",
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/chunk_metadata.jsonl",
+      "--output",
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/raw_rankings.jsonl",
+      "--report",
+      "/workspace/code_list/some tricks/LLMLeanring/.worktrees/bm25-hard-baseline/MedicalGraphRAG/outputs/pubmedqa_hard_v1/bm25_abstract_only/search_run.json",
+      "--top-k",
+      "100",
+      "--k1",
+      "0.9",
+      "--b",
+      "0.4"
+    ],
+    "query_count": 1000,
+    "requested_top_k": 100,
+    "min_hits": 3,
+    "max_hits": 100,
+    "short_ranking_count": 5,
+    "hit_count_histogram": {
+      "3": 1,
+      "29": 1,
+      "58": 1,
+      "71": 1,
+      "72": 1,
+      "100": 995
+    },
+    "k1": 0.9,
+    "b": 0.4,
+    "pyserini_version": "0.22.1"
+  },
+  "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
+  "dataset_artifact_hashes": {
+    "questions.jsonl": "cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982",
+    "documents.jsonl": "7f726e535e8d171c83446f7c7165994f6d408635b30e3f5b88b9cb44e199f3a9",
+    "chunks.jsonl": "51d2757a1bf09328463a4c0363217d425883e132c550f05916d6d7130bdb0309",
+    "qrels.tsv": "96b87dbb46cd68fb92cabc4d6ce55ce5c41dc535d7a7b4fe77094957eae55a0a"
+  },
+  "generated_at_utc": "2026-08-03T11:29:12.646025+00:00",
+  "rankings_sha256": "0d32b54d4c72761eab6a58a0feb70f0e9cf6e176c8fd0154ebdf7cc40f033386",
+  "question_count": 1000,
+  "document_count": 5000,
+  "chunk_metadata_count": 7562,
+  "split_counts": {
+    "dev": 500,
+    "test": 500
+  },
+  "chunk_top_k": 100,
+  "aggregation": "max_chunk_score",
+  "bm25": {
+    "k1": 0.9,
+    "b": 0.4
+  },
+  "text_mode": "abstract_only"
+}
