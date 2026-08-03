@@ -17,6 +17,7 @@ ENV/
 .ipynb_checkpoints/
 .idea/
 .vscode/
+.worktrees/
 
 # Secrets and local configuration
 .env
