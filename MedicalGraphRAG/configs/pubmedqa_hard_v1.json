@@ -1,0 +1,15 @@
+{
+  "seed": 20260803,
+  "gold_document_count": 1000,
+  "dev_query_count": 500,
+  "test_query_count": 500,
+  "distractor_count": 4000,
+  "initial_shard_count": 40,
+  "candidates_per_shard": 120,
+  "tokenizer": "sentence-transformers/all-mpnet-base-v2",
+  "max_tokens": 512,
+  "overlap": 64,
+  "audit_query_count": 20,
+  "retrieval_text_mode": "abstract_only",
+  "comparison_text_mode": "title_abstract"
+}
