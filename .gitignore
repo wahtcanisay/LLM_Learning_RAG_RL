@@ -30,7 +30,9 @@ ENV/
 models/
 checkpoints/
 datasets/
-/data/
+data/
+!MedicalGraphRAG/src/medical_graphrag/data/
+!MedicalGraphRAG/src/medical_graphrag/data/**
 corpus/
 indexes/
 faiss_index/
