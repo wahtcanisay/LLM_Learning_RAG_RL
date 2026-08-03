@@ -63,3 +63,13 @@ def test_search_one_query_records_rank_score_and_doc_id() -> None:
     assert result["hits"] == [
         {"chunk_id": "c1", "doc_id": "d1", "chunk_rank": 1, "score": 2.5}
     ]
+
+
+def test_search_jsonl_reader_preserves_unicode_paragraph_separator(tmp_path: Path) -> None:
+    module = _load("search_pyserini_bm25")
+    path = tmp_path / "metadata.jsonl"
+    path.write_text('{"chunk_id":"c1","title":"alpha\u2029beta"}\n', encoding="utf-8")
+
+    rows = module._read_jsonl(path)
+
+    assert rows == [{"chunk_id": "c1", "title": "alpha\u2029beta"}]

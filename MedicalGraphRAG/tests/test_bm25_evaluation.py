@@ -21,7 +21,7 @@ def test_evaluation_reports_splits_separately(tmp_path: Path) -> None:
         "\n".join(
             [
                 '{"doc_id":"d1","title":"one","content":"a","source":"pubmedqa","year":null}',
-                '{"doc_id":"d2","title":"two","content":"b","source":"pubmedqa","year":null}',
+                '{"doc_id":"d2","title":"two\u2029line","content":"b","source":"pubmedqa","year":null}',
                 '{"doc_id":"x","title":"other","content":"z","source":"medrag_pubmed","year":null}',
             ]
         )
@@ -32,7 +32,7 @@ def test_evaluation_reports_splits_separately(tmp_path: Path) -> None:
         "\n".join(
             [
                 '{"chunk_id":"c1","doc_id":"d1","order":0,"title":"one","content":"gold alpha text","source":"pubmedqa"}',
-                '{"chunk_id":"c2","doc_id":"d2","order":0,"title":"two","content":"gold beta text","source":"pubmedqa"}',
+                '{"chunk_id":"c2","doc_id":"d2","order":0,"title":"two\u2029line","content":"gold beta text","source":"pubmedqa"}',
                 '{"chunk_id":"cx","doc_id":"x","order":0,"title":"other","content":"other text","source":"medrag_pubmed"}',
             ]
         )
@@ -48,7 +48,7 @@ def test_evaluation_reports_splits_separately(tmp_path: Path) -> None:
         "\n".join(
             [
                 '{"chunk_id":"c1","doc_id":"d1","order":0,"title":"one","source":"pubmedqa"}',
-                '{"chunk_id":"c2","doc_id":"d2","order":0,"title":"two","source":"pubmedqa"}',
+                '{"chunk_id":"c2","doc_id":"d2","order":0,"title":"two\u2029line","source":"pubmedqa"}',
                 '{"chunk_id":"cx","doc_id":"x","order":0,"title":"other","source":"medrag_pubmed"}',
             ]
         )
@@ -87,4 +87,5 @@ def test_evaluation_reports_splits_separately(tmp_path: Path) -> None:
     assert (output / "run_manifest.json").exists()
     cases = json.loads((output / "cases.json").read_text(encoding="utf-8"))
     assert cases["success"][0]["gold_chunk_excerpt"] == "gold beta text"
+    assert cases["success"][0]["gold_title"] == "two\u2029line"
     assert cases["success"][0]["top_documents"][0]["title"] == "other"
