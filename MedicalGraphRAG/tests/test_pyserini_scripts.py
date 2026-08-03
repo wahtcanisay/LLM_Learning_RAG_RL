@@ -1,0 +1,65 @@
+import importlib.util
+from pathlib import Path
+
+
+ROOT = Path(__file__).parents[1]
+
+
+def _load(name: str):
+    path = ROOT / "scripts" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_index_command_is_fixed() -> None:
+    module = _load("build_pyserini_index")
+
+    command = module.build_command(Path("collection"), Path("index"), threads=8)
+
+    assert command[-12:] == [
+        "--collection",
+        "JsonCollection",
+        "--input",
+        "collection",
+        "--index",
+        "index",
+        "--generator",
+        "DefaultLuceneDocumentGenerator",
+        "--threads",
+        "8",
+        "--stemmer",
+        "porter",
+    ]
+
+
+def test_search_one_query_records_rank_score_and_doc_id() -> None:
+    module = _load("search_pyserini_bm25")
+
+    class Hit:
+        def __init__(self, docid: str, score: float) -> None:
+            self.docid = docid
+            self.score = score
+
+    class Searcher:
+        def search(self, query: str, k: int):
+            assert query == "alpha?"
+            assert k == 1
+            return [Hit("c1", 2.5)]
+
+    result = module.search_one(
+        Searcher(),
+        {"query_id": "q1", "question": "alpha?", "split": "dev"},
+        {"c1": "d1"},
+        top_k=1,
+        clock=iter([1.0, 1.012]).__next__,
+    )
+
+    assert result["query_id"] == "q1"
+    assert result["split"] == "dev"
+    assert result["latency_ms"] == 12.0
+    assert result["hits"] == [
+        {"chunk_id": "c1", "doc_id": "d1", "chunk_rank": 1, "score": 2.5}
+    ]
