@@ -1,0 +1,16 @@
+{
+  "100": {
+    "QUESTION": "Does treatment help?",
+    "CONTEXTS": ["Background.", "Results show benefit."],
+    "YEAR": "2020",
+    "final_decision": "yes",
+    "LONG_ANSWER": "Treatment helped."
+  },
+  "200": {
+    "QUESTION": "Is exposure safe?",
+    "CONTEXTS": ["Observed adverse events."],
+    "YEAR": "2021",
+    "final_decision": "no",
+    "LONG_ANSWER": "Exposure was not safe."
+  }
+}
