@@ -1,12 +1,20 @@
 import subprocess
 from pathlib import Path
 
+import pytest
 
-def test_source_data_package_is_not_gitignored() -> None:
+
+@pytest.mark.parametrize(
+    "tracked_path",
+    [
+        Path("MedicalGraphRAG/src/medical_graphrag/data/__init__.py"),
+        Path("MedicalGraphRAG/tests/fixtures/medrag_pubmed/pubmed23n0001.jsonl"),
+    ],
+)
+def test_project_sources_and_fixtures_are_not_gitignored(tracked_path: Path) -> None:
     repository_root = Path(__file__).resolve().parents[2]
-    source_init = Path("MedicalGraphRAG/src/medical_graphrag/data/__init__.py")
     result = subprocess.run(
-        ["git", "check-ignore", "-q", str(source_init)],
+        ["git", "check-ignore", "-q", str(tracked_path)],
         cwd=repository_root,
         check=False,
     )
