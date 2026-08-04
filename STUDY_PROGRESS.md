@@ -147,7 +147,10 @@ scripts/run_sft.sh
 - 2026-08-04：Hybrid = RRF(BM25+Dense) 完成（`hybrid_rrf`）。复用两路已审计 raw rankings，按 doc_id 折叠后 RRF(k=60) 融合，不重跑任何检索器。
 - Hybrid test（500 题）：Recall@1 `0.960`、Recall@5 `0.990`、Recall@10 `0.992`、MRR@10 `0.973833`、nDCG@10 `0.978454`；dev：Recall@1 `0.958`、Recall@10 `0.996`。
 - **负结果（如实记录）**：Hybrid 全面低于 Dense 单路（Recall@1 0.960 vs 0.966、nDCG@10 0.978 vs 0.982）。已知失败查询 `11570976`（Dense 63→Hybrid 114）与 `18359123`（57→113）反而更糟。原因：此基准上 BM25 严格弱于 Dense（摘要偏语义匹配，词项是噪音），RRF 让 BM25 高位错误文档稀释 Dense 信号。设计假设"融合互补信号超过单路"在此基准被证伪，不做无依据调参追逐。
-- 当前完整测试：`65 passed`。
+- 2026-08-04：LinearGraphRetriever 完成（`graph_abstract_only`）。医学 NER（BC5CDR）提取 8378 实体、19178 Entity-Passage 边、42342 句子桥；igraph（Entity+Passage 节点）；在线检索 = seed entities → Entity→Sentence→Entity BFS 传播 → passage 先验 → PPR（damping 0.85、passage_ratio 1.5、threshold 0.5、top_k_sentence 1、max_iterations 3）。相邻边 v1 默认关闭（pubmedqa 短摘要）。
+- Graph test（500 题）：Recall@1 `0.790`、Recall@5 `0.946`、Recall@10 `0.954`、MRR@10 `0.856744`、nDCG@10 `0.881167`、mean 延迟 `195.775 ms`（PPR+NER 代价，比 Dense 慢 ~12×）。
+- **四路对比（test）**：Dense（R@1 0.966）> Hybrid（0.960）> BM25（0.926）> **Graph（0.790）**。图检索在 `pubmedqa_hard_v1` 垫底——短摘要 + 事实题不是图的主场，实体传播 + PPR 相对强 Dense 先验是噪音。印证需要方案 B（`linearrag_medical_v1` 图主场）。独立复算误差 ~1e-15。
+- 当前完整测试：`72 passed`。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
 
@@ -209,7 +212,7 @@ scripts/run_sft.sh
 
 # 下一步
 
-阶段 1 检索基线已完成：BM25（test Recall@1 0.926）、Dense（最优单路，Recall@1 0.966）、Hybrid RRF（负结果，低于 Dense，已如实记录）。下一步为阶段 2 LinearRAG 图检索迁移：实现统一 `LinearGraphRetriever.search(query, top_k)` 接入同一评测；数据用 `pubmedqa_hard_v1`（短摘要，图相邻边无用）或构建 `linearrag_medical_v1`（GraphRAG-Bench Medical，长结构化文档 + 多跳题，图检索主场）；相邻边按 `(doc_id, order)` 只在文档内连接并作为单变量实验。
+阶段 2 方案 A 完成：LinearGraphRetriever 已在 `pubmedqa_hard_v1` 上跑通四路对比（Dense > Hybrid > BM25 > Graph，图垫底，符合"短摘要不是图主场"的预期，图检索延迟也最高）。下一步为**方案 B：构建 `linearrag_medical_v1`**（从 LinearRAG medical 数据 = GraphRAG-Bench Medical，225 长指南 chunk + 2062 题含 509 多跳），验证图检索在"主场"的价值；复用统一接口与评测；相邻边按 `(doc_id, order)` 只在文档内连接并作为单变量实验。
 
 MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 互不替代），不影响阶段 1/2 完成门槛。Reranker（专用 Qwen3-Reranker）排在 Dense/Hybrid/LinearRAG 全部完成后。当前所有指标均来自封闭 5,000 文档 / 1,000 题基准，全量 PubMed 实验暂缓，不把封闭结果外推。BM25 解释门禁按学习者决定跳过，不计为已掌握。
 
@@ -248,6 +251,8 @@ MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 �
 | Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 16.080 ms |
 | Hybrid RRF (BM25+Dense, k=60) | dev (500) | 0.958 | 0.990 | 0.996 | 0.972905 | 0.978649 | 离线融合 n/a |
 | Hybrid RRF (BM25+Dense, k=60) | official test (500) | 0.960 | 0.990 | 0.992 | 0.973833 | 0.978454 | 离线融合 n/a |
+| Graph (BC5CDR Entity-Passage + PPR) | dev (500) | 0.764 | 0.928 | 0.956 | 0.837507 | 0.866736 | 191.8 ms |
+| Graph (BC5CDR Entity-Passage + PPR) | official test (500) | 0.790 | 0.946 | 0.954 | 0.856744 | 0.881167 | 195.775 ms |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 

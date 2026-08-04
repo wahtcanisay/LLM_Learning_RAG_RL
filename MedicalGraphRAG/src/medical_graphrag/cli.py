@@ -9,6 +9,7 @@ from medical_graphrag.data.benchmark import audit_benchmark, build_benchmark
 from medical_graphrag.data.io import sha256_file
 from medical_graphrag.evaluation.bm25 import evaluate_bm25_run
 from medical_graphrag.evaluation.dense import evaluate_dense_run
+from medical_graphrag.evaluation.graph import evaluate_graph_run
 from medical_graphrag.evaluation.hybrid import evaluate_hybrid_run
 from medical_graphrag.retrieval.bm25 import (
     export_pyserini_collection,
@@ -87,6 +88,15 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_hybrid.add_argument("--git-commit", required=True)
     evaluate_hybrid.add_argument("--docker-image", required=True)
     evaluate_hybrid.add_argument("--rrf-k", type=int, default=60)
+
+    evaluate_graph = subparsers.add_parser("evaluate-graph")
+    evaluate_graph.add_argument("--dataset-dir", type=Path, required=True)
+    evaluate_graph.add_argument("--rankings", type=Path, required=True)
+    evaluate_graph.add_argument("--index-report", type=Path, required=True)
+    evaluate_graph.add_argument("--search-report", type=Path, required=True)
+    evaluate_graph.add_argument("--output-dir", type=Path, required=True)
+    evaluate_graph.add_argument("--git-commit", required=True)
+    evaluate_graph.add_argument("--docker-image", required=True)
     return parser
 
 
@@ -110,7 +120,34 @@ def main() -> int:
         return _evaluate_command(args, evaluate_dense_run)
     if args.command == "evaluate-hybrid":
         return _evaluate_hybrid_command(args)
+    if args.command == "evaluate-graph":
+        return _evaluate_graph_command(args)
     return 2
+
+
+def _evaluate_graph_command(args: argparse.Namespace) -> int:
+    """Wiring for evaluate-graph: bind the graph index report and rankings."""
+    index_report = json.loads(args.index_report.read_text(encoding="utf-8"))
+    search_report = json.loads(args.search_report.read_text(encoding="utf-8"))
+    dataset_manifest = validate_frozen_dataset(args.dataset_dir)
+    evaluate_graph_run(
+        args.dataset_dir,
+        args.rankings,
+        args.output_dir,
+        run_context={
+            "git_commit": args.git_commit,
+            "host_platform": platform.platform(),
+            "host_python_version": platform.python_version(),
+            "docker_image": args.docker_image,
+            "evaluation_command": sys.argv,
+            "index": index_report,
+            "search": search_report,
+            "index_report_sha256": sha256_file(args.index_report),
+            "dataset_manifest_sha256": sha256_file(args.dataset_dir / "manifest.json"),
+            "dataset_artifact_hashes": dataset_manifest["artifact_hashes"],
+        },
+    )
+    return 0
 
 
 def _evaluate_command(args: argparse.Namespace, evaluator) -> int:
