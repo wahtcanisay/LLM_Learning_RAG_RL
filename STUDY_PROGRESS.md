@@ -130,7 +130,7 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - 最终审计重跑代码 commit：`49f655e`；数据 manifest SHA-256：`cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；questions SHA-256：`cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982`；collection SHA-256：`8651101da23e625c4324e6e0d97018039c2cefd97f539c74bfd69d7fb202360c`；index SHA-256：`24d98c4f6ce12c6aba2e8f7e7aa34c9b5594b92c0caca7a67c122b70f927a274`；raw rankings SHA-256：`3c2376b93f9c7982c28e2d706d942da0e3390c27e1fa9d9e092c09639aa28487`。
 - 审计链：导出、建索引、搜索、评测逐级校验 frozen dataset、collection、metadata、index 与前序报告哈希；评测同时复算 query 数、命中数量分布、短排名数量，并从已验证搜索报告读取 Top-k、k1、b 和 text mode，不再硬编码实验标签。
 - 2026-08-04：Dense 基线完成（`dense_abstract_only`）。embedding 用 `all-mpnet-base-v2`（= LinearRAG 同款；本地路径 `models/all-mpnet-base-v2`，438MB，经断点续传下载器 `scripts/download_embedding_model.py` 获取，HF 直连中途断线、hf-mirror 无 ETag 被拒的网络坑已记录）；FAISS IndexFlatIP、768 维、归一化、Top-100 候选深度与 BM25 对齐、按 doc_id 取 max 折叠。
-- Dense test（500 题，主结果）：Recall@1 `0.966`、Recall@5 `0.992`、Recall@10 `0.994`、MRR@10 `0.977786`、nDCG@10 `0.981885`、mean 延迟 `13.309 ms`。全面超过 BM25（Recall@1 +4.0、Recall@10 +1.0、MRR@10 +3.2、nDCG@10 +2.7）。
+- Dense test（500 题，主结果）：Recall@1 `0.966`、Recall@5 `0.992`、Recall@10 `0.994`、MRR@10 `0.977786`、nDCG@10 `0.981885`、mean 延迟 `16.080 ms`（按次运行波动，13~16ms 区间）。全面超过 BM25（Recall@1 +4.0、Recall@10 +1.0、MRR@10 +3.2、nDCG@10 +2.7）。
 - Dense dev（500 题）：Recall@1 `0.966`、Recall@5 `0.994`、Recall@10 `0.994`、MRR@10 `0.978233`、nDCG@10 `0.982254`。
 - Dense 案例：test 仅 3 题 gold 掉出 Top-10（BM25 8 题）；`11570976`（"Is it Crohn's disease?" rank 63）与 `18359123`（"Is it better to be big?" rank 57）与 BM25 是同一批短模糊 query 失败，可作为 Hybrid 是否缓解的观察点。
 - 当前完整测试：`57 passed`。
@@ -231,7 +231,7 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 | BM25 abstract-only | dev (500) | 0.920 | 0.972 | 0.978 | 0.943250 | 0.951905 | 1.394 ms |
 | BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.359 ms |
 | Dense all-mpnet (IndexFlatIP) | dev (500) | 0.966 | 0.994 | 0.994 | 0.978233 | 0.982254 | 19.707 ms |
-| Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 13.309 ms |
+| Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 16.080 ms |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 

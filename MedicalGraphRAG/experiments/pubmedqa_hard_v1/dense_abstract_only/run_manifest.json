@@ -1,5 +1,5 @@
 {
-  "git_commit": "d01a88dbbb6f756337e5c617d36b3feb60991d90",
+  "git_commit": "fc3d8cf7df3bdbc71f11bfe9053cc337bc829652",
   "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
   "host_python_version": "3.12.3",
   "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
@@ -19,7 +19,7 @@
     "--output-dir",
     "experiments/pubmedqa_hard_v1/dense_abstract_only",
     "--git-commit",
-    "d01a88dbbb6f756337e5c617d36b3feb60991d90",
+    "fc3d8cf7df3bdbc71f11bfe9053cc337bc829652",
     "--docker-image",
     "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
   ],
@@ -84,7 +84,7 @@
     "index_report_sha256": "5ae6e798baaf357c84393194b551595a8ad98309a7304eb2f38d26e947eda619",
     "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
     "questions_sha256": "cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982",
-    "rankings_sha256": "21d08cbfac28760d758382efea42205e73f47b3d611f9e7486ee1ebac5a19039"
+    "rankings_sha256": "98877afc06ddc6cb474cfc10269dd82c6b5758eceb0c65ef9a38b2bc2637a139"
   },
   "index_report_sha256": "5ae6e798baaf357c84393194b551595a8ad98309a7304eb2f38d26e947eda619",
   "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
@@ -94,8 +94,8 @@
     "chunks.jsonl": "51d2757a1bf09328463a4c0363217d425883e132c550f05916d6d7130bdb0309",
     "qrels.tsv": "96b87dbb46cd68fb92cabc4d6ce55ce5c41dc535d7a7b4fe77094957eae55a0a"
   },
-  "generated_at_utc": "2026-08-04T03:53:16.314186+00:00",
-  "rankings_sha256": "21d08cbfac28760d758382efea42205e73f47b3d611f9e7486ee1ebac5a19039",
+  "generated_at_utc": "2026-08-04T07:40:11.247831+00:00",
+  "rankings_sha256": "98877afc06ddc6cb474cfc10269dd82c6b5758eceb0c65ef9a38b2bc2637a139",
   "question_count": 1000,
   "document_count": 5000,
   "chunk_metadata_count": 7562,
