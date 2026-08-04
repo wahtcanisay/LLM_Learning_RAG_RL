@@ -23,6 +23,13 @@
 
 新项目目录为 `MedicalGraphRAG/`，与 `MedRAG/`、`LinearRAG/` 平级。当前先补齐阶段 1 的可比较基线：使用 PubMedQA PQA-L 的 1,000 个 gold documents、4,000 个确定性 MedRAG PubMed distractors 和 document-level qrels，运行 BM25 并产出 Recall@1/5/10、MRR@10、nDCG@10。BM25 完成前，不启动 LinearRAG 医学迁移实验。
 
+## 当前执行焦点（2026-08-04，阶段 3 临时预习）
+
+- 因当前可用额度有限，学习者明确要求暂时开始 MedicalGPT；该变更记为阶段 3 代码阅读预习，不代表阶段 1 的 Hybrid 或阶段 2 医学迁移已经完成。
+- 官方来源为 `https://github.com/shibing624/MedicalGPT`。Git 协议连续出现 TLS 中断和 443 超时，本地目前使用 GitHub 官方 `codeload` 的 `main` 分支源码快照；Git 历史和精确 commit 尚未补齐，后续网络恢复后必须校验。
+- 本次只读并注释 `scripts/run_sft.sh → training/supervised_finetuning.py`，不下载模型或外部数据，不启动训练。
+- MedicalGPT 的当前 GRPO 默认面向 GSM8K，奖励为答案正确性和 `<think>/<answer>` 格式；代码中没有 Search/Inspect 工具环境、检索状态或多轮搜索 rollout，因此不能把它等同于 Search-R1。
+
 ## LinearRAG 真实学习边界
 
 - 已亲自阅读：`LinearRAG/readme.md`、`LinearRAG/run.py`、`src/config.py`、`src/embedding_store.py`、`src/ner.py`、`src/evaluate.py`、`src/utils.py` 的相关辅助函数，以及 `src/LinearRAG.py` 默认非向量化主干：初始化、离线 `index()`、正式图构建、在线 `retrieve()`、Seed Entity、实体传播、Passage 先验、PPR、Top-k 与 `qa()`。
@@ -76,38 +83,42 @@
 
 # 今日唯一任务
 
-2026-08-03：运行 `pubmedqa_hard_v1` 的正式 BM25 检索基线（已完成）：
+2026-08-04：阅读 MedicalGPT 的 SFT 最小调用链（助手材料准备已完成，学习者复述尚未完成）：
 
 ```text
-7,562 chunks
-→ Pyserini/Lucene BM25
-→ 每题最多 Top-100 chunks
-→ 同 doc_id 取最高 BM25 分数
-→ document Top-k
-→ Recall@1/5/10、MRR@10、nDCG@10
+scripts/run_sft.sh
+→ 四组 dataclass 参数
+→ tokenizer / chat template
+→ JSONL conversations
+→ input_ids / attention_mask / labels
+→ IGNORE_INDEX loss mask
+→ 4-bit QLoRA / LoRA adapter
+→ DataCollator / Trainer
+→ checkpoint 与模型保存
 ```
-
-主设置只索引 chunk `content`（`abstract_only`）；`title_abstract` 只作为后续泄漏对照，不混入主结果。
-
-Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1,000 题返回 100 hits，另 5 题返回 3、29、58、71、72 hits；这些短排名原样进入评测，没有补齐零分文档或丢弃问题。
 
 # 完成标准
 
-- [x] Pyserini collection 与 Lucene index 成功生成，并记录真实命令和索引时间；
-- [x] 1,000 个问题全部产生 chunk 排名与折叠后的 document 排名；
-- [x] 评测脚本真实输出 Recall@1/5/10、MRR@10、nDCG@10 和 mean/P50/P95 查询延迟；
-- [x] 保存配置、manifest、结果 JSON、失败问题和 Git commit；
-- 能解释为什么 chunk 排名需要按 `doc_id` 折叠，以及为什么使用最高 BM25 分数；
-- 不生成答案、不调用 GPU，不把检索命中率写成 QA Accuracy。
+- [x] 官方源码快照位于 `MedicalGPT/`，未下载模型或外部数据；
+- [x] `run_sft.sh` 与 `supervised_finetuning.py` 已加入关键中文学习注释；
+- [x] Python 与 Bash 静态语法检查通过；与原始快照比较确认源码变化只有注释；
+- [ ] 学习者能指出 `run_sft.sh` 中控制模型、数据、LoRA 和训练规模的参数；
+- [ ] 学习者能用自己的话解释 `train_on_inputs=False` 时，为什么用户输入仍在 `input_ids` 中、却不参与 loss；
+- [ ] 学习者能解释 LoRA 与 QLoRA 的区别，以及为什么 MedicalGPT GRPO 不是 Search-R1。
 
 ## 今日检查题
 
-1. Pyserini 的 `id/contents` 与我们的 `chunk_id/doc_id/content` 如何映射？
-2. 为什么不能直接拿 chunk 排名与 document-level qrels 比较？
-3. Top-100 chunks 折叠后如何得到唯一 document 排名？
-4. Recall@k、MRR@10、nDCG@10 分别回答什么问题？
+请先只回答一个问题：`train_on_inputs=False` 时，模型为什么仍然需要读取用户问题的 token，但这些 token 对应的 `labels` 要替换成 `IGNORE_INDEX`？
 
 # 已完成
+
+## MedicalGPT SFT 阅读材料准备（2026-08-04）
+
+- 从官方 GitHub `main` 分支源码快照建立 `MedicalGPT/`；Git clone 因网络错误未补齐历史，不能记录未经验证的 commit。
+- 为 `MedicalGPT/scripts/run_sft.sh` 加入参数分组、双卡示例和 QLoRA 开关说明。
+- 为 `MedicalGPT/training/supervised_finetuning.py` 标注参数解析、模板与数据加载、loss mask、量化加载、LoRA 注入、collator、Trainer、恢复/保存和 perplexity 边界。
+- 静态验证：`python -m py_compile MedicalGPT/training/supervised_finetuning.py` 返回 0；`C:\Program Files\Git\bin\bash.exe -n MedicalGPT/scripts/run_sft.sh` 返回 0。
+- 与下载 ZIP 中的原始文件执行 `git diff --no-index`，确认两份源码只增加注释和解释性 docstring，没有训练逻辑变化。
 
 ## MedicalGraphRAG（2026-08-03）
 
@@ -133,7 +144,10 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - Dense test（500 题，主结果）：Recall@1 `0.966`、Recall@5 `0.992`、Recall@10 `0.994`、MRR@10 `0.977786`、nDCG@10 `0.981885`、mean 延迟 `16.080 ms`（按次运行波动，13~16ms 区间）。全面超过 BM25（Recall@1 +4.0、Recall@10 +1.0、MRR@10 +3.2、nDCG@10 +2.7）。
 - Dense dev（500 题）：Recall@1 `0.966`、Recall@5 `0.994`、Recall@10 `0.994`、MRR@10 `0.978233`、nDCG@10 `0.982254`。
 - Dense 案例：test 仅 3 题 gold 掉出 Top-10（BM25 8 题）；`11570976`（"Is it Crohn's disease?" rank 63）与 `18359123`（"Is it better to be big?" rank 57）与 BM25 是同一批短模糊 query 失败，可作为 Hybrid 是否缓解的观察点。
-- 当前完整测试：`57 passed`。
+- 2026-08-04：Hybrid = RRF(BM25+Dense) 完成（`hybrid_rrf`）。复用两路已审计 raw rankings，按 doc_id 折叠后 RRF(k=60) 融合，不重跑任何检索器。
+- Hybrid test（500 题）：Recall@1 `0.960`、Recall@5 `0.990`、Recall@10 `0.992`、MRR@10 `0.973833`、nDCG@10 `0.978454`；dev：Recall@1 `0.958`、Recall@10 `0.996`。
+- **负结果（如实记录）**：Hybrid 全面低于 Dense 单路（Recall@1 0.960 vs 0.966、nDCG@10 0.978 vs 0.982）。已知失败查询 `11570976`（Dense 63→Hybrid 114）与 `18359123`（57→113）反而更糟。原因：此基准上 BM25 严格弱于 Dense（摘要偏语义匹配，词项是噪音），RRF 让 BM25 高位错误文档稀释 Dense 信号。设计假设"融合互补信号超过单路"在此基准被证伪，不做无依据调参追逐。
+- 当前完整测试：`65 passed`。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
 
@@ -195,9 +209,9 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 
 # 下一步
 
-下一步（`feat/dense-baseline` 分支，BM25 与 Dense 已完成）：设计并实现 Hybrid = RRF(BM25 + Dense)。复用同一冻结数据、dev/test、qrels、document 折叠与 `evaluate_rankings`；RRF 按 rank 融合两路文档排名（k 固定）；与 BM25/Dense 单路对比，记录 Recall@1/5/10、MRR@10、nDCG@10、延迟；观察 `11570976` / `18359123` 短模糊 query 是否被融合缓解。不引入 Reranker、生成模型或 LinearRAG。
+阶段 1 检索基线已完成：BM25（test Recall@1 0.926）、Dense（最优单路，Recall@1 0.966）、Hybrid RRF（负结果，低于 Dense，已如实记录）。下一步为阶段 2 LinearRAG 图检索迁移：实现统一 `LinearGraphRetriever.search(query, top_k)` 接入同一评测；数据用 `pubmedqa_hard_v1`（短摘要，图相邻边无用）或构建 `linearrag_medical_v1`（GraphRAG-Bench Medical，长结构化文档 + 多跳题，图检索主场）；相邻边按 `(doc_id, order)` 只在文档内连接并作为单变量实验。
 
-已确认管线顺序：Hybrid → LinearRAG 图检索迁移（阶段 2）→ 三者全部完成后，才做 Reranker（专用 Qwen3-Reranker 模型）作为检索后的打分层。当前所有指标均来自封闭 5,000 文档 / 1,000 题基准，全量 PubMed 实验暂缓，不把封闭结果外推。BM25 解释门禁按学习者决定跳过，不计为已掌握。
+MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 互不替代），不影响阶段 1/2 完成门槛。Reranker（专用 Qwen3-Reranker）排在 Dense/Hybrid/LinearRAG 全部完成后。当前所有指标均来自封闭 5,000 文档 / 1,000 题基准，全量 PubMed 实验暂缓，不把封闭结果外推。BM25 解释门禁按学习者决定跳过，不计为已掌握。
 
 # 待补知识
 
@@ -232,6 +246,8 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 | BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.359 ms |
 | Dense all-mpnet (IndexFlatIP) | dev (500) | 0.966 | 0.994 | 0.994 | 0.978233 | 0.982254 | 19.707 ms |
 | Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 16.080 ms |
+| Hybrid RRF (BM25+Dense, k=60) | dev (500) | 0.958 | 0.990 | 0.996 | 0.972905 | 0.978649 | 离线融合 n/a |
+| Hybrid RRF (BM25+Dense, k=60) | official test (500) | 0.960 | 0.990 | 0.992 | 0.973833 | 0.978454 | 离线融合 n/a |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 
