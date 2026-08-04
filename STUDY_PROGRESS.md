@@ -212,7 +212,11 @@ scripts/run_sft.sh
 
 # 下一步
 
-阶段 2 方案 A 完成：LinearGraphRetriever 已在 `pubmedqa_hard_v1` 上跑通四路对比（Dense > Hybrid > BM25 > Graph，图垫底，符合"短摘要不是图主场"的预期，图检索延迟也最高）。下一步为**方案 B：构建 `linearrag_medical_v1`**（从 LinearRAG medical 数据 = GraphRAG-Bench Medical，225 长指南 chunk + 2062 题含 509 多跳），验证图检索在"主场"的价值；复用统一接口与评测；相邻边按 `(doc_id, order)` 只在文档内连接并作为单变量实验。
+阶段 2 方案 B 调整：原定 GraphRAG-Bench Medical（`linearrag_medical_v1`）**因无文档级 gold 不可行**（evidence 是改写文本，逐字/归一化/embedding 映射均不可靠，无法建 qrels）。改用公开带标注的 **BEIR/NFCorpus**（医学 IR，323 test / 3633 docs，每题平均 38 相关文档），并泛化评测指标支持**多相关 qrels**（Recall@k=|gold∩topk|/|gold|，MRR=首个相关文档倒数，nDCG 多相关；单 gold 向后兼容，75 测试全过）。
+
+NFCorpus 四路对比（test 323）：**Hybrid（R@10 0.172 / MRR 0.552 / nDCG 0.354）> Dense（0.159/0.502/0.325）> BM25（0.150/0.516/0.313）≈ Graph（0.157/0.483/0.314）**。关键观察：`pubmedqa_hard_v1` 上 Hybrid<Dense（BM25 太弱被稀释），**NFCorpus 上 Hybrid>两路单路**（BM25/Dense 势均力敌时 RRF 互补）——**基准选择显著影响结论**；图检索在两个基准均未胜出。
+
+下一步：阶段 3 MedicalGPT SFT（并行线已开始预习）；Reranker（Qwen3-Reranker）排在检索基线完备后。当前指标均来自封闭/公开基准，全量 PubMed 实验暂缓。
 
 MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 互不替代），不影响阶段 1/2 完成门槛。Reranker（专用 Qwen3-Reranker）排在 Dense/Hybrid/LinearRAG 全部完成后。当前所有指标均来自封闭 5,000 文档 / 1,000 题基准，全量 PubMed 实验暂缓，不把封闭结果外推。BM25 解释门禁按学习者决定跳过，不计为已掌握。
 
@@ -253,6 +257,17 @@ MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 �
 | Hybrid RRF (BM25+Dense, k=60) | official test (500) | 0.960 | 0.990 | 0.992 | 0.973833 | 0.978454 | 离线融合 n/a |
 | Graph (BC5CDR Entity-Passage + PPR) | dev (500) | 0.796 | 0.928 | 0.960 | 0.856575 | 0.881938 | 173.1 ms |
 | Graph (BC5CDR Entity-Passage + PPR) | official test (500) | 0.800 | 0.942 | 0.958 | 0.861929 | 0.885909 | 168.690 ms |
+
+### NFCorpus（BEIR，多相关 qrels，test 323）
+
+| 方法 | Recall@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|
+| BM25 | 0.150 | 0.516 | 0.313 |
+| Dense all-mpnet (IndexFlatIP) | 0.159 | 0.502 | 0.325 |
+| Hybrid RRF (BM25+Dense, k=60) | **0.172** | **0.552** | **0.354** |
+| Graph (BC5CDR Entity-Passage + PPR) | 0.157 | 0.483 | 0.314 |
+
+独立复算多相关指标误差 0/1e-16。
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 

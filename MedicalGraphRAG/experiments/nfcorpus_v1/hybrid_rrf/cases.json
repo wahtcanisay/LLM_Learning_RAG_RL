@@ -1,0 +1,602 @@
+{
+  "success": [
+    {
+      "query_id": "PLAIN-1018",
+      "question": "DHA",
+      "gold_doc_id": "MED-2750",
+      "gold_title": "Lack of benefit of dietary advice to men with angina: results of a controlled trial.",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-4936",
+          "title": "Algal-oil capsules and cooked salmon: nutritionally equivalent sources of docosahexaenoic acid.",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-5095",
+          "title": "Bioequivalence of Docosahexaenoic acid from different algal oils in capsules and in a DHA-fortified food.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-5091",
+          "title": "Essential n-3 fatty acids in pregnant women and early visual acuity maturation in term infants.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-1832",
+          "title": "Visual acuity and the essentiality of docosahexaenoic acid and arachidonic acid in the diet of term infants.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-839",
+          "title": "Omega-3 fatty acids for nutrition and medicine: considering microalgae oil as a vegetarian source of EPA and DHA.",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-5093",
+          "title": "Maternal consumption of a docosahexaenoic acid-containing functional food during pregnancy: benefit for infant performance on problem-solving but n...",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-1801",
+          "title": "Modern organic and broiler chickens sold for human consumption provide more energy from fat than protein.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-5092",
+          "title": "Visual acuity and cognitive outcomes at 4 years of age in a double-blind, randomized trial of long-chain polyunsaturated fatty acid-supplemented in...",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-928",
+          "title": "Incorporation of EPA and DHA into plasma phospholipids in response to different omega-3 fatty acid formulations - a comparative bioavailability study of fish oil vs. krill oil",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-5364",
+          "title": "Long chain n-3 fatty acids intake, fish consumption and suicide in a cohort of Japanese men and women--the Japan Public Health Center-based (JPHC) ...",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-102",
+      "question": "Stopping Heart Disease in Childhood",
+      "gold_doc_id": "MED-3254",
+      "gold_title": "Relation of serum lipoprotein levels and systolic blood pressure to early atherosclerosis. The Bogalusa Heart Study.",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-3253",
+          "title": "Pathobiological determinants of atherosclerosis in youth risk scores are associated with early and advanced atherosclerosis.",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-3954",
+          "title": "Does childhood meat eating contribute to sex differences in risk factors for ischaemic heart disease in a developing population?",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-1987",
+          "title": "Management of type 2 diabetes mellitus in children and adolescents.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-4613",
+          "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-4255",
+          "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition.",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-1366",
+          "title": "Mediterranean diet and public health: personal reflections.",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-1548",
+          "title": "Defining and setting national goals for cardiovascular health promotion and disease reduction: the American Heart Association's strategic Impact Go...",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-1991",
+          "title": "Plant foods and plant-based diets: protective against childhood obesity?",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-4609",
+          "title": "The beriberi analogy to myocardial infarction.",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-4243",
+          "title": "Intensive lifestyle changes for reversal of coronary heart disease.",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1039",
+      "question": "domoic acid",
+      "gold_doc_id": "MED-4380",
+      "gold_title": "Domoic acid and human exposure risks: a review.",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-4380",
+          "title": "Domoic acid and human exposure risks: a review.",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-4381",
+          "title": "Amnesic shellfish poison.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-2102",
+          "title": "Bile acids influence the growth, oestrogen receptor and oestrogen-regulated proteins of MCF-7 human breast cancer cells.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-2101",
+          "title": "Breast-gut connection: origin of chenodeoxycholic acid in breast cyst fluid.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-4995",
+          "title": "Salicylic Acid sans Aspirin in Animals and Man: Persistence in Fasting and Biosynthesis from Benzoic Acid",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-846",
+          "title": "Antifungal mechanisms supporting boric acid therapy of Candida vaginitis.",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-5059",
+          "title": "Evaluation of certain food additives. Seventy-first report of the Joint FAO/WHO Expert Committee on Food Additives.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-3221",
+          "title": "Effect of urine pH changed by dietary intervention on uric acid clearance mechanism of pH-dependent excretion of urinary uric acid",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-1841",
+          "title": "Dietary citric acid enhances absorption of aluminum in antacids.",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-4319",
+          "title": "Phytate in foods and significance for humans: food sources, intake, processing, bioavailability, protective role and analysis.",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1050",
+      "question": "Dr. Dean Ornish",
+      "gold_doc_id": "MED-2763",
+      "gold_title": "Facing the facelessness of public health: what's the public got to do with it?",
+      "gold_rank": 7,
+      "top_documents": [
+        {
+          "doc_id": "MED-1097",
+          "title": "Moses Maimonides: medieval physician and scholar.",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-1712",
+          "title": "Dietary restriction reduces insulin-like growth factor I levels, which modulates apoptosis, cell proliferation, and tumor progression in p53-defici...",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-2510",
+          "title": "Comparative and meta-analytic insights into life extension via dietary restriction.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-5346",
+          "title": "Resident duty-hour restrictions-who are we protecting?: AOA critical issues.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-1021",
+          "title": "Management of diabetic retinopathy: a systematic review.",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-748",
+          "title": "Medical practice and social authority.",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-2112",
+          "title": "How evidence-based medicine biases physicians against nutrition.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-2498",
+          "title": "Dietary Restriction, Growth Factors and Aging: from yeast to humans",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-3283",
+          "title": "Lowered methionine ingestion as responsible for the decrease in rodent mitochondrial oxidative stress in protein and dietary restriction possible i...",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-5311",
+          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma.",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1088",
+      "question": "ECMO",
+      "gold_doc_id": "MED-2109",
+      "gold_title": "Extracorporeal membrane oxygenation and conventional medical therapy in neonates with persistent pulmonary hypertension of the newborn: a prospecti...",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-2109",
+          "title": "Extracorporeal membrane oxygenation and conventional medical therapy in neonates with persistent pulmonary hypertension of the newborn: a prospecti...",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-2110",
+          "title": "Extracorporeal membrane oxygenation for newborn respiratory failure: forty-five cases.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-1634",
+          "title": "Cardiovascular disease data to be standardized across Europe.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-1314",
+          "title": "The management of skin reactions in cancer patients receiving epidermal growth factor receptor targeted therapies.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-1311",
+          "title": "Cetuximab preclinical antitumor activity (monotherapy and combination based) is not predicted by relative total or activated epidermal growth facto...",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-762",
+          "title": "The Ethiopian Field Epidemiology and Laboratory Training Program: strengthening public health systems and building human resource capacity.",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-4811",
+          "title": "Fish-induced keriorrhea.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-3407",
+          "title": "The Princeton III Consensus Recommendations for the Management of Erectile Dysfunction and Cardiovascular Disease",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-2947",
+          "title": "Radiation dose from contemporary cardiothoracic multidetector CT protocols with an anthropomorphic female phantom: implications for cancer induction.",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-3428",
+          "title": "Erectile dysfunction prevalence, time of onset and association with risk factors in 300 consecutive patients with acute chest pain and angiographic...",
+          "fused_rank": 10
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "PLAIN-1008",
+      "question": "deafness",
+      "gold_doc_id": "MED-4532",
+      "gold_title": "Cytotoxic response of breast cancer cell lines, MCF 7 and T 47 D to triphala and its modification by antioxidants.",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-4668",
+          "title": "Cretinism revisited.",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-2217",
+          "title": "Prevalence of Alzheimer's disease and other dementias in rural India: the Indo-US study.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-5036",
+          "title": "Meta-analysis of long-term mobile phone use and the association with brain tumours.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-1273",
+          "title": "Amyotrophic lateral sclerosis. A case-control study following detection of a cluster in a small Wisconsin community.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-991",
+          "title": "Prevalence of Cognitive Impairment without Dementia in the United States",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-2900",
+          "title": "The Association of Consumption of Fruits/Vegetables with Decreased Risk of Glaucoma among Older African American Women in the Study of Osteoporotic Fractures",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-3319",
+          "title": "Epidemiologic Investigation of Immune-Mediated Polyradiculoneuropathy among Abattoir Workers Exposed to Porcine Brain",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-2164",
+          "title": "How common is the most common adult movement disorder? Update on the worldwide prevalence of essential tremor.",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-1881",
+          "title": "Lower intake of vegetables and legumes associated with cognitive decline among illiterate elderly Chinese: a 3-year cohort study.",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-4384",
+          "title": "Glaucoma risk and the consumption of fruits and vegetables among older women in the study of osteoporotic fractures.",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1028",
+      "question": "dietary scoring",
+      "gold_doc_id": "MED-4686",
+      "gold_title": "Proposal for a dietary \"phytochemical index\".",
+      "gold_rank": 25,
+      "top_documents": [
+        {
+          "doc_id": "MED-2294",
+          "title": "Comparison of Nutritional Quality of the Vegan, Vegetarian, Semi-Vegetarian, Pesco-Vegetarian and Omnivorous Diet",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-4163",
+          "title": "Protein dietary reference intakes may be inadequate for vegetarians if low amounts of animal protein are consumed.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-3900",
+          "title": "Dried fruit consumption is associated with improved diet quality and reduced obesity in US adults: National Health and Nutrition Examination Survey...",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-1377",
+          "title": "Higher Diet Quality Is Associated with Decreased Risk of All-Cause, Cardiovascular Disease, and Cancer Mortality among Older Adults",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-1402",
+          "title": "Mediterranean diet and health status: an updated meta-analysis and a proposal for a literature-based adherence score.",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-1210",
+          "title": "Comparing indices of diet quality with chronic disease mortality risk in postmenopausal women in the Women's Health Initiative Observational Study:...",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-4744",
+          "title": "Diet quality of preschool children and maternal perceptions/misperceptions: the GENESIS study.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-5181",
+          "title": "A diet high in fruits and low in meats reduces the risk of colorectal adenomas.",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-1323",
+          "title": "Low-carbohydrate diet scores and risk of type 2 diabetes in men",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-1380",
+          "title": "Anatomy of health effects of Mediterranean diet: Greek EPIC prospective cohort study",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1066",
+      "question": "Dr. Walter Willett",
+      "gold_doc_id": "MED-4000",
+      "gold_title": "Coconut oil predicts a beneficial lipid profile in pre-menopausal women in the Philippines",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-2763",
+          "title": "Facing the facelessness of public health: what's the public got to do with it?",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-1097",
+          "title": "Moses Maimonides: medieval physician and scholar.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-1712",
+          "title": "Dietary restriction reduces insulin-like growth factor I levels, which modulates apoptosis, cell proliferation, and tumor progression in p53-defici...",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-2510",
+          "title": "Comparative and meta-analytic insights into life extension via dietary restriction.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-5311",
+          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma.",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-1021",
+          "title": "Management of diabetic retinopathy: a systematic review.",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-748",
+          "title": "Medical practice and social authority.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-2498",
+          "title": "Dietary Restriction, Growth Factors and Aging: from yeast to humans",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-3604",
+          "title": "US medical researchers, the Nuremberg Doctors Trial, and the Nuremberg Code. A review of findings of the Advisory Committee on Human Radiation Expe...",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-3283",
+          "title": "Lowered methionine ingestion as responsible for the decrease in rodent mitochondrial oxidative stress in protein and dietary restriction possible i...",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1098",
+      "question": "eggnog",
+      "gold_doc_id": "MED-3806",
+      "gold_title": "Toxicology of nutmeg abuse.",
+      "gold_rank": 19,
+      "top_documents": [
+        {
+          "doc_id": "MED-2976",
+          "title": "Egg consumption and risk of type 2 diabetes in older adults",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-4892",
+          "title": "Egg Consumption and Risk of Type 2 Diabetes in Men and Women",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-2977",
+          "title": "Egg Consumption and Risk of Type 2 Diabetes in Men and Women",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-2884",
+          "title": "A 12-wk egg intervention increases serum zeaxanthin and macular pigment optical density in women.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-5124",
+          "title": "Egg Consumption and Cardiovascular Disease and Mortality The Physicians' Health Study",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-4676",
+          "title": "Dietary cholesterol and egg yolks: Not for patients at risk of vascular disease",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-4150",
+          "title": "Pseudo-maple syrup urine disease due to maternal prenatal ingestion of fenugreek.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-4741",
+          "title": "Egg consumption and the risk of cancer: a multisite case-control study in Uruguay.",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-4324",
+          "title": "Egg yolk consumption and carotid plaque.",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-2374",
+          "title": "Egg consumption and risk of cardiovascular diseases and diabetes: a meta-analysis.",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1119",
+      "question": "energy drinks",
+      "gold_doc_id": "MED-3788",
+      "gold_title": "Intestinal microbiota metabolism of L-carnitine, a nutrient in red meat, promotes atherosclerosis",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-877",
+          "title": "Detrimental effects of energy drink consumption on platelet and endothelial function.",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "MED-1708",
+          "title": "Dietary sugars intake and cardiovascular health: a scientific statement from the American Heart Association.",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "MED-1534",
+          "title": "Glucose and insulin responses to manufactured and whole-food snacks.",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "MED-1646",
+          "title": "A new proposed guidance system for beverage consumption in the United States.",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "MED-1627",
+          "title": "Sweetened Beverages, Coffee, and Tea and Depression Risk among Older US Adults",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "MED-4438",
+          "title": "Caffeine-Not just a stimulant.",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "MED-1707",
+          "title": "Dietary sugar and body weight: have we reached a crisis in the epidemic of obesity and diabetes?: health be damned! Pour on the sugar.",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "MED-1710",
+          "title": "Energy and Fructose From Beverages Sweetened With Sugar or High-Fructose Corn Syrup Pose a Health Risk for Some People",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "MED-3588",
+          "title": "Caffeinated and alcoholic beverage intake in relation to ovulatory disorder infertility",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "MED-2718",
+          "title": "Energy Balance and Obesity",
+          "fused_rank": 10
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 236,
+    "failure_at_10_available": 87,
+    "saved_per_group_max": 5
+  },
+  "known_failures": {}
+}

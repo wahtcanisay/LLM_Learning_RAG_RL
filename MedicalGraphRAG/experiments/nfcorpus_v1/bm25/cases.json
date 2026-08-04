@@ -1,0 +1,621 @@
+{
+  "success": [
+    {
+      "query_id": "PLAIN-1018",
+      "question": "DHA",
+      "gold_doc_id": "MED-2750",
+      "gold_title": "Lack of benefit of dietary advice to men with angina: results of a controlled trial.",
+      "gold_rank": 2,
+      "gold_chunk_excerpt": "OBJECTIVE: To see whether mortality among men with angina can be reduced by dietary advice. DESIGN: A randomized controlled factorial trial. SETTING: Male patients of general practitioners in south Wales. SUBJECTS: A total of 3114 men under 70 y of age with angina. INTERVENTIONS: Subjects were randomly allocated to four groups: (1) advised to eat two portions of oily fish each week, or to take three fish oil capsules daily; (2) advised to eat more fruit, vegetables and oats; (3) given both the a",
+      "top_documents": [
+        {
+          "doc_id": "MED-5095",
+          "score": 4.64739990234375,
+          "best_chunk_id": "MED-5095",
+          "best_chunk_rank": 1,
+          "title": "Bioequivalence of Docosahexaenoic acid from different algal oils in capsules and in a DHA-fortified food."
+        },
+        {
+          "doc_id": "MED-4936",
+          "score": 4.611599922180176,
+          "best_chunk_id": "MED-4936",
+          "best_chunk_rank": 2,
+          "title": "Algal-oil capsules and cooked salmon: nutritionally equivalent sources of docosahexaenoic acid."
+        },
+        {
+          "doc_id": "MED-839",
+          "score": 4.595799922943115,
+          "best_chunk_id": "MED-839",
+          "best_chunk_rank": 3,
+          "title": "Omega-3 fatty acids for nutrition and medicine: considering microalgae oil as a vegetarian source of EPA and DHA."
+        },
+        {
+          "doc_id": "MED-5091",
+          "score": 4.519000053405762,
+          "best_chunk_id": "MED-5091",
+          "best_chunk_rank": 4,
+          "title": "Essential n-3 fatty acids in pregnant women and early visual acuity maturation in term infants."
+        },
+        {
+          "doc_id": "MED-928",
+          "score": 4.503499984741211,
+          "best_chunk_id": "MED-928",
+          "best_chunk_rank": 5,
+          "title": "Incorporation of EPA and DHA into plasma phospholipids in response to different omega-3 fatty acid formulations - a comparative bioavailability study of fish oil vs. krill oil"
+        },
+        {
+          "doc_id": "MED-1832",
+          "score": 4.420899868011475,
+          "best_chunk_id": "MED-1832",
+          "best_chunk_rank": 6,
+          "title": "Visual acuity and the essentiality of docosahexaenoic acid and arachidonic acid in the diet of term infants."
+        },
+        {
+          "doc_id": "MED-5093",
+          "score": 4.353300094604492,
+          "best_chunk_id": "MED-5093",
+          "best_chunk_rank": 7,
+          "title": "Maternal consumption of a docosahexaenoic acid-containing functional food during pregnancy: benefit for infant performance on problem-solving but n..."
+        },
+        {
+          "doc_id": "MED-3012",
+          "score": 4.3531999588012695,
+          "best_chunk_id": "MED-3012",
+          "best_chunk_rank": 8,
+          "title": "Fish consumption during child bearing age: a quantitative risk-benefit analysis on neurodevelopment."
+        },
+        {
+          "doc_id": "MED-5092",
+          "score": 4.342199802398682,
+          "best_chunk_id": "MED-5092",
+          "best_chunk_rank": 9,
+          "title": "Visual acuity and cognitive outcomes at 4 years of age in a double-blind, randomized trial of long-chain polyunsaturated fatty acid-supplemented in..."
+        },
+        {
+          "doc_id": "MED-838",
+          "score": 4.1992998123168945,
+          "best_chunk_id": "MED-838",
+          "best_chunk_rank": 10,
+          "title": "Docosahexaenoic acid from a cultured microalga inhibits cell growth and induces apoptosis by upregulating Bax/Bcl-2 ratio in human breast carcinoma..."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-102",
+      "question": "Stopping Heart Disease in Childhood",
+      "gold_doc_id": "MED-3254",
+      "gold_title": "Relation of serum lipoprotein levels and systolic blood pressure to early atherosclerosis. The Bogalusa Heart Study.",
+      "gold_rank": 3,
+      "gold_chunk_excerpt": "We assessed the relation of risk factors for cardiovascular disease to early atherosclerotic lesions in the aorta and coronary arteries in 35 persons (mean age at death, 18 years). Aortic involvement with fatty streaks was greater in blacks than in whites (37 vs. 17 percent, P less than 0.01). However, aortic fatty streaks were strongly related to antemortem levels of both total and low-density lipoprotein cholesterol (r = 0.67, P less than 0.0001 for each association), independently of race, se",
+      "top_documents": [
+        {
+          "doc_id": "MED-3954",
+          "score": 5.572700023651123,
+          "best_chunk_id": "MED-3954",
+          "best_chunk_rank": 1,
+          "title": "Does childhood meat eating contribute to sex differences in risk factors for ischaemic heart disease in a developing population?"
+        },
+        {
+          "doc_id": "MED-1999",
+          "score": 5.373499870300293,
+          "best_chunk_id": "MED-1999",
+          "best_chunk_rank": 2,
+          "title": "Strategies for preventing type 2 diabetes: an update for clinicians"
+        },
+        {
+          "doc_id": "MED-3253",
+          "score": 5.285399913787842,
+          "best_chunk_id": "MED-3253",
+          "best_chunk_rank": 3,
+          "title": "Pathobiological determinants of atherosclerosis in youth risk scores are associated with early and advanced atherosclerosis."
+        },
+        {
+          "doc_id": "MED-4160",
+          "score": 4.9319000244140625,
+          "best_chunk_id": "MED-4160",
+          "best_chunk_rank": 4,
+          "title": "Risks and benefits of estrogen plus progestin in healthy postmenopausal women: principal results From the Women's Health Initiative randomized cont..."
+        },
+        {
+          "doc_id": "MED-3197",
+          "score": 4.457900047302246,
+          "best_chunk_id": "MED-3197",
+          "best_chunk_rank": 5,
+          "title": "Beef in an Optimal Lean Diet study: effects on lipids, lipoproteins, and apolipoproteins"
+        },
+        {
+          "doc_id": "MED-5293",
+          "score": 3.8369998931884766,
+          "best_chunk_id": "MED-5293",
+          "best_chunk_rank": 6,
+          "title": "A comparative risk assessment of burden of disease and injury attributable to 67 risk factors and risk factor clusters in 21 regions, 1990–2010: a systematic analysis for the Global Burden of Disease Study 2010"
+        },
+        {
+          "doc_id": "MED-1932",
+          "score": 3.698699951171875,
+          "best_chunk_id": "MED-1932",
+          "best_chunk_rank": 7,
+          "title": "Exposure to violence during childhood is associated with telomere erosion from 5 to 10 years of age: a longitudinal study"
+        },
+        {
+          "doc_id": "MED-2126",
+          "score": 3.616499900817871,
+          "best_chunk_id": "MED-2126",
+          "best_chunk_rank": 8,
+          "title": "Excessive Leucine-mTORC1-Signalling of Cow Milk-Based Infant Formula: The Missing Link to Understand Early Childhood Obesity"
+        },
+        {
+          "doc_id": "MED-4849",
+          "score": 3.604099988937378,
+          "best_chunk_id": "MED-4849",
+          "best_chunk_rank": 9,
+          "title": "Uncooked, lactobacilli-rich, vegan food and rheumatoid arthritis."
+        },
+        {
+          "doc_id": "MED-1991",
+          "score": 3.5785000324249268,
+          "best_chunk_id": "MED-1991",
+          "best_chunk_rank": 10,
+          "title": "Plant foods and plant-based diets: protective against childhood obesity?"
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1039",
+      "question": "domoic acid",
+      "gold_doc_id": "MED-4380",
+      "gold_title": "Domoic acid and human exposure risks: a review.",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Domoic acid is a potent neurotoxin that is naturally produced by several diatom species of the genus Pseudo-nitzschia. The toxin acts as a glutamate agonist and is excitotoxic in the vertebrate central nervous system and other glutamate receptor-rich organs. Human exposure to domoic acid occurs via the consumption of contaminated shellfish that have accumulated the toxin while filter feeding on toxigenic phytoplankton during blooms. The first reported human domoic acid poisoning event occurred i",
+      "top_documents": [
+        {
+          "doc_id": "MED-4380",
+          "score": 8.303799629211426,
+          "best_chunk_id": "MED-4380",
+          "best_chunk_rank": 1,
+          "title": "Domoic acid and human exposure risks: a review."
+        },
+        {
+          "doc_id": "MED-4381",
+          "score": 7.753499984741211,
+          "best_chunk_id": "MED-4381",
+          "best_chunk_rank": 2,
+          "title": "Amnesic shellfish poison."
+        },
+        {
+          "doc_id": "MED-3221",
+          "score": 1.8128999471664429,
+          "best_chunk_id": "MED-3221",
+          "best_chunk_rank": 3,
+          "title": "Effect of urine pH changed by dietary intervention on uric acid clearance mechanism of pH-dependent excretion of urinary uric acid"
+        },
+        {
+          "doc_id": "MED-1067",
+          "score": 1.7702000141143799,
+          "best_chunk_id": "MED-1067",
+          "best_chunk_rank": 4,
+          "title": "Differential effect of oleic and palmitic acid on lipid accumulation and apoptosis in cultured hepatocytes."
+        },
+        {
+          "doc_id": "MED-1454",
+          "score": 1.7699999809265137,
+          "best_chunk_id": "MED-1454",
+          "best_chunk_rank": 5,
+          "title": "Substituting dietary saturated for monounsaturated fat impairs insulin sensitivity in healthy men and women: The KANWU Study."
+        },
+        {
+          "doc_id": "MED-3215",
+          "score": 1.7661000490188599,
+          "best_chunk_id": "MED-3215",
+          "best_chunk_rank": 6,
+          "title": "Excess dietary protein can adversely affect bone."
+        },
+        {
+          "doc_id": "MED-2098",
+          "score": 1.7623000144958496,
+          "best_chunk_id": "MED-2098",
+          "best_chunk_rank": 7,
+          "title": "Steam cooking significantly improves in vitro bile acid binding of collard greens, kale, mustard greens, broccoli, green bell pepper, and cabbage."
+        },
+        {
+          "doc_id": "MED-846",
+          "score": 1.7573000192642212,
+          "best_chunk_id": "MED-846",
+          "best_chunk_rank": 8,
+          "title": "Antifungal mechanisms supporting boric acid therapy of Candida vaginitis."
+        },
+        {
+          "doc_id": "MED-4551",
+          "score": 1.7486000061035156,
+          "best_chunk_id": "MED-4551",
+          "best_chunk_rank": 9,
+          "title": "Maternal meat and fat consumption during pregnancy and suspected atopic eczema in Japanese infants aged 3-4 months: the Osaka Maternal and Child He..."
+        },
+        {
+          "doc_id": "MED-4626",
+          "score": 1.7485990524291992,
+          "best_chunk_id": "MED-4626",
+          "best_chunk_rank": 10,
+          "title": "Individual variation and intraclass correlation in arachidonic acid and eicosapentaenoic acid in chicken muscle"
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1050",
+      "question": "Dr. Dean Ornish",
+      "gold_doc_id": "MED-2763",
+      "gold_title": "Facing the facelessness of public health: what's the public got to do with it?",
+      "gold_rank": 10,
+      "gold_chunk_excerpt": "Despite compelling statistics that show we could eliminate 80%of all heart disease and strokes, 90% of all diabetes, and 60% of all cancers with basic lifestyle changes, we have failed to motivate the public to make these changes and failed to motivate policy makers to make healthy choices the easiest choice. Dr. Katz suggests we have failed because we have focused too much on statistics and too little on passion. He implores all of us to tap into people's passion by connecting each of these sta",
+      "top_documents": [
+        {
+          "doc_id": "MED-1712",
+          "score": 5.133399963378906,
+          "best_chunk_id": "MED-1712",
+          "best_chunk_rank": 1,
+          "title": "Dietary restriction reduces insulin-like growth factor I levels, which modulates apoptosis, cell proliferation, and tumor progression in p53-defici..."
+        },
+        {
+          "doc_id": "MED-2510",
+          "score": 4.89709997177124,
+          "best_chunk_id": "MED-2510",
+          "best_chunk_rank": 2,
+          "title": "Comparative and meta-analytic insights into life extension via dietary restriction."
+        },
+        {
+          "doc_id": "MED-1021",
+          "score": 4.769499778747559,
+          "best_chunk_id": "MED-1021",
+          "best_chunk_rank": 3,
+          "title": "Management of diabetic retinopathy: a systematic review."
+        },
+        {
+          "doc_id": "MED-2498",
+          "score": 4.59689998626709,
+          "best_chunk_id": "MED-2498",
+          "best_chunk_rank": 4,
+          "title": "Dietary Restriction, Growth Factors and Aging: from yeast to humans"
+        },
+        {
+          "doc_id": "MED-3283",
+          "score": 4.593800067901611,
+          "best_chunk_id": "MED-3283",
+          "best_chunk_rank": 5,
+          "title": "Lowered methionine ingestion as responsible for the decrease in rodent mitochondrial oxidative stress in protein and dietary restriction possible i..."
+        },
+        {
+          "doc_id": "MED-2509",
+          "score": 4.482100009918213,
+          "best_chunk_id": "MED-2509",
+          "best_chunk_rank": 6,
+          "title": "Amino acid sensing in dietary-restriction-mediated longevity: roles of signal-transducing kinases GCN2 and TOR"
+        },
+        {
+          "doc_id": "MED-2324",
+          "score": 4.471099853515625,
+          "best_chunk_id": "MED-2324",
+          "best_chunk_rank": 7,
+          "title": "The role of hormesis in life extension by dietary restriction."
+        },
+        {
+          "doc_id": "MED-2502",
+          "score": 4.047699928283691,
+          "best_chunk_id": "MED-2502",
+          "best_chunk_rank": 8,
+          "title": "Macronutrient balance and lifespan"
+        },
+        {
+          "doc_id": "MED-2603",
+          "score": 4.0218000411987305,
+          "best_chunk_id": "MED-2603",
+          "best_chunk_rank": 9,
+          "title": "FADD: a regulator of life and death."
+        },
+        {
+          "doc_id": "MED-2763",
+          "score": 3.250200033187866,
+          "best_chunk_id": "MED-2763",
+          "best_chunk_rank": 10,
+          "title": "Facing the facelessness of public health: what's the public got to do with it?"
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1088",
+      "question": "ECMO",
+      "gold_doc_id": "MED-2109",
+      "gold_title": "Extracorporeal membrane oxygenation and conventional medical therapy in neonates with persistent pulmonary hypertension of the newborn: a prospecti...",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Thirty-nine newborn infants with severe persistent pulmonary hypertension and respiratory failure who met criteria for 85% likelihood of dying were enrolled in a randomized trial in which extracorporeal membrane oxygenation (ECMO) therapy was compared with conventional medical therapy (CMT). In phase I, 4 of 10 babies in the CMT group died and 9 of 9 babies in the ECMO group survived. Randomization was halted after the fourth CMT death, as planned before initiating the study, and the next 20 bab",
+      "top_documents": [
+        {
+          "doc_id": "MED-2109",
+          "score": 6.474100112915039,
+          "best_chunk_id": "MED-2109",
+          "best_chunk_rank": 1,
+          "title": "Extracorporeal membrane oxygenation and conventional medical therapy in neonates with persistent pulmonary hypertension of the newborn: a prospecti..."
+        },
+        {
+          "doc_id": "MED-2110",
+          "score": 5.980599880218506,
+          "best_chunk_id": "MED-2110",
+          "best_chunk_rank": 2,
+          "title": "Extracorporeal membrane oxygenation for newborn respiratory failure: forty-five cases."
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "PLAIN-1008",
+      "question": "deafness",
+      "gold_doc_id": "MED-4532",
+      "gold_title": "Cytotoxic response of breast cancer cell lines, MCF 7 and T 47 D to triphala and its modification by antioxidants.",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "The cytotoxic effects of Triphala (TPL), an Indian Ayurvedic formulation with known anti-cancer properties, has been investigated on two human breast cancer cell lines differing in their p53 status. In vitro studies showed that MCF 7 with wild type p53 was more sensitive to TPL than T 47 D, which is p53 negative. TPL induced loss of cell viability was determined by MTT assay. After 72h incubation, the IC 50 values for MCF 7 was found to be approximately 8microg/ml and that for T 47 D was approxi",
+      "top_documents": [
+        {
+          "doc_id": "MED-4668",
+          "score": 4.369699954986572,
+          "best_chunk_id": "MED-4668",
+          "best_chunk_rank": 1,
+          "title": "Cretinism revisited."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1028",
+      "question": "dietary scoring",
+      "gold_doc_id": "MED-4686",
+      "gold_title": "Proposal for a dietary \"phytochemical index\".",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "There is ample reason to believe that diets rich in phytochemicals provide protection from vascular diseases and many cancers; direct antioxidant activity as well as modulation of enzyme expression or hormone activity contribute to this effect. Phytochemicals derived from diverse foods presumably can interact additively and (possibly) synergistically; thus, the total dietary load of phytochemicals may have important implications for health. As a means of very roughly quantifying this load, a \"ph",
+      "top_documents": [
+        {
+          "doc_id": "MED-4480",
+          "score": 3.3949999809265137,
+          "best_chunk_id": "MED-4480",
+          "best_chunk_rank": 1,
+          "title": "Principal component analysis of dietary and lifestyle patterns in relation to risk of subtypes of esophageal and gastric cancer"
+        },
+        {
+          "doc_id": "MED-1377",
+          "score": 3.2922000885009766,
+          "best_chunk_id": "MED-1377",
+          "best_chunk_rank": 2,
+          "title": "Higher Diet Quality Is Associated with Decreased Risk of All-Cause, Cardiovascular Disease, and Cancer Mortality among Older Adults"
+        },
+        {
+          "doc_id": "MED-4163",
+          "score": 3.2857000827789307,
+          "best_chunk_id": "MED-4163",
+          "best_chunk_rank": 3,
+          "title": "Protein dietary reference intakes may be inadequate for vegetarians if low amounts of animal protein are consumed."
+        },
+        {
+          "doc_id": "MED-3723",
+          "score": 3.2836999893188477,
+          "best_chunk_id": "MED-3723",
+          "best_chunk_rank": 4,
+          "title": "Dietary patterns and risk of oesophageal cancers: a population-based case-control study."
+        },
+        {
+          "doc_id": "MED-4104",
+          "score": 3.2142999172210693,
+          "best_chunk_id": "MED-4104",
+          "best_chunk_rank": 5,
+          "title": "Changes in nutrient intake and dietary quality among participants with type 2 diabetes following a low-fat vegan diet or a conventional diabetes di..."
+        },
+        {
+          "doc_id": "MED-5327",
+          "score": 3.194200038909912,
+          "best_chunk_id": "MED-5327",
+          "best_chunk_rank": 6,
+          "title": "The association between dietary patterns and mental health in early adolescence."
+        },
+        {
+          "doc_id": "MED-3622",
+          "score": 3.169300079345703,
+          "best_chunk_id": "MED-3622",
+          "best_chunk_rank": 7,
+          "title": "Dietary and clastogenic factors in children who immigrated to Israel from regions contaminated by the Chernobyl accident."
+        },
+        {
+          "doc_id": "MED-2294",
+          "score": 3.117300033569336,
+          "best_chunk_id": "MED-2294",
+          "best_chunk_rank": 8,
+          "title": "Comparison of Nutritional Quality of the Vegan, Vegetarian, Semi-Vegetarian, Pesco-Vegetarian and Omnivorous Diet"
+        },
+        {
+          "doc_id": "MED-1565",
+          "score": 3.1166999340057373,
+          "best_chunk_id": "MED-1565",
+          "best_chunk_rank": 9,
+          "title": "Adherence to the World Cancer Research Fund/American Institute for Cancer Research guidelines and risk of death in Europe: results from the Europea..."
+        },
+        {
+          "doc_id": "MED-3699",
+          "score": 3.054500102996826,
+          "best_chunk_id": "MED-3699",
+          "best_chunk_rank": 10,
+          "title": "Is concordance with World Cancer Research Fund/American Institute for Cancer Research guidelines for cancer prevention related to subsequent risk o..."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1066",
+      "question": "Dr. Walter Willett",
+      "gold_doc_id": "MED-4000",
+      "gold_title": "Coconut oil predicts a beneficial lipid profile in pre-menopausal women in the Philippines",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "Coconut oil is a common edible oil in many countries, and there is mixed evidence for its effects on lipid profiles and cardiovascular disease risk. Here we examine the association between coconut oil consumption and lipid profiles in a cohort of 1,839 Filipino women (age 35–69 years) participating in the Cebu Longitudinal Health and Nutrition Survey, a community based study in Metropolitan Cebu City. Coconut oil intake was measured as individual coconut oil intake calculated using two 24-hour d",
+      "top_documents": [
+        {
+          "doc_id": "MED-1712",
+          "score": 5.133399963378906,
+          "best_chunk_id": "MED-1712",
+          "best_chunk_rank": 1,
+          "title": "Dietary restriction reduces insulin-like growth factor I levels, which modulates apoptosis, cell proliferation, and tumor progression in p53-defici..."
+        },
+        {
+          "doc_id": "MED-2510",
+          "score": 4.89709997177124,
+          "best_chunk_id": "MED-2510",
+          "best_chunk_rank": 2,
+          "title": "Comparative and meta-analytic insights into life extension via dietary restriction."
+        },
+        {
+          "doc_id": "MED-1021",
+          "score": 4.769499778747559,
+          "best_chunk_id": "MED-1021",
+          "best_chunk_rank": 3,
+          "title": "Management of diabetic retinopathy: a systematic review."
+        },
+        {
+          "doc_id": "MED-2498",
+          "score": 4.59689998626709,
+          "best_chunk_id": "MED-2498",
+          "best_chunk_rank": 4,
+          "title": "Dietary Restriction, Growth Factors and Aging: from yeast to humans"
+        },
+        {
+          "doc_id": "MED-3283",
+          "score": 4.593800067901611,
+          "best_chunk_id": "MED-3283",
+          "best_chunk_rank": 5,
+          "title": "Lowered methionine ingestion as responsible for the decrease in rodent mitochondrial oxidative stress in protein and dietary restriction possible i..."
+        },
+        {
+          "doc_id": "MED-2509",
+          "score": 4.482100009918213,
+          "best_chunk_id": "MED-2509",
+          "best_chunk_rank": 6,
+          "title": "Amino acid sensing in dietary-restriction-mediated longevity: roles of signal-transducing kinases GCN2 and TOR"
+        },
+        {
+          "doc_id": "MED-2324",
+          "score": 4.471099853515625,
+          "best_chunk_id": "MED-2324",
+          "best_chunk_rank": 7,
+          "title": "The role of hormesis in life extension by dietary restriction."
+        },
+        {
+          "doc_id": "MED-4476",
+          "score": 4.369699954986572,
+          "best_chunk_id": "MED-4476",
+          "best_chunk_rank": 8,
+          "title": "Determination of total N-nitroso compounds and their precursors in frankfurters, fresh meat, dried salted fish, sauces, tobacco, and tobacco smoke ..."
+        },
+        {
+          "doc_id": "MED-2502",
+          "score": 4.047699928283691,
+          "best_chunk_id": "MED-2502",
+          "best_chunk_rank": 9,
+          "title": "Macronutrient balance and lifespan"
+        },
+        {
+          "doc_id": "MED-2603",
+          "score": 4.0218000411987305,
+          "best_chunk_id": "MED-2603",
+          "best_chunk_rank": 10,
+          "title": "FADD: a regulator of life and death."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1098",
+      "question": "eggnog",
+      "gold_doc_id": "MED-3806",
+      "gold_title": "Toxicology of nutmeg abuse.",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "BACKGROUND: Unpleasant and frightening side effects associated with the abuse of nutmeg occasionally generate emergency department referrals. We report a young patient's first-time experience with nutmeg and review the mechanisms of its toxicity. CASE REPORT: A 13-year-old female ingested 15-24 g of nutmeg over a 3-hour period and smoked and shared 2 joints of marijuana. To facilitate ingestion, the nutmeg was put into 00-000 gelatin capsules. Bizarre behavior and visual, auditory, and tactile h",
+      "top_documents": []
+    },
+    {
+      "query_id": "PLAIN-1119",
+      "question": "energy drinks",
+      "gold_doc_id": "MED-3788",
+      "gold_title": "Intestinal microbiota metabolism of L-carnitine, a nutrient in red meat, promotes atherosclerosis",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "Intestinal microbiota metabolism of choline/phosphatidylcholine produces trimethylamine (TMA), which is further metabolized to a proatherogenic species, trimethylamine-N-oxide (TMAO). Herein we demonstrate that intestinal microbiota metabolism of dietary L-carnitine, a trimethylamine abundant in red meat, also produces TMAO and accelerates atherosclerosis. Omnivorous subjects are shown to produce significantly more TMAO than vegans/vegetarians following ingestion of L-carnitine through a microbi",
+      "top_documents": [
+        {
+          "doc_id": "MED-877",
+          "score": 5.3445000648498535,
+          "best_chunk_id": "MED-877",
+          "best_chunk_rank": 1,
+          "title": "Detrimental effects of energy drink consumption on platelet and endothelial function."
+        },
+        {
+          "doc_id": "MED-1708",
+          "score": 4.309100151062012,
+          "best_chunk_id": "MED-1708",
+          "best_chunk_rank": 2,
+          "title": "Dietary sugars intake and cardiovascular health: a scientific statement from the American Heart Association."
+        },
+        {
+          "doc_id": "MED-4025",
+          "score": 4.20989990234375,
+          "best_chunk_id": "MED-4025",
+          "best_chunk_rank": 3,
+          "title": "Analysis of the erosive effect of different dietary substances and medications."
+        },
+        {
+          "doc_id": "MED-2115",
+          "score": 3.947499990463257,
+          "best_chunk_id": "MED-2115",
+          "best_chunk_rank": 4,
+          "title": "Diet supplementation with donkey milk upregulates liver mitochondrial uncoupling, reduces energy efficiency and improves antioxidant and antiinflam..."
+        },
+        {
+          "doc_id": "MED-1534",
+          "score": 3.8236000537872314,
+          "best_chunk_id": "MED-1534",
+          "best_chunk_rank": 5,
+          "title": "Glucose and insulin responses to manufactured and whole-food snacks."
+        },
+        {
+          "doc_id": "MED-2490",
+          "score": 3.7246999740600586,
+          "best_chunk_id": "MED-2490",
+          "best_chunk_rank": 6,
+          "title": "Arsenic, Organic Foods, and Brown Rice Syrup"
+        },
+        {
+          "doc_id": "MED-869",
+          "score": 3.711699962615967,
+          "best_chunk_id": "MED-869",
+          "best_chunk_rank": 7,
+          "title": "Yerba Mate (Ilex paraguariensis) consumption is associated with higher bone mineral density in postmenopausal women."
+        },
+        {
+          "doc_id": "MED-2969",
+          "score": 3.6064999103546143,
+          "best_chunk_id": "MED-2969",
+          "best_chunk_rank": 8,
+          "title": "Orange juice or fructose intake does not induce oxidative and inflammatory response."
+        },
+        {
+          "doc_id": "MED-1055",
+          "score": 3.4598000049591064,
+          "best_chunk_id": "MED-1055",
+          "best_chunk_rank": 9,
+          "title": "Why the Bush administration and the global sugar industry are determined to demolish the 2004 WHO global strategy on diet, physical activity and he..."
+        },
+        {
+          "doc_id": "MED-4036",
+          "score": 3.3592000007629395,
+          "best_chunk_id": "MED-4036",
+          "best_chunk_rank": 10,
+          "title": "Diet, nutrition and the prevention of dental diseases."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 221,
+    "failure_at_10_available": 102,
+    "saved_per_group_max": 5
+  }
+}

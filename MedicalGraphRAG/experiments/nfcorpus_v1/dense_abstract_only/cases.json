@@ -1,0 +1,811 @@
+{
+  "success": [
+    {
+      "query_id": "PLAIN-1018",
+      "question": "DHA",
+      "gold_doc_id": "MED-2750",
+      "gold_title": "Lack of benefit of dietary advice to men with angina: results of a controlled trial.",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "OBJECTIVE: To see whether mortality among men with angina can be reduced by dietary advice. DESIGN: A randomized controlled factorial trial. SETTING: Male patients of general practitioners in south Wales. SUBJECTS: A total of 3114 men under 70 y of age with angina. INTERVENTIONS: Subjects were randomly allocated to four groups: (1) advised to eat two portions of oily fish each week, or to take three fish oil capsules daily; (2) advised to eat more fruit, vegetables and oats; (3) given both the a",
+      "top_documents": [
+        {
+          "doc_id": "MED-4936",
+          "score": 0.5402793884277344,
+          "best_chunk_id": "MED-4936",
+          "best_chunk_rank": 1,
+          "title": "Algal-oil capsules and cooked salmon: nutritionally equivalent sources of docosahexaenoic acid."
+        },
+        {
+          "doc_id": "MED-5095",
+          "score": 0.5117940902709961,
+          "best_chunk_id": "MED-5095",
+          "best_chunk_rank": 2,
+          "title": "Bioequivalence of Docosahexaenoic acid from different algal oils in capsules and in a DHA-fortified food."
+        },
+        {
+          "doc_id": "MED-5091",
+          "score": 0.47670114040374756,
+          "best_chunk_id": "MED-5091",
+          "best_chunk_rank": 3,
+          "title": "Essential n-3 fatty acids in pregnant women and early visual acuity maturation in term infants."
+        },
+        {
+          "doc_id": "MED-1801",
+          "score": 0.45519348978996277,
+          "best_chunk_id": "MED-1801",
+          "best_chunk_rank": 4,
+          "title": "Modern organic and broiler chickens sold for human consumption provide more energy from fat than protein."
+        },
+        {
+          "doc_id": "MED-1832",
+          "score": 0.4548347294330597,
+          "best_chunk_id": "MED-1832",
+          "best_chunk_rank": 5,
+          "title": "Visual acuity and the essentiality of docosahexaenoic acid and arachidonic acid in the diet of term infants."
+        },
+        {
+          "doc_id": "MED-4321",
+          "score": 0.45435187220573425,
+          "best_chunk_id": "MED-4321",
+          "best_chunk_rank": 6,
+          "title": "Dehydroepiandrosterone sulfate and postmenopausal women."
+        },
+        {
+          "doc_id": "MED-1833",
+          "score": 0.45018771290779114,
+          "best_chunk_id": "MED-1833",
+          "best_chunk_rank": 7,
+          "title": "Cod liver oil intake and incidence of asthma in Norwegian adults--the HUNT study."
+        },
+        {
+          "doc_id": "MED-1397",
+          "score": 0.4383600354194641,
+          "best_chunk_id": "MED-1397",
+          "best_chunk_rank": 8,
+          "title": "Omega-3 fatty acids and antioxidants in edible wild plants."
+        },
+        {
+          "doc_id": "MED-839",
+          "score": 0.4356018602848053,
+          "best_chunk_id": "MED-839",
+          "best_chunk_rank": 9,
+          "title": "Omega-3 fatty acids for nutrition and medicine: considering microalgae oil as a vegetarian source of EPA and DHA."
+        },
+        {
+          "doc_id": "MED-5093",
+          "score": 0.43451014161109924,
+          "best_chunk_id": "MED-5093",
+          "best_chunk_rank": 10,
+          "title": "Maternal consumption of a docosahexaenoic acid-containing functional food during pregnancy: benefit for infant performance on problem-solving but n..."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-102",
+      "question": "Stopping Heart Disease in Childhood",
+      "gold_doc_id": "MED-3254",
+      "gold_title": "Relation of serum lipoprotein levels and systolic blood pressure to early atherosclerosis. The Bogalusa Heart Study.",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "We assessed the relation of risk factors for cardiovascular disease to early atherosclerotic lesions in the aorta and coronary arteries in 35 persons (mean age at death, 18 years). Aortic involvement with fatty streaks was greater in blacks than in whites (37 vs. 17 percent, P less than 0.01). However, aortic fatty streaks were strongly related to antemortem levels of both total and low-density lipoprotein cholesterol (r = 0.67, P less than 0.0001 for each association), independently of race, se",
+      "top_documents": [
+        {
+          "doc_id": "MED-3255",
+          "score": 0.5890859365463257,
+          "best_chunk_id": "MED-3255",
+          "best_chunk_rank": 1,
+          "title": "Endothelial function in healthy 11-year-old children after dietary intervention with onset in infancy: the Special Turku Coronary Risk Factor Inter..."
+        },
+        {
+          "doc_id": "MED-1548",
+          "score": 0.5692428350448608,
+          "best_chunk_id": "MED-1548",
+          "best_chunk_rank": 2,
+          "title": "Defining and setting national goals for cardiovascular health promotion and disease reduction: the American Heart Association's strategic Impact Go..."
+        },
+        {
+          "doc_id": "MED-3253",
+          "score": 0.5295535922050476,
+          "best_chunk_id": "MED-3253",
+          "best_chunk_rank": 3,
+          "title": "Pathobiological determinants of atherosclerosis in youth risk scores are associated with early and advanced atherosclerosis."
+        },
+        {
+          "doc_id": "MED-2753",
+          "score": 0.48915666341781616,
+          "best_chunk_id": "MED-2753",
+          "best_chunk_rank": 4,
+          "title": "Secondary prevention of CHD in UK men: the Diet and Reinfarction Trial and its sequel."
+        },
+        {
+          "doc_id": "MED-4609",
+          "score": 0.48875001072883606,
+          "best_chunk_id": "MED-4609",
+          "best_chunk_rank": 5,
+          "title": "The beriberi analogy to myocardial infarction."
+        },
+        {
+          "doc_id": "MED-1949",
+          "score": 0.48498183488845825,
+          "best_chunk_id": "MED-1949",
+          "best_chunk_rank": 6,
+          "title": "Is very preterm birth a risk factor for adult cardiometabolic disease?"
+        },
+        {
+          "doc_id": "MED-4613",
+          "score": 0.4846639037132263,
+          "best_chunk_id": "MED-4613",
+          "best_chunk_rank": 7,
+          "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition."
+        },
+        {
+          "doc_id": "MED-4255",
+          "score": 0.4846639037132263,
+          "best_chunk_id": "MED-4255",
+          "best_chunk_rank": 8,
+          "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition."
+        },
+        {
+          "doc_id": "MED-1366",
+          "score": 0.48241275548934937,
+          "best_chunk_id": "MED-1366",
+          "best_chunk_rank": 9,
+          "title": "Mediterranean diet and public health: personal reflections."
+        },
+        {
+          "doc_id": "MED-4560",
+          "score": 0.47773078083992004,
+          "best_chunk_id": "MED-4560",
+          "best_chunk_rank": 10,
+          "title": "Preventing and arresting coronary atherosclerosis."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1028",
+      "question": "dietary scoring",
+      "gold_doc_id": "MED-4686",
+      "gold_title": "Proposal for a dietary \"phytochemical index\".",
+      "gold_rank": 9,
+      "gold_chunk_excerpt": "There is ample reason to believe that diets rich in phytochemicals provide protection from vascular diseases and many cancers; direct antioxidant activity as well as modulation of enzyme expression or hormone activity contribute to this effect. Phytochemicals derived from diverse foods presumably can interact additively and (possibly) synergistically; thus, the total dietary load of phytochemicals may have important implications for health. As a means of very roughly quantifying this load, a \"ph",
+      "top_documents": [
+        {
+          "doc_id": "MED-3654",
+          "score": 0.6801553964614868,
+          "best_chunk_id": "MED-3654",
+          "best_chunk_rank": 1,
+          "title": "Nutrient profiling of foods: creating a nutrient-rich food index."
+        },
+        {
+          "doc_id": "MED-4556",
+          "score": 0.5828604698181152,
+          "best_chunk_id": "MED-4556",
+          "best_chunk_rank": 2,
+          "title": "Tolerable upper intake levels for trans fat, saturated fat, and cholesterol."
+        },
+        {
+          "doc_id": "MED-2294",
+          "score": 0.5726849436759949,
+          "best_chunk_id": "MED-2294",
+          "best_chunk_rank": 3,
+          "title": "Comparison of Nutritional Quality of the Vegan, Vegetarian, Semi-Vegetarian, Pesco-Vegetarian and Omnivorous Diet"
+        },
+        {
+          "doc_id": "MED-2220",
+          "score": 0.5721460580825806,
+          "best_chunk_id": "MED-2220",
+          "best_chunk_rank": 4,
+          "title": "Position of the academy of nutrition and dietetics: total diet approach to healthy eating."
+        },
+        {
+          "doc_id": "MED-2180",
+          "score": 0.5714231133460999,
+          "best_chunk_id": "MED-2180",
+          "best_chunk_rank": 5,
+          "title": "Christmas 2012: Research: Nutritional content of supermarket ready meals and recipes by television chefs in the United Kingdom: cross sectional study"
+        },
+        {
+          "doc_id": "MED-2984",
+          "score": 0.5628712177276611,
+          "best_chunk_id": "MED-2984",
+          "best_chunk_rank": 6,
+          "title": "An algorithm to assess intestinal iron availability for use in dietary surveys"
+        },
+        {
+          "doc_id": "MED-4989",
+          "score": 0.5599290132522583,
+          "best_chunk_id": "MED-4989",
+          "best_chunk_rank": 7,
+          "title": "Effect of a high nutrient density diet on long-term weight loss: a retrospective chart review."
+        },
+        {
+          "doc_id": "MED-3137",
+          "score": 0.5590720176696777,
+          "best_chunk_id": "MED-3137",
+          "best_chunk_rank": 8,
+          "title": "Americans Do Not Meet Federal Dietary Recommendations"
+        },
+        {
+          "doc_id": "MED-4686",
+          "score": 0.5532754063606262,
+          "best_chunk_id": "MED-4686",
+          "best_chunk_rank": 9,
+          "title": "Proposal for a dietary \"phytochemical index\"."
+        },
+        {
+          "doc_id": "MED-3786",
+          "score": 0.5488567352294922,
+          "best_chunk_id": "MED-3786",
+          "best_chunk_rank": 10,
+          "title": "Choline- and betaine-defined diets for use in clinical research and for the management of trimethylaminuria."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1039",
+      "question": "domoic acid",
+      "gold_doc_id": "MED-4380",
+      "gold_title": "Domoic acid and human exposure risks: a review.",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Domoic acid is a potent neurotoxin that is naturally produced by several diatom species of the genus Pseudo-nitzschia. The toxin acts as a glutamate agonist and is excitotoxic in the vertebrate central nervous system and other glutamate receptor-rich organs. Human exposure to domoic acid occurs via the consumption of contaminated shellfish that have accumulated the toxin while filter feeding on toxigenic phytoplankton during blooms. The first reported human domoic acid poisoning event occurred i",
+      "top_documents": [
+        {
+          "doc_id": "MED-4380",
+          "score": 0.451856791973114,
+          "best_chunk_id": "MED-4380",
+          "best_chunk_rank": 1,
+          "title": "Domoic acid and human exposure risks: a review."
+        },
+        {
+          "doc_id": "MED-4381",
+          "score": 0.4271525740623474,
+          "best_chunk_id": "MED-4381",
+          "best_chunk_rank": 2,
+          "title": "Amnesic shellfish poison."
+        },
+        {
+          "doc_id": "MED-4995",
+          "score": 0.33452853560447693,
+          "best_chunk_id": "MED-4995",
+          "best_chunk_rank": 3,
+          "title": "Salicylic Acid sans Aspirin in Animals and Man: Persistence in Fasting and Biosynthesis from Benzoic Acid"
+        },
+        {
+          "doc_id": "MED-5059",
+          "score": 0.31996577978134155,
+          "best_chunk_id": "MED-5059",
+          "best_chunk_rank": 4,
+          "title": "Evaluation of certain food additives. Seventy-first report of the Joint FAO/WHO Expert Committee on Food Additives."
+        },
+        {
+          "doc_id": "MED-721",
+          "score": 0.3180195093154907,
+          "best_chunk_id": "MED-721",
+          "best_chunk_rank": 5,
+          "title": "Bismuth therapy in gastrointestinal diseases."
+        },
+        {
+          "doc_id": "MED-1278",
+          "score": 0.31772568821907043,
+          "best_chunk_id": "MED-1278",
+          "best_chunk_rank": 6,
+          "title": "Does α-Amino-β-methylaminopropionic Acid (BMAA) Play a Role in Neurodegeneration?"
+        },
+        {
+          "doc_id": "MED-4607",
+          "score": 0.31646037101745605,
+          "best_chunk_id": "MED-4607",
+          "best_chunk_rank": 7,
+          "title": "Effects of sorbic acid and its salts on chromosome aberrations, sister chromatid exchanges and gene mutations in cultured Chinese hamster cells."
+        },
+        {
+          "doc_id": "MED-3510",
+          "score": 0.31481698155403137,
+          "best_chunk_id": "MED-3510",
+          "best_chunk_rank": 8,
+          "title": "A risk-benefit assessment of cisapride in the treatment of gastrointestinal disorders."
+        },
+        {
+          "doc_id": "MED-3850",
+          "score": 0.3132341206073761,
+          "best_chunk_id": "MED-3850",
+          "best_chunk_rank": 9,
+          "title": "Excretion, isolation and structure of a new phenolic constituent of female urine."
+        },
+        {
+          "doc_id": "MED-2101",
+          "score": 0.31062501668930054,
+          "best_chunk_id": "MED-2101",
+          "best_chunk_rank": 10,
+          "title": "Breast-gut connection: origin of chenodeoxycholic acid in breast cyst fluid."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1050",
+      "question": "Dr. Dean Ornish",
+      "gold_doc_id": "MED-2763",
+      "gold_title": "Facing the facelessness of public health: what's the public got to do with it?",
+      "gold_rank": 4,
+      "gold_chunk_excerpt": "Despite compelling statistics that show we could eliminate 80%of all heart disease and strokes, 90% of all diabetes, and 60% of all cancers with basic lifestyle changes, we have failed to motivate the public to make these changes and failed to motivate policy makers to make healthy choices the easiest choice. Dr. Katz suggests we have failed because we have focused too much on statistics and too little on passion. He implores all of us to tap into people's passion by connecting each of these sta",
+      "top_documents": [
+        {
+          "doc_id": "MED-1097",
+          "score": 0.29396581649780273,
+          "best_chunk_id": "MED-1097",
+          "best_chunk_rank": 1,
+          "title": "Moses Maimonides: medieval physician and scholar."
+        },
+        {
+          "doc_id": "MED-5346",
+          "score": 0.26361751556396484,
+          "best_chunk_id": "MED-5346",
+          "best_chunk_rank": 2,
+          "title": "Resident duty-hour restrictions-who are we protecting?: AOA critical issues."
+        },
+        {
+          "doc_id": "MED-748",
+          "score": 0.25513535737991333,
+          "best_chunk_id": "MED-748",
+          "best_chunk_rank": 3,
+          "title": "Medical practice and social authority."
+        },
+        {
+          "doc_id": "MED-2112",
+          "score": 0.23224115371704102,
+          "best_chunk_id": "MED-2112",
+          "best_chunk_rank": 4,
+          "title": "How evidence-based medicine biases physicians against nutrition."
+        },
+        {
+          "doc_id": "MED-5311",
+          "score": 0.2225525975227356,
+          "best_chunk_id": "MED-5311",
+          "best_chunk_rank": 5,
+          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma."
+        },
+        {
+          "doc_id": "MED-3755",
+          "score": 0.22103220224380493,
+          "best_chunk_id": "MED-3755",
+          "best_chunk_rank": 6,
+          "title": "Can deceiving patients be morally acceptable?"
+        },
+        {
+          "doc_id": "MED-3636",
+          "score": 0.2148999124765396,
+          "best_chunk_id": "MED-3636",
+          "best_chunk_rank": 7,
+          "title": "Death by polonium-210: lessons learned from the murder of former Soviet spy Alexander Litvinenko."
+        },
+        {
+          "doc_id": "MED-1053",
+          "score": 0.2124268263578415,
+          "best_chunk_id": "MED-1053",
+          "best_chunk_rank": 8,
+          "title": "Physician disclosure of healthy personal behaviors improves credibility and ability to motivate."
+        },
+        {
+          "doc_id": "MED-1543",
+          "score": 0.21085527539253235,
+          "best_chunk_id": "MED-1543",
+          "best_chunk_rank": 9,
+          "title": "Patient-related diet and exercise counseling: do providers' own lifestyle habits matter?"
+        },
+        {
+          "doc_id": "MED-749",
+          "score": 0.21071386337280273,
+          "best_chunk_id": "MED-749",
+          "best_chunk_rank": 10,
+          "title": "Current perception of nutrition education in U.S. medical schools."
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "PLAIN-1008",
+      "question": "deafness",
+      "gold_doc_id": "MED-4532",
+      "gold_title": "Cytotoxic response of breast cancer cell lines, MCF 7 and T 47 D to triphala and its modification by antioxidants.",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "The cytotoxic effects of Triphala (TPL), an Indian Ayurvedic formulation with known anti-cancer properties, has been investigated on two human breast cancer cell lines differing in their p53 status. In vitro studies showed that MCF 7 with wild type p53 was more sensitive to TPL than T 47 D, which is p53 negative. TPL induced loss of cell viability was determined by MTT assay. After 72h incubation, the IC 50 values for MCF 7 was found to be approximately 8microg/ml and that for T 47 D was approxi",
+      "top_documents": [
+        {
+          "doc_id": "MED-4668",
+          "score": 0.3170265555381775,
+          "best_chunk_id": "MED-4668",
+          "best_chunk_rank": 1,
+          "title": "Cretinism revisited."
+        },
+        {
+          "doc_id": "MED-2217",
+          "score": 0.29942432045936584,
+          "best_chunk_id": "MED-2217",
+          "best_chunk_rank": 2,
+          "title": "Prevalence of Alzheimer's disease and other dementias in rural India: the Indo-US study."
+        },
+        {
+          "doc_id": "MED-5036",
+          "score": 0.2836710810661316,
+          "best_chunk_id": "MED-5036",
+          "best_chunk_rank": 3,
+          "title": "Meta-analysis of long-term mobile phone use and the association with brain tumours."
+        },
+        {
+          "doc_id": "MED-1273",
+          "score": 0.26021987199783325,
+          "best_chunk_id": "MED-1273",
+          "best_chunk_rank": 4,
+          "title": "Amyotrophic lateral sclerosis. A case-control study following detection of a cluster in a small Wisconsin community."
+        },
+        {
+          "doc_id": "MED-991",
+          "score": 0.2594318985939026,
+          "best_chunk_id": "MED-991",
+          "best_chunk_rank": 5,
+          "title": "Prevalence of Cognitive Impairment without Dementia in the United States"
+        },
+        {
+          "doc_id": "MED-2900",
+          "score": 0.2593315839767456,
+          "best_chunk_id": "MED-2900",
+          "best_chunk_rank": 6,
+          "title": "The Association of Consumption of Fruits/Vegetables with Decreased Risk of Glaucoma among Older African American Women in the Study of Osteoporotic Fractures"
+        },
+        {
+          "doc_id": "MED-3319",
+          "score": 0.25617286562919617,
+          "best_chunk_id": "MED-3319",
+          "best_chunk_rank": 7,
+          "title": "Epidemiologic Investigation of Immune-Mediated Polyradiculoneuropathy among Abattoir Workers Exposed to Porcine Brain"
+        },
+        {
+          "doc_id": "MED-2164",
+          "score": 0.25469720363616943,
+          "best_chunk_id": "MED-2164",
+          "best_chunk_rank": 8,
+          "title": "How common is the most common adult movement disorder? Update on the worldwide prevalence of essential tremor."
+        },
+        {
+          "doc_id": "MED-1881",
+          "score": 0.2502644658088684,
+          "best_chunk_id": "MED-1881",
+          "best_chunk_rank": 9,
+          "title": "Lower intake of vegetables and legumes associated with cognitive decline among illiterate elderly Chinese: a 3-year cohort study."
+        },
+        {
+          "doc_id": "MED-4384",
+          "score": 0.24971093237400055,
+          "best_chunk_id": "MED-4384",
+          "best_chunk_rank": 10,
+          "title": "Glaucoma risk and the consumption of fruits and vegetables among older women in the study of osteoporotic fractures."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1066",
+      "question": "Dr. Walter Willett",
+      "gold_doc_id": "MED-4000",
+      "gold_title": "Coconut oil predicts a beneficial lipid profile in pre-menopausal women in the Philippines",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "Coconut oil is a common edible oil in many countries, and there is mixed evidence for its effects on lipid profiles and cardiovascular disease risk. Here we examine the association between coconut oil consumption and lipid profiles in a cohort of 1,839 Filipino women (age 35–69 years) participating in the Cebu Longitudinal Health and Nutrition Survey, a community based study in Metropolitan Cebu City. Coconut oil intake was measured as individual coconut oil intake calculated using two 24-hour d",
+      "top_documents": [
+        {
+          "doc_id": "MED-1097",
+          "score": 0.3017417788505554,
+          "best_chunk_id": "MED-1097",
+          "best_chunk_rank": 1,
+          "title": "Moses Maimonides: medieval physician and scholar."
+        },
+        {
+          "doc_id": "MED-5311",
+          "score": 0.281639039516449,
+          "best_chunk_id": "MED-5311",
+          "best_chunk_rank": 2,
+          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma."
+        },
+        {
+          "doc_id": "MED-748",
+          "score": 0.280678391456604,
+          "best_chunk_id": "MED-748",
+          "best_chunk_rank": 3,
+          "title": "Medical practice and social authority."
+        },
+        {
+          "doc_id": "MED-3604",
+          "score": 0.27871954441070557,
+          "best_chunk_id": "MED-3604",
+          "best_chunk_rank": 4,
+          "title": "US medical researchers, the Nuremberg Doctors Trial, and the Nuremberg Code. A review of findings of the Advisory Committee on Human Radiation Expe..."
+        },
+        {
+          "doc_id": "MED-5346",
+          "score": 0.269390732049942,
+          "best_chunk_id": "MED-5346",
+          "best_chunk_rank": 5,
+          "title": "Resident duty-hour restrictions-who are we protecting?: AOA critical issues."
+        },
+        {
+          "doc_id": "MED-2112",
+          "score": 0.2628776431083679,
+          "best_chunk_id": "MED-2112",
+          "best_chunk_rank": 6,
+          "title": "How evidence-based medicine biases physicians against nutrition."
+        },
+        {
+          "doc_id": "MED-3636",
+          "score": 0.2610112428665161,
+          "best_chunk_id": "MED-3636",
+          "best_chunk_rank": 7,
+          "title": "Death by polonium-210: lessons learned from the murder of former Soviet spy Alexander Litvinenko."
+        },
+        {
+          "doc_id": "MED-749",
+          "score": 0.24966134130954742,
+          "best_chunk_id": "MED-749",
+          "best_chunk_rank": 8,
+          "title": "Current perception of nutrition education in U.S. medical schools."
+        },
+        {
+          "doc_id": "MED-1655",
+          "score": 0.2453204244375229,
+          "best_chunk_id": "MED-1655",
+          "best_chunk_rank": 9,
+          "title": "An archaeologic dig: a rice-fruit diet reverses ECG changes in hypertension."
+        },
+        {
+          "doc_id": "MED-728",
+          "score": 0.23930680751800537,
+          "best_chunk_id": "MED-728",
+          "best_chunk_rank": 10,
+          "title": "Barriers to providing nutrition counseling cited by physicians: a survey of primary care practitioners."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1098",
+      "question": "eggnog",
+      "gold_doc_id": "MED-3806",
+      "gold_title": "Toxicology of nutmeg abuse.",
+      "gold_rank": 19,
+      "gold_chunk_excerpt": "BACKGROUND: Unpleasant and frightening side effects associated with the abuse of nutmeg occasionally generate emergency department referrals. We report a young patient's first-time experience with nutmeg and review the mechanisms of its toxicity. CASE REPORT: A 13-year-old female ingested 15-24 g of nutmeg over a 3-hour period and smoked and shared 2 joints of marijuana. To facilitate ingestion, the nutmeg was put into 00-000 gelatin capsules. Bizarre behavior and visual, auditory, and tactile h",
+      "top_documents": [
+        {
+          "doc_id": "MED-2976",
+          "score": 0.3380165100097656,
+          "best_chunk_id": "MED-2976",
+          "best_chunk_rank": 1,
+          "title": "Egg consumption and risk of type 2 diabetes in older adults"
+        },
+        {
+          "doc_id": "MED-4892",
+          "score": 0.32200440764427185,
+          "best_chunk_id": "MED-4892",
+          "best_chunk_rank": 2,
+          "title": "Egg Consumption and Risk of Type 2 Diabetes in Men and Women"
+        },
+        {
+          "doc_id": "MED-2977",
+          "score": 0.32200440764427185,
+          "best_chunk_id": "MED-2977",
+          "best_chunk_rank": 3,
+          "title": "Egg Consumption and Risk of Type 2 Diabetes in Men and Women"
+        },
+        {
+          "doc_id": "MED-2884",
+          "score": 0.31506192684173584,
+          "best_chunk_id": "MED-2884",
+          "best_chunk_rank": 4,
+          "title": "A 12-wk egg intervention increases serum zeaxanthin and macular pigment optical density in women."
+        },
+        {
+          "doc_id": "MED-5124",
+          "score": 0.3141997456550598,
+          "best_chunk_id": "MED-5124",
+          "best_chunk_rank": 5,
+          "title": "Egg Consumption and Cardiovascular Disease and Mortality The Physicians' Health Study"
+        },
+        {
+          "doc_id": "MED-4676",
+          "score": 0.3124842941761017,
+          "best_chunk_id": "MED-4676",
+          "best_chunk_rank": 6,
+          "title": "Dietary cholesterol and egg yolks: Not for patients at risk of vascular disease"
+        },
+        {
+          "doc_id": "MED-4150",
+          "score": 0.30652910470962524,
+          "best_chunk_id": "MED-4150",
+          "best_chunk_rank": 7,
+          "title": "Pseudo-maple syrup urine disease due to maternal prenatal ingestion of fenugreek."
+        },
+        {
+          "doc_id": "MED-4741",
+          "score": 0.30400732159614563,
+          "best_chunk_id": "MED-4741",
+          "best_chunk_rank": 8,
+          "title": "Egg consumption and the risk of cancer: a multisite case-control study in Uruguay."
+        },
+        {
+          "doc_id": "MED-4324",
+          "score": 0.2995014786720276,
+          "best_chunk_id": "MED-4324",
+          "best_chunk_rank": 9,
+          "title": "Egg yolk consumption and carotid plaque."
+        },
+        {
+          "doc_id": "MED-2374",
+          "score": 0.2933899760246277,
+          "best_chunk_id": "MED-2374",
+          "best_chunk_rank": 10,
+          "title": "Egg consumption and risk of cardiovascular diseases and diabetes: a meta-analysis."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1119",
+      "question": "energy drinks",
+      "gold_doc_id": "MED-3788",
+      "gold_title": "Intestinal microbiota metabolism of L-carnitine, a nutrient in red meat, promotes atherosclerosis",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "Intestinal microbiota metabolism of choline/phosphatidylcholine produces trimethylamine (TMA), which is further metabolized to a proatherogenic species, trimethylamine-N-oxide (TMAO). Herein we demonstrate that intestinal microbiota metabolism of dietary L-carnitine, a trimethylamine abundant in red meat, also produces TMAO and accelerates atherosclerosis. Omnivorous subjects are shown to produce significantly more TMAO than vegans/vegetarians following ingestion of L-carnitine through a microbi",
+      "top_documents": [
+        {
+          "doc_id": "MED-4438",
+          "score": 0.5679998397827148,
+          "best_chunk_id": "MED-4438",
+          "best_chunk_rank": 1,
+          "title": "Caffeine-Not just a stimulant."
+        },
+        {
+          "doc_id": "MED-1646",
+          "score": 0.4889322519302368,
+          "best_chunk_id": "MED-1646",
+          "best_chunk_rank": 2,
+          "title": "A new proposed guidance system for beverage consumption in the United States."
+        },
+        {
+          "doc_id": "MED-3894",
+          "score": 0.46991270780563354,
+          "best_chunk_id": "MED-3894",
+          "best_chunk_rank": 3,
+          "title": "Sun-dried raisins are a cost-effective alternative to Sports Jelly Beans in prolonged cycling."
+        },
+        {
+          "doc_id": "MED-5244",
+          "score": 0.45559000968933105,
+          "best_chunk_id": "MED-5244",
+          "best_chunk_rank": 4,
+          "title": "Effects of habitual coffee consumption on cardiometabolic disease, cardiovascular health, and all-cause mortality."
+        },
+        {
+          "doc_id": "MED-2155",
+          "score": 0.45559000968933105,
+          "best_chunk_id": "MED-2155",
+          "best_chunk_rank": 5,
+          "title": "Effects of habitual coffee consumption on cardiometabolic disease, cardiovascular health, and all-cause mortality."
+        },
+        {
+          "doc_id": "MED-877",
+          "score": 0.45544666051864624,
+          "best_chunk_id": "MED-877",
+          "best_chunk_rank": 6,
+          "title": "Detrimental effects of energy drink consumption on platelet and endothelial function."
+        },
+        {
+          "doc_id": "MED-5054",
+          "score": 0.45185816287994385,
+          "best_chunk_id": "MED-5054",
+          "best_chunk_rank": 7,
+          "title": "The potential toxicity of artificial sweeteners."
+        },
+        {
+          "doc_id": "MED-4331",
+          "score": 0.4458269476890564,
+          "best_chunk_id": "MED-4331",
+          "best_chunk_rank": 8,
+          "title": "Black tea is not significantly different from water in the maintenance of normal hydration in human subjects: results from a randomised controlled ..."
+        },
+        {
+          "doc_id": "MED-3895",
+          "score": 0.44056522846221924,
+          "best_chunk_id": "MED-3895",
+          "best_chunk_rank": 9,
+          "title": "Metabolic and performance effects of raisins versus sports gel as pre-exercise feedings in cyclists."
+        },
+        {
+          "doc_id": "MED-3473",
+          "score": 0.4405074119567871,
+          "best_chunk_id": "MED-3473",
+          "best_chunk_rank": 10,
+          "title": "Orange juice improved lipid profile and blood lactate of overweight middle-aged women subjected to aerobic training."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1161",
+      "question": "fava beans",
+      "gold_doc_id": "MED-4281",
+      "gold_title": "Beneficial effects of L-arginine on reducing obesity: potential mechanisms and important implications for human health.",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "Over the past 20 years, growing interest in the biochemistry, nutrition, and pharmacology of L-arginine has led to extensive studies to explore its nutritional and therapeutic roles in treating and preventing human metabolic disorders. Emerging evidence shows that dietary L-arginine supplementation reduces adiposity in genetically obese rats, diet-induced obese rats, finishing pigs, and obese human subjects with Type-2 diabetes mellitus. The mechanisms responsible for the beneficial effects of L",
+      "top_documents": [
+        {
+          "doc_id": "MED-4991",
+          "score": 0.46399474143981934,
+          "best_chunk_id": "MED-4991",
+          "best_chunk_rank": 1,
+          "title": "Bean consumption is associated with greater nutrient intake, reduced systolic blood pressure, lower body weight, and a smaller waist circumference ..."
+        },
+        {
+          "doc_id": "MED-3138",
+          "score": 0.4566277861595154,
+          "best_chunk_id": "MED-3138",
+          "best_chunk_rank": 2,
+          "title": "Perceptions of flatulence from bean consumption among adults in 3 feeding studies"
+        },
+        {
+          "doc_id": "MED-2570",
+          "score": 0.41509461402893066,
+          "best_chunk_id": "MED-2570",
+          "best_chunk_rank": 3,
+          "title": "In vitro investigations of the potential health benefits of Australian-grown faba beans (Vicia faba L.): chemopreventative capacity and inhibitory ..."
+        },
+        {
+          "doc_id": "MED-3136",
+          "score": 0.40622690320014954,
+          "best_chunk_id": "MED-3136",
+          "best_chunk_rank": 4,
+          "title": "Influence of frequent and long-term bean consumption on colonic function and fermentation."
+        },
+        {
+          "doc_id": "MED-2144",
+          "score": 0.37749892473220825,
+          "best_chunk_id": "MED-2144",
+          "best_chunk_rank": 5,
+          "title": "Beans and diabetes: Phaseolus vulgaris preparations as antihyperglycemic agents."
+        },
+        {
+          "doc_id": "MED-3132",
+          "score": 0.37562474608421326,
+          "best_chunk_id": "MED-3132",
+          "best_chunk_rank": 6,
+          "title": "Legume promotion in counselling: an e-mail survey of dietitians."
+        },
+        {
+          "doc_id": "MED-5079",
+          "score": 0.37536224722862244,
+          "best_chunk_id": "MED-5079",
+          "best_chunk_rank": 7,
+          "title": "Pinto bean consumption reduces biomarkers for heart disease risk."
+        },
+        {
+          "doc_id": "MED-4510",
+          "score": 0.3649314045906067,
+          "best_chunk_id": "MED-4510",
+          "best_chunk_rank": 8,
+          "title": "Non-Soy Legume Consumption Lowers Cholesterol Levels: A Meta-Analysis of Randomized Controlled Trials"
+        },
+        {
+          "doc_id": "MED-2147",
+          "score": 0.3592609465122223,
+          "best_chunk_id": "MED-2147",
+          "best_chunk_rank": 9,
+          "title": "Phaseolus beans: impact on glycaemic response and chronic disease risk in human subjects."
+        },
+        {
+          "doc_id": "MED-724",
+          "score": 0.3563351035118103,
+          "best_chunk_id": "MED-724",
+          "best_chunk_rank": 10,
+          "title": "Flatulence--causes, relation to diet and remedies."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 219,
+    "failure_at_10_available": 104,
+    "saved_per_group_max": 5
+  }
+}

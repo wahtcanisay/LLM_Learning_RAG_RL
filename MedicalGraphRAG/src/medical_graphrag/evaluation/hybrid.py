@@ -13,6 +13,7 @@ from typing import Any
 from medical_graphrag.data.io import sha256_file, write_json
 from medical_graphrag.evaluation.retrieval import (
     evaluate_rankings,
+    first_gold_rank,
     read_jsonl,
     read_qrels,
     validate_hit_rows,
@@ -105,9 +106,9 @@ def evaluate_hybrid_run(
 
     qrels = read_qrels(dataset_dir / "qrels.tsv")
     if set(qrels) != set(questions) or any(
-        doc_id not in documents for doc_id in qrels.values()
+        doc_id not in documents for doc_ids in qrels.values() for doc_id in doc_ids
     ):
-        raise ValueError("qrels do not resolve one existing document for every question")
+        raise ValueError("qrels do not resolve an existing document for every question")
 
     bm25_by_qid = {str(r["query_id"]): r for r in bm25_rows}
     dense_by_qid = {str(r["query_id"]): r for r in dense_rows}
@@ -157,11 +158,7 @@ def evaluate_hybrid_run(
         query_id for query_id, row in questions.items() if row["split"] == "test"
     ]
     gold_ranks = {
-        query_id: (
-            fused_rankings[query_id].index(qrels[query_id]) + 1
-            if qrels[query_id] in fused_rankings[query_id]
-            else None
-        )
+        query_id: first_gold_rank(fused_rankings[query_id], qrels[query_id])
         for query_id in test_ids
     }
     success_all = [
@@ -180,8 +177,8 @@ def evaluate_hybrid_run(
             {
                 "query_id": query_id,
                 "question": questions[query_id]["question"],
-                "gold_doc_id": qrels[query_id],
-                "gold_title": documents[qrels[query_id]]["title"],
+                "gold_doc_id": qrels[query_id][0],
+                "gold_title": documents[qrels[query_id][0]]["title"],
                 "gold_rank": gold_ranks[query_id],
                 "top_documents": [
                     {
@@ -203,7 +200,7 @@ def evaluate_hybrid_run(
     for query_id in KNOWN_FAILURE_QUERIES:
         if query_id not in questions:
             continue
-        gold = qrels[query_id]
+        gold = qrels[query_id][0]
         bm25_doc_ids = [
             str(item["doc_id"])
             for item in collapse_chunk_hits(

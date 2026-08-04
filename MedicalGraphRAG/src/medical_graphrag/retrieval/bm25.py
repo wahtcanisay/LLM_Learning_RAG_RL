@@ -140,13 +140,11 @@ def validate_frozen_dataset(dataset_dir: Path) -> dict[str, Any]:
     for query_id, doc_id, relevance in qrels:
         if not query_id or not doc_id or relevance != 1:
             raise ValueError("qrels must contain non-empty IDs and relevance=1")
-        if query_id in qrel_query_ids:
-            raise ValueError(f"duplicate qrel query_id: {query_id}")
         if query_id not in query_ids or doc_id not in document_ids:
             raise ValueError("qrel must reference an existing query and document")
         qrel_query_ids.add(query_id)
     if qrel_query_ids != query_ids:
-        raise ValueError("every question must have exactly one qrel")
+        raise ValueError("every question must have at least one qrel")
     return manifest
 
 
