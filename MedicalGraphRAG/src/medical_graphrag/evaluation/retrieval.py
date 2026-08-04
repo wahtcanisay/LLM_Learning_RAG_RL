@@ -1,5 +1,8 @@
+import json
 import math
 from collections.abc import Mapping, Sequence
+from pathlib import Path
+from typing import Any
 
 
 def evaluate_rankings(
@@ -25,3 +28,41 @@ def evaluate_rankings(
     result["mrr@10"] = sum(reciprocal_ranks) / count
     result["ndcg@10"] = sum(ndcgs) / count
     return result
+
+
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    with path.open(encoding="utf-8") as handle:
+        return [json.loads(line) for line in handle if line.strip()]
+
+
+def percentile(values: list[float], fraction: float) -> float:
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * fraction
+    lower = math.floor(position)
+    upper = math.ceil(position)
+    if lower == upper:
+        return ordered[lower]
+    return ordered[lower] + (ordered[upper] - ordered[lower]) * (position - lower)
+
+
+def read_qrels(path: Path) -> dict[str, str]:
+    rows = path.read_text(encoding="utf-8").splitlines()[1:]
+    result: dict[str, str] = {}
+    for row in rows:
+        query_id, doc_id, relevance = row.split("\t")
+        if relevance != "1" or query_id in result:
+            raise ValueError("qrels must contain one relevance=1 row per query")
+        result[query_id] = doc_id
+    return result
+
+
+def validate_hit_rows(raw_rows: list[dict[str, Any]], requested_top_k: int) -> None:
+    """Shared ranking-shape checks: contiguous one-based ranks and finite scores."""
+    for row in raw_rows:
+        for expected_rank, hit in enumerate(row["hits"], start=1):
+            score = float(hit["score"])
+            if int(hit["chunk_rank"]) != expected_rank:
+                raise ValueError("hit ranks must be contiguous and one-based")
+            if not math.isfinite(score):
+                raise ValueError("hit score must be finite")
+    _ = requested_top_k

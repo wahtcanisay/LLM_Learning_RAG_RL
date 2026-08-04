@@ -1,3 +1,10 @@
+"""Dense/FAISS run evaluation, mirroring the BM25 evaluation contract.
+
+Shares ``evaluate_rankings`` and ``collapse_chunk_hits`` with BM25 so the two
+baselines use the exact same metric definition and chunk-to-document folding.
+The only differences are the run-report validation (dense binds the embedding
+model / index hashes) and the retriever section written into the manifest.
+"""
 import math
 import statistics
 from collections import Counter
@@ -49,6 +56,9 @@ def _validate_run_context(
         raise ValueError("search report rankings SHA-256 mismatch")
     if search_report.get("text_mode") != "abstract_only":
         raise ValueError("search report must use abstract_only text mode")
+    for key in ("embedding_model", "dim", "normalized", "index_type"):
+        if search_report.get(key) != index_report.get(key):
+            raise ValueError(f"search report {key} does not match index report")
     requested_top_k = int(search_report["requested_top_k"])
     if requested_top_k <= 0:
         raise ValueError("requested_top_k must be positive")
@@ -77,7 +87,7 @@ def _validate_run_context(
     return search_report
 
 
-def evaluate_bm25_run(
+def evaluate_dense_run(
     dataset_dir: Path,
     metadata_path: Path,
     rankings_path: Path,
@@ -95,8 +105,7 @@ def evaluate_bm25_run(
         str(row["doc_id"]): row for row in read_jsonl(dataset_dir / "documents.jsonl")
     }
     chunks = read_jsonl(dataset_dir / "chunks.jsonl")
-    metadata_rows = read_jsonl(metadata_path)
-    metadata = {str(row["chunk_id"]): row for row in metadata_rows}
+    metadata = {str(row["chunk_id"]): row for row in read_jsonl(metadata_path)}
     raw_rows = read_jsonl(rankings_path)
     if len(raw_rows) != len(questions) or {
         str(row["query_id"]) for row in raw_rows
@@ -223,7 +232,12 @@ def evaluate_bm25_run(
         },
         "chunk_top_k": int(search_report["requested_top_k"]),
         "aggregation": "max_chunk_score",
-        "bm25": {"k1": float(search_report["k1"]), "b": float(search_report["b"])},
+        "dense": {
+            "embedding_model": search_report["embedding_model"],
+            "dim": int(search_report["dim"]),
+            "normalized": bool(search_report["normalized"]),
+            "index_type": search_report["index_type"],
+        },
         "text_mode": search_report["text_mode"],
     }
     write_json(output_dir / "metrics.json", metrics)

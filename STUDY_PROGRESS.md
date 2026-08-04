@@ -129,7 +129,11 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - 结果位置：`MedicalGraphRAG/experiments/pubmedqa_hard_v1/bm25_abstract_only/`；raw rankings、collection、index 位于 ignored `outputs/`、`indexes/`。
 - 最终审计重跑代码 commit：`49f655e`；数据 manifest SHA-256：`cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa`；questions SHA-256：`cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982`；collection SHA-256：`8651101da23e625c4324e6e0d97018039c2cefd97f539c74bfd69d7fb202360c`；index SHA-256：`24d98c4f6ce12c6aba2e8f7e7aa34c9b5594b92c0caca7a67c122b70f927a274`；raw rankings SHA-256：`3c2376b93f9c7982c28e2d706d942da0e3390c27e1fa9d9e092c09639aa28487`。
 - 审计链：导出、建索引、搜索、评测逐级校验 frozen dataset、collection、metadata、index 与前序报告哈希；评测同时复算 query 数、命中数量分布、短排名数量，并从已验证搜索报告读取 Top-k、k1、b 和 text mode，不再硬编码实验标签。
-- 当前完整测试：`47 passed`。
+- 2026-08-04：Dense 基线完成（`dense_abstract_only`）。embedding 用 `all-mpnet-base-v2`（= LinearRAG 同款；本地路径 `models/all-mpnet-base-v2`，438MB，经断点续传下载器 `scripts/download_embedding_model.py` 获取，HF 直连中途断线、hf-mirror 无 ETag 被拒的网络坑已记录）；FAISS IndexFlatIP、768 维、归一化、Top-100 候选深度与 BM25 对齐、按 doc_id 取 max 折叠。
+- Dense test（500 题，主结果）：Recall@1 `0.966`、Recall@5 `0.992`、Recall@10 `0.994`、MRR@10 `0.977786`、nDCG@10 `0.981885`、mean 延迟 `13.309 ms`。全面超过 BM25（Recall@1 +4.0、Recall@10 +1.0、MRR@10 +3.2、nDCG@10 +2.7）。
+- Dense dev（500 题）：Recall@1 `0.966`、Recall@5 `0.994`、Recall@10 `0.994`、MRR@10 `0.978233`、nDCG@10 `0.982254`。
+- Dense 案例：test 仅 3 题 gold 掉出 Top-10（BM25 8 题）；`11570976`（"Is it Crohn's disease?" rank 63）与 `18359123`（"Is it better to be big?" rank 57）与 BM25 是同一批短模糊 query 失败，可作为 Hybrid 是否缓解的观察点。
+- 当前完整测试：`57 passed`。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
 
@@ -191,7 +195,9 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 
 # 下一步
 
-下一步唯一任务：结合保存的 5 个成功和 5 个失败案例，用自己的话解释一个术语明确问题为什么 BM25 排名高、一个宽泛问题为什么 BM25 失败，并说明 BM25 依赖词项匹配而不是向量相似度。完成这一步后开始 Dense baseline 设计，不直接跳到 LinearRAG 医学迁移。
+下一步（`feat/dense-baseline` 分支，BM25 与 Dense 已完成）：设计并实现 Hybrid = RRF(BM25 + Dense)。复用同一冻结数据、dev/test、qrels、document 折叠与 `evaluate_rankings`；RRF 按 rank 融合两路文档排名（k 固定）；与 BM25/Dense 单路对比，记录 Recall@1/5/10、MRR@10、nDCG@10、延迟；观察 `11570976` / `18359123` 短模糊 query 是否被融合缓解。不引入 Reranker、生成模型或 LinearRAG。
+
+已确认管线顺序：Hybrid → LinearRAG 图检索迁移（阶段 2）→ 三者全部完成后，才做 Reranker（专用 Qwen3-Reranker 模型）作为检索后的打分层。当前所有指标均来自封闭 5,000 文档 / 1,000 题基准，全量 PubMed 实验暂缓，不把封闭结果外推。BM25 解释门禁按学习者决定跳过，不计为已掌握。
 
 # 待补知识
 
@@ -200,6 +206,7 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 - 向量化传播与默认 BFS-style 分支的一致性（可选，端到端主干跑通后再验证）；
 - Recall@k、MRR、nDCG 与 QA Accuracy 的评测边界。
 - chunk-level ranking 到 document-level ranking 的聚合偏差，以及 Top-100 candidate depth 对 Recall@10 的影响。
+- LinearRAG 相邻 Passage 边与 PubMed 短摘要不适配（2026-08-03 反思）：LinearRAG 用 `re.compile(r'^(\d+):')` 从 passage 文本提前缀建相邻边，而我们的 chunk `content` 无前缀、顺序在 `order` 字段，直接喂入建不出相邻边；照搬"全局排序连相邻"还会跨文档错边。迁移时应改为按 `(doc_id, order)` 只在文档内连接，并把相邻边作为单变量实验（预计对短摘要收益很小）；主信号是 Entity–Passage 边 + Entity→Sentence→Entity 传播 + PPR。
 
 # 实验结果总表
 
@@ -223,6 +230,8 @@ Lucene 只返回至少命中一个 query 词项的文档。真实运行中 995/1
 |---|---|---:|---:|---:|---:|---:|---:|
 | BM25 abstract-only | dev (500) | 0.920 | 0.972 | 0.978 | 0.943250 | 0.951905 | 1.394 ms |
 | BM25 abstract-only | official test (500) | 0.926 | 0.974 | 0.984 | 0.945825 | 0.955147 | 1.359 ms |
+| Dense all-mpnet (IndexFlatIP) | dev (500) | 0.966 | 0.994 | 0.994 | 0.978233 | 0.982254 | 19.707 ms |
+| Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 13.309 ms |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 

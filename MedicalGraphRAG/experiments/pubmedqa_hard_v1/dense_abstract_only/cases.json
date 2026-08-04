@@ -1,0 +1,651 @@
+{
+  "success": [
+    {
+      "query_id": "7482275",
+      "question": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_doc_id": "PMID:7482275",
+      "gold_title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "the accepted treatment protocol for necrotizing fasciitis ( nf ) consists of extensive surgery and wide spectrum antibiotics. hyperbaric oxygenation ( hbo ) has been recommended as adjuvant therapy for nf, improving patient mortality and outcome. however, the beneficial effect of hbo for nf remains controversial.",
+      "top_documents": [
+        {
+          "doc_id": "PMID:7482275",
+          "score": 0.9427039623260498,
+          "best_chunk_id": "PMID:7482275#0",
+          "best_chunk_rank": 1,
+          "title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?"
+        },
+        {
+          "doc_id": "PMID:24270957",
+          "score": 0.5505043864250183,
+          "best_chunk_id": "PMID:24270957#2",
+          "best_chunk_rank": 2,
+          "title": "Is combined therapy more effective than growth hormone or hyperbaric oxygen alone in the healing of left ischemic and non-ischemic colonic anastomoses?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0275_4448",
+          "score": 0.47999343276023865,
+          "best_chunk_id": "MEDRAG:pubmed23n0275_4448#0",
+          "best_chunk_rank": 3,
+          "title": "[Initial experiences with extracorporeal shockwave lithotripsy (ESWL) in treatment of tendinosis calcarea of the shoulder]."
+        },
+        {
+          "doc_id": "PMID:11862129",
+          "score": 0.47415217757225037,
+          "best_chunk_id": "PMID:11862129#2",
+          "best_chunk_rank": 4,
+          "title": "Do clinical variables predict pathologic radiographs in the first episode of wheezing?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0275_1614",
+          "score": 0.4649910628795624,
+          "best_chunk_id": "MEDRAG:pubmed23n0275_1614#1",
+          "best_chunk_rank": 5,
+          "title": "Acute asphyxia affects neutrophil number and function in the rat."
+        },
+        {
+          "doc_id": "PMID:26418796",
+          "score": 0.46279001235961914,
+          "best_chunk_id": "PMID:26418796#2",
+          "best_chunk_rank": 6,
+          "title": "Do Wound Cultures Give Information About the Microbiology of Blood Cultures in Severe Burn Patients?"
+        },
+        {
+          "doc_id": "PMID:19504993",
+          "score": 0.4578731060028076,
+          "best_chunk_id": "PMID:19504993#0",
+          "best_chunk_rank": 8,
+          "title": "It's Fournier's gangrene still dangerous?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0869_24016",
+          "score": 0.4498685598373413,
+          "best_chunk_id": "MEDRAG:pubmed23n0869_24016#1",
+          "best_chunk_rank": 9,
+          "title": "Sulodexide for treating venous leg ulcers."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0794_3339",
+          "score": 0.4493328332901001,
+          "best_chunk_id": "MEDRAG:pubmed23n0794_3339#0",
+          "best_chunk_rank": 10,
+          "title": "Pediatric burn wound impetigo after grafting."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_3751",
+          "score": 0.4479743242263794,
+          "best_chunk_id": "MEDRAG:pubmed23n1133_3751#0",
+          "best_chunk_rank": 11,
+          "title": "A bibliometric analysis of clinical research on fracture-related infection."
+        }
+      ]
+    },
+    {
+      "query_id": "7497757",
+      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_doc_id": "PMID:7497757",
+      "gold_title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "to determine if temperature during cardiopulmonary bypass ( cpb ) has an effect on perioperative and postoperative thyroid function.",
+      "top_documents": [
+        {
+          "doc_id": "PMID:7497757",
+          "score": 0.8176904916763306,
+          "best_chunk_id": "PMID:7497757#0",
+          "best_chunk_rank": 1,
+          "title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_400",
+          "score": 0.6679526567459106,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_400#0",
+          "best_chunk_rank": 2,
+          "title": "Forced-air warming is no more effective than conventional methods for raising postoperative core temperature after cardiac surgery."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0515_11805",
+          "score": 0.6477108001708984,
+          "best_chunk_id": "MEDRAG:pubmed23n0515_11805#0",
+          "best_chunk_rank": 3,
+          "title": "Profound hypothermia with alpha-stat pH management during open-heart surgery is associated with choreoathetosis."
+        },
+        {
+          "doc_id": "PMID:17054994",
+          "score": 0.5700008869171143,
+          "best_chunk_id": "PMID:17054994#0",
+          "best_chunk_rank": 7,
+          "title": "Does frozen section alter surgical management of multinodular thyroid disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_19893",
+          "score": 0.5354941487312317,
+          "best_chunk_id": "MEDRAG:pubmed23n0412_19893#0",
+          "best_chunk_rank": 9,
+          "title": "[Role of the Swan-Ganz pulmonary artery (PA) catheter in evaluation of hemodynamic changes during myocardial revascularization in patients with low left ventricular function]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0200_87",
+          "score": 0.5100365877151489,
+          "best_chunk_id": "MEDRAG:pubmed23n0200_87#0",
+          "best_chunk_rank": 10,
+          "title": "The management of accidental hypothermia."
+        },
+        {
+          "doc_id": "PMID:10381996",
+          "score": 0.4863477349281311,
+          "best_chunk_id": "PMID:10381996#1",
+          "best_chunk_rank": 11,
+          "title": "Clinician assessment for acute chest syndrome in febrile patients with sickle cell disease: is it accurate enough?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_12537",
+          "score": 0.4720648527145386,
+          "best_chunk_id": "MEDRAG:pubmed23n0412_12537#1",
+          "best_chunk_rank": 12,
+          "title": "Comparison of a prototype esophageal oximetry probe with two conventional digital pulse oximetry monitors in aortocoronary bypass patients."
+        },
+        {
+          "doc_id": "PMID:11146778",
+          "score": 0.46720796823501587,
+          "best_chunk_id": "PMID:11146778#0",
+          "best_chunk_rank": 13,
+          "title": "Risk stratification in emergency surgical patients: is the APACHE II score a reliable marker of physiological impairment?"
+        },
+        {
+          "doc_id": "PMID:10430303",
+          "score": 0.45093628764152527,
+          "best_chunk_id": "PMID:10430303#2",
+          "best_chunk_rank": 15,
+          "title": "Does laparoscopic cholecystectomy influence peri-sinusoidal cell activity?"
+        }
+      ]
+    },
+    {
+      "query_id": "7547656",
+      "question": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_doc_id": "PMID:7547656",
+      "gold_title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "bolus intravenous injection of epinephrine can decrease uterine blood flow. this study examined the effects of intravenous infusion of epinephrine on uterine blood flow in the gravid ewe.",
+      "top_documents": [
+        {
+          "doc_id": "PMID:7547656",
+          "score": 0.9025377035140991,
+          "best_chunk_id": "PMID:7547656#0",
+          "best_chunk_rank": 1,
+          "title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_12179",
+          "score": 0.6798020601272583,
+          "best_chunk_id": "MEDRAG:pubmed23n0008_12179#0",
+          "best_chunk_rank": 4,
+          "title": "Uteroplacental blood flow during alkalosis in the sheep."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_14266",
+          "score": 0.5679064989089966,
+          "best_chunk_id": "MEDRAG:pubmed23n0120_14266#0",
+          "best_chunk_rank": 5,
+          "title": "Vasopressin-induced bradycardia in fetal and adult sheep is not dependent on an increase in blood pressure."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_24180",
+          "score": 0.550787627696991,
+          "best_chunk_id": "MEDRAG:pubmed23n0548_24180#0",
+          "best_chunk_rank": 6,
+          "title": "Up-regulation of the endothelin receptor A in placental tissue from first trimester delayed miscarriages."
+        },
+        {
+          "doc_id": "PMID:10577397",
+          "score": 0.5326027274131775,
+          "best_chunk_id": "PMID:10577397#2",
+          "best_chunk_rank": 7,
+          "title": "Is a pressor necessary during aortic perfusion and oxygenation therapy of cardiac arrest?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_10068",
+          "score": 0.5186043381690979,
+          "best_chunk_id": "MEDRAG:pubmed23n0548_10068#0",
+          "best_chunk_rank": 8,
+          "title": "Development of the ovine fetal cardiovascular defense to hypoxemia towards full term."
+        },
+        {
+          "doc_id": "PMID:17551944",
+          "score": 0.5091012716293335,
+          "best_chunk_id": "PMID:17551944#1",
+          "best_chunk_rank": 9,
+          "title": "Doppler examination of uteroplacental circulation in early pregnancy: can it predict adverse outcome?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_8564",
+          "score": 0.488669753074646,
+          "best_chunk_id": "MEDRAG:pubmed23n0294_8564#0",
+          "best_chunk_rank": 10,
+          "title": "Monitoring technology and the clinical perspective."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0255_17762",
+          "score": 0.4878610372543335,
+          "best_chunk_id": "MEDRAG:pubmed23n0255_17762#0",
+          "best_chunk_rank": 11,
+          "title": "Effects of nitroglycerin on the uterine and umbilical circulation in severe preeclampsia."
+        },
+        {
+          "doc_id": "PMID:9483814",
+          "score": 0.4877747595310211,
+          "best_chunk_id": "PMID:9483814#2",
+          "best_chunk_rank": 12,
+          "title": "Does para-cervical block offer additional advantages in abortion induction with gemeprost in the 2nd trimester?"
+        }
+      ]
+    },
+    {
+      "query_id": "7664228",
+      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_doc_id": "PMID:7664228",
+      "gold_title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_rank": 2,
+      "gold_chunk_excerpt": "to determine whether decreasing lengths of stay over time for selected diagnostic categories were associated with increased hospital readmission rates and mean number of physician visits after discharge.",
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "score": 0.5581099987030029,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_8311#0",
+          "best_chunk_rank": 1,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
+        },
+        {
+          "doc_id": "PMID:7664228",
+          "score": 0.5520154237747192,
+          "best_chunk_id": "PMID:7664228#3",
+          "best_chunk_rank": 2,
+          "title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?"
+        },
+        {
+          "doc_id": "PMID:17682349",
+          "score": 0.5409708619117737,
+          "best_chunk_id": "PMID:17682349#4",
+          "best_chunk_rank": 4,
+          "title": "Are there gender differences in the reasons why African Americans delay in seeking medical help for symptoms of an acute myocardial infarction?"
+        },
+        {
+          "doc_id": "PMID:10158597",
+          "score": 0.5291190147399902,
+          "best_chunk_id": "PMID:10158597#5",
+          "best_chunk_rank": 5,
+          "title": "Does a dedicated discharge coordinator improve the quality of hospital discharge?"
+        },
+        {
+          "doc_id": "PMID:11833948",
+          "score": 0.5103927850723267,
+          "best_chunk_id": "PMID:11833948#2",
+          "best_chunk_rank": 8,
+          "title": "Does a delay in transfer to a rehabilitation unit for older people affect outcome after fracture of the proximal femur?"
+        },
+        {
+          "doc_id": "PMID:7860319",
+          "score": 0.50408935546875,
+          "best_chunk_id": "PMID:7860319#3",
+          "best_chunk_rank": 9,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "PMID:26516021",
+          "score": 0.5029603838920593,
+          "best_chunk_id": "PMID:26516021#2",
+          "best_chunk_rank": 10,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8314",
+          "score": 0.47245198488235474,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_8314#0",
+          "best_chunk_rank": 13,
+          "title": "Hospital reform and nursing labor market trends in Canada."
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "score": 0.47045570611953735,
+          "best_chunk_id": "PMID:17610439#0",
+          "best_chunk_rank": 14,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "score": 0.46597591042518616,
+          "best_chunk_id": "PMID:24666444#0",
+          "best_chunk_rank": 15,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        }
+      ]
+    },
+    {
+      "query_id": "7860319",
+      "question": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_doc_id": "PMID:7860319",
+      "gold_title": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "we compare 30 - day and 180 - day postadmission hospital mortality rates for all medicare patients and those in three categories of cardiac care : coronary artery bypass graft surgery, acute myocardial infarction, and congestive heart failure. data sources /",
+      "top_documents": [
+        {
+          "doc_id": "PMID:7860319",
+          "score": 0.7325405478477478,
+          "best_chunk_id": "PMID:7860319#2",
+          "best_chunk_rank": 1,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "score": 0.5815526843070984,
+          "best_chunk_id": "PMID:17610439#2",
+          "best_chunk_rank": 5,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "PMID:21849531",
+          "score": 0.5757999420166016,
+          "best_chunk_id": "PMID:21849531#3",
+          "best_chunk_rank": 6,
+          "title": "Does growth hormone replacement therapy reduce mortality in adults with growth hormone deficiency?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0553_15394",
+          "score": 0.5639066696166992,
+          "best_chunk_id": "MEDRAG:pubmed23n0553_15394#0",
+          "best_chunk_rank": 7,
+          "title": "A semiparametric additive rates model for recurrent event data."
+        },
+        {
+          "doc_id": "PMID:9920954",
+          "score": 0.5534089207649231,
+          "best_chunk_id": "PMID:9920954#2",
+          "best_chunk_rank": 8,
+          "title": "Do \"America's Best Hospitals\" perform better for acute myocardial infarction?"
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "score": 0.5110040903091431,
+          "best_chunk_id": "PMID:24666444#0",
+          "best_chunk_rank": 11,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "score": 0.5059739351272583,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_8311#0",
+          "best_chunk_rank": 12,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_11694",
+          "score": 0.5047032833099365,
+          "best_chunk_id": "MEDRAG:pubmed23n0294_11694#0",
+          "best_chunk_rank": 13,
+          "title": "Using USRDS generated hospitalization tables to compare local dialysis patient hospitalization rates to national rates."
+        },
+        {
+          "doc_id": "PMID:24751724",
+          "score": 0.5045115947723389,
+          "best_chunk_id": "PMID:24751724#2",
+          "best_chunk_rank": 14,
+          "title": "Does ethnicity affect where people with cancer die?"
+        },
+        {
+          "doc_id": "PMID:23972333",
+          "score": 0.4941641688346863,
+          "best_chunk_id": "PMID:23972333#2",
+          "best_chunk_rank": 16,
+          "title": "Has the prevalence of health care services use increased over the last decade (2001-2009) in elderly people?"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "11570976",
+      "question": "Is it Crohn's disease?",
+      "gold_doc_id": "PMID:11570976",
+      "gold_title": "Is it Crohn's disease?",
+      "gold_rank": 63,
+      "gold_chunk_excerpt": "sulfasalazine is a widely used anti - inflammatory agent in the treatment of inflammatory bowel disease and several rheumatological disorders. although as many as 20 % of treated patients may experience reversible, dose - dependent side effects, less frequent but potentially severe, systemic reactions have also been reported.",
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_13805",
+          "score": 0.5265863537788391,
+          "best_chunk_id": "MEDRAG:pubmed23n0294_13805#0",
+          "best_chunk_rank": 1,
+          "title": "Effect of pregnancy on the clinical course of a cohort of women with inflammatory bowel disease."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_16583",
+          "score": 0.5238585472106934,
+          "best_chunk_id": "MEDRAG:pubmed23n0120_16583#0",
+          "best_chunk_rank": 2,
+          "title": "Internal carotid artery occlusion in association with Crohn's disease."
+        },
+        {
+          "doc_id": "PMID:9347843",
+          "score": 0.5125455260276794,
+          "best_chunk_id": "PMID:9347843#0",
+          "best_chunk_rank": 3,
+          "title": "Laparoscopic-assisted ileocolic resections in patients with Crohn's disease: are abscesses, phlegmons, or recurrent disease contraindications?"
+        },
+        {
+          "doc_id": "PMID:18802997",
+          "score": 0.48284441232681274,
+          "best_chunk_id": "PMID:18802997#1",
+          "best_chunk_rank": 4,
+          "title": "Can calprotectin predict relapse risk in inflammatory bowel disease?"
+        },
+        {
+          "doc_id": "PMID:10811329",
+          "score": 0.48265430331230164,
+          "best_chunk_id": "PMID:10811329#2",
+          "best_chunk_rank": 5,
+          "title": "Are 99mTc leukocyte scintigraphy and SBFT studies useful in children suspected of having inflammatory bowel disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0991_11212",
+          "score": 0.4522649645805359,
+          "best_chunk_id": "MEDRAG:pubmed23n0991_11212#0",
+          "best_chunk_rank": 9,
+          "title": "Effectiveness of sigmoidoscopy for assessing ulcerative colitis disease activity and therapeutic response."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0885_16832",
+          "score": 0.4455852508544922,
+          "best_chunk_id": "MEDRAG:pubmed23n0885_16832#0",
+          "best_chunk_rank": 10,
+          "title": "Endocrine manifestations in celiac disease."
+        },
+        {
+          "doc_id": "PMID:12612531",
+          "score": 0.4411706030368805,
+          "best_chunk_id": "PMID:12612531#0",
+          "best_chunk_rank": 11,
+          "title": "Fragility of the esophageal mucosa: a pathognomonic endoscopic sign of primary eosinophilic esophagitis?"
+        },
+        {
+          "doc_id": "PMID:17502203",
+          "score": 0.4406468868255615,
+          "best_chunk_id": "PMID:17502203#0",
+          "best_chunk_rank": 12,
+          "title": "Cholestasis associated with small bowel atresia: do we always need to investigate?"
+        },
+        {
+          "doc_id": "PMID:20197761",
+          "score": 0.4392286539077759,
+          "best_chunk_id": "PMID:20197761#1",
+          "best_chunk_rank": 13,
+          "title": "Is irritable bowel syndrome a diagnosis of exclusion?"
+        }
+      ]
+    },
+    {
+      "query_id": "18359123",
+      "question": "Is it better to be big?",
+      "gold_doc_id": "PMID:18359123",
+      "gold_title": "Is it better to be big?",
+      "gold_rank": 57,
+      "gold_chunk_excerpt": "swedish hospital mergers seem to stem from a conviction among policy makers that bigger hospitals lead to lower average costs and improved clinical outcomes. the effects of mergers in the form of multisited hospitals have not been systematically evaluated. the purpose of this article is to contribute to this area of knowledge by exploring responses to the merger of blekinge hospital.",
+      "top_documents": [
+        {
+          "doc_id": "PMID:18607272",
+          "score": 0.3542144000530243,
+          "best_chunk_id": "PMID:18607272#0",
+          "best_chunk_rank": 1,
+          "title": "Body perception: do parents, their children, and their children's physicians perceive body image differently?"
+        },
+        {
+          "doc_id": "PMID:21123461",
+          "score": 0.315343976020813,
+          "best_chunk_id": "PMID:21123461#3",
+          "best_chunk_rank": 3,
+          "title": "Are adult body circumferences associated with height?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_6893",
+          "score": 0.31286460161209106,
+          "best_chunk_id": "MEDRAG:pubmed23n0968_6893#0",
+          "best_chunk_rank": 4,
+          "title": "Brain and Body Size Relations among Spotted Hyenas (Crocuta crocuta)."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0552_3124",
+          "score": 0.2994890809059143,
+          "best_chunk_id": "MEDRAG:pubmed23n0552_3124#0",
+          "best_chunk_rank": 5,
+          "title": "Differential parental weight and height contributions to offspring birthweight and weight gain in infancy."
+        },
+        {
+          "doc_id": "PMID:17595200",
+          "score": 0.27985823154449463,
+          "best_chunk_id": "PMID:17595200#0",
+          "best_chunk_rank": 7,
+          "title": "Is there an intrauterine influence on obesity?"
+        },
+        {
+          "doc_id": "PMID:25034219",
+          "score": 0.2747170925140381,
+          "best_chunk_id": "PMID:25034219#1",
+          "best_chunk_rank": 8,
+          "title": "Does maternal obesity have an influence on feeding behavior of obese children?"
+        },
+        {
+          "doc_id": "PMID:22813804",
+          "score": 0.27306610345840454,
+          "best_chunk_id": "PMID:22813804#0",
+          "best_chunk_rank": 9,
+          "title": "Does obesity impact the pattern and outcome of trauma in children?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0615_12053",
+          "score": 0.27248385548591614,
+          "best_chunk_id": "MEDRAG:pubmed23n0615_12053#0",
+          "best_chunk_rank": 10,
+          "title": "Waist circumference in relation to body perception reported by Finnish adolescent girls and their mothers."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_1025",
+          "score": 0.2647586762905121,
+          "best_chunk_id": "MEDRAG:pubmed23n0968_1025#0",
+          "best_chunk_rank": 11,
+          "title": "Individual differences in appeal of energy dense foods predicts lower body mass change during adolescence."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0962_20407",
+          "score": 0.26264679431915283,
+          "best_chunk_id": "MEDRAG:pubmed23n0962_20407#0",
+          "best_chunk_rank": 13,
+          "title": "Survival of the Fastest: The Multivariate Optimization of Performance Phenotypes."
+        }
+      ]
+    },
+    {
+      "query_id": "18708308",
+      "question": "Can surgeon familiarization with current evidence lead to a change in practice?",
+      "gold_doc_id": "PMID:18708308",
+      "gold_title": "Can surgeon familiarization with current evidence lead to a change in practice?",
+      "gold_rank": 15,
+      "gold_chunk_excerpt": "despite evidence against its utility, many surgeons continue to employ prophylactic nasogastric decompression in elective colonic resection. this study aimed to establish whether an easy and practical intervention, mailing out a summary of current evidence to surgeons, can change surgeons practice to bring it more in line with current evidence.",
+      "top_documents": [
+        {
+          "doc_id": "PMID:26516021",
+          "score": 0.6078131198883057,
+          "best_chunk_id": "PMID:26516021#0",
+          "best_chunk_rank": 1,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0526_23336",
+          "score": 0.5890202522277832,
+          "best_chunk_id": "MEDRAG:pubmed23n0526_23336#0",
+          "best_chunk_rank": 2,
+          "title": "Evolution of methodological standards in surgical trials."
+        },
+        {
+          "doc_id": "PMID:23379759",
+          "score": 0.5814915895462036,
+          "best_chunk_id": "PMID:23379759#1",
+          "best_chunk_rank": 3,
+          "title": "Can early second-look tympanoplasty reduce the rate of conversion to modified radical mastoidectomy?"
+        },
+        {
+          "doc_id": "PMID:19712912",
+          "score": 0.5734374523162842,
+          "best_chunk_id": "PMID:19712912#4",
+          "best_chunk_rank": 4,
+          "title": "Has the 80-hour workweek improved surgical resident education in New England?"
+        },
+        {
+          "doc_id": "PMID:9645785",
+          "score": 0.557094931602478,
+          "best_chunk_id": "PMID:9645785#1",
+          "best_chunk_rank": 5,
+          "title": "Is a mandatory general surgery rotation necessary in the surgical clerkship?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0885_21607",
+          "score": 0.5485744476318359,
+          "best_chunk_id": "MEDRAG:pubmed23n0885_21607#0",
+          "best_chunk_rank": 6,
+          "title": "Performance and learning curve of a surgical care practitioner in completing hip aspirations."
+        },
+        {
+          "doc_id": "PMID:16678696",
+          "score": 0.5410033464431763,
+          "best_chunk_id": "PMID:16678696#0",
+          "best_chunk_rank": 7,
+          "title": "Continuity of care experience of residents in an academic vascular department: are trainees learning complete surgical care?"
+        },
+        {
+          "doc_id": "PMID:15041506",
+          "score": 0.5151222944259644,
+          "best_chunk_id": "PMID:15041506#1",
+          "best_chunk_rank": 11,
+          "title": "Is fear of anaphylactic shock discouraging surgeons from more widely adopting percutaneous and laparoscopic techniques in the treatment of liver hydatid cyst?"
+        },
+        {
+          "doc_id": "PMID:10354335",
+          "score": 0.5140160322189331,
+          "best_chunk_id": "PMID:10354335#3",
+          "best_chunk_rank": 12,
+          "title": "Can medical students contribute to quality assurance programmes in day surgery?"
+        },
+        {
+          "doc_id": "PMID:11380492",
+          "score": 0.513107419013977,
+          "best_chunk_id": "PMID:11380492#1",
+          "best_chunk_rank": 13,
+          "title": "Transsphenoidal pituitary surgery in Cushing's disease: can we predict outcome?"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 497,
+    "failure_at_10_available": 3,
+    "saved_per_group_max": 5
+  }
+}
