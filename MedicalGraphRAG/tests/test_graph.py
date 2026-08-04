@@ -83,7 +83,8 @@ def _make_dataset(tmp_path: Path) -> Path:
 def test_build_entity_passage_edges_normalizes_counts() -> None:
     entities, edges = build_entity_passage_edges(
         ["c1", "c2"],
-        [["Aspirin", "Aspirin", "pain"], ["Aspirin", "bleeding"]],
+        ["Aspirin reduces pain with Aspirin", "Aspirin causes bleeding"],
+        [["Aspirin", "pain"], ["Aspirin", "bleeding"]],
     )
     assert entities == ["Aspirin", "bleeding", "pain"]
     assert edges["c1"]["Aspirin"] == pytest.approx(2 / 3)

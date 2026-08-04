@@ -57,6 +57,9 @@ def validate_index(index_dir: Path, questions: Path, report_path: Path) -> dict[
         "sentence_embeddings.npy": "sentence_embeddings_sha256",
         "entity_embeddings.npy": "entity_embeddings_sha256",
         "passage_embeddings.npy": "passage_embeddings_sha256",
+        "entities.jsonl": "entities_sha256",
+        "entity_to_sentences.jsonl": "entity_to_sentences_sha256",
+        "sentence_to_entities.jsonl": "sentence_to_entities_sha256",
     }
     for filename, field in expected.items():
         if sha256_file(index_dir / filename) != report.get(field):
@@ -108,12 +111,29 @@ def main() -> int:
     args = parser.parse_args()
 
     index_report = validate_index(args.index, args.questions, args.index_report)
-    config = GraphConfig(ner_model=args.ner_model, embedding_model=args.embedding_model)
+    if args.ner_model != index_report["ner_model"]:
+        raise ValueError("requested ner model does not match index report")
+    if args.embedding_model != index_report["embedding_model"]:
+        raise ValueError("requested embedding model does not match index report")
+    index_config = index_report["config"]
+    config = GraphConfig(
+        damping=index_config["damping"],
+        passage_ratio=index_config["passage_ratio"],
+        passage_node_weight=index_config["passage_node_weight"],
+        iteration_threshold=index_config["iteration_threshold"],
+        top_k_sentence=index_config["top_k_sentence"],
+        max_iterations=index_config["max_iterations"],
+        ner_model=args.ner_model,
+        embedding_model=args.embedding_model,
+    )
     retriever = LinearGraphRetriever(args.index, config=config)
 
     questions = _read_jsonl(args.questions)
     chunks = _read_jsonl(args.chunks)
     chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in chunks}
+    missing = [p for p in retriever.passage_ids if p not in chunk_to_doc]
+    if missing:
+        raise ValueError(f"{len(missing)} index passages missing from --chunks")
     rows = [
         search_one(retriever, row, chunk_to_doc, args.top_k) for row in questions
     ]

@@ -148,8 +148,8 @@ scripts/run_sft.sh
 - Hybrid test（500 题）：Recall@1 `0.960`、Recall@5 `0.990`、Recall@10 `0.992`、MRR@10 `0.973833`、nDCG@10 `0.978454`；dev：Recall@1 `0.958`、Recall@10 `0.996`。
 - **负结果（如实记录）**：Hybrid 全面低于 Dense 单路（Recall@1 0.960 vs 0.966、nDCG@10 0.978 vs 0.982）。已知失败查询 `11570976`（Dense 63→Hybrid 114）与 `18359123`（57→113）反而更糟。原因：此基准上 BM25 严格弱于 Dense（摘要偏语义匹配，词项是噪音），RRF 让 BM25 高位错误文档稀释 Dense 信号。设计假设"融合互补信号超过单路"在此基准被证伪，不做无依据调参追逐。
 - 2026-08-04：LinearGraphRetriever 完成（`graph_abstract_only`）。医学 NER（BC5CDR）提取 8378 实体、19178 Entity-Passage 边、42342 句子桥；igraph（Entity+Passage 节点）；在线检索 = seed entities → Entity→Sentence→Entity BFS 传播 → passage 先验 → PPR（damping 0.85、passage_ratio 1.5、threshold 0.5、top_k_sentence 1、max_iterations 3）。相邻边 v1 默认关闭（pubmedqa 短摘要）。
-- Graph test（500 题）：Recall@1 `0.790`、Recall@5 `0.946`、Recall@10 `0.954`、MRR@10 `0.856744`、nDCG@10 `0.881167`、mean 延迟 `195.775 ms`（PPR+NER 代价，比 Dense 慢 ~12×）。
-- **四路对比（test）**：Dense（R@1 0.966）> Hybrid（0.960）> BM25（0.926）> **Graph（0.790）**。图检索在 `pubmedqa_hard_v1` 垫底——短摘要 + 事实题不是图的主场，实体传播 + PPR 相对强 Dense 先验是噪音。印证需要方案 B（`linearrag_medical_v1` 图主场）。独立复算误差 ~1e-15。
+- Graph test（500 题）：Recall@1 `0.800`、Recall@5 `0.942`、Recall@10 `0.958`、MRR@10 `0.861929`、nDCG@10 `0.885909`、mean 延迟 `168.690 ms`（PPR+NER 代价，比 Dense 慢 ~10×）；dev：Recall@1 `0.796`、Recall@10 `0.960`。
+- **四路对比（test）**：Dense（R@1 0.966）> Hybrid（0.960）> BM25（0.926）> **Graph（0.800）**。图检索在 `pubmedqa_hard_v1` 垫底——短摘要 + 事实题不是图的主场，实体传播 + PPR 相对强 Dense 先验是噪音。印证需要方案 B（`linearrag_medical_v1` 图主场）。独立复算误差 ~1e-15。
 - 当前完整测试：`72 passed`。
 
 ## MedRAG（2026-07-16 至 2026-07-23）
@@ -251,8 +251,8 @@ MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 �
 | Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 16.080 ms |
 | Hybrid RRF (BM25+Dense, k=60) | dev (500) | 0.958 | 0.990 | 0.996 | 0.972905 | 0.978649 | 离线融合 n/a |
 | Hybrid RRF (BM25+Dense, k=60) | official test (500) | 0.960 | 0.990 | 0.992 | 0.973833 | 0.978454 | 离线融合 n/a |
-| Graph (BC5CDR Entity-Passage + PPR) | dev (500) | 0.764 | 0.928 | 0.956 | 0.837507 | 0.866736 | 191.8 ms |
-| Graph (BC5CDR Entity-Passage + PPR) | official test (500) | 0.790 | 0.946 | 0.954 | 0.856744 | 0.881167 | 195.775 ms |
+| Graph (BC5CDR Entity-Passage + PPR) | dev (500) | 0.796 | 0.928 | 0.960 | 0.856575 | 0.881938 | 173.1 ms |
+| Graph (BC5CDR Entity-Passage + PPR) | official test (500) | 0.800 | 0.942 | 0.958 | 0.861929 | 0.885909 | 168.690 ms |
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 

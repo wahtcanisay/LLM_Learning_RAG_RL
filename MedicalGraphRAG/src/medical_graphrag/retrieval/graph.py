@@ -93,19 +93,21 @@ def split_sentences(nlp, texts: list[str]) -> list[list[str]]:
 
 def build_entity_passage_edges(
     passage_ids: list[str],
+    passage_texts: list[str],
     passage_entities: list[list[str]],
 ) -> tuple[list[str], dict[str, dict[str, float]]]:
-    """Compute Entity-Passage edge weights (normalized co-occurrence).
+    """Compute Entity-Passage edge weights (normalized occurrence counts).
 
-    Returns (unique_entities, edges) where edges[passage_id][entity] is
-    ``count(entity in passage) / sum(counts of all entities in passage)``.
+    Matches LinearRAG's ``add_entity_to_passage_edges``: an entity's weight is
+    its string-occurrence count in the passage text divided by the sum of
+    occurrence counts of all entities in that passage.
     """
     edges: dict[str, dict[str, float]] = {}
     all_entities: set[str] = set()
-    for passage_id, entities in zip(passage_ids, passage_entities):
-        counts: dict[str, int] = defaultdict(int)
-        for entity in entities:
-            counts[entity] += 1
+    for passage_id, text, entities in zip(passage_ids, passage_texts, passage_entities):
+        if not entities:
+            continue
+        counts = {entity: text.count(entity) for entity in entities}
         total = sum(counts.values())
         if total == 0:
             continue
@@ -156,11 +158,14 @@ def build_graph_index(
     sentence_to_entities: list[list[str]] = []
     entity_to_sentences: dict[str, list[str]] = defaultdict(list)
     for p_idx, sentence_list in enumerate(sentences):
+        passage_ents = passage_entities[p_idx]
         for s_idx, sentence in enumerate(sentence_list):
             sid = f"{passage_ids[p_idx]}#s{s_idx}"
             sentence_ids.append(sid)
             sentence_texts.append(sentence)
-            sentence_entities = passage_entities[p_idx]  # entities of the passage
+            # Only entities that actually appear in this sentence bridge it
+            # (closer to LinearRAG's per-sentence NER than whole-passage entities).
+            sentence_entities = [e for e in passage_ents if e in sentence]
             sentence_to_entities.append(sentence_entities)
             for entity in sentence_entities:
                 entity_to_sentences[entity].append(sid)
@@ -185,7 +190,7 @@ def build_graph_index(
     )
 
     # Entity-Passage edges + entity list.
-    all_entities, edges = build_entity_passage_edges(passage_ids, passage_entities)
+    all_entities, edges = build_entity_passage_edges(passage_ids, texts, passage_entities)
 
     # Entity embeddings (for seed-entity matching).
     entity_embeddings = np.asarray(
@@ -235,7 +240,6 @@ def build_graph_index(
     np.save(output_dir / "sentence_embeddings.npy", sentence_embeddings)
     np.save(output_dir / "entity_embeddings.npy", entity_embeddings)
     np.save(output_dir / "passage_embeddings.npy", passage_embeddings)
-    write_jsonl(output_dir / "passage_ids.jsonl", [{"passage_id": p} for p in passage_ids])
     report = {
         "text_mode": TEXT_MODE,
         "ner_model": config.ner_model,
@@ -252,6 +256,9 @@ def build_graph_index(
         "sentence_embeddings_sha256": sha256_file(output_dir / "sentence_embeddings.npy"),
         "entity_embeddings_sha256": sha256_file(output_dir / "entity_embeddings.npy"),
         "passage_embeddings_sha256": sha256_file(output_dir / "passage_embeddings.npy"),
+        "entities_sha256": sha256_file(output_dir / "entities.jsonl"),
+        "entity_to_sentences_sha256": sha256_file(output_dir / "entity_to_sentences.jsonl"),
+        "sentence_to_entities_sha256": sha256_file(output_dir / "sentence_to_entities.jsonl"),
         "config": {
             "damping": config.damping,
             "passage_ratio": config.passage_ratio,
@@ -313,7 +320,6 @@ class LinearGraphRetriever:
         self.passage_texts = contents[entity_count:]
         self.passage_node_indices = list(range(entity_count, len(names)))
         self.node_name_to_vertex_idx = {name: i for i, name in enumerate(names)}
-        self.entity_idx = {e: i for i, e in enumerate(self.entity_list)}
         self.sentence_id_to_idx = {
             str(row["sentence_id"]): i
             for i, row in enumerate(
@@ -332,12 +338,10 @@ class LinearGraphRetriever:
                 entities.append(text)
         return entities
 
-    def _get_seed_entities(
-        self, query: str, query_embedding: np.ndarray
-    ) -> tuple[list[int], list[float]]:
+    def _get_seed_entities(self, query: str) -> tuple[list[int], list[float]]:
         """Match each question entity to its argmax corpus entity."""
         question_entities = self._question_entities(query)
-        if not question_entities:
+        if not question_entities or self.entity_embeddings.shape[0] == 0:
             return [], []
         q_embs = np.asarray(
             self.embedder.encode(
@@ -432,9 +436,11 @@ class LinearGraphRetriever:
                 occurrences = passage_text_lower.count(entity.lower())
                 if occurrences > 0:
                     denom = tier if tier >= 1 else 1
-                    total_bonus += entity_score * math.log(1 + occurrences) / denom
+                    # Clamp the entity score so negative seed similarities cannot
+                    # drive the log argument out of its domain.
+                    total_bonus += max(entity_score, 0.0) * math.log(1 + occurrences) / denom
             score = self.config.passage_ratio * float(norm[p_idx]) + math.log(
-                1 + total_bonus
+                max(1 + total_bonus, 1e-9)
             )
             node_idx = self.node_name_to_vertex_idx[passage_id]
             passage_weights[node_idx] = score * self.config.passage_node_weight
@@ -451,6 +457,8 @@ class LinearGraphRetriever:
             implementation="prpack",
         )
         doc_scores = np.array([scores[i] for i in self.passage_node_indices])
+        if np.isnan(doc_scores).any():
+            doc_scores = np.nan_to_num(doc_scores, nan=0.0)
         order = np.argsort(doc_scores)[::-1]
         sorted_ids = [self.passage_ids[i] for i in order]
         return sorted_ids, doc_scores[order].tolist()
@@ -467,7 +475,7 @@ class LinearGraphRetriever:
             self.embedder.encode(query, normalize_embeddings=True, show_progress_bar=False),
             dtype="float32",
         )
-        seed_indices, seed_scores = self._get_seed_entities(query, query_embedding)
+        seed_indices, seed_scores = self._get_seed_entities(query)
         if not seed_indices:
             return self._dense_fallback(query_embedding, top_k)
         entity_weights, actived = self._calculate_entity_scores(

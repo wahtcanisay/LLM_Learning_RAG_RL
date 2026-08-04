@@ -6,7 +6,6 @@ evaluation reuses the same folding (max chunk score per document), the same
 validation is graph-specific: it binds the search report to the graph index
 report and to the actual rankings file.
 """
-import statistics
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
@@ -15,7 +14,6 @@ from typing import Any
 from medical_graphrag.data.io import sha256_file, write_json
 from medical_graphrag.evaluation.retrieval import (
     evaluate_rankings,
-    percentile,
     read_jsonl,
     read_qrels,
     validate_hit_rows,
