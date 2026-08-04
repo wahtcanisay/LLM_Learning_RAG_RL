@@ -37,7 +37,7 @@ CHUNK = 1024 * 1024
 
 
 def download_file(session: requests.Session, url: str, dest: Path) -> bool:
-    """Download one file from one source. Returns True when the stream completed."""
+    """Download one file from one source. Returns True when verified complete."""
     tmp = dest.with_suffix(dest.suffix + ".part")
     tmp.parent.mkdir(parents=True, exist_ok=True)
     existing = tmp.stat().st_size if tmp.exists() else 0
@@ -49,12 +49,18 @@ def download_file(session: requests.Session, url: str, dest: Path) -> bool:
             return True
         if resp.status_code not in (200, 206):
             raise RuntimeError(f"HTTP {resp.status_code} for {url}")
+        if resp.status_code == 206:
+            total = int(resp.headers["Content-Range"].split("/")[-1])
+        else:
+            total = int(resp.headers["Content-Length"])
         mode = "ab" if (existing and resp.status_code == 206) else "wb"
         with tmp.open(mode) as handle:
             for chunk in resp.iter_content(chunk_size=CHUNK):
                 if chunk:
                     handle.write(chunk)
-        # Stream completed without exception => this chunk of the file is complete.
+        size = tmp.stat().st_size
+        if size != total:
+            raise RuntimeError(f"incomplete download: {size} bytes != {total}")
         tmp.replace(dest)
         return True
 
@@ -64,10 +70,10 @@ def download_with_retries(
     sources: tuple[str, ...],
     name: str,
     dest: Path,
+    deadline: float,
 ) -> None:
-    """Try every source with an infinite retry loop until the file is complete."""
-    tmp = dest.with_suffix(dest.suffix + ".part")
-    while True:
+    """Try every source with a retry loop until complete or the deadline passes."""
+    while time.monotonic() < deadline:
         for base in sources:
             try:
                 download_file(session, f"{base}/{name}", dest)
@@ -78,6 +84,7 @@ def download_with_retries(
                     flush=True,
                 )
                 time.sleep(2)
+    raise TimeoutError(f"timed out downloading {name}")
 
 
 def main() -> int:
@@ -95,10 +102,11 @@ def main() -> int:
             print(f"skip   {name} (present)", flush=True)
             continue
         print(f"start  {name}", flush=True)
-        while time.monotonic() < deadline:
-            download_with_retries(session, SOURCES, name, dest)
-            if dest.exists():
-                break
+        try:
+            download_with_retries(session, SOURCES, name, dest, deadline)
+        except TimeoutError:
+            print(f"FAILED {name} within deadline", flush=True)
+            return 1
         if not dest.exists():
             print(f"FAILED {name} within deadline", flush=True)
             return 1

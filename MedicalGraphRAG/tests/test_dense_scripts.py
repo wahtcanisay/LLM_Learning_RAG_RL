@@ -90,6 +90,34 @@ def test_search_one_maps_index_to_chunk_and_doc() -> None:
     ]
 
 
+def test_search_one_stops_at_faiss_padding() -> None:
+    module = _load("search_faiss_dense")
+
+    class FakeEmbedder:
+        def encode(self, text: str, normalize_embeddings: bool, show_progress_bar: bool):
+            return [0.1, 0.2, 0.3]
+
+    class FakeIndex:
+        def search(self, vector, k: int):
+            import numpy as np
+
+            return (np.array([[0.9, -1.0]]), np.array([[1, -1]]))
+
+    result = module.search_one(
+        FakeEmbedder(),
+        FakeIndex(),
+        {"query_id": "q1", "question": "alpha?", "split": "dev"},
+        ["c1", "c2"],
+        {"c1": "d1", "c2": "d2"},
+        top_k=2,
+        clock=iter([1.0, 1.012]).__next__,
+    )
+
+    assert result["hits"] == [
+        {"chunk_id": "c2", "doc_id": "d2", "chunk_rank": 1, "score": 0.9}
+    ]
+
+
 def test_search_input_validation_rejects_modified_index(tmp_path: Path) -> None:
     module = _load("search_faiss_dense")
     index = tmp_path / "index.faiss"

@@ -36,6 +36,8 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def percentile(values: list[float], fraction: float) -> float:
+    if not values:
+        return 0.0
     ordered = sorted(values)
     position = (len(ordered) - 1) * fraction
     lower = math.floor(position)
@@ -56,7 +58,7 @@ def read_qrels(path: Path) -> dict[str, str]:
     return result
 
 
-def validate_hit_rows(raw_rows: list[dict[str, Any]], requested_top_k: int) -> None:
+def validate_hit_rows(raw_rows: list[dict[str, Any]]) -> None:
     """Shared ranking-shape checks: contiguous one-based ranks and finite scores."""
     for row in raw_rows:
         for expected_rank, hit in enumerate(row["hits"], start=1):
@@ -65,4 +67,3 @@ def validate_hit_rows(raw_rows: list[dict[str, Any]], requested_top_k: int) -> N
                 raise ValueError("hit ranks must be contiguous and one-based")
             if not math.isfinite(score):
                 raise ValueError("hit score must be finite")
-    _ = requested_top_k

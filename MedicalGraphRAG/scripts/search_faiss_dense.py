@@ -85,6 +85,8 @@ def search_one(
     chunk_id_by_index: list[str],
     chunk_to_doc: Mapping[str, str],
     top_k: int,
+    *,
+    normalize: bool = True,
     clock: Any = time.perf_counter,
 ) -> dict[str, object]:
     import numpy as np
@@ -93,7 +95,7 @@ def search_one(
     vector = np.asarray(
         embedder.encode(
             str(question["question"]),
-            normalize_embeddings=True,
+            normalize_embeddings=normalize,
             show_progress_bar=False,
         ),
         dtype="float32",
@@ -102,7 +104,11 @@ def search_one(
     latency_ms = round((clock() - started) * 1000, 6)
     hits = []
     for rank in range(top_k):
-        chunk_id = chunk_id_by_index[int(indices[0, rank])]
+        chunk_index = int(indices[0, rank])
+        if chunk_index < 0:
+            # FAISS pads missing neighbours with -1 when top_k exceeds index size.
+            break
+        chunk_id = chunk_id_by_index[chunk_index]
         hits.append(
             {
                 "chunk_id": chunk_id,
@@ -130,7 +136,6 @@ def main() -> int:
     parser.add_argument("--index-report", type=Path, required=True)
     parser.add_argument("--top-k", type=int, default=100)
     parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
-    parser.add_argument("--batch-size", type=int, default=64)
     args = parser.parse_args()
 
     index_path = Path(args.index)
@@ -147,6 +152,16 @@ def main() -> int:
 
     from sentence_transformers import SentenceTransformer
 
+    if args.embedding_model != index_report["embedding_model"]:
+        raise ValueError(
+            "requested embedding model does not match index report: "
+            f"{args.embedding_model!r} != {index_report['embedding_model']!r}"
+        )
+    if args.top_k > int(index_report["chunk_count"]):
+        raise ValueError(
+            f"requested top_k {args.top_k} exceeds index chunk count "
+            f"{index_report['chunk_count']}"
+        )
     index = faiss.read_index(str(index_path))
     embedder = SentenceTransformer(args.embedding_model)
     questions = _read_jsonl(args.questions)
@@ -166,6 +181,7 @@ def main() -> int:
             chunk_id_by_index,
             chunk_to_doc,
             args.top_k,
+            normalize=bool(index_report["normalized"]),
         )
         for row in questions
     ]

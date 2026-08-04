@@ -11,6 +11,7 @@ from medical_graphrag.evaluation.retrieval import (
     percentile,
     read_jsonl,
     read_qrels,
+    validate_hit_rows,
 )
 from medical_graphrag.retrieval.bm25 import collapse_chunk_hits, validate_frozen_dataset
 
@@ -67,13 +68,7 @@ def _validate_run_context(
     reported_summary = {key: search_report.get(key) for key in actual_summary}
     if actual_summary != reported_summary:
         raise ValueError("search report hit summary mismatch")
-    for row in raw_rows:
-        for expected_rank, hit in enumerate(row["hits"], start=1):
-            score = float(hit["score"])
-            if int(hit["chunk_rank"]) != expected_rank:
-                raise ValueError("hit ranks must be contiguous and one-based")
-            if not math.isfinite(score):
-                raise ValueError("hit score must be finite")
+    validate_hit_rows(raw_rows)
     return search_report
 
 
@@ -160,7 +155,7 @@ def evaluate_bm25_run(
             "sample_count": len(ids),
             **split_metrics,
             "latency_ms": {
-                "mean": statistics.fmean(values),
+                "mean": statistics.fmean(values) if values else 0.0,
                 "p50": percentile(values, 0.50),
                 "p95": percentile(values, 0.95),
             },
@@ -197,9 +192,12 @@ def evaluate_bm25_run(
                 "gold_title": documents[qrels[query_id]]["title"],
                 "gold_rank": gold_ranks[query_id],
                 "gold_chunk_excerpt": next(
-                    str(chunk["content"])[:500]
-                    for chunk in chunks
-                    if chunk["doc_id"] == qrels[query_id]
+                    (
+                        str(chunk["content"])[:500]
+                        for chunk in chunks
+                        if chunk["doc_id"] == qrels[query_id]
+                    ),
+                    "",
                 ),
                 "top_documents": detailed[query_id][:10],
             }
