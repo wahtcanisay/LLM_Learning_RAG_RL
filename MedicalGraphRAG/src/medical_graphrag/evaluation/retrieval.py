@@ -85,10 +85,11 @@ def read_qrels(path: Path) -> dict[str, list[str]]:
     Single-gold datasets (one row per query) become single-element lists, so this
     is backward compatible with the pubmedqa_hard_v1 contract.
     """
-    rows = path.read_text(encoding="utf-8").splitlines()[1:]
     result: dict[str, list[str]] = {}
-    for row in rows:
-        query_id, doc_id, relevance = row.split("\t")
+    for line in path.read_text(encoding="utf-8").splitlines()[1:]:
+        if not line.strip():
+            continue
+        query_id, doc_id, relevance = (part.strip() for part in line.split("\t"))
         if relevance != "1" or not query_id or not doc_id:
             raise ValueError("qrels must contain non-empty IDs and relevance=1")
         result.setdefault(query_id, []).append(doc_id)
