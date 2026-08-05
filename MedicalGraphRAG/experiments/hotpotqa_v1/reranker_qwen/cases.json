@@ -1,0 +1,491 @@
+{
+  "success": [
+    {
+      "query_id": "5a8b57f25542995d1e6f1371",
+      "question": "Were Scott Derrickson and Ed Wood of the same nationality?",
+      "gold_doc_id": "Ed Wood",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Scott Derrickson",
+          "score": 5.875
+        },
+        {
+          "doc_id": "Ed Wood",
+          "score": 2.9375
+        },
+        {
+          "doc_id": "Ed Wood (film)",
+          "score": 2.375
+        },
+        {
+          "doc_id": "Conrad Brooks",
+          "score": -0.625
+        },
+        {
+          "doc_id": "Tyler Bates",
+          "score": -3.375
+        },
+        {
+          "doc_id": "Patricia Arquette",
+          "score": -3.6875
+        },
+        {
+          "doc_id": "Scott Logan (musician)",
+          "score": -4.0
+        },
+        {
+          "doc_id": "Adam Collis",
+          "score": -4.0625
+        },
+        {
+          "doc_id": "Doctor Strange (2016 film)",
+          "score": -4.0625
+        },
+        {
+          "doc_id": "Deliver Us from Evil (2014 film)",
+          "score": -4.125
+        }
+      ]
+    },
+    {
+      "query_id": "5a8c7595554299585d9e36b6",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "gold_doc_id": "Kiss and Tell (1945 film)",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Kiss and Tell (1945 film)",
+          "score": 6.1875
+        },
+        {
+          "doc_id": "A Kiss for Corliss",
+          "score": 3.875
+        },
+        {
+          "doc_id": "Janet Waldo",
+          "score": 1.5
+        },
+        {
+          "doc_id": "Meet Corliss Archer (TV series)",
+          "score": 0.125
+        },
+        {
+          "doc_id": "The Prodigal Daughter",
+          "score": -1.1875
+        },
+        {
+          "doc_id": "The Kiss (1929 film)",
+          "score": -2.0
+        },
+        {
+          "doc_id": "Charles Craft",
+          "score": -2.875
+        },
+        {
+          "doc_id": "Nora Lewin",
+          "score": -3.5
+        },
+        {
+          "doc_id": "Meet Corliss Archer",
+          "score": -3.75
+        },
+        {
+          "doc_id": "Hannah Gale",
+          "score": -3.8125
+        }
+      ]
+    },
+    {
+      "query_id": "5a85ea095542994775f606a8",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "gold_doc_id": "Animorphs",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Animorphs",
+          "score": 7.5
+        },
+        {
+          "doc_id": "The Hork-Bajir Chronicles",
+          "score": 6.9375
+        },
+        {
+          "doc_id": "A Wind in the Door",
+          "score": 6.0625
+        },
+        {
+          "doc_id": "Talking to Dragons",
+          "score": 3.8125
+        },
+        {
+          "doc_id": "Victoria Hanley",
+          "score": 3.25
+        },
+        {
+          "doc_id": "The Maze Runner (series)",
+          "score": 2.125
+        },
+        {
+          "doc_id": "Roswell High",
+          "score": 1.375
+        },
+        {
+          "doc_id": "Time Quintet",
+          "score": 0.25
+        },
+        {
+          "doc_id": "Eric Northman",
+          "score": -0.1875
+        },
+        {
+          "doc_id": "The Subtle Knife",
+          "score": -0.1875
+        }
+      ]
+    },
+    {
+      "query_id": "5adbf0a255429947ff17385a",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "gold_doc_id": "Esma Sultan Mansion",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Esma Sultan Mansion",
+          "score": 8.25
+        },
+        {
+          "doc_id": "Laleli Mosque",
+          "score": 7.9375
+        },
+        {
+          "doc_id": "Esma Sultan",
+          "score": 4.3125
+        },
+        {
+          "doc_id": "Esma Sultan (daughter of Abdul Hamid I)",
+          "score": 2.4375
+        },
+        {
+          "doc_id": "Esma Sultan (daughter of Ahmed III)",
+          "score": 2.375
+        },
+        {
+          "doc_id": "Esma Sultan (daughter of Abdülaziz)",
+          "score": 1.5
+        },
+        {
+          "doc_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "score": 0.375
+        },
+        {
+          "doc_id": "Pertevniyal Valide Sultan Mosque",
+          "score": -1.6875
+        },
+        {
+          "doc_id": "Gazi Atik Ali Pasha Mosque",
+          "score": -1.75
+        },
+        {
+          "doc_id": "Vasat Atik Ali Pasha Mosque",
+          "score": -3.125
+        }
+      ]
+    },
+    {
+      "query_id": "5a8e3ea95542995a26add48d",
+      "question": "The director of the romantic comedy \"Big Stone Gap\" is based in what New York city?",
+      "gold_doc_id": "Adriana Trigiani",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Big Stone Gap (film)",
+          "score": 7.625
+        },
+        {
+          "doc_id": "Nola (film)",
+          "score": 1.5
+        },
+        {
+          "doc_id": "When Harry Met Sally...",
+          "score": 1.5
+        },
+        {
+          "doc_id": "Just My Luck (2006 film)",
+          "score": 1.25
+        },
+        {
+          "doc_id": "Manhattan Romance",
+          "score": 0.625
+        },
+        {
+          "doc_id": "Brooklyn (film)",
+          "score": 0.375
+        },
+        {
+          "doc_id": "Sex and the City (film)",
+          "score": 0.375
+        },
+        {
+          "doc_id": "Ed's Next Move",
+          "score": 0.125
+        },
+        {
+          "doc_id": "I Love NY (2015 film)",
+          "score": 0.125
+        },
+        {
+          "doc_id": "Maid in Manhattan",
+          "score": 0.0
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "5adf62d05542992d7e9f932d",
+      "question": "Which number-one single is Michael Steele responsible for?",
+      "gold_doc_id": "Ezo (band)",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "All 4 Love",
+          "score": -1.0625
+        },
+        {
+          "doc_id": "I'm Gonna Get Married",
+          "score": -1.5
+        },
+        {
+          "doc_id": "Lightning (song)",
+          "score": -2.125
+        },
+        {
+          "doc_id": "Bret Michaels",
+          "score": -2.25
+        },
+        {
+          "doc_id": "Beat It",
+          "score": -2.625
+        },
+        {
+          "doc_id": "Dangerous (Michael Jackson album)",
+          "score": -2.75
+        },
+        {
+          "doc_id": "Time, Love &amp; Tenderness",
+          "score": -2.8125
+        },
+        {
+          "doc_id": "Big Deal (LeAnn Rimes song)",
+          "score": -2.875
+        },
+        {
+          "doc_id": "Your Love Amazes Me",
+          "score": -3.0625
+        },
+        {
+          "doc_id": "(Everything I Do) I Do It for You",
+          "score": -3.1875
+        }
+      ]
+    },
+    {
+      "query_id": "5a8e296f554299068b959e71",
+      "question": "What country does Washington Dulles International Airport and Baltimore–Washington metropolitan area have in common?",
+      "gold_doc_id": "Kaneohe, Hawaii",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "Washington Dulles International Airport",
+          "score": 8.4375
+        },
+        {
+          "doc_id": "Baltimore–Washington International Airport",
+          "score": 7.9375
+        },
+        {
+          "doc_id": "Washington Metro",
+          "score": 4.5
+        },
+        {
+          "doc_id": "National Weather Service Baltimore/Washington",
+          "score": 3.4375
+        },
+        {
+          "doc_id": "Dulles International Airport station",
+          "score": 3.3125
+        },
+        {
+          "doc_id": "Baltimore County, Maryland",
+          "score": 2.8125
+        },
+        {
+          "doc_id": "Sterling Park, Virginia",
+          "score": 1.75
+        },
+        {
+          "doc_id": "BWI Marshall Airport Shuttle",
+          "score": 1.0
+        },
+        {
+          "doc_id": "History of surface transit in Northern Virginia",
+          "score": -0.125
+        },
+        {
+          "doc_id": "Northeast megalopolis",
+          "score": -0.125
+        }
+      ]
+    },
+    {
+      "query_id": "5a7f669a5542994857a76729",
+      "question": "What character did the actor born on January 19, 1944 play in \"As the World Turns?\"",
+      "gold_doc_id": "Anthony Herrera",
+      "gold_rank": 15,
+      "top_documents": [
+        {
+          "doc_id": "Bob Hughes",
+          "score": 6.9375
+        },
+        {
+          "doc_id": "Patrick Tovatt",
+          "score": 6.4375
+        },
+        {
+          "doc_id": "Liberty Ciccone",
+          "score": 6.0
+        },
+        {
+          "doc_id": "Scott Holmes",
+          "score": 5.875
+        },
+        {
+          "doc_id": "Michael Louden",
+          "score": 5.8125
+        },
+        {
+          "doc_id": "Abigail Williams (As the World Turns)",
+          "score": 5.75
+        },
+        {
+          "doc_id": "Terri Conn",
+          "score": 5.625
+        },
+        {
+          "doc_id": "Daniel Hughes (As the World Turns)",
+          "score": 5.375
+        },
+        {
+          "doc_id": "Roger Howarth",
+          "score": 5.0625
+        },
+        {
+          "doc_id": "Kim Sullivan Hughes",
+          "score": 5.0
+        }
+      ]
+    },
+    {
+      "query_id": "5abde7ba5542991f6610609e",
+      "question": "When was the former IBF World title holder born? ",
+      "gold_doc_id": "Lucian Bute vs. Glen Johnson",
+      "gold_rank": 35,
+      "top_documents": [
+        {
+          "doc_id": "Martin Lindsay (boxer)",
+          "score": 4.5
+        },
+        {
+          "doc_id": "Vic Darchinyan",
+          "score": 2.75
+        },
+        {
+          "doc_id": "Tommy Karpency",
+          "score": 2.375
+        },
+        {
+          "doc_id": "Mike Tyson",
+          "score": 2.0
+        },
+        {
+          "doc_id": "Zab Judah",
+          "score": 1.9375
+        },
+        {
+          "doc_id": "Nedal Hussein",
+          "score": 1.875
+        },
+        {
+          "doc_id": "Carl Frampton",
+          "score": 1.6875
+        },
+        {
+          "doc_id": "Freddie Norwood",
+          "score": 1.5
+        },
+        {
+          "doc_id": "Randall Bailey",
+          "score": 1.25
+        },
+        {
+          "doc_id": "Carlos Hernández (boxer)",
+          "score": 1.125
+        }
+      ]
+    },
+    {
+      "query_id": "5ab5d6155542997d4ad1f1fa",
+      "question": "What band was the man who compiled the tracks for The Early Years a part of when they were inducted into the Rock and Roll Hall of Fame?",
+      "gold_doc_id": "David Coverdale",
+      "gold_rank": 11,
+      "top_documents": [
+        {
+          "doc_id": "Rock &amp; Roll Hall of Fame Covers EP",
+          "score": 2.5625
+        },
+        {
+          "doc_id": "Fleetwood Mac",
+          "score": 2.0625
+        },
+        {
+          "doc_id": "John Fogerty",
+          "score": 0.625
+        },
+        {
+          "doc_id": "Bill Pinkney",
+          "score": 0.5
+        },
+        {
+          "doc_id": "Malcolm Young",
+          "score": 0.5
+        },
+        {
+          "doc_id": "Sly Stone",
+          "score": 0.375
+        },
+        {
+          "doc_id": "Tony Kaye (musician)",
+          "score": 0.375
+        },
+        {
+          "doc_id": "Red Hot Chili Peppers",
+          "score": 0.25
+        },
+        {
+          "doc_id": "The J.B.'s",
+          "score": 0.25
+        },
+        {
+          "doc_id": "Steve Miller Band",
+          "score": 0.1875
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 7391,
+    "failure_at_10_available": 14,
+    "saved_per_group_max": 5
+  }
+}

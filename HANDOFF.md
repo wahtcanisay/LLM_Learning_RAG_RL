@@ -79,9 +79,21 @@
 |---|---:|---:|---:|
 | BM25 | 0.791 | 0.630 | 0.664 |
 | Dense | 0.769 | 0.594 | 0.633 |
-| **Hybrid** | **0.838** | **0.669** | **0.705** |
+| Hybrid | 0.838 | 0.669 | 0.705 |
+| Graph | 0.682 | 0.458 | 0.507 |
+| **Hybrid2 (Qwen3-Reranker)** | **0.895** | **0.740** | **0.772** |
 
-（scifact 的 Graph/Hybrid2 待补；trec_covid 待跑。）
+*hotpotqa_v1（多跳硬 gold，test 7405，每问恰 2.0 gold）*
+
+| 方法 | R@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|
+| BM25 | 0.738 | 0.798 | 0.663 |
+| Dense | 0.711 | 0.817 | 0.668 |
+| Graph | 0.680 | 0.784 | 0.638 |
+| Hybrid | 0.800 | 0.852 | 0.731 |
+| **Hybrid2 (Qwen3-Reranker)** | **0.898** | **0.955** | **0.865** |
+
+（trec_covid 已放弃检索：24.6% 空文本非连续内容。）
 
 ### 3.3 关键结论
 
@@ -102,13 +114,13 @@
 
 ## 5. 下一步
 
-1. **HotpotQA 补 Hybrid2**（Qwen3-Reranker 三路重排，运行中）；FRAMES 轻接已完成（`data/processed/frames_v1/questions_with_gold.json`，824 问/金标映射，不建语料）。
+1. **HotpotQA Hybrid2 完成**（R@10 0.898 / MRR 0.955 / nDCG 0.865，全面碾压 Hybrid 0.800/0.852/0.731）；FRAMES 轻接已完成（`data/processed/frames_v1/questions_with_gold.json`，824 问/金标映射，不建语料）。
 2. **trec_covid 放弃检索**：原始语料 24.6% 文档 `text` 为空（仅标题的会议摘要记录，非连续文本），title 回退无检索价值。
 3. **LinearRAG medical 仅定性**：`LinearRAG/dataset/medical/` evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集与 hotpotqa_v1 同源无额外价值。
 4. **MIRAGE 端到端**（仓库已拉取到 `MIRAGE/`，git 忽略可重建；等阶段 3 有 LLM 再跑 QA Accuracy）。
 5. 阶段 3 MedicalGPT SFT（GPT 并行线预习中）。之后阶段 4 Search-R1、阶段 5 MedSearch-R1。
 
-**关键结论**：检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）× 多基准（pubmedqa/nfcorpus/scifact/hotpotqa）完备。基准选择显著影响结论：pubmedqa Dense 最优、nfcorpus/scifact Hybrid2 最优、hotpotqa Hybrid 最优；**图检索在全部四个基准均未胜出**（HotpotQA 上 BC5CDR 医学 NER 在通用维基上实体稀疏，实体传播信号弱——诚实负结果）。**Hybrid RRF 在多跳场景（hotpotqa）大幅胜出**（R@10 0.800 vs 单路最好 Dense 0.711），词项+语义两路互补价值显著。
+**关键结论**：检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）× 多基准（pubmedqa/nfcorpus/scifact/hotpotqa）完备。基准选择显著影响结论：pubmedqa Dense 最优、nfcorpus/scifact/hotpotqa Hybrid2 最优；**图检索在全部四个基准均未胜出**（HotpotQA 上 BC5CDR 医学 NER 在通用维基上实体稀疏，实体传播信号弱——诚实负结果）。**Hybrid2 (Qwen3-Reranker) 在多跳场景（hotpotqa）碾压**（R@10 0.898 / nDCG 0.865，vs Hybrid 0.800/0.731），cross-encoder 重排价值在多跳场景最显著；**Hybrid RRF 也大幅超过单路**（R@10 0.800 vs Dense 0.711），词项+语义两路互补。
 
 ## 6. 给下一位 Agent 的开场指令
 

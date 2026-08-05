@@ -1,0 +1,37 @@
+{
+  "git_commit": "e2b111d",
+  "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "host_python_version": "3.12.3",
+  "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
+  "evaluation_command": [
+    "src/medical_graphrag/cli.py",
+    "evaluate-reranker",
+    "--dataset-dir",
+    "data/processed/hotpotqa_v1",
+    "--rankings",
+    "outputs/hotpotqa_v1/reranker_qwen/reranked.jsonl",
+    "--reranker-report",
+    "outputs/hotpotqa_v1/reranker_qwen/rerank_report.json",
+    "--output-dir",
+    "experiments/hotpotqa_v1/reranker_qwen",
+    "--git-commit",
+    "e2b111d",
+    "--docker-image",
+    "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
+  ],
+  "reranker": {
+    "model": "models/Qwen3-Reranker-0.6B",
+    "top_n": 50,
+    "bm25_rankings_sha256": "a38a21c99af33e84244041d782eaa0d0b8838c55dbbd3a9edc9853ccd78445f9",
+    "dense_rankings_sha256": "665a99de7d85502abaf314ccf30f9a320c080ed27df581a64da899232e9aed35",
+    "graph_rankings_sha256": "cc1cc1b7258eb27a51cd54debd94c608c1904d7a8a0265a229954244dbca3ca5"
+  },
+  "dataset_manifest_sha256": "18e14d03aea7c2a47b91d44a027d5ad9deb35b53ec0a74e425f0cf2e8dfc2aec",
+  "generated_at_utc": "2026-08-05T06:50:16.893485+00:00",
+  "rankings_sha256": "f62aafab2a6a9c0b6d54e70cf01819e3490de9b42a8232d05b906ee5dbf5e35c",
+  "question_count": 7405,
+  "split_counts": {
+    "test": 7405
+  },
+  "text_mode": "abstract_only"
+}

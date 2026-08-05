@@ -222,14 +222,15 @@ scripts/run_sft.sh
 6. **trec_covid 放弃检索**：原始语料 24.6% 文档 `text` 为空（仅标题的会议摘要记录，非连续文本），3,135 条 qrels 指向空文本文档；title 回退无检索价值，决定不接入检索。
 7. **HotpotQA 多跳基准接入（`hotpotqa_v1`）**：构建 `scripts/build_hotpotqa.py`，HF `hotpotqa/hotpot_qa` distractor validation——**7,405 问 / 66,581 文档 / 14,810 qrels（每问恰 2.0 gold）**。语料自洽（自带 8 干扰段/问），可靠 gold，Graph 可跑。NFKC+空白归一化解同标题段落 Unicode 变体。
 8. **HotpotQA 图检索多跳验证（负结果）**：BM25（R@10 0.738 / MRR 0.798 / nDCG 0.663）、Dense（0.711/0.817/0.668）、Graph（0.680/0.784/0.638）、**Hybrid（0.800/0.852/0.731）——RRF 融合大幅胜出（R@10 +0.089 vs 单路最好 Dense）**。图检索第四个基准依然垫底；可能原因是 BC5CDR 医学 NER 在通用维基上实体稀疏（11,250 实体/66,581 段落）。
+10. **HotpotQA Hybrid2 完成**：**R@10 0.898 / MRR 0.955 / nDCG 0.865，全面碾压 Hybrid（0.800/0.852/0.731）**——cross-encoder 重排在多跳场景价值最显著（R@10 +0.098、nDCG +0.134）。五路齐。
 9. **LinearRAG medical 数据集调查**：`LinearRAG/dataset/medical/`（225 chunks + 2,062 问 4 种题型）evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集（1,000 问）与我们的 hotpotqa_v1 同源，无额外价值。→ medical 仅定性，hotpotqa_v1 为多跳验证主力。
 
 **下一步（按序）：**
-1. HotpotQA 补 Hybrid2（Qwen3-Reranker 三路重排，运行中）；FRAMES 轻接（仅保留 questions/答案/金标标题映射，不建语料，待端到端评测）；
+1. FRAMES 轻接已完成（仅保留 questions/答案/金标标题映射，不建语料，待端到端评测）；
 2. MIRAGE 端到端（已拉取仓库，等阶段 3 有 LLM 再跑）；
 3. 阶段 3 MedicalGPT SFT（GPT 并行线）。
 
-**现有基准结果汇总**：`pubmedqa_hard_v1` Dense 最优；`nfcorpus_v1` Hybrid2 最优；`scifact_v1` Hybrid2 最优；`hotpotqa_v1` Hybrid 最优。图检索在全部四个基准均未胜出。检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）完备，评测支持多相关 qrels。
+**现有基准结果汇总**：`pubmedqa_hard_v1` Dense 最优；`nfcorpus_v1` Hybrid2 最优；`scifact_v1` Hybrid2 最优；`hotpotqa_v1` Hybrid2 最优。图检索在全部四个基准均未胜出。检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）完备，评测支持多相关 qrels。
 
 # 待补知识
 
@@ -299,9 +300,10 @@ scripts/run_sft.sh
 | BM25 | 0.738 | 0.798 | 0.663 |
 | Dense all-mpnet (IndexFlatIP) | 0.711 | 0.817 | 0.668 |
 | Graph (BC5CDR Entity-Passage + PPR) | 0.680 | 0.784 | 0.638 |
-| **Hybrid RRF (BM25+Dense, k=60)** | **0.800** | **0.852** | **0.731** |
+| Hybrid RRF (BM25+Dense, k=60) | 0.800 | 0.852 | 0.731 |
+| **Hybrid2 (Qwen3-Reranker)** | **0.898** | **0.955** | **0.865** |
 
-（多跳 gold 每问恰 2.0 篇，R@10 显著低于单答案基准；RRF 融合大幅胜出 = 词项+语义两路互补。图检索依然垫底，BC5CDR 医学 NER 在通用维基上实体稀疏。）
+（多跳 gold 每问恰 2.0 篇，R@10 显著低于单答案基准；RRF 融合胜出 = 词项+语义两路互补；**Hybrid2 重排大幅碾压（R@10 +0.098 vs Hybrid）——cross-encoder 在多跳场景价值最显著**。图检索依然垫底，BC5CDR 医学 NER 在通用维基上实体稀疏。）
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 
