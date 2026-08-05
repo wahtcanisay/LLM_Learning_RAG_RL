@@ -1,5 +1,5 @@
 {
-  "git_commit": "c5875a8037db105c0f45eed8aeacf42079fbf44d",
+  "git_commit": "1429c55f1af3b2fda5dca0767edc67bdd447630a",
   "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
   "host_python_version": "3.12.3",
   "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
@@ -12,22 +12,22 @@
     "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/nfcorpus_v1/reranker_qwen/reranked.jsonl",
     "--reranker-report",
     "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/nfcorpus_v1/reranker_qwen/rerank_report.json",
-    "--questions",
-    "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/nfcorpus_v1/questions.jsonl",
     "--output-dir",
     "experiments/nfcorpus_v1/reranker_qwen",
     "--git-commit",
-    "c5875a8037db105c0f45eed8aeacf42079fbf44d",
+    "1429c55f1af3b2fda5dca0767edc67bdd447630a",
     "--docker-image",
     "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
   ],
   "reranker": {
     "model": "models/Qwen3-Reranker-0.6B",
-    "top_n": 50
+    "top_n": 50,
+    "bm25_rankings_sha256": "cd6013346dd4b6f21cd8cf22fad56b1ad944b97c67af2384e8f11b542643932b",
+    "dense_rankings_sha256": "35b2071ba54c911d00d027aece4d92e62eac0a732f57dfc43378aaa5fd9c7394",
+    "graph_rankings_sha256": "50a45f41a96c4af4deb1bcf86f25589bb77dc74eaf933c660cd68dc102cf20a0"
   },
-  "questions_path": "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/nfcorpus_v1/questions.jsonl",
   "dataset_manifest_sha256": "fb9f057d3fee55965748f2927324ad346f556c33f29175ca547451f5bd7472c2",
-  "generated_at_utc": "2026-08-05T02:53:07.163944+00:00",
+  "generated_at_utc": "2026-08-05T03:42:01.617306+00:00",
   "rankings_sha256": "941eb955eb9b144b506fd1b5678f6d6ca59a47ef4de2ed17d66b8ea3bd70f110",
   "question_count": 323,
   "split_counts": {

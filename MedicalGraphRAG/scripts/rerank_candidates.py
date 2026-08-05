@@ -27,10 +27,16 @@ def _read_jsonl(path: Path) -> list[dict[str, Any]]:
         return [json.loads(line) for line in handle if line.strip()]
 
 
-def _validate_source(rankings: Path, search_report: Path, label: str) -> None:
+def _validate_source(
+    rankings: Path, search_report: Path, label: str, dataset_manifest_sha256: str
+) -> None:
     report = json.loads(search_report.read_text(encoding="utf-8"))
     if report.get("rankings_sha256") != sha256_file(rankings):
         raise ValueError(f"{label} rankings SHA-256 mismatch")
+    if report.get("dataset_manifest_sha256") != dataset_manifest_sha256:
+        raise ValueError(f"{label} search report does not match frozen dataset manifest")
+    if report.get("text_mode") != "abstract_only":
+        raise ValueError(f"{label} search report must use abstract_only text mode")
 
 
 def _fold_doc_ranking(hits: list[dict[str, Any]], metadata: dict[str, dict[str, Any]]) -> list[str]:
@@ -55,11 +61,21 @@ def main() -> int:
     parser.add_argument("--model", default=DEFAULT_RERANKER_MODEL)
     args = parser.parse_args()
 
-    _validate_source(args.bm25_rankings, args.bm25_search_report, "bm25")
-    _validate_source(args.dense_rankings, args.dense_search_report, "dense")
-    _validate_source(args.graph_rankings, args.graph_search_report, "graph")
     dataset_manifest = validate_frozen_dataset(args.dataset_manifest.parent)
     dataset_manifest_sha256 = sha256_file(args.dataset_manifest)
+    if sha256_file(args.documents) != dataset_manifest["artifact_hashes"]["documents.jsonl"]:
+        raise ValueError("documents do not match frozen dataset manifest")
+    if sha256_file(args.chunks) != dataset_manifest["artifact_hashes"]["chunks.jsonl"]:
+        raise ValueError("chunks do not match frozen dataset manifest")
+    _validate_source(
+        args.bm25_rankings, args.bm25_search_report, "bm25", dataset_manifest_sha256
+    )
+    _validate_source(
+        args.dense_rankings, args.dense_search_report, "dense", dataset_manifest_sha256
+    )
+    _validate_source(
+        args.graph_rankings, args.graph_search_report, "graph", dataset_manifest_sha256
+    )
 
     sources = {
         "bm25": {str(r["query_id"]): r for r in _read_jsonl(args.bm25_rankings)},

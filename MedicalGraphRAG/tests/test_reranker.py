@@ -128,7 +128,9 @@ def test_reranker_evaluation_metrics_and_bindings(tmp_path: Path) -> None:
     assert result["test"]["recall@10"] == 1.0
     assert result["test"]["mrr@10"] == 0.75
     manifest = json.loads((output / "run_manifest.json").read_text(encoding="utf-8"))
-    assert manifest["reranker"] == {"model": "models/Qwen3-Reranker-0.6B", "top_n": 50}
+    assert manifest["reranker"]["model"] == "models/Qwen3-Reranker-0.6B"
+    assert manifest["reranker"]["top_n"] == 50
+    assert "bm25_rankings_sha256" in manifest["reranker"]
 
 
 def test_reranker_evaluation_rejects_tampered_rankings(tmp_path: Path) -> None:

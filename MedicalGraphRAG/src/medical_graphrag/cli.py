@@ -103,7 +103,6 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_reranker.add_argument("--dataset-dir", type=Path, required=True)
     evaluate_reranker.add_argument("--rankings", type=Path, required=True)
     evaluate_reranker.add_argument("--reranker-report", type=Path, required=True)
-    evaluate_reranker.add_argument("--questions", type=Path, required=True)
     evaluate_reranker.add_argument("--output-dir", type=Path, required=True)
     evaluate_reranker.add_argument("--git-commit", required=True)
     evaluate_reranker.add_argument("--docker-image", required=True)
@@ -151,7 +150,6 @@ def _evaluate_reranker_command(args: argparse.Namespace) -> int:
             "docker_image": args.docker_image,
             "evaluation_command": sys.argv,
             "reranker": reranker_report,
-            "questions_path": str(args.questions),
             "dataset_manifest_sha256": sha256_file(
                 args.dataset_dir / "manifest.json"
             ),

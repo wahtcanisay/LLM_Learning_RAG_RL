@@ -5,6 +5,7 @@ this evaluation computes metrics directly from ``doc_ids`` per query with the
 shared multi-gold `evaluate_rankings`. The run report is bound to the actual
 ranking file, the questions file, and the frozen dataset manifest.
 """
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -22,7 +23,7 @@ from medical_graphrag.retrieval.bm25 import validate_frozen_dataset
 def _validate_report(
     run_context: dict[str, Any],
     rankings_path: Path,
-    questions: dict[str, Any],
+    questions_path: Path,
     dataset_manifest_sha256: str,
 ) -> None:
     try:
@@ -31,9 +32,7 @@ def _validate_report(
         raise ValueError(f"missing reranker run report: {error.args[0]}") from error
     if report.get("rankings_sha256") != sha256_file(rankings_path):
         raise ValueError("reranker rankings SHA-256 mismatch")
-    if report.get("questions_sha256") != sha256_file(
-        Path(run_context["questions_path"])
-    ):
+    if report.get("questions_sha256") != sha256_file(questions_path):
         raise ValueError("reranker questions SHA-256 mismatch")
     if report.get("dataset_manifest_sha256") != dataset_manifest_sha256:
         raise ValueError("reranker report does not match frozen dataset manifest")
@@ -58,8 +57,11 @@ def evaluate_reranker_run(
     ):
         raise ValueError("ranking query set does not match questions")
     _validate_report(
-        run_context, rankings_path, questions, dataset_manifest_sha256
+        run_context, rankings_path, dataset_dir / "questions.jsonl", dataset_manifest_sha256
     )
+    documents = {
+        str(row["doc_id"]): row for row in read_jsonl(dataset_dir / "documents.jsonl")
+    }
 
     doc_rankings: dict[str, list[str]] = {}
     scores_by_query: dict[str, list[float]] = {}
@@ -67,8 +69,17 @@ def evaluate_reranker_run(
         query_id = str(row["query_id"])
         if row["split"] != questions[query_id]["split"]:
             raise ValueError(f"split mismatch for {query_id}")
-        doc_rankings[query_id] = [str(d) for d in row["doc_ids"]]
-        scores_by_query[query_id] = [float(s) for s in row["scores"]]
+        doc_ids = [str(d) for d in row["doc_ids"]]
+        scores = [float(s) for s in row["scores"]]
+        if len(doc_ids) != len(scores):
+            raise ValueError(f"doc_ids/scores length mismatch for {query_id}")
+        if not all(math.isfinite(s) for s in scores):
+            raise ValueError(f"non-finite reranker score for {query_id}")
+        for doc_id in doc_ids:
+            if doc_id not in documents:
+                raise ValueError(f"unknown doc_id {doc_id} in reranked ranking")
+        doc_rankings[query_id] = doc_ids
+        scores_by_query[query_id] = scores
 
     metrics: dict[str, Any] = {}
     for split in ("dev", "test"):
@@ -124,8 +135,17 @@ def evaluate_reranker_run(
             name: value["sample_count"] for name, value in metrics.items()
         },
         "reranker": {
-            "model": run_context["reranker"]["model"],
-            "top_n": run_context["reranker"]["top_n"],
+            "model": run_context["reranker"].get("model"),
+            "top_n": run_context["reranker"].get("top_n"),
+            "bm25_rankings_sha256": run_context["reranker"].get(
+                "bm25_rankings_sha256"
+            ),
+            "dense_rankings_sha256": run_context["reranker"].get(
+                "dense_rankings_sha256"
+            ),
+            "graph_rankings_sha256": run_context["reranker"].get(
+                "graph_rankings_sha256"
+            ),
         },
         "text_mode": "abstract_only",
     }
