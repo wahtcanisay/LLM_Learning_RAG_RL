@@ -218,15 +218,18 @@ scripts/run_sft.sh
 2. **LinearRAG 内置 medical 定性检索通过**（多跳题两段证据都召回到 top-2）。
 3. **Hybrid2 完成**：Qwen3-Reranker 三路重排（CrossEncoder 加载），nfcorpus 上 **nDCG 0.384 > Hybrid RRF 0.354 > Dense 0.325 > BM25 0.313**——cross-encoder 重排胜出，已审计合并。
 4. **BEIR 多数据集接入（进行中）**：泛化 `build_beir.py`；构建 `scifact_v1`（300 题/5,183 文档/339 qrels）与 `trec_covid_v1`（50 题/171,332 文档/24,673 qrels）；**bioasq 因 HF 仓库 401（门禁）下载失败**，待找替代源。
-5. **scifact 前三路**：**Hybrid（R@10 0.838）> BM25（0.791）> Dense（0.769）**——科学声明核查里词项匹配强，但 RRF 融合仍胜（两路互补），与 nfcorpus 一致。
+5. **scifact 补齐五路**：Graph（R@10 0.682 / MRR 0.458 / nDCG 0.507）、**Hybrid2（R@10 0.895 / MRR 0.740 / nDCG 0.772）全面超过 Hybrid（0.838/0.669/0.705）**——cross-encoder 重排再次胜出。修复 `search_graph.py` search report 缺 `text_mode` 字段（d5e3007 引入的 rerank 校验必失败 bug），提交 `4442303`。
+6. **trec_covid 放弃检索**：原始语料 24.6% 文档 `text` 为空（仅标题的会议摘要记录，非连续文本），3,135 条 qrels 指向空文本文档；title 回退无检索价值，决定不接入检索。
+7. **HotpotQA 多跳基准接入（`hotpotqa_v1`）**：构建 `scripts/build_hotpotqa.py`，HF `hotpotqa/hotpot_qa` distractor validation——**7,405 问 / 66,581 文档 / 14,810 qrels（每问恰 2.0 gold）**。语料自洽（自带 8 干扰段/问），可靠 gold，Graph 可跑。NFKC+空白归一化解同标题段落 Unicode 变体。
+8. **HotpotQA 图检索多跳验证（负结果）**：BM25（R@10 0.738 / MRR 0.798 / nDCG 0.663）、Dense（0.711/0.817/0.668）、Graph（0.680/0.784/0.638）、**Hybrid（0.800/0.852/0.731）——RRF 融合大幅胜出（R@10 +0.089 vs 单路最好 Dense）**。图检索第四个基准依然垫底；可能原因是 BC5CDR 医学 NER 在通用维基上实体稀疏（11,250 实体/66,581 段落）。
+9. **LinearRAG medical 数据集调查**：`LinearRAG/dataset/medical/`（225 chunks + 2,062 问 4 种题型）evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集（1,000 问）与我们的 hotpotqa_v1 同源，无额外价值。→ medical 仅定性，hotpotqa_v1 为多跳验证主力。
 
 **下一步（按序）：**
-1. scifact 补 Graph + Hybrid2（凑齐五路）；trec_covid 跑检索（171k 文档，Graph 太重先跳过）；
-2. 接入 HotpotQA + FRAMES（多跳硬 gold，写清洗脚本），验证图检索多跳价值；
-3. MIRAGE 端到端（已拉取仓库，等阶段 3 有 LLM 再跑）；
-4. 阶段 3 MedicalGPT SFT（GPT 并行线）。
+1. HotpotQA 补 Hybrid2（Qwen3-Reranker 三路重排，运行中）；FRAMES 轻接（仅保留 questions/答案/金标标题映射，不建语料，待端到端评测）；
+2. MIRAGE 端到端（已拉取仓库，等阶段 3 有 LLM 再跑）；
+3. 阶段 3 MedicalGPT SFT（GPT 并行线）。
 
-**现有基准结果汇总**：`pubmedqa_hard_v1` Dense 最优；`nfcorpus_v1` Hybrid2 最优；`scifact_v1` Hybrid 最优（BM25>Dense）。图检索在已有基准均未胜出。检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）完备，评测支持多相关 qrels。
+**现有基准结果汇总**：`pubmedqa_hard_v1` Dense 最优；`nfcorpus_v1` Hybrid2 最优；`scifact_v1` Hybrid2 最优；`hotpotqa_v1` Hybrid 最优。图检索在全部四个基准均未胜出。检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）完备，评测支持多相关 qrels。
 
 # 待补知识
 
@@ -276,6 +279,29 @@ scripts/run_sft.sh
 | Graph (BC5CDR Entity-Passage + PPR) | 0.157 | 0.483 | 0.314 |
 
 独立复算多相关指标误差 0/1e-16。
+
+### SciFact（BEIR，科学声明核查，test 300）
+
+| 方法 | Recall@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|
+| BM25 | 0.791 | 0.630 | 0.664 |
+| Dense all-mpnet (IndexFlatIP) | 0.769 | 0.594 | 0.633 |
+| Hybrid RRF (BM25+Dense, k=60) | 0.838 | 0.669 | 0.705 |
+| Graph (BC5CDR Entity-Passage + PPR) | 0.682 | 0.458 | 0.507 |
+| **Hybrid2 (Qwen3-Reranker)** | **0.895** | **0.740** | **0.772** |
+
+（commit `4442303`；graph 检索在 scifact 上垫底——科学声明核查里词项/语义匹配强，实体传播信号弱。）
+
+### HotpotQA（多跳硬 gold，test 7405）
+
+| 方法 | Recall@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|
+| BM25 | 0.738 | 0.798 | 0.663 |
+| Dense all-mpnet (IndexFlatIP) | 0.711 | 0.817 | 0.668 |
+| Graph (BC5CDR Entity-Passage + PPR) | 0.680 | 0.784 | 0.638 |
+| **Hybrid RRF (BM25+Dense, k=60)** | **0.800** | **0.852** | **0.731** |
+
+（多跳 gold 每问恰 2.0 篇，R@10 显著低于单答案基准；RRF 融合大幅胜出 = 词项+语义两路互补。图检索依然垫底，BC5CDR 医学 NER 在通用维基上实体稀疏。）
 
 该封闭基准只含 5,000 documents，且 PubMedQA 问题与 gold article 主题高度一致；不得把高 Recall 外推为全 PubMed 检索性能。主设置没有索引 title，但术语明确问题仍容易依靠 abstract 词项命中。
 

@@ -1,0 +1,811 @@
+{
+  "success": [
+    {
+      "query_id": "5a8b57f25542995d1e6f1371",
+      "question": "Were Scott Derrickson and Ed Wood of the same nationality?",
+      "gold_doc_id": "Ed Wood",
+      "gold_title": "Ed Wood",
+      "gold_rank": 7,
+      "gold_chunk_excerpt": "Edward Davis Wood Jr. (October 10, 1924 – December 10, 1978) was an American filmmaker, actor, writer, producer, and director.",
+      "top_documents": [
+        {
+          "doc_id": "Ed Melvin",
+          "score": 0.41002699732780457,
+          "best_chunk_id": "Ed Melvin",
+          "best_chunk_rank": 1,
+          "title": "Ed Melvin"
+        },
+        {
+          "doc_id": "The Stanley Brothers",
+          "score": 0.40488070249557495,
+          "best_chunk_id": "The Stanley Brothers",
+          "best_chunk_rank": 2,
+          "title": "The Stanley Brothers"
+        },
+        {
+          "doc_id": "John Drew (basketball)",
+          "score": 0.4032045602798462,
+          "best_chunk_id": "John Drew (basketball)",
+          "best_chunk_rank": 3,
+          "title": "John Drew (basketball)"
+        },
+        {
+          "doc_id": "Rufus Sisson",
+          "score": 0.38970714807510376,
+          "best_chunk_id": "Rufus Sisson",
+          "best_chunk_rank": 4,
+          "title": "Rufus Sisson"
+        },
+        {
+          "doc_id": "Mookie Blaylock",
+          "score": 0.3896535038948059,
+          "best_chunk_id": "Mookie Blaylock",
+          "best_chunk_rank": 5,
+          "title": "Mookie Blaylock"
+        },
+        {
+          "doc_id": "Jeff Wood (racing driver)",
+          "score": 0.389576256275177,
+          "best_chunk_id": "Jeff Wood (racing driver)",
+          "best_chunk_rank": 6,
+          "title": "Jeff Wood (racing driver)"
+        },
+        {
+          "doc_id": "Ed Wood",
+          "score": 0.387955904006958,
+          "best_chunk_id": "Ed Wood",
+          "best_chunk_rank": 7,
+          "title": "Ed Wood"
+        },
+        {
+          "doc_id": "John Emerson (filmmaker)",
+          "score": 0.37857645750045776,
+          "best_chunk_id": "John Emerson (filmmaker)",
+          "best_chunk_rank": 8,
+          "title": "John Emerson (filmmaker)"
+        },
+        {
+          "doc_id": "Eric Forbes-Robertson",
+          "score": 0.37821146845817566,
+          "best_chunk_id": "Eric Forbes-Robertson",
+          "best_chunk_rank": 9,
+          "title": "Eric Forbes-Robertson"
+        },
+        {
+          "doc_id": "Derrick Hamilton (basketball)",
+          "score": 0.37783539295196533,
+          "best_chunk_id": "Derrick Hamilton (basketball)",
+          "best_chunk_rank": 10,
+          "title": "Derrick Hamilton (basketball)"
+        }
+      ]
+    },
+    {
+      "query_id": "5a8c7595554299585d9e36b6",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "gold_doc_id": "Kiss and Tell (1945 film)",
+      "gold_title": "Kiss and Tell (1945 film)",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Kiss and Tell is a 1945 American comedy film starring then 17-year-old Shirley Temple as Corliss Archer. In the film, two teenage girls cause their respective parents much concern when they start to become interested in boys. The parents' bickering about which girl is the worse influence causes more problems than it solves.",
+      "top_documents": [
+        {
+          "doc_id": "Kiss and Tell (1945 film)",
+          "score": 0.6418401598930359,
+          "best_chunk_id": "Kiss and Tell (1945 film)",
+          "best_chunk_rank": 1,
+          "title": "Kiss and Tell (1945 film)"
+        },
+        {
+          "doc_id": "Meet Corliss Archer (TV series)",
+          "score": 0.4703313112258911,
+          "best_chunk_id": "Meet Corliss Archer (TV series)",
+          "best_chunk_rank": 2,
+          "title": "Meet Corliss Archer (TV series)"
+        },
+        {
+          "doc_id": "Hannah Gale",
+          "score": 0.4637487530708313,
+          "best_chunk_id": "Hannah Gale",
+          "best_chunk_rank": 3,
+          "title": "Hannah Gale"
+        },
+        {
+          "doc_id": "A Kiss for Corliss",
+          "score": 0.4610983729362488,
+          "best_chunk_id": "A Kiss for Corliss",
+          "best_chunk_rank": 4,
+          "title": "A Kiss for Corliss"
+        },
+        {
+          "doc_id": "Evelyn S. Lieberman",
+          "score": 0.4603973925113678,
+          "best_chunk_id": "Evelyn S. Lieberman",
+          "best_chunk_rank": 5,
+          "title": "Evelyn S. Lieberman"
+        },
+        {
+          "doc_id": "Helen Chenoweth-Hage",
+          "score": 0.4511294364929199,
+          "best_chunk_id": "Helen Chenoweth-Hage",
+          "best_chunk_rank": 6,
+          "title": "Helen Chenoweth-Hage"
+        },
+        {
+          "doc_id": "Pat Swinney Kaufman",
+          "score": 0.44986915588378906,
+          "best_chunk_id": "Pat Swinney Kaufman",
+          "best_chunk_rank": 7,
+          "title": "Pat Swinney Kaufman"
+        },
+        {
+          "doc_id": "Julia Compton Moore",
+          "score": 0.44818857312202454,
+          "best_chunk_id": "Julia Compton Moore",
+          "best_chunk_rank": 8,
+          "title": "Julia Compton Moore"
+        },
+        {
+          "doc_id": "The Kiss (1929 film)",
+          "score": 0.44560015201568604,
+          "best_chunk_id": "The Kiss (1929 film)",
+          "best_chunk_rank": 9,
+          "title": "The Kiss (1929 film)"
+        },
+        {
+          "doc_id": "Heather Penney",
+          "score": 0.4418211579322815,
+          "best_chunk_id": "Heather Penney",
+          "best_chunk_rank": 10,
+          "title": "Heather Penney"
+        }
+      ]
+    },
+    {
+      "query_id": "5a85ea095542994775f606a8",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "gold_doc_id": "Animorphs",
+      "gold_title": "Animorphs",
+      "gold_rank": 4,
+      "gold_chunk_excerpt": "Animorphs is a science fantasy series of young adult books written by Katherine Applegate and her husband Michael Grant, writing together under the name K. A. Applegate, and published by Scholastic. It is told in first person, with all six main characters taking turns narrating the books through their own perspectives. Horror, war, dehumanization, sanity, morality, innocence, leadership, freedom and growing up are the core themes of the series.",
+      "top_documents": [
+        {
+          "doc_id": "The Broken Empire Trilogy",
+          "score": 0.43410763144493103,
+          "best_chunk_id": "The Broken Empire Trilogy",
+          "best_chunk_rank": 1,
+          "title": "The Broken Empire Trilogy"
+        },
+        {
+          "doc_id": "The Chronicles of Tornor",
+          "score": 0.42705023288726807,
+          "best_chunk_id": "The Chronicles of Tornor",
+          "best_chunk_rank": 2,
+          "title": "The Chronicles of Tornor"
+        },
+        {
+          "doc_id": "Eric Flint bibliography",
+          "score": 0.42443668842315674,
+          "best_chunk_id": "Eric Flint bibliography",
+          "best_chunk_rank": 3,
+          "title": "Eric Flint bibliography"
+        },
+        {
+          "doc_id": "Animorphs",
+          "score": 0.4175739288330078,
+          "best_chunk_id": "Animorphs",
+          "best_chunk_rank": 4,
+          "title": "Animorphs"
+        },
+        {
+          "doc_id": "Victoria Hanley",
+          "score": 0.4061216413974762,
+          "best_chunk_id": "Victoria Hanley",
+          "best_chunk_rank": 5,
+          "title": "Victoria Hanley"
+        },
+        {
+          "doc_id": "The Starbuck Chronicles",
+          "score": 0.3987773060798645,
+          "best_chunk_id": "The Starbuck Chronicles",
+          "best_chunk_rank": 6,
+          "title": "The Starbuck Chronicles"
+        },
+        {
+          "doc_id": "Robert Holdstock bibliography",
+          "score": 0.39210617542266846,
+          "best_chunk_id": "Robert Holdstock bibliography",
+          "best_chunk_rank": 7,
+          "title": "Robert Holdstock bibliography"
+        },
+        {
+          "doc_id": "Talking to Dragons",
+          "score": 0.3892589211463928,
+          "best_chunk_id": "Talking to Dragons",
+          "best_chunk_rank": 8,
+          "title": "Talking to Dragons"
+        },
+        {
+          "doc_id": "The Hork-Bajir Chronicles",
+          "score": 0.3871268033981323,
+          "best_chunk_id": "The Hork-Bajir Chronicles",
+          "best_chunk_rank": 9,
+          "title": "The Hork-Bajir Chronicles"
+        },
+        {
+          "doc_id": "Enchanted Forest Chronicles",
+          "score": 0.3871051073074341,
+          "best_chunk_id": "Enchanted Forest Chronicles",
+          "best_chunk_rank": 10,
+          "title": "Enchanted Forest Chronicles"
+        }
+      ]
+    },
+    {
+      "query_id": "5adbf0a255429947ff17385a",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "gold_doc_id": "Esma Sultan Mansion",
+      "gold_title": "Esma Sultan Mansion",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "The Esma Sultan Mansion (Turkish: \"Esma Sultan Yalısı\" ), a historical yalı (English: waterside mansion ) located at Bosphorus in Ortaköy neighborhood of Istanbul, Turkey and named after its original owner Esma Sultan, is used today as a cultural center after being redeveloped.",
+      "top_documents": [
+        {
+          "doc_id": "Esma Sultan Mansion",
+          "score": 0.6434460878372192,
+          "best_chunk_id": "Esma Sultan Mansion",
+          "best_chunk_rank": 1,
+          "title": "Esma Sultan Mansion"
+        },
+        {
+          "doc_id": "Laleli Mosque",
+          "score": 0.6387901306152344,
+          "best_chunk_id": "Laleli Mosque",
+          "best_chunk_rank": 2,
+          "title": "Laleli Mosque"
+        },
+        {
+          "doc_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "score": 0.5916139483451843,
+          "best_chunk_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "best_chunk_rank": 3,
+          "title": "Mihrimah Sultan Mosque (Edirnekapı)"
+        },
+        {
+          "doc_id": "Hala Sultan Tekke",
+          "score": 0.5389830470085144,
+          "best_chunk_id": "Hala Sultan Tekke",
+          "best_chunk_rank": 4,
+          "title": "Hala Sultan Tekke"
+        },
+        {
+          "doc_id": "Ibrahim-al-Ibrahim Mosque",
+          "score": 0.5371835231781006,
+          "best_chunk_id": "Ibrahim-al-Ibrahim Mosque",
+          "best_chunk_rank": 5,
+          "title": "Ibrahim-al-Ibrahim Mosque"
+        },
+        {
+          "doc_id": "Bayezid II Mosque (Amasya)",
+          "score": 0.5364384055137634,
+          "best_chunk_id": "Bayezid II Mosque (Amasya)",
+          "best_chunk_rank": 6,
+          "title": "Bayezid II Mosque (Amasya)"
+        },
+        {
+          "doc_id": "New Mosque (Istanbul)",
+          "score": 0.5359792113304138,
+          "best_chunk_id": "New Mosque (Istanbul)",
+          "best_chunk_rank": 7,
+          "title": "New Mosque (Istanbul)"
+        },
+        {
+          "doc_id": "Bayezid II Mosque",
+          "score": 0.526549220085144,
+          "best_chunk_id": "Bayezid II Mosque",
+          "best_chunk_rank": 8,
+          "title": "Bayezid II Mosque"
+        },
+        {
+          "doc_id": "Atik Ali Pasha Mosque",
+          "score": 0.5187010765075684,
+          "best_chunk_id": "Atik Ali Pasha Mosque",
+          "best_chunk_rank": 9,
+          "title": "Atik Ali Pasha Mosque"
+        },
+        {
+          "doc_id": "Süleymaniye Mosque",
+          "score": 0.5129607915878296,
+          "best_chunk_id": "Süleymaniye Mosque",
+          "best_chunk_rank": 10,
+          "title": "Süleymaniye Mosque"
+        }
+      ]
+    },
+    {
+      "query_id": "5a8e3ea95542995a26add48d",
+      "question": "The director of the romantic comedy \"Big Stone Gap\" is based in what New York city?",
+      "gold_doc_id": "Adriana Trigiani",
+      "gold_title": "Adriana Trigiani",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Adriana Trigiani is an Italian American best-selling author of sixteen books, television writer, film director, and entrepreneur based in Greenwich Village, New York City. Trigiani has published a novel a year since 2000.",
+      "top_documents": [
+        {
+          "doc_id": "Big Stone Gap (film)",
+          "score": 0.7447845339775085,
+          "best_chunk_id": "Big Stone Gap (film)",
+          "best_chunk_rank": 1,
+          "title": "Big Stone Gap (film)"
+        },
+        {
+          "doc_id": "Manhattan Romance",
+          "score": 0.5390353798866272,
+          "best_chunk_id": "Manhattan Romance",
+          "best_chunk_rank": 2,
+          "title": "Manhattan Romance"
+        },
+        {
+          "doc_id": "Bill Berry (director)",
+          "score": 0.4712507724761963,
+          "best_chunk_id": "Bill Berry (director)",
+          "best_chunk_rank": 3,
+          "title": "Bill Berry (director)"
+        },
+        {
+          "doc_id": "Chronically Metropolitan",
+          "score": 0.4651620388031006,
+          "best_chunk_id": "Chronically Metropolitan",
+          "best_chunk_rank": 4,
+          "title": "Chronically Metropolitan"
+        },
+        {
+          "doc_id": "The Great Beauty",
+          "score": 0.46269235014915466,
+          "best_chunk_id": "The Great Beauty",
+          "best_chunk_rank": 5,
+          "title": "The Great Beauty"
+        },
+        {
+          "doc_id": "Brooklyn (film)",
+          "score": 0.46163660287857056,
+          "best_chunk_id": "Brooklyn (film)",
+          "best_chunk_rank": 6,
+          "title": "Brooklyn (film)"
+        },
+        {
+          "doc_id": "Deuce Bigalow: Male Gigolo",
+          "score": 0.4526350796222687,
+          "best_chunk_id": "Deuce Bigalow: Male Gigolo",
+          "best_chunk_rank": 7,
+          "title": "Deuce Bigalow: Male Gigolo"
+        },
+        {
+          "doc_id": "The Big Split",
+          "score": 0.44264987111091614,
+          "best_chunk_id": "The Big Split",
+          "best_chunk_rank": 8,
+          "title": "The Big Split"
+        },
+        {
+          "doc_id": "Sex and the City (film)",
+          "score": 0.4413949251174927,
+          "best_chunk_id": "Sex and the City (film)",
+          "best_chunk_rank": 9,
+          "title": "Sex and the City (film)"
+        },
+        {
+          "doc_id": "The Stone Roses: Made of Stone",
+          "score": 0.4369755983352661,
+          "best_chunk_id": "The Stone Roses: Made of Stone",
+          "best_chunk_rank": 10,
+          "title": "The Stone Roses: Made of Stone"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "5ab3b0bf5542992ade7c6e39",
+      "question": "What year did Guns N Roses perform a promo for a movie starring Arnold Schwarzenegger as a former New York Police detective?",
+      "gold_doc_id": "End of Days (film)",
+      "gold_title": "End of Days (film)",
+      "gold_rank": 14,
+      "gold_chunk_excerpt": "End of Days is a 1999 American fantasy action horror thriller film directed by Peter Hyams and starring Arnold Schwarzenegger, Gabriel Byrne, Robin Tunney, Kevin Pollak, Rod Steiger, CCH Pounder, and Udo Kier. The film follows former New York Police Department detective Jericho Cane (Schwarzenegger) after he saves a banker (Byrne) from an assassin, finds himself embroiled in a religious conflict, and must protect an innocent young woman (Tunney) who is chosen by evil forces to conceive the Antic",
+      "top_documents": [
+        {
+          "doc_id": "Guns N' Roses discography",
+          "score": 0.5915241837501526,
+          "best_chunk_id": "Guns N' Roses discography",
+          "best_chunk_rank": 1,
+          "title": "Guns N' Roses discography"
+        },
+        {
+          "doc_id": "Hollywood Rose",
+          "score": 0.5662221312522888,
+          "best_chunk_id": "Hollywood Rose",
+          "best_chunk_rank": 2,
+          "title": "Hollywood Rose"
+        },
+        {
+          "doc_id": "Guns N' Roses",
+          "score": 0.5649694204330444,
+          "best_chunk_id": "Guns N' Roses",
+          "best_chunk_rank": 3,
+          "title": "Guns N' Roses"
+        },
+        {
+          "doc_id": "List of songs recorded by Guns N' Roses",
+          "score": 0.5596452951431274,
+          "best_chunk_id": "List of songs recorded by Guns N' Roses",
+          "best_chunk_rank": 4,
+          "title": "List of songs recorded by Guns N' Roses"
+        },
+        {
+          "doc_id": "Chris Weber",
+          "score": 0.5433232188224792,
+          "best_chunk_id": "Chris Weber",
+          "best_chunk_rank": 5,
+          "title": "Chris Weber"
+        },
+        {
+          "doc_id": "North Hollywood Shootout",
+          "score": 0.4869791567325592,
+          "best_chunk_id": "North Hollywood Shootout",
+          "best_chunk_rank": 6,
+          "title": "North Hollywood Shootout"
+        },
+        {
+          "doc_id": "November Rain",
+          "score": 0.4820528030395508,
+          "best_chunk_id": "November Rain",
+          "best_chunk_rank": 7,
+          "title": "November Rain"
+        },
+        {
+          "doc_id": "Teen Spirit: The Tribute to Kurt Cobain",
+          "score": 0.46618664264678955,
+          "best_chunk_id": "Teen Spirit: The Tribute to Kurt Cobain",
+          "best_chunk_rank": 8,
+          "title": "Teen Spirit: The Tribute to Kurt Cobain"
+        },
+        {
+          "doc_id": "Daniel Amos Live in Anaheim 1985",
+          "score": 0.4613593816757202,
+          "best_chunk_id": "Daniel Amos Live in Anaheim 1985",
+          "best_chunk_rank": 9,
+          "title": "Daniel Amos Live in Anaheim 1985"
+        },
+        {
+          "doc_id": "Black Rebel Motorcycle Club discography",
+          "score": 0.45717519521713257,
+          "best_chunk_id": "Black Rebel Motorcycle Club discography",
+          "best_chunk_rank": 10,
+          "title": "Black Rebel Motorcycle Club discography"
+        }
+      ]
+    },
+    {
+      "query_id": "5ab859a955429934fafe6d7b",
+      "question": "Who is the writer of this song that was inspired by words on a tombstone and was the first track on the box set Back to Mono?",
+      "gold_doc_id": "Back to Mono (1958–1969)",
+      "gold_title": "Back to Mono (1958–1969)",
+      "gold_rank": 18,
+      "gold_chunk_excerpt": "Back to Mono (1958–1969) is a box set (4 compact discs or 5 vinyl LPs) compilation of the recorded work of record producer Phil Spector, through the 1960s, released in 1991 by ABKCO as #7118-2. The first track, \"To Know Him Is to Love Him,\" released in 1958, features Spector performing as part of the group the Teddy Bears. Initially a vinyl album-sized package, the box contained a booklet with photographs, complete song lyrics, discographical information, and a reproduction of the essay on Spect",
+      "top_documents": [
+        {
+          "doc_id": "A Letter from Death Row (album)",
+          "score": 0.5009653568267822,
+          "best_chunk_id": "A Letter from Death Row (album)",
+          "best_chunk_rank": 1,
+          "title": "A Letter from Death Row (album)"
+        },
+        {
+          "doc_id": "Domino (Van Morrison song)",
+          "score": 0.4945003390312195,
+          "best_chunk_id": "Domino (Van Morrison song)",
+          "best_chunk_rank": 2,
+          "title": "Domino (Van Morrison song)"
+        },
+        {
+          "doc_id": "Bill Grainer",
+          "score": 0.4876401424407959,
+          "best_chunk_id": "Bill Grainer",
+          "best_chunk_rank": 3,
+          "title": "Bill Grainer"
+        },
+        {
+          "doc_id": "I Love You (The Zombies song)",
+          "score": 0.4869734048843384,
+          "best_chunk_id": "I Love You (The Zombies song)",
+          "best_chunk_rank": 4,
+          "title": "I Love You (The Zombies song)"
+        },
+        {
+          "doc_id": "Here with Me (The Killers song)",
+          "score": 0.4838031530380249,
+          "best_chunk_id": "Here with Me (The Killers song)",
+          "best_chunk_rank": 5,
+          "title": "Here with Me (The Killers song)"
+        },
+        {
+          "doc_id": "The Funeral Pudding",
+          "score": 0.47964543104171753,
+          "best_chunk_id": "The Funeral Pudding",
+          "best_chunk_rank": 6,
+          "title": "The Funeral Pudding"
+        },
+        {
+          "doc_id": "Sonora's Death Row",
+          "score": 0.4779869318008423,
+          "best_chunk_id": "Sonora's Death Row",
+          "best_chunk_rank": 7,
+          "title": "Sonora's Death Row"
+        },
+        {
+          "doc_id": "Veteran of the Psychic Wars",
+          "score": 0.4705726206302643,
+          "best_chunk_id": "Veteran of the Psychic Wars",
+          "best_chunk_rank": 8,
+          "title": "Veteran of the Psychic Wars"
+        },
+        {
+          "doc_id": "Corey Chorus",
+          "score": 0.4648054838180542,
+          "best_chunk_id": "Corey Chorus",
+          "best_chunk_rank": 9,
+          "title": "Corey Chorus"
+        },
+        {
+          "doc_id": "Back from the Grave, Volume 7",
+          "score": 0.4631810188293457,
+          "best_chunk_id": "Back from the Grave, Volume 7",
+          "best_chunk_rank": 10,
+          "title": "Back from the Grave, Volume 7"
+        }
+      ]
+    },
+    {
+      "query_id": "5a7320565542991f9a20c61d",
+      "question": "who is younger Keith Bostic or Jerry Glanville ?",
+      "gold_doc_id": "Jerry Glanville",
+      "gold_title": "Jerry Glanville",
+      "gold_rank": 35,
+      "gold_chunk_excerpt": "Jerry Michael Glanville (born October 14, 1941) is a former American football player and coach, former NASCAR driver and owner, and sportscaster. He served as head coach of the Houston Oilers from 1986 to 1990 and the Atlanta Falcons from 1990 to 1994, compiling a career NFL record of 63–73. From 2007 to 2009, he was the Head Football Coach at Portland State University, tallying a mark of 9–24. Glanville has worked as an analyst on HBO's \"Inside the NFL\", CBS's \"The NFL Today\"/\"NFL on CBS\" and F",
+      "top_documents": [
+        {
+          "doc_id": "Keith Bostic",
+          "score": 0.48929184675216675,
+          "best_chunk_id": "Keith Bostic",
+          "best_chunk_rank": 1,
+          "title": "Keith Bostic"
+        },
+        {
+          "doc_id": "Keith Bilbrey",
+          "score": 0.47118014097213745,
+          "best_chunk_id": "Keith Bilbrey",
+          "best_chunk_rank": 2,
+          "title": "Keith Bilbrey"
+        },
+        {
+          "doc_id": "Jerry Bingham",
+          "score": 0.4498925507068634,
+          "best_chunk_id": "Jerry Bingham",
+          "best_chunk_rank": 3,
+          "title": "Jerry Bingham"
+        },
+        {
+          "doc_id": "Marshall Rohner",
+          "score": 0.44007277488708496,
+          "best_chunk_id": "Marshall Rohner",
+          "best_chunk_rank": 4,
+          "title": "Marshall Rohner"
+        },
+        {
+          "doc_id": "Keith Slettedahl",
+          "score": 0.4296268820762634,
+          "best_chunk_id": "Keith Slettedahl",
+          "best_chunk_rank": 5,
+          "title": "Keith Slettedahl"
+        },
+        {
+          "doc_id": "Britt Leach",
+          "score": 0.4285409450531006,
+          "best_chunk_id": "Britt Leach",
+          "best_chunk_rank": 6,
+          "title": "Britt Leach"
+        },
+        {
+          "doc_id": "Raybon Brothers",
+          "score": 0.42512115836143494,
+          "best_chunk_id": "Raybon Brothers",
+          "best_chunk_rank": 7,
+          "title": "Raybon Brothers"
+        },
+        {
+          "doc_id": "Jesse Sandoval",
+          "score": 0.4207046329975128,
+          "best_chunk_id": "Jesse Sandoval",
+          "best_chunk_rank": 8,
+          "title": "Jesse Sandoval"
+        },
+        {
+          "doc_id": "Butch Cage and Willie B. Thomas",
+          "score": 0.42062193155288696,
+          "best_chunk_id": "Butch Cage and Willie B. Thomas",
+          "best_chunk_rank": 9,
+          "title": "Butch Cage and Willie B. Thomas"
+        },
+        {
+          "doc_id": "Jonny Browning",
+          "score": 0.4202723205089569,
+          "best_chunk_id": "Jonny Browning",
+          "best_chunk_rank": 10,
+          "title": "Jonny Browning"
+        }
+      ]
+    },
+    {
+      "query_id": "5ae7ba7a5542993210983f12",
+      "question": "What is the name of the singer who's song was released as the lead single from the album \"Confessions\", and that had popular song stuck behind for eight consecutive weeks?",
+      "gold_doc_id": "I Don't Wanna Know",
+      "gold_title": "I Don't Wanna Know",
+      "gold_rank": 100,
+      "gold_chunk_excerpt": "\"I Don't Wanna Know\" is a song by American R&B artist Mario Winans, featuring a rap by P. Diddy, re-recorded background vocals by Enya and sampling the synthesizer riff from Enya's song \"Boadicea\". It reached number 1 in the United Kingdom and in Netherlands, and number 2 in the United States, stuck for eight consecutive weeks behind the Usher singles \"Yeah\" and \"Burn\", respectively. It remains Winans' only major success to date. As a result of its eight weeks at number 2, \"I Don't Wanna Know\" s",
+      "top_documents": [
+        {
+          "doc_id": "List of Billboard 200 number-one albums of 2002",
+          "score": 0.548209011554718,
+          "best_chunk_id": "List of Billboard 200 number-one albums of 2002",
+          "best_chunk_rank": 1,
+          "title": "List of Billboard 200 number-one albums of 2002"
+        },
+        {
+          "doc_id": "List of songs recorded by Britney Spears",
+          "score": 0.5152972340583801,
+          "best_chunk_id": "List of songs recorded by Britney Spears",
+          "best_chunk_rank": 2,
+          "title": "List of songs recorded by Britney Spears"
+        },
+        {
+          "doc_id": "The Confessor (song)",
+          "score": 0.511376142501831,
+          "best_chunk_id": "The Confessor (song)",
+          "best_chunk_rank": 3,
+          "title": "The Confessor (song)"
+        },
+        {
+          "doc_id": "List of songs recorded by Kelly Clarkson",
+          "score": 0.4996487498283386,
+          "best_chunk_id": "List of songs recorded by Kelly Clarkson",
+          "best_chunk_rank": 4,
+          "title": "List of songs recorded by Kelly Clarkson"
+        },
+        {
+          "doc_id": "The Confession (band)",
+          "score": 0.4874502718448639,
+          "best_chunk_id": "The Confession (band)",
+          "best_chunk_rank": 5,
+          "title": "The Confession (band)"
+        },
+        {
+          "doc_id": "Danity Kane discography",
+          "score": 0.4803187847137451,
+          "best_chunk_id": "Danity Kane discography",
+          "best_chunk_rank": 6,
+          "title": "Danity Kane discography"
+        },
+        {
+          "doc_id": "Sing (Ed Sheeran song)",
+          "score": 0.4768400192260742,
+          "best_chunk_id": "Sing (Ed Sheeran song)",
+          "best_chunk_rank": 7,
+          "title": "Sing (Ed Sheeran song)"
+        },
+        {
+          "doc_id": "Revelation (98 Degrees album)",
+          "score": 0.476421982049942,
+          "best_chunk_id": "Revelation (98 Degrees album)",
+          "best_chunk_rank": 8,
+          "title": "Revelation (98 Degrees album)"
+        },
+        {
+          "doc_id": "Kelly Clarkson discography",
+          "score": 0.4711732268333435,
+          "best_chunk_id": "Kelly Clarkson discography",
+          "best_chunk_rank": 9,
+          "title": "Kelly Clarkson discography"
+        },
+        {
+          "doc_id": "Confessions of a Teenage Drama Queen (soundtrack)",
+          "score": 0.4696555435657501,
+          "best_chunk_id": "Confessions of a Teenage Drama Queen (soundtrack)",
+          "best_chunk_rank": 10,
+          "title": "Confessions of a Teenage Drama Queen (soundtrack)"
+        }
+      ]
+    },
+    {
+      "query_id": "5ae738f75542991bbc9761c4",
+      "question": "What year was the brother of this first round draft pick by the Washington Redskins drafted?",
+      "gold_doc_id": "Boss Bailey",
+      "gold_title": "Boss Bailey",
+      "gold_rank": 46,
+      "gold_chunk_excerpt": "Rodney \"Boss\" Bailey (born October 14, 1979) is a former American football linebacker who played in the National Football League. He was originally drafted by the Detroit Lions in the second round of the 2003 NFL Draft. He played college football at the University of Georgia. He is the brother of former NFL cornerback Champ Bailey.",
+      "top_documents": [
+        {
+          "doc_id": "List of Green Bay Packers first-round draft picks",
+          "score": 0.5251525640487671,
+          "best_chunk_id": "List of Green Bay Packers first-round draft picks",
+          "best_chunk_rank": 1,
+          "title": "List of Green Bay Packers first-round draft picks"
+        },
+        {
+          "doc_id": "List of Texas Tech Red Raiders in the NFL Draft",
+          "score": 0.5207328796386719,
+          "best_chunk_id": "List of Texas Tech Red Raiders in the NFL Draft",
+          "best_chunk_rank": 2,
+          "title": "List of Texas Tech Red Raiders in the NFL Draft"
+        },
+        {
+          "doc_id": "List of Kentucky Wildcats in the NFL Draft",
+          "score": 0.5119038224220276,
+          "best_chunk_id": "List of Kentucky Wildcats in the NFL Draft",
+          "best_chunk_rank": 3,
+          "title": "List of Kentucky Wildcats in the NFL Draft"
+        },
+        {
+          "doc_id": "Akili Smith",
+          "score": 0.5053513050079346,
+          "best_chunk_id": "Akili Smith",
+          "best_chunk_rank": 4,
+          "title": "Akili Smith"
+        },
+        {
+          "doc_id": "List of Iowa State Cyclones in the NFL Draft",
+          "score": 0.49852848052978516,
+          "best_chunk_id": "List of Iowa State Cyclones in the NFL Draft",
+          "best_chunk_rank": 5,
+          "title": "List of Iowa State Cyclones in the NFL Draft"
+        },
+        {
+          "doc_id": "Scott Young (American football)",
+          "score": 0.4975266456604004,
+          "best_chunk_id": "Scott Young (American football)",
+          "best_chunk_rank": 6,
+          "title": "Scott Young (American football)"
+        },
+        {
+          "doc_id": "George Wilson (quarterback)",
+          "score": 0.493363618850708,
+          "best_chunk_id": "George Wilson (quarterback)",
+          "best_chunk_rank": 7,
+          "title": "George Wilson (quarterback)"
+        },
+        {
+          "doc_id": "Josh McCown",
+          "score": 0.49215051531791687,
+          "best_chunk_id": "Josh McCown",
+          "best_chunk_rank": 8,
+          "title": "Josh McCown"
+        },
+        {
+          "doc_id": "1999 Philadelphia Eagles season",
+          "score": 0.49114418029785156,
+          "best_chunk_id": "1999 Philadelphia Eagles season",
+          "best_chunk_rank": 9,
+          "title": "1999 Philadelphia Eagles season"
+        },
+        {
+          "doc_id": "Donovan McNabb",
+          "score": 0.48985448479652405,
+          "best_chunk_id": "Donovan McNabb",
+          "best_chunk_rank": 10,
+          "title": "Donovan McNabb"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 6932,
+    "failure_at_10_available": 473,
+    "saved_per_group_max": 5
+  }
+}

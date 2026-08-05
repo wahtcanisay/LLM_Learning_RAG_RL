@@ -1,0 +1,602 @@
+{
+  "success": [
+    {
+      "query_id": "5a8b57f25542995d1e6f1371",
+      "question": "Were Scott Derrickson and Ed Wood of the same nationality?",
+      "gold_doc_id": "Ed Wood",
+      "gold_title": "Ed Wood",
+      "gold_rank": 3,
+      "top_documents": [
+        {
+          "doc_id": "Ed Wood (film)",
+          "title": "Ed Wood (film)",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Rashaun Woods",
+          "title": "Rashaun Woods",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Scott Derrickson",
+          "title": "Scott Derrickson",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "John Scott (ice hockey)",
+          "title": "John Scott (ice hockey)",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Doctor Strange (2016 film)",
+          "title": "Doctor Strange (2016 film)",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Ed Melvin",
+          "title": "Ed Melvin",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Sinister (film)",
+          "title": "Sinister (film)",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "The Stanley Brothers",
+          "title": "The Stanley Brothers",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "John Drew (basketball)",
+          "title": "John Drew (basketball)",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "That Darn Cat (1997 film)",
+          "title": "That Darn Cat (1997 film)",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5a8c7595554299585d9e36b6",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "gold_doc_id": "Kiss and Tell (1945 film)",
+      "gold_title": "Kiss and Tell (1945 film)",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Kiss and Tell (1945 film)",
+          "title": "Kiss and Tell (1945 film)",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "A Kiss for Corliss",
+          "title": "A Kiss for Corliss",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Meet Corliss Archer (TV series)",
+          "title": "Meet Corliss Archer (TV series)",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "Meet Corliss Archer",
+          "title": "Meet Corliss Archer",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Janet Waldo",
+          "title": "Janet Waldo",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Judy Greer",
+          "title": "Judy Greer",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Hannah Gale",
+          "title": "Hannah Gale",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "The Prodigal Daughter",
+          "title": "The Prodigal Daughter",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "The Dilemma",
+          "title": "The Dilemma",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "Evelyn S. Lieberman",
+          "title": "Evelyn S. Lieberman",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5a85ea095542994775f606a8",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "gold_doc_id": "Animorphs",
+      "gold_title": "Animorphs",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Animorphs",
+          "title": "Animorphs",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Victoria Hanley",
+          "title": "Victoria Hanley",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "The Hork-Bajir Chronicles",
+          "title": "The Hork-Bajir Chronicles",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "Talking to Dragons",
+          "title": "Talking to Dragons",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Isaac Asimov's Magical Worlds of Fantasy",
+          "title": "Isaac Asimov's Magical Worlds of Fantasy",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Roswell High",
+          "title": "Roswell High",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Imaginary Worlds: The Art of Fantasy",
+          "title": "Imaginary Worlds: The Art of Fantasy",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "Enchanted Forest Chronicles",
+          "title": "Enchanted Forest Chronicles",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "K. A. Applegate",
+          "title": "K. A. Applegate",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "Time Quintet",
+          "title": "Time Quintet",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5adbf0a255429947ff17385a",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "gold_doc_id": "Esma Sultan Mansion",
+      "gold_title": "Esma Sultan Mansion",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Esma Sultan Mansion",
+          "title": "Esma Sultan Mansion",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Laleli Mosque",
+          "title": "Laleli Mosque",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "title": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "New Mosque (Istanbul)",
+          "title": "New Mosque (Istanbul)",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Pertevniyal Valide Sultan Mosque",
+          "title": "Pertevniyal Valide Sultan Mosque",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Tengku Ampuan Jemaah Mosque",
+          "title": "Tengku Ampuan Jemaah Mosque",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Sultan Ahmed Mosque",
+          "title": "Sultan Ahmed Mosque",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "King Mosque, Berat",
+          "title": "King Mosque, Berat",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "Hala Sultan Tekke",
+          "title": "Hala Sultan Tekke",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "Bayezid II Mosque (Amasya)",
+          "title": "Bayezid II Mosque (Amasya)",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5a8e3ea95542995a26add48d",
+      "question": "The director of the romantic comedy \"Big Stone Gap\" is based in what New York city?",
+      "gold_doc_id": "Adriana Trigiani",
+      "gold_title": "Adriana Trigiani",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Big Stone Gap (film)",
+          "title": "Big Stone Gap (film)",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Sex and the City (film)",
+          "title": "Sex and the City (film)",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Mind the Gap Theatre",
+          "title": "Mind the Gap Theatre",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "I Love NY (2015 film)",
+          "title": "I Love NY (2015 film)",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Oliver Stone",
+          "title": "Oliver Stone",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "The Big Split",
+          "title": "The Big Split",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Morris S. Levy",
+          "title": "Morris S. Levy",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "Going the Distance (2010 film)",
+          "title": "Going the Distance (2010 film)",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "West of Broadway",
+          "title": "West of Broadway",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "Marie Losier",
+          "title": "Marie Losier",
+          "fused_rank": 10
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "5a7c960655429935c91b5244",
+      "question": "The 1974 Texas Tech Raiders football team represented what public research university in Lubbock, Texas?",
+      "gold_doc_id": "1974 Texas Tech Red Raiders football team",
+      "gold_title": "1974 Texas Tech Red Raiders football team",
+      "gold_rank": 11,
+      "top_documents": [
+        {
+          "doc_id": "2008 Texas Tech Red Raiders football team",
+          "title": "2008 Texas Tech Red Raiders football team",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "2013 Texas Tech Red Raiders football team",
+          "title": "2013 Texas Tech Red Raiders football team",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "1960–61 Texas Tech Red Raiders basketball team",
+          "title": "1960–61 Texas Tech Red Raiders basketball team",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "1961–62 Texas Tech Red Raiders basketball team",
+          "title": "1961–62 Texas Tech Red Raiders basketball team",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Texas Tech Red Raiders football",
+          "title": "Texas Tech Red Raiders football",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "2016 Texas Tech Red Raiders football team",
+          "title": "2016 Texas Tech Red Raiders football team",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "2014 Texas Tech Red Raiders football team",
+          "title": "2014 Texas Tech Red Raiders football team",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "2015 Texas Tech Red Raiders football team",
+          "title": "2015 Texas Tech Red Raiders football team",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "1995–96 Texas Tech Red Raiders basketball team",
+          "title": "1995–96 Texas Tech Red Raiders basketball team",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "2014 Texas Tech Red Raiders baseball team",
+          "title": "2014 Texas Tech Red Raiders baseball team",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5a74c85055429916b0164218",
+      "question": "Born on 6 March 1937, this man was also a citizen of the United Kingdom.",
+      "gold_doc_id": "Alistair Grant",
+      "gold_title": "Alistair Grant",
+      "gold_rank": 60,
+      "top_documents": [
+        {
+          "doc_id": "Neville Chamberlain",
+          "title": "Neville Chamberlain",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Edmund Bartley-Denniss",
+          "title": "Edmund Bartley-Denniss",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "John MacGregor, Baron MacGregor of Pulham Market",
+          "title": "John MacGregor, Baron MacGregor of Pulham Market",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "Claude Choules",
+          "title": "Claude Choules",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Winston Churchill (1940–2010)",
+          "title": "Winston Churchill (1940–2010)",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Malaysians in the United Kingdom",
+          "title": "Malaysians in the United Kingdom",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Winston Churchill (Cavalier)",
+          "title": "Winston Churchill (Cavalier)",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "Mark Shuttleworth",
+          "title": "Mark Shuttleworth",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "Frank Curtis (priest)",
+          "title": "Frank Curtis (priest)",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "List of British monarchs",
+          "title": "List of British monarchs",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5a8ee6915542990e94052bad",
+      "question": "What season was the character introduced that becomes the main antagonist in the  following season, from the animated television series created by Bryan Konietzko and Michael Dante DiMartino as a sequel to \"\", which aired from 2005 to 2008? ",
+      "gold_doc_id": "Kuvira",
+      "gold_title": "Kuvira",
+      "gold_rank": 30,
+      "top_documents": [
+        {
+          "doc_id": "Avatar: The Last Airbender (season 1)",
+          "title": "Avatar: The Last Airbender (season 1)",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Avatar: The Last Airbender (season 3)",
+          "title": "Avatar: The Last Airbender (season 3)",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Avatar: The Last Airbender (season 2)",
+          "title": "Avatar: The Last Airbender (season 2)",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "List of Avatar: The Last Airbender episodes",
+          "title": "List of Avatar: The Last Airbender episodes",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Regular Show (season 7)",
+          "title": "Regular Show (season 7)",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Regular Show (season 8)",
+          "title": "Regular Show (season 8)",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "SpongeBob SquarePants (season 4)",
+          "title": "SpongeBob SquarePants (season 4)",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "List of Robot Chicken episodes",
+          "title": "List of Robot Chicken episodes",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "SpongeBob SquarePants (season 8)",
+          "title": "SpongeBob SquarePants (season 8)",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "SpongeBob SquarePants (season 3)",
+          "title": "SpongeBob SquarePants (season 3)",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5add673e5542992ae4cec54d",
+      "question": "Joe Walker played for which team that ends their regular season with the Civil War rivalry game?",
+      "gold_doc_id": "Joe Walker (American football)",
+      "gold_title": "Joe Walker (American football)",
+      "gold_rank": 13,
+      "top_documents": [
+        {
+          "doc_id": "1983 Oregon State vs. Oregon football game",
+          "title": "1983 Oregon State vs. Oregon football game",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "Civil War (college football game)",
+          "title": "Civil War (college football game)",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Jackie Walker (American football, born 1962)",
+          "title": "Jackie Walker (American football, born 1962)",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "List of Seattle Seahawks seasons",
+          "title": "List of Seattle Seahawks seasons",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "2008 Texas vs. Texas Tech football game",
+          "title": "2008 Texas vs. Texas Tech football game",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Magnolia Bowl",
+          "title": "Magnolia Bowl",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "2006 Chicago Bears–Arizona Cardinals game",
+          "title": "2006 Chicago Bears–Arizona Cardinals game",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "American Professional Football League",
+          "title": "American Professional Football League",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "1888 Miami Redskins football team",
+          "title": "1888 Miami Redskins football team",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "The Rivalry (Lehigh–Lafayette)",
+          "title": "The Rivalry (Lehigh–Lafayette)",
+          "fused_rank": 10
+        }
+      ]
+    },
+    {
+      "query_id": "5ade69e455429975fa854ec5",
+      "question": "What director worked with Vikram Bhatt on a film starring actors Rajneesh Duggal and Adah Sharma?",
+      "gold_doc_id": "1920 (film series)",
+      "gold_title": "1920 (film series)",
+      "gold_rank": 13,
+      "top_documents": [
+        {
+          "doc_id": "Rajneesh Duggal",
+          "title": "Rajneesh Duggal",
+          "fused_rank": 1
+        },
+        {
+          "doc_id": "List of awards and nominations received by Vikram",
+          "title": "List of awards and nominations received by Vikram",
+          "fused_rank": 2
+        },
+        {
+          "doc_id": "Robin Bhatt",
+          "title": "Robin Bhatt",
+          "fused_rank": 3
+        },
+        {
+          "doc_id": "Sujit Mondal",
+          "title": "Sujit Mondal",
+          "fused_rank": 4
+        },
+        {
+          "doc_id": "Vikram (actor)",
+          "title": "Vikram (actor)",
+          "fused_rank": 5
+        },
+        {
+          "doc_id": "Vimmy Bhatt",
+          "title": "Vimmy Bhatt",
+          "fused_rank": 6
+        },
+        {
+          "doc_id": "Dhruva Natchathiram",
+          "title": "Dhruva Natchathiram",
+          "fused_rank": 7
+        },
+        {
+          "doc_id": "Ankahee (2006 film)",
+          "title": "Ankahee (2006 film)",
+          "fused_rank": 8
+        },
+        {
+          "doc_id": "Shajoon Kariyal",
+          "title": "Shajoon Kariyal",
+          "fused_rank": 9
+        },
+        {
+          "doc_id": "Bhaskar (director)",
+          "title": "Bhaskar (director)",
+          "fused_rank": 10
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 7237,
+    "failure_at_10_available": 168,
+    "saved_per_group_max": 5
+  },
+  "known_failures": {}
+}

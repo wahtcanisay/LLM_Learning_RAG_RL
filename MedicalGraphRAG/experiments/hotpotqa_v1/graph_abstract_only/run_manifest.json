@@ -1,0 +1,132 @@
+{
+  "git_commit": "4442303",
+  "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "host_python_version": "3.12.3",
+  "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
+  "evaluation_command": [
+    "src/medical_graphrag/cli.py",
+    "evaluate-graph",
+    "--dataset-dir",
+    "data/processed/hotpotqa_v1",
+    "--rankings",
+    "outputs/hotpotqa_v1/graph_abstract_only/raw_rankings.jsonl",
+    "--index-report",
+    "indexes/hotpotqa_v1/graph_abstract_only/graph_build.json",
+    "--search-report",
+    "outputs/hotpotqa_v1/graph_abstract_only/search_run.json",
+    "--output-dir",
+    "experiments/hotpotqa_v1/graph_abstract_only",
+    "--git-commit",
+    "4442303",
+    "--docker-image",
+    "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
+  ],
+  "index": {
+    "text_mode": "abstract_only",
+    "ner_model": "en_ner_bc5cdr_md",
+    "embedding_model": "models/all-mpnet-base-v2",
+    "entity_count": 11250,
+    "passage_count": 66581,
+    "sentence_count": 251309,
+    "edge_count": 29839,
+    "passage_entity_edge_mode": "normalized_cooccurrence",
+    "adjacent_passage_edges": false,
+    "dataset_manifest_sha256": "18e14d03aea7c2a47b91d44a027d5ad9deb35b53ec0a74e425f0cf2e8dfc2aec",
+    "dataset_artifact_hashes": {
+      "questions.jsonl": "11e3507f64b416c9957ff8ed3b9b527ba8f9ee1df88f0221e28b8cd9c6982f06",
+      "documents.jsonl": "de24e5e1b4c88d3b7fe17d6d8453c4c35c1f34616bc7f93da9b7685fe5a36d95",
+      "chunks.jsonl": "976e67e108ae087eddcceaa06ba9251667386b3d5f9a0bd845956a72fd3d68e9",
+      "qrels.tsv": "2879f88d79616fc62a3645beb704a9cd54b9bf03ffa352e27a7e1cf03c011722"
+    },
+    "graph_sha256": "caf59e296b7979265db3e9d4e4dd4537bc8a79ca919b5993c953daff18828ece",
+    "sentence_embeddings_sha256": "3b259c785de76c3a6b3d1a55bd116c3c899327b5ce1418745717c8112570ac41",
+    "entity_embeddings_sha256": "ffff6c6611a16f9950b55b038a2fa0d31706c3943e2488b012d1254b5d49a04c",
+    "passage_embeddings_sha256": "c08fcc3f0526e26017e894678ea3ee29929e5f49f6d7884d7be26f48572b22ba",
+    "entities_sha256": "e424ee088721afb1c55d6e7c9fd75034e67b8ae345918c19eff2adacca77927e",
+    "entity_to_sentences_sha256": "410b4ded82d450953b9a477f42b0034d1da1007f8921ab799d4272bcc36c6d28",
+    "sentence_to_entities_sha256": "2792157b434ec4e8f367015bb603dea11282ffbbbe90fa82391ea8d0ac5859f0",
+    "config": {
+      "damping": 0.85,
+      "passage_ratio": 1.5,
+      "passage_node_weight": 0.5,
+      "iteration_threshold": 0.5,
+      "top_k_sentence": 1,
+      "max_iterations": 3
+    }
+  },
+  "search": {
+    "command": [
+      "scripts/search_graph.py",
+      "--index",
+      "indexes/hotpotqa_v1/graph_abstract_only",
+      "--questions",
+      "data/processed/hotpotqa_v1/questions.jsonl",
+      "--chunks",
+      "data/processed/hotpotqa_v1/chunks.jsonl",
+      "--output",
+      "outputs/hotpotqa_v1/graph_abstract_only/raw_rankings.jsonl",
+      "--report",
+      "outputs/hotpotqa_v1/graph_abstract_only/search_run.json",
+      "--index-report",
+      "indexes/hotpotqa_v1/graph_abstract_only/graph_build.json",
+      "--top-k",
+      "100"
+    ],
+    "query_count": 7405,
+    "requested_top_k": 100,
+    "min_hits": 100,
+    "max_hits": 100,
+    "short_ranking_count": 0,
+    "hit_count_histogram": {
+      "100": 7405
+    },
+    "text_mode": "abstract_only",
+    "ner_model": "en_ner_bc5cdr_md",
+    "embedding_model": "models/all-mpnet-base-v2",
+    "graph_sha256": "caf59e296b7979265db3e9d4e4dd4537bc8a79ca919b5993c953daff18828ece",
+    "graph_build_report_sha256": "8dc187a3fb9d71babe7de7ebb665401383c024dddc3ab5d4c361ca4399f301a4",
+    "dataset_manifest_sha256": "18e14d03aea7c2a47b91d44a027d5ad9deb35b53ec0a74e425f0cf2e8dfc2aec",
+    "questions_sha256": "11e3507f64b416c9957ff8ed3b9b527ba8f9ee1df88f0221e28b8cd9c6982f06",
+    "rankings_sha256": "cc1cc1b7258eb27a51cd54debd94c608c1904d7a8a0265a229954244dbca3ca5",
+    "config": {
+      "damping": 0.85,
+      "passage_ratio": 1.5,
+      "passage_node_weight": 0.5,
+      "iteration_threshold": 0.5,
+      "top_k_sentence": 1,
+      "max_iterations": 3
+    }
+  },
+  "index_report_sha256": "8dc187a3fb9d71babe7de7ebb665401383c024dddc3ab5d4c361ca4399f301a4",
+  "dataset_manifest_sha256": "18e14d03aea7c2a47b91d44a027d5ad9deb35b53ec0a74e425f0cf2e8dfc2aec",
+  "dataset_artifact_hashes": {
+    "questions.jsonl": "11e3507f64b416c9957ff8ed3b9b527ba8f9ee1df88f0221e28b8cd9c6982f06",
+    "documents.jsonl": "de24e5e1b4c88d3b7fe17d6d8453c4c35c1f34616bc7f93da9b7685fe5a36d95",
+    "chunks.jsonl": "976e67e108ae087eddcceaa06ba9251667386b3d5f9a0bd845956a72fd3d68e9",
+    "qrels.tsv": "2879f88d79616fc62a3645beb704a9cd54b9bf03ffa352e27a7e1cf03c011722"
+  },
+  "generated_at_utc": "2026-08-05T05:58:30.945199+00:00",
+  "rankings_sha256": "cc1cc1b7258eb27a51cd54debd94c608c1904d7a8a0265a229954244dbca3ca5",
+  "question_count": 7405,
+  "document_count": 66581,
+  "chunk_metadata_count": 66581,
+  "split_counts": {
+    "test": 7405
+  },
+  "chunk_top_k": 100,
+  "aggregation": "max_chunk_score",
+  "graph": {
+    "ner_model": "en_ner_bc5cdr_md",
+    "embedding_model": "models/all-mpnet-base-v2",
+    "config": {
+      "damping": 0.85,
+      "passage_ratio": 1.5,
+      "passage_node_weight": 0.5,
+      "iteration_threshold": 0.5,
+      "top_k_sentence": 1,
+      "max_iterations": 3
+    },
+    "adjacent_passage_edges": false
+  },
+  "text_mode": "abstract_only"
+}

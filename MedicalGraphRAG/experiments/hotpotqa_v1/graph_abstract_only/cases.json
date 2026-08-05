@@ -1,0 +1,801 @@
+{
+  "success": [
+    {
+      "query_id": "5a8b57f25542995d1e6f1371",
+      "question": "Were Scott Derrickson and Ed Wood of the same nationality?",
+      "gold_doc_id": "Ed Wood",
+      "gold_title": "Ed Wood",
+      "gold_rank": 7,
+      "top_documents": [
+        {
+          "doc_id": "Ed Melvin",
+          "score": 0.41002705693244934,
+          "best_chunk_id": "Ed Melvin",
+          "best_chunk_rank": 1,
+          "title": "Ed Melvin"
+        },
+        {
+          "doc_id": "The Stanley Brothers",
+          "score": 0.40488070249557495,
+          "best_chunk_id": "The Stanley Brothers",
+          "best_chunk_rank": 2,
+          "title": "The Stanley Brothers"
+        },
+        {
+          "doc_id": "John Drew (basketball)",
+          "score": 0.4032045006752014,
+          "best_chunk_id": "John Drew (basketball)",
+          "best_chunk_rank": 3,
+          "title": "John Drew (basketball)"
+        },
+        {
+          "doc_id": "Rufus Sisson",
+          "score": 0.38970711827278137,
+          "best_chunk_id": "Rufus Sisson",
+          "best_chunk_rank": 4,
+          "title": "Rufus Sisson"
+        },
+        {
+          "doc_id": "Mookie Blaylock",
+          "score": 0.3896535336971283,
+          "best_chunk_id": "Mookie Blaylock",
+          "best_chunk_rank": 5,
+          "title": "Mookie Blaylock"
+        },
+        {
+          "doc_id": "Jeff Wood (racing driver)",
+          "score": 0.38957616686820984,
+          "best_chunk_id": "Jeff Wood (racing driver)",
+          "best_chunk_rank": 6,
+          "title": "Jeff Wood (racing driver)"
+        },
+        {
+          "doc_id": "Ed Wood",
+          "score": 0.3879558742046356,
+          "best_chunk_id": "Ed Wood",
+          "best_chunk_rank": 7,
+          "title": "Ed Wood"
+        },
+        {
+          "doc_id": "John Emerson (filmmaker)",
+          "score": 0.3785763084888458,
+          "best_chunk_id": "John Emerson (filmmaker)",
+          "best_chunk_rank": 8,
+          "title": "John Emerson (filmmaker)"
+        },
+        {
+          "doc_id": "Eric Forbes-Robertson",
+          "score": 0.3782113790512085,
+          "best_chunk_id": "Eric Forbes-Robertson",
+          "best_chunk_rank": 9,
+          "title": "Eric Forbes-Robertson"
+        },
+        {
+          "doc_id": "Derrick Hamilton (basketball)",
+          "score": 0.37783539295196533,
+          "best_chunk_id": "Derrick Hamilton (basketball)",
+          "best_chunk_rank": 10,
+          "title": "Derrick Hamilton (basketball)"
+        }
+      ]
+    },
+    {
+      "query_id": "5a8c7595554299585d9e36b6",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "gold_doc_id": "Kiss and Tell (1945 film)",
+      "gold_title": "Kiss and Tell (1945 film)",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Kiss and Tell (1945 film)",
+          "score": 0.6418401002883911,
+          "best_chunk_id": "Kiss and Tell (1945 film)",
+          "best_chunk_rank": 1,
+          "title": "Kiss and Tell (1945 film)"
+        },
+        {
+          "doc_id": "Meet Corliss Archer (TV series)",
+          "score": 0.4703312814235687,
+          "best_chunk_id": "Meet Corliss Archer (TV series)",
+          "best_chunk_rank": 2,
+          "title": "Meet Corliss Archer (TV series)"
+        },
+        {
+          "doc_id": "Hannah Gale",
+          "score": 0.4637487530708313,
+          "best_chunk_id": "Hannah Gale",
+          "best_chunk_rank": 3,
+          "title": "Hannah Gale"
+        },
+        {
+          "doc_id": "A Kiss for Corliss",
+          "score": 0.46109825372695923,
+          "best_chunk_id": "A Kiss for Corliss",
+          "best_chunk_rank": 4,
+          "title": "A Kiss for Corliss"
+        },
+        {
+          "doc_id": "Evelyn S. Lieberman",
+          "score": 0.4603974223136902,
+          "best_chunk_id": "Evelyn S. Lieberman",
+          "best_chunk_rank": 5,
+          "title": "Evelyn S. Lieberman"
+        },
+        {
+          "doc_id": "Helen Chenoweth-Hage",
+          "score": 0.4511292278766632,
+          "best_chunk_id": "Helen Chenoweth-Hage",
+          "best_chunk_rank": 6,
+          "title": "Helen Chenoweth-Hage"
+        },
+        {
+          "doc_id": "Pat Swinney Kaufman",
+          "score": 0.44986921548843384,
+          "best_chunk_id": "Pat Swinney Kaufman",
+          "best_chunk_rank": 7,
+          "title": "Pat Swinney Kaufman"
+        },
+        {
+          "doc_id": "Julia Compton Moore",
+          "score": 0.44818854331970215,
+          "best_chunk_id": "Julia Compton Moore",
+          "best_chunk_rank": 8,
+          "title": "Julia Compton Moore"
+        },
+        {
+          "doc_id": "The Kiss (1929 film)",
+          "score": 0.4456002414226532,
+          "best_chunk_id": "The Kiss (1929 film)",
+          "best_chunk_rank": 9,
+          "title": "The Kiss (1929 film)"
+        },
+        {
+          "doc_id": "Heather Penney",
+          "score": 0.44182124733924866,
+          "best_chunk_id": "Heather Penney",
+          "best_chunk_rank": 10,
+          "title": "Heather Penney"
+        }
+      ]
+    },
+    {
+      "query_id": "5a85ea095542994775f606a8",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "gold_doc_id": "Animorphs",
+      "gold_title": "Animorphs",
+      "gold_rank": 4,
+      "top_documents": [
+        {
+          "doc_id": "The Broken Empire Trilogy",
+          "score": 0.4341075122356415,
+          "best_chunk_id": "The Broken Empire Trilogy",
+          "best_chunk_rank": 1,
+          "title": "The Broken Empire Trilogy"
+        },
+        {
+          "doc_id": "The Chronicles of Tornor",
+          "score": 0.4270502030849457,
+          "best_chunk_id": "The Chronicles of Tornor",
+          "best_chunk_rank": 2,
+          "title": "The Chronicles of Tornor"
+        },
+        {
+          "doc_id": "Eric Flint bibliography",
+          "score": 0.42443665862083435,
+          "best_chunk_id": "Eric Flint bibliography",
+          "best_chunk_rank": 3,
+          "title": "Eric Flint bibliography"
+        },
+        {
+          "doc_id": "Animorphs",
+          "score": 0.4175738990306854,
+          "best_chunk_id": "Animorphs",
+          "best_chunk_rank": 4,
+          "title": "Animorphs"
+        },
+        {
+          "doc_id": "Victoria Hanley",
+          "score": 0.4061216413974762,
+          "best_chunk_id": "Victoria Hanley",
+          "best_chunk_rank": 5,
+          "title": "Victoria Hanley"
+        },
+        {
+          "doc_id": "The Starbuck Chronicles",
+          "score": 0.39877718687057495,
+          "best_chunk_id": "The Starbuck Chronicles",
+          "best_chunk_rank": 6,
+          "title": "The Starbuck Chronicles"
+        },
+        {
+          "doc_id": "Robert Holdstock bibliography",
+          "score": 0.3921062648296356,
+          "best_chunk_id": "Robert Holdstock bibliography",
+          "best_chunk_rank": 7,
+          "title": "Robert Holdstock bibliography"
+        },
+        {
+          "doc_id": "Talking to Dragons",
+          "score": 0.38925883173942566,
+          "best_chunk_id": "Talking to Dragons",
+          "best_chunk_rank": 8,
+          "title": "Talking to Dragons"
+        },
+        {
+          "doc_id": "The Hork-Bajir Chronicles",
+          "score": 0.38712674379348755,
+          "best_chunk_id": "The Hork-Bajir Chronicles",
+          "best_chunk_rank": 9,
+          "title": "The Hork-Bajir Chronicles"
+        },
+        {
+          "doc_id": "Enchanted Forest Chronicles",
+          "score": 0.38710522651672363,
+          "best_chunk_id": "Enchanted Forest Chronicles",
+          "best_chunk_rank": 10,
+          "title": "Enchanted Forest Chronicles"
+        }
+      ]
+    },
+    {
+      "query_id": "5adbf0a255429947ff17385a",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "gold_doc_id": "Esma Sultan Mansion",
+      "gold_title": "Esma Sultan Mansion",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Esma Sultan Mansion",
+          "score": 0.643446147441864,
+          "best_chunk_id": "Esma Sultan Mansion",
+          "best_chunk_rank": 1,
+          "title": "Esma Sultan Mansion"
+        },
+        {
+          "doc_id": "Laleli Mosque",
+          "score": 0.6387900114059448,
+          "best_chunk_id": "Laleli Mosque",
+          "best_chunk_rank": 2,
+          "title": "Laleli Mosque"
+        },
+        {
+          "doc_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "score": 0.5916140675544739,
+          "best_chunk_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "best_chunk_rank": 3,
+          "title": "Mihrimah Sultan Mosque (Edirnekapı)"
+        },
+        {
+          "doc_id": "Hala Sultan Tekke",
+          "score": 0.538983166217804,
+          "best_chunk_id": "Hala Sultan Tekke",
+          "best_chunk_rank": 4,
+          "title": "Hala Sultan Tekke"
+        },
+        {
+          "doc_id": "Ibrahim-al-Ibrahim Mosque",
+          "score": 0.5371834635734558,
+          "best_chunk_id": "Ibrahim-al-Ibrahim Mosque",
+          "best_chunk_rank": 5,
+          "title": "Ibrahim-al-Ibrahim Mosque"
+        },
+        {
+          "doc_id": "Bayezid II Mosque (Amasya)",
+          "score": 0.5364382863044739,
+          "best_chunk_id": "Bayezid II Mosque (Amasya)",
+          "best_chunk_rank": 6,
+          "title": "Bayezid II Mosque (Amasya)"
+        },
+        {
+          "doc_id": "New Mosque (Istanbul)",
+          "score": 0.5359792709350586,
+          "best_chunk_id": "New Mosque (Istanbul)",
+          "best_chunk_rank": 7,
+          "title": "New Mosque (Istanbul)"
+        },
+        {
+          "doc_id": "Bayezid II Mosque",
+          "score": 0.5265491604804993,
+          "best_chunk_id": "Bayezid II Mosque",
+          "best_chunk_rank": 8,
+          "title": "Bayezid II Mosque"
+        },
+        {
+          "doc_id": "Atik Ali Pasha Mosque",
+          "score": 0.5187009572982788,
+          "best_chunk_id": "Atik Ali Pasha Mosque",
+          "best_chunk_rank": 9,
+          "title": "Atik Ali Pasha Mosque"
+        },
+        {
+          "doc_id": "Süleymaniye Mosque",
+          "score": 0.5129609107971191,
+          "best_chunk_id": "Süleymaniye Mosque",
+          "best_chunk_rank": 10,
+          "title": "Süleymaniye Mosque"
+        }
+      ]
+    },
+    {
+      "query_id": "5a8e3ea95542995a26add48d",
+      "question": "The director of the romantic comedy \"Big Stone Gap\" is based in what New York city?",
+      "gold_doc_id": "Adriana Trigiani",
+      "gold_title": "Adriana Trigiani",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "Big Stone Gap (film)",
+          "score": 0.7447845935821533,
+          "best_chunk_id": "Big Stone Gap (film)",
+          "best_chunk_rank": 1,
+          "title": "Big Stone Gap (film)"
+        },
+        {
+          "doc_id": "Manhattan Romance",
+          "score": 0.539035439491272,
+          "best_chunk_id": "Manhattan Romance",
+          "best_chunk_rank": 2,
+          "title": "Manhattan Romance"
+        },
+        {
+          "doc_id": "Bill Berry (director)",
+          "score": 0.47125083208084106,
+          "best_chunk_id": "Bill Berry (director)",
+          "best_chunk_rank": 3,
+          "title": "Bill Berry (director)"
+        },
+        {
+          "doc_id": "Chronically Metropolitan",
+          "score": 0.465162068605423,
+          "best_chunk_id": "Chronically Metropolitan",
+          "best_chunk_rank": 4,
+          "title": "Chronically Metropolitan"
+        },
+        {
+          "doc_id": "The Great Beauty",
+          "score": 0.4626922607421875,
+          "best_chunk_id": "The Great Beauty",
+          "best_chunk_rank": 5,
+          "title": "The Great Beauty"
+        },
+        {
+          "doc_id": "Brooklyn (film)",
+          "score": 0.46163660287857056,
+          "best_chunk_id": "Brooklyn (film)",
+          "best_chunk_rank": 6,
+          "title": "Brooklyn (film)"
+        },
+        {
+          "doc_id": "Deuce Bigalow: Male Gigolo",
+          "score": 0.45263513922691345,
+          "best_chunk_id": "Deuce Bigalow: Male Gigolo",
+          "best_chunk_rank": 7,
+          "title": "Deuce Bigalow: Male Gigolo"
+        },
+        {
+          "doc_id": "The Big Split",
+          "score": 0.4426499009132385,
+          "best_chunk_id": "The Big Split",
+          "best_chunk_rank": 8,
+          "title": "The Big Split"
+        },
+        {
+          "doc_id": "Sex and the City (film)",
+          "score": 0.4413948059082031,
+          "best_chunk_id": "Sex and the City (film)",
+          "best_chunk_rank": 9,
+          "title": "Sex and the City (film)"
+        },
+        {
+          "doc_id": "The Stone Roses: Made of Stone",
+          "score": 0.4369755685329437,
+          "best_chunk_id": "The Stone Roses: Made of Stone",
+          "best_chunk_rank": 10,
+          "title": "The Stone Roses: Made of Stone"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "5a7bbb64554299042af8f7cc",
+      "question": "Who is older, Annie Morton or Terry Richardson?",
+      "gold_doc_id": "Annie Morton",
+      "gold_title": "Annie Morton",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "Lady Gaga x Terry Richardson",
+          "score": 5.4899496750072145e-05,
+          "best_chunk_id": "Lady Gaga x Terry Richardson",
+          "best_chunk_rank": 1,
+          "title": "Lady Gaga x Terry Richardson"
+        },
+        {
+          "doc_id": "Garth Richardson",
+          "score": 5.486938248981069e-05,
+          "best_chunk_id": "Garth Richardson",
+          "best_chunk_rank": 2,
+          "title": "Garth Richardson"
+        },
+        {
+          "doc_id": "Leo Richardson",
+          "score": 5.4036011941525774e-05,
+          "best_chunk_id": "Leo Richardson",
+          "best_chunk_rank": 3,
+          "title": "Leo Richardson"
+        },
+        {
+          "doc_id": "Kevin Richardson (footballer)",
+          "score": 5.403589691940212e-05,
+          "best_chunk_id": "Kevin Richardson (footballer)",
+          "best_chunk_rank": 4,
+          "title": "Kevin Richardson (footballer)"
+        },
+        {
+          "doc_id": "Richardson, Texas",
+          "score": 5.2352786222915226e-05,
+          "best_chunk_id": "Richardson, Texas",
+          "best_chunk_rank": 5,
+          "title": "Richardson, Texas"
+        },
+        {
+          "doc_id": "Lewis Richardson (Hollyoaks)",
+          "score": 5.207899926065088e-05,
+          "best_chunk_id": "Lewis Richardson (Hollyoaks)",
+          "best_chunk_rank": 6,
+          "title": "Lewis Richardson (Hollyoaks)"
+        },
+        {
+          "doc_id": "Patricia Richardson",
+          "score": 5.078689547813845e-05,
+          "best_chunk_id": "Patricia Richardson",
+          "best_chunk_rank": 7,
+          "title": "Patricia Richardson"
+        },
+        {
+          "doc_id": "Act Your Age (radio series)",
+          "score": 5.0560987271569e-05,
+          "best_chunk_id": "Act Your Age (radio series)",
+          "best_chunk_rank": 8,
+          "title": "Act Your Age (radio series)"
+        },
+        {
+          "doc_id": "Elliot Richardson",
+          "score": 5.024153819761473e-05,
+          "best_chunk_id": "Elliot Richardson",
+          "best_chunk_rank": 9,
+          "title": "Elliot Richardson"
+        },
+        {
+          "doc_id": "Joely Richardson",
+          "score": 4.945537505837786e-05,
+          "best_chunk_id": "Joely Richardson",
+          "best_chunk_rank": 10,
+          "title": "Joely Richardson"
+        }
+      ]
+    },
+    {
+      "query_id": "5a877e5d5542993e715abf7d",
+      "question": "What screenwriter with credits for \"Evolution\" co-wrote a film starring Nicolas Cage and Téa Leoni?",
+      "gold_doc_id": "David Weissman",
+      "gold_title": "David Weissman",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "Morten Borgersen",
+          "score": 5.749152695404917e-05,
+          "best_chunk_id": "Morten Borgersen",
+          "best_chunk_rank": 1,
+          "title": "Morten Borgersen"
+        },
+        {
+          "doc_id": "Monisha Kaltenborn",
+          "score": 5.396480338655378e-05,
+          "best_chunk_id": "Monisha Kaltenborn",
+          "best_chunk_rank": 2,
+          "title": "Monisha Kaltenborn"
+        },
+        {
+          "doc_id": "Svein Tindberg",
+          "score": 5.366279011075234e-05,
+          "best_chunk_id": "Svein Tindberg",
+          "best_chunk_rank": 3,
+          "title": "Svein Tindberg"
+        },
+        {
+          "doc_id": "Rønnaug Alten",
+          "score": 5.352047404670416e-05,
+          "best_chunk_id": "Rønnaug Alten",
+          "best_chunk_rank": 4,
+          "title": "Rønnaug Alten"
+        },
+        {
+          "doc_id": "ByKolles Racing",
+          "score": 5.244327885170817e-05,
+          "best_chunk_id": "ByKolles Racing",
+          "best_chunk_rank": 5,
+          "title": "ByKolles Racing"
+        },
+        {
+          "doc_id": "Scuderia Toro Rosso",
+          "score": 5.2384072729884735e-05,
+          "best_chunk_id": "Scuderia Toro Rosso",
+          "best_chunk_rank": 6,
+          "title": "Scuderia Toro Rosso"
+        },
+        {
+          "doc_id": "Sucker Punch (2011 film)",
+          "score": 5.152282349499101e-05,
+          "best_chunk_id": "Sucker Punch (2011 film)",
+          "best_chunk_rank": 7,
+          "title": "Sucker Punch (2011 film)"
+        },
+        {
+          "doc_id": "Priscilla Martel",
+          "score": 5.138352134195427e-05,
+          "best_chunk_id": "Priscilla Martel",
+          "best_chunk_rank": 8,
+          "title": "Priscilla Martel"
+        },
+        {
+          "doc_id": "Moneyball (film)",
+          "score": 5.1232898417534825e-05,
+          "best_chunk_id": "Moneyball (film)",
+          "best_chunk_rank": 9,
+          "title": "Moneyball (film)"
+        },
+        {
+          "doc_id": "Tomcats Screaming Outside",
+          "score": 5.106639662134863e-05,
+          "best_chunk_id": "Tomcats Screaming Outside",
+          "best_chunk_rank": 10,
+          "title": "Tomcats Screaming Outside"
+        }
+      ]
+    },
+    {
+      "query_id": "5ab3b0bf5542992ade7c6e39",
+      "question": "What year did Guns N Roses perform a promo for a movie starring Arnold Schwarzenegger as a former New York Police detective?",
+      "gold_doc_id": "End of Days (film)",
+      "gold_title": "End of Days (film)",
+      "gold_rank": 14,
+      "top_documents": [
+        {
+          "doc_id": "Guns N' Roses discography",
+          "score": 0.5915241241455078,
+          "best_chunk_id": "Guns N' Roses discography",
+          "best_chunk_rank": 1,
+          "title": "Guns N' Roses discography"
+        },
+        {
+          "doc_id": "Hollywood Rose",
+          "score": 0.5662222504615784,
+          "best_chunk_id": "Hollywood Rose",
+          "best_chunk_rank": 2,
+          "title": "Hollywood Rose"
+        },
+        {
+          "doc_id": "Guns N' Roses",
+          "score": 0.5649693608283997,
+          "best_chunk_id": "Guns N' Roses",
+          "best_chunk_rank": 3,
+          "title": "Guns N' Roses"
+        },
+        {
+          "doc_id": "List of songs recorded by Guns N' Roses",
+          "score": 0.5596452951431274,
+          "best_chunk_id": "List of songs recorded by Guns N' Roses",
+          "best_chunk_rank": 4,
+          "title": "List of songs recorded by Guns N' Roses"
+        },
+        {
+          "doc_id": "Chris Weber",
+          "score": 0.5433233976364136,
+          "best_chunk_id": "Chris Weber",
+          "best_chunk_rank": 5,
+          "title": "Chris Weber"
+        },
+        {
+          "doc_id": "North Hollywood Shootout",
+          "score": 0.4869789779186249,
+          "best_chunk_id": "North Hollywood Shootout",
+          "best_chunk_rank": 6,
+          "title": "North Hollywood Shootout"
+        },
+        {
+          "doc_id": "November Rain",
+          "score": 0.4820528030395508,
+          "best_chunk_id": "November Rain",
+          "best_chunk_rank": 7,
+          "title": "November Rain"
+        },
+        {
+          "doc_id": "Teen Spirit: The Tribute to Kurt Cobain",
+          "score": 0.46618664264678955,
+          "best_chunk_id": "Teen Spirit: The Tribute to Kurt Cobain",
+          "best_chunk_rank": 8,
+          "title": "Teen Spirit: The Tribute to Kurt Cobain"
+        },
+        {
+          "doc_id": "Daniel Amos Live in Anaheim 1985",
+          "score": 0.4613593518733978,
+          "best_chunk_id": "Daniel Amos Live in Anaheim 1985",
+          "best_chunk_rank": 9,
+          "title": "Daniel Amos Live in Anaheim 1985"
+        },
+        {
+          "doc_id": "Black Rebel Motorcycle Club discography",
+          "score": 0.45717528462409973,
+          "best_chunk_id": "Black Rebel Motorcycle Club discography",
+          "best_chunk_rank": 10,
+          "title": "Black Rebel Motorcycle Club discography"
+        }
+      ]
+    },
+    {
+      "query_id": "5a80721b554299485f5985ef",
+      "question": "The Livesey Hal War Memorial commemorates the fallen of which war, that had over 60 million casualties?",
+      "gold_doc_id": "Livesey Hall War Memorial",
+      "gold_title": "Livesey Hall War Memorial",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "Operation Halyard",
+          "score": 7.548463483698022e-05,
+          "best_chunk_id": "Operation Halyard",
+          "best_chunk_rank": 1,
+          "title": "Operation Halyard"
+        },
+        {
+          "doc_id": "Ōban Star-Racers",
+          "score": 6.93317211606246e-05,
+          "best_chunk_id": "Ōban Star-Racers",
+          "best_chunk_rank": 2,
+          "title": "Ōban Star-Racers"
+        },
+        {
+          "doc_id": "Chawinda",
+          "score": 6.201497626281544e-05,
+          "best_chunk_id": "Chawinda",
+          "best_chunk_rank": 3,
+          "title": "Chawinda"
+        },
+        {
+          "doc_id": "Halloween on Franklin Street",
+          "score": 6.145739187938377e-05,
+          "best_chunk_id": "Halloween on Franklin Street",
+          "best_chunk_rank": 4,
+          "title": "Halloween on Franklin Street"
+        },
+        {
+          "doc_id": "Bald eagle",
+          "score": 6.059762883266478e-05,
+          "best_chunk_id": "Bald eagle",
+          "best_chunk_rank": 5,
+          "title": "Bald eagle"
+        },
+        {
+          "doc_id": "Black Taj Mahal",
+          "score": 5.977371553129652e-05,
+          "best_chunk_id": "Black Taj Mahal",
+          "best_chunk_rank": 6,
+          "title": "Black Taj Mahal"
+        },
+        {
+          "doc_id": "Robinson Ekspeditionen 2010",
+          "score": 5.865995304074299e-05,
+          "best_chunk_id": "Robinson Ekspeditionen 2010",
+          "best_chunk_rank": 7,
+          "title": "Robinson Ekspeditionen 2010"
+        },
+        {
+          "doc_id": "Music of Iowa",
+          "score": 5.85158178843314e-05,
+          "best_chunk_id": "Music of Iowa",
+          "best_chunk_rank": 8,
+          "title": "Music of Iowa"
+        },
+        {
+          "doc_id": "Lester Lautenschlaeger",
+          "score": 5.702150143371293e-05,
+          "best_chunk_id": "Lester Lautenschlaeger",
+          "best_chunk_rank": 9,
+          "title": "Lester Lautenschlaeger"
+        },
+        {
+          "doc_id": "Beck v. Eiland-Hall",
+          "score": 5.683103603266886e-05,
+          "best_chunk_id": "Beck v. Eiland-Hall",
+          "best_chunk_rank": 10,
+          "title": "Beck v. Eiland-Hall"
+        }
+      ]
+    },
+    {
+      "query_id": "5a760ab65542994ccc918697",
+      "question": "Alfred Balk served as the secretary of the Committee on the Employment of Minority Groups in the News Media under which United States Vice President?",
+      "gold_doc_id": "Alfred Balk",
+      "gold_title": "Alfred Balk",
+      "gold_rank": 87,
+      "top_documents": [
+        {
+          "doc_id": "Public Affairs Operations Center",
+          "score": 6.997377176423217e-05,
+          "best_chunk_id": "Public Affairs Operations Center",
+          "best_chunk_rank": 1,
+          "title": "Public Affairs Operations Center"
+        },
+        {
+          "doc_id": "Neurofilament",
+          "score": 6.704996200655913e-05,
+          "best_chunk_id": "Neurofilament",
+          "best_chunk_rank": 2,
+          "title": "Neurofilament"
+        },
+        {
+          "doc_id": "North Korea Strategy Center",
+          "score": 6.021183779437241e-05,
+          "best_chunk_id": "North Korea Strategy Center",
+          "best_chunk_rank": 3,
+          "title": "North Korea Strategy Center"
+        },
+        {
+          "doc_id": "Comedy Film Nerds",
+          "score": 5.9558747377805824e-05,
+          "best_chunk_id": "Comedy Film Nerds",
+          "best_chunk_rank": 4,
+          "title": "Comedy Film Nerds"
+        },
+        {
+          "doc_id": "Jacob Dolson Cox",
+          "score": 5.906057669633556e-05,
+          "best_chunk_id": "Jacob Dolson Cox",
+          "best_chunk_rank": 5,
+          "title": "Jacob Dolson Cox"
+        },
+        {
+          "doc_id": "990WBOB",
+          "score": 5.8734552189306274e-05,
+          "best_chunk_id": "990WBOB",
+          "best_chunk_rank": 6,
+          "title": "990WBOB"
+        },
+        {
+          "doc_id": "Turner Broadcasting System, Inc. v. FCC",
+          "score": 5.8616422223662326e-05,
+          "best_chunk_id": "Turner Broadcasting System, Inc. v. FCC",
+          "best_chunk_rank": 7,
+          "title": "Turner Broadcasting System, Inc. v. FCC"
+        },
+        {
+          "doc_id": "The Sean Hannity Show",
+          "score": 5.680090716409056e-05,
+          "best_chunk_id": "The Sean Hannity Show",
+          "best_chunk_rank": 8,
+          "title": "The Sean Hannity Show"
+        },
+        {
+          "doc_id": "Karl Frisch",
+          "score": 5.6617846312483706e-05,
+          "best_chunk_id": "Karl Frisch",
+          "best_chunk_rank": 9,
+          "title": "Karl Frisch"
+        },
+        {
+          "doc_id": "Marblemedia",
+          "score": 5.599948970424347e-05,
+          "best_chunk_id": "Marblemedia",
+          "best_chunk_rank": 10,
+          "title": "Marblemedia"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 6733,
+    "failure_at_10_available": 672,
+    "saved_per_group_max": 5
+  }
+}

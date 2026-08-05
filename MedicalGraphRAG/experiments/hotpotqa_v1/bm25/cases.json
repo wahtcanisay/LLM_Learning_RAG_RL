@@ -1,0 +1,811 @@
+{
+  "success": [
+    {
+      "query_id": "5a8b57f25542995d1e6f1371",
+      "question": "Were Scott Derrickson and Ed Wood of the same nationality?",
+      "gold_doc_id": "Ed Wood",
+      "gold_title": "Ed Wood",
+      "gold_rank": 8,
+      "gold_chunk_excerpt": "Edward Davis Wood Jr. (October 10, 1924 – December 10, 1978) was an American filmmaker, actor, writer, producer, and director.",
+      "top_documents": [
+        {
+          "doc_id": "Doctor Strange (2016 film)",
+          "score": 9.261099815368652,
+          "best_chunk_id": "Doctor Strange (2016 film)",
+          "best_chunk_rank": 1,
+          "title": "Doctor Strange (2016 film)"
+        },
+        {
+          "doc_id": "Sinister (film)",
+          "score": 9.182100296020508,
+          "best_chunk_id": "Sinister (film)",
+          "best_chunk_rank": 2,
+          "title": "Sinister (film)"
+        },
+        {
+          "doc_id": "That Darn Cat (1997 film)",
+          "score": 8.117500305175781,
+          "best_chunk_id": "That Darn Cat (1997 film)",
+          "best_chunk_rank": 3,
+          "title": "That Darn Cat (1997 film)"
+        },
+        {
+          "doc_id": "Patricia Arquette",
+          "score": 8.066300392150879,
+          "best_chunk_id": "Patricia Arquette",
+          "best_chunk_rank": 4,
+          "title": "Patricia Arquette"
+        },
+        {
+          "doc_id": "Woodson, Arkansas",
+          "score": 7.993000030517578,
+          "best_chunk_id": "Woodson, Arkansas",
+          "best_chunk_rank": 5,
+          "title": "Woodson, Arkansas"
+        },
+        {
+          "doc_id": "The Right Stuff (film)",
+          "score": 7.85099983215332,
+          "best_chunk_id": "The Right Stuff (film)",
+          "best_chunk_rank": 6,
+          "title": "The Right Stuff (film)"
+        },
+        {
+          "doc_id": "Ed Wood (film)",
+          "score": 7.76230001449585,
+          "best_chunk_id": "Ed Wood (film)",
+          "best_chunk_rank": 7,
+          "title": "Ed Wood (film)"
+        },
+        {
+          "doc_id": "Scott Derrickson",
+          "score": 7.688899993896484,
+          "best_chunk_id": "Scott Derrickson",
+          "best_chunk_rank": 8,
+          "title": "Scott Derrickson"
+        },
+        {
+          "doc_id": "Frankenweenie (2012 film)",
+          "score": 7.683599948883057,
+          "best_chunk_id": "Frankenweenie (2012 film)",
+          "best_chunk_rank": 9,
+          "title": "Frankenweenie (2012 film)"
+        },
+        {
+          "doc_id": "Sinister 2",
+          "score": 7.561999797821045,
+          "best_chunk_id": "Sinister 2",
+          "best_chunk_rank": 10,
+          "title": "Sinister 2"
+        }
+      ]
+    },
+    {
+      "query_id": "5a8c7595554299585d9e36b6",
+      "question": "What government position was held by the woman who portrayed Corliss Archer in the film Kiss and Tell?",
+      "gold_doc_id": "Kiss and Tell (1945 film)",
+      "gold_title": "Kiss and Tell (1945 film)",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Kiss and Tell is a 1945 American comedy film starring then 17-year-old Shirley Temple as Corliss Archer. In the film, two teenage girls cause their respective parents much concern when they start to become interested in boys. The parents' bickering about which girl is the worse influence causes more problems than it solves.",
+      "top_documents": [
+        {
+          "doc_id": "Kiss and Tell (1945 film)",
+          "score": 16.480899810791016,
+          "best_chunk_id": "Kiss and Tell (1945 film)",
+          "best_chunk_rank": 1,
+          "title": "Kiss and Tell (1945 film)"
+        },
+        {
+          "doc_id": "A Kiss for Corliss",
+          "score": 15.466099739074707,
+          "best_chunk_id": "A Kiss for Corliss",
+          "best_chunk_rank": 2,
+          "title": "A Kiss for Corliss"
+        },
+        {
+          "doc_id": "The Prodigal Daughter",
+          "score": 10.186699867248535,
+          "best_chunk_id": "The Prodigal Daughter",
+          "best_chunk_rank": 3,
+          "title": "The Prodigal Daughter"
+        },
+        {
+          "doc_id": "The Dilemma",
+          "score": 10.057100296020508,
+          "best_chunk_id": "The Dilemma",
+          "best_chunk_rank": 4,
+          "title": "The Dilemma"
+        },
+        {
+          "doc_id": "Fatal Attraction",
+          "score": 9.13860034942627,
+          "best_chunk_id": "Fatal Attraction",
+          "best_chunk_rank": 5,
+          "title": "Fatal Attraction"
+        },
+        {
+          "doc_id": "Janet Waldo",
+          "score": 9.07040023803711,
+          "best_chunk_id": "Janet Waldo",
+          "best_chunk_rank": 6,
+          "title": "Janet Waldo"
+        },
+        {
+          "doc_id": "Meet Corliss Archer (TV series)",
+          "score": 8.978799819946289,
+          "best_chunk_id": "Meet Corliss Archer (TV series)",
+          "best_chunk_rank": 7,
+          "title": "Meet Corliss Archer (TV series)"
+        },
+        {
+          "doc_id": "Capital Execution",
+          "score": 8.743499755859375,
+          "best_chunk_id": "Capital Execution",
+          "best_chunk_rank": 8,
+          "title": "Capital Execution"
+        },
+        {
+          "doc_id": "Likhoradka",
+          "score": 8.654899597167969,
+          "best_chunk_id": "Likhoradka",
+          "best_chunk_rank": 9,
+          "title": "Likhoradka"
+        },
+        {
+          "doc_id": "Wonder Woman (2017 film)",
+          "score": 8.588600158691406,
+          "best_chunk_id": "Wonder Woman (2017 film)",
+          "best_chunk_rank": 10,
+          "title": "Wonder Woman (2017 film)"
+        }
+      ]
+    },
+    {
+      "query_id": "5a85ea095542994775f606a8",
+      "question": "What science fantasy young adult series, told in first person, has a set of companion books narrating the stories of enslaved worlds and alien species?",
+      "gold_doc_id": "Animorphs",
+      "gold_title": "Animorphs",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Animorphs is a science fantasy series of young adult books written by Katherine Applegate and her husband Michael Grant, writing together under the name K. A. Applegate, and published by Scholastic. It is told in first person, with all six main characters taking turns narrating the books through their own perspectives. Horror, war, dehumanization, sanity, morality, innocence, leadership, freedom and growing up are the core themes of the series.",
+      "top_documents": [
+        {
+          "doc_id": "Animorphs",
+          "score": 22.641599655151367,
+          "best_chunk_id": "Animorphs",
+          "best_chunk_rank": 1,
+          "title": "Animorphs"
+        },
+        {
+          "doc_id": "The Hork-Bajir Chronicles",
+          "score": 21.452199935913086,
+          "best_chunk_id": "The Hork-Bajir Chronicles",
+          "best_chunk_rank": 2,
+          "title": "The Hork-Bajir Chronicles"
+        },
+        {
+          "doc_id": "Tales of the Quintana Roo",
+          "score": 17.187299728393555,
+          "best_chunk_id": "Tales of the Quintana Roo",
+          "best_chunk_rank": 3,
+          "title": "Tales of the Quintana Roo"
+        },
+        {
+          "doc_id": "Fallen In Love",
+          "score": 17.176300048828125,
+          "best_chunk_id": "Fallen In Love",
+          "best_chunk_rank": 4,
+          "title": "Fallen In Love"
+        },
+        {
+          "doc_id": "Victoria Hanley",
+          "score": 16.4325008392334,
+          "best_chunk_id": "Victoria Hanley",
+          "best_chunk_rank": 5,
+          "title": "Victoria Hanley"
+        },
+        {
+          "doc_id": "Talking to Dragons",
+          "score": 16.10260009765625,
+          "best_chunk_id": "Talking to Dragons",
+          "best_chunk_rank": 6,
+          "title": "Talking to Dragons"
+        },
+        {
+          "doc_id": "A Wind in the Door",
+          "score": 15.957799911499023,
+          "best_chunk_id": "A Wind in the Door",
+          "best_chunk_rank": 7,
+          "title": "A Wind in the Door"
+        },
+        {
+          "doc_id": "Castle in the Air (novel)",
+          "score": 15.488499641418457,
+          "best_chunk_id": "Castle in the Air (novel)",
+          "best_chunk_rank": 8,
+          "title": "Castle in the Air (novel)"
+        },
+        {
+          "doc_id": "Andre Norton Award",
+          "score": 15.141599655151367,
+          "best_chunk_id": "Andre Norton Award",
+          "best_chunk_rank": 9,
+          "title": "Andre Norton Award"
+        },
+        {
+          "doc_id": "A. J. Hartley",
+          "score": 15.044899940490723,
+          "best_chunk_id": "A. J. Hartley",
+          "best_chunk_rank": 10,
+          "title": "A. J. Hartley"
+        }
+      ]
+    },
+    {
+      "query_id": "5adbf0a255429947ff17385a",
+      "question": "Are the Laleli Mosque and Esma Sultan Mansion located in the same neighborhood?",
+      "gold_doc_id": "Esma Sultan Mansion",
+      "gold_title": "Esma Sultan Mansion",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "The Esma Sultan Mansion (Turkish: \"Esma Sultan Yalısı\" ), a historical yalı (English: waterside mansion ) located at Bosphorus in Ortaköy neighborhood of Istanbul, Turkey and named after its original owner Esma Sultan, is used today as a cultural center after being redeveloped.",
+      "top_documents": [
+        {
+          "doc_id": "Esma Sultan Mansion",
+          "score": 21.27050018310547,
+          "best_chunk_id": "Esma Sultan Mansion",
+          "best_chunk_rank": 1,
+          "title": "Esma Sultan Mansion"
+        },
+        {
+          "doc_id": "Laleli Mosque",
+          "score": 15.370100021362305,
+          "best_chunk_id": "Laleli Mosque",
+          "best_chunk_rank": 2,
+          "title": "Laleli Mosque"
+        },
+        {
+          "doc_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "score": 14.982099533081055,
+          "best_chunk_id": "Mihrimah Sultan Mosque (Edirnekapı)",
+          "best_chunk_rank": 3,
+          "title": "Mihrimah Sultan Mosque (Edirnekapı)"
+        },
+        {
+          "doc_id": "Pertevniyal Valide Sultan Mosque",
+          "score": 14.970600128173828,
+          "best_chunk_id": "Pertevniyal Valide Sultan Mosque",
+          "best_chunk_rank": 4,
+          "title": "Pertevniyal Valide Sultan Mosque"
+        },
+        {
+          "doc_id": "Sultan Ahmed Mosque",
+          "score": 12.47070026397705,
+          "best_chunk_id": "Sultan Ahmed Mosque",
+          "best_chunk_rank": 5,
+          "title": "Sultan Ahmed Mosque"
+        },
+        {
+          "doc_id": "King Mosque, Berat",
+          "score": 12.429800033569336,
+          "best_chunk_id": "King Mosque, Berat",
+          "best_chunk_rank": 6,
+          "title": "King Mosque, Berat"
+        },
+        {
+          "doc_id": "New Mosque (Istanbul)",
+          "score": 12.220199584960938,
+          "best_chunk_id": "New Mosque (Istanbul)",
+          "best_chunk_rank": 7,
+          "title": "New Mosque (Istanbul)"
+        },
+        {
+          "doc_id": "Tengku Ampuan Jemaah Mosque",
+          "score": 11.712599754333496,
+          "best_chunk_id": "Tengku Ampuan Jemaah Mosque",
+          "best_chunk_rank": 8,
+          "title": "Tengku Ampuan Jemaah Mosque"
+        },
+        {
+          "doc_id": "Djamaâ el Kebir",
+          "score": 11.517900466918945,
+          "best_chunk_id": "Djamaâ el Kebir",
+          "best_chunk_rank": 9,
+          "title": "Djamaâ el Kebir"
+        },
+        {
+          "doc_id": "Firuz Agha Mosque",
+          "score": 11.097700119018555,
+          "best_chunk_id": "Firuz Agha Mosque",
+          "best_chunk_rank": 10,
+          "title": "Firuz Agha Mosque"
+        }
+      ]
+    },
+    {
+      "query_id": "5a8e3ea95542995a26add48d",
+      "question": "The director of the romantic comedy \"Big Stone Gap\" is based in what New York city?",
+      "gold_doc_id": "Adriana Trigiani",
+      "gold_title": "Adriana Trigiani",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "Adriana Trigiani is an Italian American best-selling author of sixteen books, television writer, film director, and entrepreneur based in Greenwich Village, New York City. Trigiani has published a novel a year since 2000.",
+      "top_documents": [
+        {
+          "doc_id": "Big Stone Gap (film)",
+          "score": 16.255199432373047,
+          "best_chunk_id": "Big Stone Gap (film)",
+          "best_chunk_rank": 1,
+          "title": "Big Stone Gap (film)"
+        },
+        {
+          "doc_id": "Kingston Morning",
+          "score": 11.688699722290039,
+          "best_chunk_id": "Kingston Morning",
+          "best_chunk_rank": 2,
+          "title": "Kingston Morning"
+        },
+        {
+          "doc_id": "Sex and the City (film)",
+          "score": 10.640399932861328,
+          "best_chunk_id": "Sex and the City (film)",
+          "best_chunk_rank": 3,
+          "title": "Sex and the City (film)"
+        },
+        {
+          "doc_id": "Just Another Romantic Wrestling Comedy",
+          "score": 10.611800193786621,
+          "best_chunk_id": "Just Another Romantic Wrestling Comedy",
+          "best_chunk_rank": 4,
+          "title": "Just Another Romantic Wrestling Comedy"
+        },
+        {
+          "doc_id": "Great Eastern Conventions",
+          "score": 10.41569995880127,
+          "best_chunk_id": "Great Eastern Conventions",
+          "best_chunk_rank": 5,
+          "title": "Great Eastern Conventions"
+        },
+        {
+          "doc_id": "Hamish and Andy's Gap Year",
+          "score": 10.272500038146973,
+          "best_chunk_id": "Hamish and Andy's Gap Year",
+          "best_chunk_rank": 6,
+          "title": "Hamish and Andy's Gap Year"
+        },
+        {
+          "doc_id": "Alexander Garvin",
+          "score": 10.110099792480469,
+          "best_chunk_id": "Alexander Garvin",
+          "best_chunk_rank": 7,
+          "title": "Alexander Garvin"
+        },
+        {
+          "doc_id": "Clinton, Minnesota",
+          "score": 10.071700096130371,
+          "best_chunk_id": "Clinton, Minnesota",
+          "best_chunk_rank": 8,
+          "title": "Clinton, Minnesota"
+        },
+        {
+          "doc_id": "Nola (film)",
+          "score": 10.045599937438965,
+          "best_chunk_id": "Nola (film)",
+          "best_chunk_rank": 9,
+          "title": "Nola (film)"
+        },
+        {
+          "doc_id": "New York Society of Model Engineers",
+          "score": 10.010100364685059,
+          "best_chunk_id": "New York Society of Model Engineers",
+          "best_chunk_rank": 10,
+          "title": "New York Society of Model Engineers"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "5a8db19d5542994ba4e3dd00",
+      "question": "Are Local H and For Against both from the United States?",
+      "gold_doc_id": "For Against",
+      "gold_title": "For Against",
+      "gold_rank": 30,
+      "gold_chunk_excerpt": "For Against is a United States post-punk/dream pop band from Lincoln, Nebraska. Despite numerous lineup shuffles and some periods of dormancy, the band has produced material steadily from its 1984 inception to the present.",
+      "top_documents": [
+        {
+          "doc_id": "Amherst, Massachusetts",
+          "score": 8.947699546813965,
+          "best_chunk_id": "Amherst, Massachusetts",
+          "best_chunk_rank": 1,
+          "title": "Amherst, Massachusetts"
+        },
+        {
+          "doc_id": "William H. Cook Water Tank House",
+          "score": 7.877399921417236,
+          "best_chunk_id": "William H. Cook Water Tank House",
+          "best_chunk_rank": 2,
+          "title": "William H. Cook Water Tank House"
+        },
+        {
+          "doc_id": "Ogallala Aquifer",
+          "score": 7.5920000076293945,
+          "best_chunk_id": "Ogallala Aquifer",
+          "best_chunk_rank": 3,
+          "title": "Ogallala Aquifer"
+        },
+        {
+          "doc_id": "Reagan Democrat",
+          "score": 7.295000076293945,
+          "best_chunk_id": "Reagan Democrat",
+          "best_chunk_rank": 4,
+          "title": "Reagan Democrat"
+        },
+        {
+          "doc_id": "The Team EP",
+          "score": 7.291100025177002,
+          "best_chunk_id": "The Team EP",
+          "best_chunk_rank": 5,
+          "title": "The Team EP"
+        },
+        {
+          "doc_id": "Ophur",
+          "score": 7.267399787902832,
+          "best_chunk_id": "Ophur",
+          "best_chunk_rank": 6,
+          "title": "Ophur"
+        },
+        {
+          "doc_id": "Libby Mitchell",
+          "score": 7.224699974060059,
+          "best_chunk_id": "Libby Mitchell",
+          "best_chunk_rank": 7,
+          "title": "Libby Mitchell"
+        },
+        {
+          "doc_id": "Suffrajett",
+          "score": 7.1315999031066895,
+          "best_chunk_id": "Suffrajett",
+          "best_chunk_rank": 8,
+          "title": "Suffrajett"
+        },
+        {
+          "doc_id": "Mendocino County GMO Ban",
+          "score": 7.090199947357178,
+          "best_chunk_id": "Mendocino County GMO Ban",
+          "best_chunk_rank": 9,
+          "title": "Mendocino County GMO Ban"
+        },
+        {
+          "doc_id": "80th United States Congress",
+          "score": 7.081500053405762,
+          "best_chunk_id": "80th United States Congress",
+          "best_chunk_rank": 10,
+          "title": "80th United States Congress"
+        }
+      ]
+    },
+    {
+      "query_id": "5a77724455429972597f153e",
+      "question": "What race track in the midwest hosts a 500 mile race eavery May?",
+      "gold_doc_id": "1957 Indianapolis 500",
+      "gold_title": "1957 Indianapolis 500",
+      "gold_rank": 23,
+      "gold_chunk_excerpt": "The 41st International 500-Mile Sweepstakes was held at the Indianapolis Motor Speedway on Thursday, May 30, 1957. The event was part of the 1957 USAC National Championship Trail and it was race 3 of 8 in the 1957 World Championship of Drivers.",
+      "top_documents": [
+        {
+          "doc_id": "Carolina Dodge Dealers 400",
+          "score": 17.501300811767578,
+          "best_chunk_id": "Carolina Dodge Dealers 400",
+          "best_chunk_rank": 1,
+          "title": "Carolina Dodge Dealers 400"
+        },
+        {
+          "doc_id": "Auto Club 400",
+          "score": 17.06100082397461,
+          "best_chunk_id": "Auto Club 400",
+          "best_chunk_rank": 2,
+          "title": "Auto Club 400"
+        },
+        {
+          "doc_id": "Illinois State Fairgrounds Racetrack",
+          "score": 15.26200008392334,
+          "best_chunk_id": "Illinois State Fairgrounds Racetrack",
+          "best_chunk_rank": 3,
+          "title": "Illinois State Fairgrounds Racetrack"
+        },
+        {
+          "doc_id": "Subway 400",
+          "score": 14.519499778747559,
+          "best_chunk_id": "Subway 400",
+          "best_chunk_rank": 4,
+          "title": "Subway 400"
+        },
+        {
+          "doc_id": "2012 MAVTV 500 IndyCar World Championships",
+          "score": 14.052300453186035,
+          "best_chunk_id": "2012 MAVTV 500 IndyCar World Championships",
+          "best_chunk_rank": 5,
+          "title": "2012 MAVTV 500 IndyCar World Championships"
+        },
+        {
+          "doc_id": "Allison Transmission",
+          "score": 13.963899612426758,
+          "best_chunk_id": "Allison Transmission",
+          "best_chunk_rank": 6,
+          "title": "Allison Transmission"
+        },
+        {
+          "doc_id": "Louis Schwitzer Award",
+          "score": 13.864399909973145,
+          "best_chunk_id": "Louis Schwitzer Award",
+          "best_chunk_rank": 7,
+          "title": "Louis Schwitzer Award"
+        },
+        {
+          "doc_id": "Hidden Valley Downs",
+          "score": 13.527299880981445,
+          "best_chunk_id": "Hidden Valley Downs",
+          "best_chunk_rank": 8,
+          "title": "Hidden Valley Downs"
+        },
+        {
+          "doc_id": "Stardust International Raceway",
+          "score": 13.202899932861328,
+          "best_chunk_id": "Stardust International Raceway",
+          "best_chunk_rank": 9,
+          "title": "Stardust International Raceway"
+        },
+        {
+          "doc_id": "Orange County Fair Speedway",
+          "score": 12.988200187683105,
+          "best_chunk_id": "Orange County Fair Speedway",
+          "best_chunk_rank": 10,
+          "title": "Orange County Fair Speedway"
+        }
+      ]
+    },
+    {
+      "query_id": "5ae32e125542991a06ce9946",
+      "question": "According to the 2001 census, what was the population of the city in which Kirton End is located?",
+      "gold_doc_id": "Boston, Lincolnshire",
+      "gold_title": "Boston, Lincolnshire",
+      "gold_rank": 72,
+      "gold_chunk_excerpt": "Boston ( ) is a town and small port in Lincolnshire, on the east coast of England. It is the largest town of the wider Borough of Boston local government district. The borough had a total population of 66,900, at the ONS mid 2015 estimates, while the town itself had a population of 35,124 at the 2001 census. It is due north of Greenwich on the Prime Meridian.",
+      "top_documents": [
+        {
+          "doc_id": "Kirton, Nottinghamshire",
+          "score": 17.093000411987305,
+          "best_chunk_id": "Kirton, Nottinghamshire",
+          "best_chunk_rank": 1,
+          "title": "Kirton, Nottinghamshire"
+        },
+        {
+          "doc_id": "Kirton, Suffolk",
+          "score": 15.267399787902832,
+          "best_chunk_id": "Kirton, Suffolk",
+          "best_chunk_rank": 2,
+          "title": "Kirton, Suffolk"
+        },
+        {
+          "doc_id": "Willoughton",
+          "score": 14.824399948120117,
+          "best_chunk_id": "Willoughton",
+          "best_chunk_rank": 3,
+          "title": "Willoughton"
+        },
+        {
+          "doc_id": "Parkridge, Saskatoon",
+          "score": 13.896400451660156,
+          "best_chunk_id": "Parkridge, Saskatoon",
+          "best_chunk_rank": 4,
+          "title": "Parkridge, Saskatoon"
+        },
+        {
+          "doc_id": "Karaman Province",
+          "score": 13.181400299072266,
+          "best_chunk_id": "Karaman Province",
+          "best_chunk_rank": 5,
+          "title": "Karaman Province"
+        },
+        {
+          "doc_id": "2001 Bangladesh census",
+          "score": 12.985099792480469,
+          "best_chunk_id": "2001 Bangladesh census",
+          "best_chunk_rank": 6,
+          "title": "2001 Bangladesh census"
+        },
+        {
+          "doc_id": "Sauce Viejo, Argentina",
+          "score": 12.348600387573242,
+          "best_chunk_id": "Sauce Viejo, Argentina",
+          "best_chunk_rank": 7,
+          "title": "Sauce Viejo, Argentina"
+        },
+        {
+          "doc_id": "Union, South Carolina",
+          "score": 12.104499816894531,
+          "best_chunk_id": "Union, South Carolina",
+          "best_chunk_rank": 8,
+          "title": "Union, South Carolina"
+        },
+        {
+          "doc_id": "Urbanisation in India",
+          "score": 12.02299976348877,
+          "best_chunk_id": "Urbanisation in India",
+          "best_chunk_rank": 9,
+          "title": "Urbanisation in India"
+        },
+        {
+          "doc_id": "Vancouver",
+          "score": 11.996399879455566,
+          "best_chunk_id": "Vancouver",
+          "best_chunk_rank": 10,
+          "title": "Vancouver"
+        }
+      ]
+    },
+    {
+      "query_id": "5a7c960655429935c91b5244",
+      "question": "The 1974 Texas Tech Raiders football team represented what public research university in Lubbock, Texas?",
+      "gold_doc_id": "1974 Texas Tech Red Raiders football team",
+      "gold_title": "1974 Texas Tech Red Raiders football team",
+      "gold_rank": 22,
+      "gold_chunk_excerpt": "The 1974 Texas Tech Red Raiders football team represented Texas Tech University in the Southwest Conference during the 1974 NCAA Division I football season. In their fifth and final season under head coach Jim Carlen, the Red Raiders compiled a 6–4–2 record (3–4 against conference opponents), finished in sixth place in the conference, and outscored opponents by a combined total of 193 to 158. The team's statistical leaders included Tommy Duniven with 552 passing yards, Larry Isaac with 671 rushi",
+      "top_documents": [
+        {
+          "doc_id": "2008 Texas Tech Red Raiders football team",
+          "score": 27.497600555419922,
+          "best_chunk_id": "2008 Texas Tech Red Raiders football team",
+          "best_chunk_rank": 1,
+          "title": "2008 Texas Tech Red Raiders football team"
+        },
+        {
+          "doc_id": "2013 Texas Tech Red Raiders football team",
+          "score": 27.052900314331055,
+          "best_chunk_id": "2013 Texas Tech Red Raiders football team",
+          "best_chunk_rank": 2,
+          "title": "2013 Texas Tech Red Raiders football team"
+        },
+        {
+          "doc_id": "1960–61 Texas Tech Red Raiders basketball team",
+          "score": 26.77630043029785,
+          "best_chunk_id": "1960–61 Texas Tech Red Raiders basketball team",
+          "best_chunk_rank": 3,
+          "title": "1960–61 Texas Tech Red Raiders basketball team"
+        },
+        {
+          "doc_id": "1961–62 Texas Tech Red Raiders basketball team",
+          "score": 26.678199768066406,
+          "best_chunk_id": "1961–62 Texas Tech Red Raiders basketball team",
+          "best_chunk_rank": 4,
+          "title": "1961–62 Texas Tech Red Raiders basketball team"
+        },
+        {
+          "doc_id": "2016 Texas Tech Red Raiders football team",
+          "score": 26.587799072265625,
+          "best_chunk_id": "2016 Texas Tech Red Raiders football team",
+          "best_chunk_rank": 5,
+          "title": "2016 Texas Tech Red Raiders football team"
+        },
+        {
+          "doc_id": "2014 Texas Tech Red Raiders football team",
+          "score": 26.474300384521484,
+          "best_chunk_id": "2014 Texas Tech Red Raiders football team",
+          "best_chunk_rank": 6,
+          "title": "2014 Texas Tech Red Raiders football team"
+        },
+        {
+          "doc_id": "2015 Texas Tech Red Raiders football team",
+          "score": 26.43239974975586,
+          "best_chunk_id": "2015 Texas Tech Red Raiders football team",
+          "best_chunk_rank": 7,
+          "title": "2015 Texas Tech Red Raiders football team"
+        },
+        {
+          "doc_id": "Texas Tech Red Raiders football",
+          "score": 26.287900924682617,
+          "best_chunk_id": "Texas Tech Red Raiders football",
+          "best_chunk_rank": 8,
+          "title": "Texas Tech Red Raiders football"
+        },
+        {
+          "doc_id": "2012 Texas Tech Red Raiders football team",
+          "score": 26.22249984741211,
+          "best_chunk_id": "2012 Texas Tech Red Raiders football team",
+          "best_chunk_rank": 9,
+          "title": "2012 Texas Tech Red Raiders football team"
+        },
+        {
+          "doc_id": "1995–96 Texas Tech Red Raiders basketball team",
+          "score": 26.158300399780273,
+          "best_chunk_id": "1995–96 Texas Tech Red Raiders basketball team",
+          "best_chunk_rank": 10,
+          "title": "1995–96 Texas Tech Red Raiders basketball team"
+        }
+      ]
+    },
+    {
+      "query_id": "5a74c85055429916b0164218",
+      "question": "Born on 6 March 1937, this man was also a citizen of the United Kingdom.",
+      "gold_doc_id": "Alistair Grant",
+      "gold_title": "Alistair Grant",
+      "gold_rank": 31,
+      "gold_chunk_excerpt": "Sir Matthew Alistair Grant {'1': \", '2': \", '3': \", '4': \"} (6 March 1937 – 21 January 2001) was a British businessman.",
+      "top_documents": [
+        {
+          "doc_id": "Claude Choules",
+          "score": 10.695899963378906,
+          "best_chunk_id": "Claude Choules",
+          "best_chunk_rank": 1,
+          "title": "Claude Choules"
+        },
+        {
+          "doc_id": "Malaysians in the United Kingdom",
+          "score": 9.342399597167969,
+          "best_chunk_id": "Malaysians in the United Kingdom",
+          "best_chunk_rank": 2,
+          "title": "Malaysians in the United Kingdom"
+        },
+        {
+          "doc_id": "Mark Shuttleworth",
+          "score": 9.111100196838379,
+          "best_chunk_id": "Mark Shuttleworth",
+          "best_chunk_rank": 3,
+          "title": "Mark Shuttleworth"
+        },
+        {
+          "doc_id": "List of British monarchs",
+          "score": 8.95580005645752,
+          "best_chunk_id": "List of British monarchs",
+          "best_chunk_rank": 4,
+          "title": "List of British monarchs"
+        },
+        {
+          "doc_id": "Eve Unsell",
+          "score": 8.526700019836426,
+          "best_chunk_id": "Eve Unsell",
+          "best_chunk_rank": 5,
+          "title": "Eve Unsell"
+        },
+        {
+          "doc_id": "Rex Records (1933)",
+          "score": 8.359000205993652,
+          "best_chunk_id": "Rex Records (1933)",
+          "best_chunk_rank": 6,
+          "title": "Rex Records (1933)"
+        },
+        {
+          "doc_id": "Paul Méfano",
+          "score": 8.135700225830078,
+          "best_chunk_id": "Paul Méfano",
+          "best_chunk_rank": 7,
+          "title": "Paul Méfano"
+        },
+        {
+          "doc_id": "Robin Bailie",
+          "score": 8.105899810791016,
+          "best_chunk_id": "Robin Bailie",
+          "best_chunk_rank": 8,
+          "title": "Robin Bailie"
+        },
+        {
+          "doc_id": "2016 Birthday Honours",
+          "score": 8.042900085449219,
+          "best_chunk_id": "2016 Birthday Honours",
+          "best_chunk_rank": 9,
+          "title": "2016 Birthday Honours"
+        },
+        {
+          "doc_id": "William Bonfield",
+          "score": 7.931600093841553,
+          "best_chunk_id": "William Bonfield",
+          "best_chunk_rank": 10,
+          "title": "William Bonfield"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 7119,
+    "failure_at_10_available": 286,
+    "saved_per_group_max": 5
+  }
+}
