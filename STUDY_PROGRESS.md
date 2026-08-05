@@ -230,7 +230,7 @@ scripts/run_sft.sh
 13. **README 简历版总结 + 上传 GitHub**（commit `fe89a64`）：README 补充数据清洗小节 + 末尾简历版项目总结（三点：数据集清洗 / 检索 pipeline 三段 / 相对 baseline 提升）；根 README 已删，文档集中在 `MedicalGraphRAG/README.md`；**已推送 GitHub** `wahtcanisay/LLM_Learning_RAG_RL`（main 同步）。
 
 **下一步（按序）：**
-1. **Search-R1 模型选型**：默认 qwen3-0.5B 过小，调研官方 Search-R1 模型规模 + 7B RL 显存需求，确定折中方案；
+1. **Search-R1 模型选型（已调研）**：官方 Search-R1 用 Qwen2.5-7B 主（+26%）/3B 验证（+21%）；本地 RTX 5090 32GB + MedicalGPT 内置 GRPO（TRL，QLoRA 可配）。rollout≥4 下显存估算：3B≈11GB、4B≈13GB、7B≈20GB、8B≈22GB，均可行但 7B/8B 余量小且 rollout 慢（NF4 反量化 1.5-2×）。**建议：3B 起步跑通管线 → 稳定后上 4B/7B**（与设计文档 2026-07-18 一致）。
 2. MIRAGE 端到端（已拉取仓库，等阶段 3 有 LLM 再跑）；
 3. 阶段 3 MedicalGPT SFT（GPT 并行线，即将进入）。
 
