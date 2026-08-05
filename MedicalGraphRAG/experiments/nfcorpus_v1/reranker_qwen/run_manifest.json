@@ -1,0 +1,37 @@
+{
+  "git_commit": "c5875a8037db105c0f45eed8aeacf42079fbf44d",
+  "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "host_python_version": "3.12.3",
+  "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
+  "evaluation_command": [
+    "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/src/medical_graphrag/cli.py",
+    "evaluate-reranker",
+    "--dataset-dir",
+    "data/processed/nfcorpus_v1",
+    "--rankings",
+    "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/nfcorpus_v1/reranker_qwen/reranked.jsonl",
+    "--reranker-report",
+    "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/nfcorpus_v1/reranker_qwen/rerank_report.json",
+    "--questions",
+    "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/nfcorpus_v1/questions.jsonl",
+    "--output-dir",
+    "experiments/nfcorpus_v1/reranker_qwen",
+    "--git-commit",
+    "c5875a8037db105c0f45eed8aeacf42079fbf44d",
+    "--docker-image",
+    "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
+  ],
+  "reranker": {
+    "model": "models/Qwen3-Reranker-0.6B",
+    "top_n": 50
+  },
+  "questions_path": "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/nfcorpus_v1/questions.jsonl",
+  "dataset_manifest_sha256": "fb9f057d3fee55965748f2927324ad346f556c33f29175ca547451f5bd7472c2",
+  "generated_at_utc": "2026-08-05T02:53:07.163944+00:00",
+  "rankings_sha256": "941eb955eb9b144b506fd1b5678f6d6ca59a47ef4de2ed17d66b8ea3bd70f110",
+  "question_count": 323,
+  "split_counts": {
+    "test": 323
+  },
+  "text_mode": "abstract_only"
+}

@@ -1,0 +1,491 @@
+{
+  "success": [
+    {
+      "query_id": "PLAIN-1018",
+      "question": "DHA",
+      "gold_doc_id": "MED-2750",
+      "gold_rank": 3,
+      "top_documents": [
+        {
+          "doc_id": "MED-5095",
+          "score": 5.875
+        },
+        {
+          "doc_id": "MED-838",
+          "score": 5.4375
+        },
+        {
+          "doc_id": "MED-5091",
+          "score": 5.3125
+        },
+        {
+          "doc_id": "MED-4936",
+          "score": 4.875
+        },
+        {
+          "doc_id": "MED-3012",
+          "score": 4.8125
+        },
+        {
+          "doc_id": "MED-1832",
+          "score": 4.6875
+        },
+        {
+          "doc_id": "MED-5093",
+          "score": 4.6875
+        },
+        {
+          "doc_id": "MED-839",
+          "score": 4.625
+        },
+        {
+          "doc_id": "MED-5364",
+          "score": 3.8125
+        },
+        {
+          "doc_id": "MED-5092",
+          "score": 3.4375
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-102",
+      "question": "Stopping Heart Disease in Childhood",
+      "gold_doc_id": "MED-3254",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "MED-1190",
+          "score": 4.875
+        },
+        {
+          "doc_id": "MED-3253",
+          "score": 4.0
+        },
+        {
+          "doc_id": "MED-3954",
+          "score": 3.1875
+        },
+        {
+          "doc_id": "MED-3255",
+          "score": 2.0
+        },
+        {
+          "doc_id": "MED-1986",
+          "score": 0.5625
+        },
+        {
+          "doc_id": "MED-1884",
+          "score": -0.5
+        },
+        {
+          "doc_id": "MED-1996",
+          "score": -0.5625
+        },
+        {
+          "doc_id": "MED-1548",
+          "score": -0.875
+        },
+        {
+          "doc_id": "MED-1949",
+          "score": -0.9375
+        },
+        {
+          "doc_id": "MED-2590",
+          "score": -0.9375
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1039",
+      "question": "domoic acid",
+      "gold_doc_id": "MED-4380",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-4380",
+          "score": 6.5625
+        },
+        {
+          "doc_id": "MED-4381",
+          "score": 5.1875
+        },
+        {
+          "doc_id": "MED-838",
+          "score": -1.5625
+        },
+        {
+          "doc_id": "MED-2103",
+          "score": -2.125
+        },
+        {
+          "doc_id": "MED-1158",
+          "score": -3.625
+        },
+        {
+          "doc_id": "MED-1841",
+          "score": -3.625
+        },
+        {
+          "doc_id": "MED-1839",
+          "score": -3.75
+        },
+        {
+          "doc_id": "MED-4703",
+          "score": -3.9375
+        },
+        {
+          "doc_id": "MED-5202",
+          "score": -4.0
+        },
+        {
+          "doc_id": "MED-5059",
+          "score": -4.3125
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1088",
+      "question": "ECMO",
+      "gold_doc_id": "MED-2109",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-2110",
+          "score": 5.0625
+        },
+        {
+          "doc_id": "MED-2109",
+          "score": 4.8125
+        },
+        {
+          "doc_id": "MED-2944",
+          "score": -5.1875
+        },
+        {
+          "doc_id": "MED-2947",
+          "score": -5.1875
+        },
+        {
+          "doc_id": "MED-4617",
+          "score": -5.1875
+        },
+        {
+          "doc_id": "MED-1634",
+          "score": -5.25
+        },
+        {
+          "doc_id": "MED-3428",
+          "score": -5.25
+        },
+        {
+          "doc_id": "MED-4806",
+          "score": -5.75
+        },
+        {
+          "doc_id": "MED-3420",
+          "score": -5.8125
+        },
+        {
+          "doc_id": "MED-3433",
+          "score": -5.84375
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1109",
+      "question": "endocrine disruptors",
+      "gold_doc_id": "MED-2494",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-2650",
+          "score": 6.25
+        },
+        {
+          "doc_id": "MED-2643",
+          "score": 5.9375
+        },
+        {
+          "doc_id": "MED-2627",
+          "score": 5.375
+        },
+        {
+          "doc_id": "MED-1099",
+          "score": 4.75
+        },
+        {
+          "doc_id": "MED-2087",
+          "score": 4.625
+        },
+        {
+          "doc_id": "MED-1100",
+          "score": 4.3125
+        },
+        {
+          "doc_id": "MED-5323",
+          "score": 4.1875
+        },
+        {
+          "doc_id": "MED-1594",
+          "score": 3.75
+        },
+        {
+          "doc_id": "MED-2658",
+          "score": 3.6875
+        },
+        {
+          "doc_id": "MED-1003",
+          "score": 3.4375
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "PLAIN-1008",
+      "question": "deafness",
+      "gold_doc_id": "MED-4532",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-4668",
+          "score": -4.75
+        },
+        {
+          "doc_id": "MED-4694",
+          "score": -5.1875
+        },
+        {
+          "doc_id": "MED-3981",
+          "score": -5.8125
+        },
+        {
+          "doc_id": "MED-1944",
+          "score": -5.875
+        },
+        {
+          "doc_id": "MED-991",
+          "score": -6.40625
+        },
+        {
+          "doc_id": "MED-2217",
+          "score": -6.5
+        },
+        {
+          "doc_id": "MED-5036",
+          "score": -6.875
+        },
+        {
+          "doc_id": "MED-901",
+          "score": -7.125
+        },
+        {
+          "doc_id": "MED-2896",
+          "score": -7.25
+        },
+        {
+          "doc_id": "MED-2164",
+          "score": -7.3125
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1028",
+      "question": "dietary scoring",
+      "gold_doc_id": "MED-4686",
+      "gold_rank": 49,
+      "top_documents": [
+        {
+          "doc_id": "MED-1402",
+          "score": 4.3125
+        },
+        {
+          "doc_id": "MED-1210",
+          "score": 3.6875
+        },
+        {
+          "doc_id": "MED-1377",
+          "score": 3.375
+        },
+        {
+          "doc_id": "MED-3699",
+          "score": 2.4375
+        },
+        {
+          "doc_id": "MED-1565",
+          "score": 2.25
+        },
+        {
+          "doc_id": "MED-1323",
+          "score": 2.1875
+        },
+        {
+          "doc_id": "MED-1374",
+          "score": 1.9375
+        },
+        {
+          "doc_id": "MED-4480",
+          "score": 1.1875
+        },
+        {
+          "doc_id": "MED-5327",
+          "score": 1.125
+        },
+        {
+          "doc_id": "MED-3622",
+          "score": 1.0625
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1050",
+      "question": "Dr. Dean Ornish",
+      "gold_doc_id": "MED-2763",
+      "gold_rank": 16,
+      "top_documents": [
+        {
+          "doc_id": "MED-1712",
+          "score": -2.5
+        },
+        {
+          "doc_id": "MED-3283",
+          "score": -2.625
+        },
+        {
+          "doc_id": "MED-1655",
+          "score": -3.25
+        },
+        {
+          "doc_id": "MED-2498",
+          "score": -3.6875
+        },
+        {
+          "doc_id": "MED-2527",
+          "score": -3.6875
+        },
+        {
+          "doc_id": "MED-2509",
+          "score": -4.0
+        },
+        {
+          "doc_id": "MED-2502",
+          "score": -4.4375
+        },
+        {
+          "doc_id": "MED-1053",
+          "score": -4.5
+        },
+        {
+          "doc_id": "MED-2324",
+          "score": -4.625
+        },
+        {
+          "doc_id": "MED-2510",
+          "score": -4.875
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1066",
+      "question": "Dr. Walter Willett",
+      "gold_doc_id": "MED-4000",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-892",
+          "score": -4.3125
+        },
+        {
+          "doc_id": "MED-1021",
+          "score": -6.125
+        },
+        {
+          "doc_id": "MED-1655",
+          "score": -6.1875
+        },
+        {
+          "doc_id": "MED-1543",
+          "score": -6.21875
+        },
+        {
+          "doc_id": "MED-1712",
+          "score": -6.71875
+        },
+        {
+          "doc_id": "MED-4476",
+          "score": -6.75
+        },
+        {
+          "doc_id": "MED-1053",
+          "score": -6.78125
+        },
+        {
+          "doc_id": "MED-761",
+          "score": -6.8125
+        },
+        {
+          "doc_id": "MED-3380",
+          "score": -6.875
+        },
+        {
+          "doc_id": "MED-3577",
+          "score": -7.15625
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1098",
+      "question": "eggnog",
+      "gold_doc_id": "MED-3806",
+      "gold_rank": 36,
+      "top_documents": [
+        {
+          "doc_id": "MED-1884",
+          "score": 1.125
+        },
+        {
+          "doc_id": "MED-2975",
+          "score": -0.125
+        },
+        {
+          "doc_id": "MED-2374",
+          "score": -0.4375
+        },
+        {
+          "doc_id": "MED-2977",
+          "score": -0.6875
+        },
+        {
+          "doc_id": "MED-4892",
+          "score": -0.6875
+        },
+        {
+          "doc_id": "MED-4676",
+          "score": -1.3125
+        },
+        {
+          "doc_id": "MED-2371",
+          "score": -1.4375
+        },
+        {
+          "doc_id": "MED-4741",
+          "score": -1.75
+        },
+        {
+          "doc_id": "MED-1890",
+          "score": -1.9375
+        },
+        {
+          "doc_id": "MED-2372",
+          "score": -2.0
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 243,
+    "failure_at_10_available": 80,
+    "saved_per_group_max": 5
+  }
+}

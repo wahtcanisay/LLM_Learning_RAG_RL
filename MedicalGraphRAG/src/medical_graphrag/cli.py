@@ -11,6 +11,7 @@ from medical_graphrag.evaluation.bm25 import evaluate_bm25_run
 from medical_graphrag.evaluation.dense import evaluate_dense_run
 from medical_graphrag.evaluation.graph import evaluate_graph_run
 from medical_graphrag.evaluation.hybrid import evaluate_hybrid_run
+from medical_graphrag.evaluation.reranker import evaluate_reranker_run
 from medical_graphrag.retrieval.bm25 import (
     export_pyserini_collection,
     validate_frozen_dataset,
@@ -97,6 +98,15 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_graph.add_argument("--output-dir", type=Path, required=True)
     evaluate_graph.add_argument("--git-commit", required=True)
     evaluate_graph.add_argument("--docker-image", required=True)
+
+    evaluate_reranker = subparsers.add_parser("evaluate-reranker")
+    evaluate_reranker.add_argument("--dataset-dir", type=Path, required=True)
+    evaluate_reranker.add_argument("--rankings", type=Path, required=True)
+    evaluate_reranker.add_argument("--reranker-report", type=Path, required=True)
+    evaluate_reranker.add_argument("--questions", type=Path, required=True)
+    evaluate_reranker.add_argument("--output-dir", type=Path, required=True)
+    evaluate_reranker.add_argument("--git-commit", required=True)
+    evaluate_reranker.add_argument("--docker-image", required=True)
     return parser
 
 
@@ -122,7 +132,32 @@ def main() -> int:
         return _evaluate_hybrid_command(args)
     if args.command == "evaluate-graph":
         return _evaluate_graph_command(args)
+    if args.command == "evaluate-reranker":
+        return _evaluate_reranker_command(args)
     return 2
+
+
+def _evaluate_reranker_command(args: argparse.Namespace) -> int:
+    """Wiring for evaluate-reranker: bind the reranker run report + dataset."""
+    reranker_report = json.loads(args.reranker_report.read_text(encoding="utf-8"))
+    evaluate_reranker_run(
+        args.dataset_dir,
+        args.rankings,
+        args.output_dir,
+        run_context={
+            "git_commit": args.git_commit,
+            "host_platform": platform.platform(),
+            "host_python_version": platform.python_version(),
+            "docker_image": args.docker_image,
+            "evaluation_command": sys.argv,
+            "reranker": reranker_report,
+            "questions_path": str(args.questions),
+            "dataset_manifest_sha256": sha256_file(
+                args.dataset_dir / "manifest.json"
+            ),
+        },
+    )
+    return 0
 
 
 def _evaluate_graph_command(args: argparse.Namespace) -> int:
