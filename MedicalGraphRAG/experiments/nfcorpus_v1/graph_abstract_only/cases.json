@@ -9,73 +9,73 @@
       "top_documents": [
         {
           "doc_id": "MED-4936",
-          "score": 0.00039911410279103214,
+          "score": 0.001052993020394083,
           "best_chunk_id": "MED-4936",
           "best_chunk_rank": 1,
           "title": "Algal-oil capsules and cooked salmon: nutritionally equivalent sources of docosahexaenoic acid."
         },
         {
           "doc_id": "MED-5095",
-          "score": 0.00036662107399580853,
+          "score": 0.0007728724305648768,
           "best_chunk_id": "MED-5095",
           "best_chunk_rank": 2,
           "title": "Bioequivalence of Docosahexaenoic acid from different algal oils in capsules and in a DHA-fortified food."
         },
         {
           "doc_id": "MED-5091",
-          "score": 0.0003628047895100807,
+          "score": 0.0007444851058918169,
           "best_chunk_id": "MED-5091",
           "best_chunk_rank": 3,
           "title": "Essential n-3 fatty acids in pregnant women and early visual acuity maturation in term infants."
         },
         {
           "doc_id": "MED-5093",
-          "score": 0.00034357060844694665,
+          "score": 0.0007292594843425458,
           "best_chunk_id": "MED-5093",
           "best_chunk_rank": 4,
           "title": "Maternal consumption of a docosahexaenoic acid-containing functional food during pregnancy: benefit for infant performance on problem-solving but n..."
         },
         {
           "doc_id": "MED-1801",
-          "score": 0.000320480336847375,
+          "score": 0.0006288197388978307,
           "best_chunk_id": "MED-1801",
           "best_chunk_rank": 5,
           "title": "Modern organic and broiler chickens sold for human consumption provide more energy from fat than protein."
         },
         {
           "doc_id": "MED-1832",
-          "score": 0.00030457667043386444,
+          "score": 0.0005877812898297289,
           "best_chunk_id": "MED-1832",
           "best_chunk_rank": 6,
           "title": "Visual acuity and the essentiality of docosahexaenoic acid and arachidonic acid in the diet of term infants."
         },
         {
-          "doc_id": "MED-2790",
-          "score": 0.00029704259960434135,
-          "best_chunk_id": "MED-2790",
+          "doc_id": "MED-3012",
+          "score": 0.0005448951655920917,
+          "best_chunk_id": "MED-3012",
           "best_chunk_rank": 7,
-          "title": "A clinical review of different formulations of Vasa (Adhatoda vasica) on Tamaka Shwasa (asthma)"
+          "title": "Fish consumption during child bearing age: a quantitative risk-benefit analysis on neurodevelopment."
+        },
+        {
+          "doc_id": "MED-838",
+          "score": 0.0005283956348208104,
+          "best_chunk_id": "MED-838",
+          "best_chunk_rank": 8,
+          "title": "Docosahexaenoic acid from a cultured microalga inhibits cell growth and induces apoptosis by upregulating Bax/Bcl-2 ratio in human breast carcinoma..."
         },
         {
           "doc_id": "MED-839",
-          "score": 0.00029676625510758464,
+          "score": 0.0005194862084270404,
           "best_chunk_id": "MED-839",
-          "best_chunk_rank": 8,
+          "best_chunk_rank": 9,
           "title": "Omega-3 fatty acids for nutrition and medicine: considering microalgae oil as a vegetarian source of EPA and DHA."
         },
         {
-          "doc_id": "MED-5092",
-          "score": 0.00029555045440410197,
-          "best_chunk_id": "MED-5092",
-          "best_chunk_rank": 9,
-          "title": "Visual acuity and cognitive outcomes at 4 years of age in a double-blind, randomized trial of long-chain polyunsaturated fatty acid-supplemented in..."
-        },
-        {
-          "doc_id": "MED-928",
-          "score": 0.0002836548766203353,
-          "best_chunk_id": "MED-928",
+          "doc_id": "MED-1764",
+          "score": 0.0005147169327857537,
+          "best_chunk_id": "MED-1764",
           "best_chunk_rank": 10,
-          "title": "Incorporation of EPA and DHA into plasma phospholipids in response to different omega-3 fatty acid formulations - a comparative bioavailability study of fish oil vs. krill oil"
+          "title": "Lipid Concentrations and Semen Quality: The LIFE Study"
         }
       ]
     },
@@ -84,77 +84,77 @@
       "question": "Stopping Heart Disease in Childhood",
       "gold_doc_id": "MED-3254",
       "gold_title": "Relation of serum lipoprotein levels and systolic blood pressure to early atherosclerosis. The Bogalusa Heart Study.",
-      "gold_rank": 1,
+      "gold_rank": 7,
       "top_documents": [
         {
-          "doc_id": "MED-3253",
-          "score": 0.00028875130388880796,
-          "best_chunk_id": "MED-3253",
-          "best_chunk_rank": 1,
-          "title": "Pathobiological determinants of atherosclerosis in youth risk scores are associated with early and advanced atherosclerosis."
-        },
-        {
           "doc_id": "MED-4255",
-          "score": 0.0002878075822663339,
+          "score": 0.0006922617898495161,
           "best_chunk_id": "MED-4255",
-          "best_chunk_rank": 2,
+          "best_chunk_rank": 1,
           "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition."
         },
         {
           "doc_id": "MED-4613",
-          "score": 0.0002878075822663029,
+          "score": 0.0006922617898494043,
           "best_chunk_id": "MED-4613",
-          "best_chunk_rank": 3,
+          "best_chunk_rank": 2,
           "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition."
         },
         {
-          "doc_id": "MED-4496",
-          "score": 0.00026893968603998924,
-          "best_chunk_id": "MED-4496",
+          "doc_id": "MED-1257",
+          "score": 0.00047199433784900533,
+          "best_chunk_id": "MED-1257",
+          "best_chunk_rank": 3,
+          "title": "Protein and coronary heart disease: the role of different protein sources."
+        },
+        {
+          "doc_id": "MED-2763",
+          "score": 0.00046131025402093914,
+          "best_chunk_id": "MED-2763",
           "best_chunk_rank": 4,
-          "title": "The effect of fruit and vegetable intake on risk for coronary heart disease."
+          "title": "Facing the facelessness of public health: what's the public got to do with it?"
         },
         {
-          "doc_id": "MED-2944",
-          "score": 0.0002650541935882033,
-          "best_chunk_id": "MED-2944",
+          "doc_id": "MED-1884",
+          "score": 0.0004571835199406357,
+          "best_chunk_id": "MED-1884",
           "best_chunk_rank": 5,
-          "title": "Systematic Review of the Incidence of Sudden Cardiac Death in the United States"
+          "title": "Maintenance of the LDL cholesterol:HDL cholesterol ratio in an elderly population given a dietary cholesterol challenge."
         },
         {
-          "doc_id": "MED-4617",
-          "score": 0.00026505419358818815,
-          "best_chunk_id": "MED-4617",
+          "doc_id": "MED-2590",
+          "score": 0.0004414392426493029,
+          "best_chunk_id": "MED-2590",
           "best_chunk_rank": 6,
-          "title": "Systematic Review of the Incidence of Sudden Cardiac Death in the United States"
+          "title": "Reversing heart disease in the new millennium--the Fleming unified theory."
         },
         {
-          "doc_id": "MED-4243",
-          "score": 0.00026220321596620274,
-          "best_chunk_id": "MED-4243",
+          "doc_id": "MED-3253",
+          "score": 0.00043936170226702734,
+          "best_chunk_id": "MED-3253",
           "best_chunk_rank": 7,
-          "title": "Intensive lifestyle changes for reversal of coronary heart disease."
+          "title": "Pathobiological determinants of atherosclerosis in youth risk scores are associated with early and advanced atherosclerosis."
         },
         {
-          "doc_id": "MED-1366",
-          "score": 0.000259596790647611,
-          "best_chunk_id": "MED-1366",
+          "doc_id": "MED-1530",
+          "score": 0.0004256380882712814,
+          "best_chunk_id": "MED-1530",
           "best_chunk_rank": 8,
-          "title": "Mediterranean diet and public health: personal reflections."
+          "title": "Cardiovascular disease mortality and cancer incidence in vegetarians: a meta-analysis and systematic review."
         },
         {
-          "doc_id": "MED-4578",
-          "score": 0.00025668690782090846,
-          "best_chunk_id": "MED-4578",
+          "doc_id": "MED-5027",
+          "score": 0.00042400396270539554,
+          "best_chunk_id": "MED-5027",
           "best_chunk_rank": 9,
-          "title": "Effects of consumption of pomegranate juice on carotid intima-media thickness in men and women at moderate risk for coronary heart disease."
+          "title": "Diet and risk of ischemic heart disease in India."
         },
         {
-          "doc_id": "MED-3255",
-          "score": 0.00025506789101572603,
-          "best_chunk_id": "MED-3255",
+          "doc_id": "MED-2376",
+          "score": 0.00042365865142171804,
+          "best_chunk_id": "MED-2376",
           "best_chunk_rank": 10,
-          "title": "Endothelial function in healthy 11-year-old children after dietary intervention with onset in infancy: the Special Turku Coronary Risk Factor Inter..."
+          "title": "Usefulness of brachial artery flow-mediated dilation to predict long-term cardiovascular events in subjects without heart disease."
         }
       ]
     },
@@ -246,73 +246,73 @@
       "top_documents": [
         {
           "doc_id": "MED-4380",
-          "score": 0.0007363241000733383,
+          "score": 0.004229701088495078,
           "best_chunk_id": "MED-4380",
           "best_chunk_rank": 1,
           "title": "Domoic acid and human exposure risks: a review."
         },
         {
           "doc_id": "MED-4381",
-          "score": 0.00045262369541120543,
+          "score": 0.0007964299378301106,
           "best_chunk_id": "MED-4381",
           "best_chunk_rank": 2,
           "title": "Amnesic shellfish poison."
         },
         {
-          "doc_id": "MED-5202",
-          "score": 0.0003087088613122881,
-          "best_chunk_id": "MED-5202",
-          "best_chunk_rank": 3,
-          "title": "Synthesis and stability study of a new major metabolite of γ-hydroxybutyric acid"
-        },
-        {
-          "doc_id": "MED-5311",
-          "score": 0.00030664399610358015,
-          "best_chunk_id": "MED-5311",
-          "best_chunk_rank": 4,
-          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma."
-        },
-        {
           "doc_id": "MED-4995",
-          "score": 0.0002869893147916121,
+          "score": 0.00041019089921550496,
           "best_chunk_id": "MED-4995",
-          "best_chunk_rank": 5,
+          "best_chunk_rank": 3,
           "title": "Salicylic Acid sans Aspirin in Animals and Man: Persistence in Fasting and Biosynthesis from Benzoic Acid"
         },
         {
+          "doc_id": "MED-5059",
+          "score": 0.0003935335658099519,
+          "best_chunk_id": "MED-5059",
+          "best_chunk_rank": 4,
+          "title": "Evaluation of certain food additives. Seventy-first report of the Joint FAO/WHO Expert Committee on Food Additives."
+        },
+        {
+          "doc_id": "MED-721",
+          "score": 0.0003916278855581674,
+          "best_chunk_id": "MED-721",
+          "best_chunk_rank": 5,
+          "title": "Bismuth therapy in gastrointestinal diseases."
+        },
+        {
           "doc_id": "MED-2101",
-          "score": 0.0002866474638208233,
+          "score": 0.0003907503417925434,
           "best_chunk_id": "MED-2101",
           "best_chunk_rank": 6,
           "title": "Breast-gut connection: origin of chenodeoxycholic acid in breast cyst fluid."
         },
         {
-          "doc_id": "MED-4605",
-          "score": 0.000274384227216836,
-          "best_chunk_id": "MED-4605",
-          "best_chunk_rank": 7,
-          "title": "Genotoxicity and cell transformation studies with sorbates in Syrian hamster embryo fibroblasts."
-        },
-        {
-          "doc_id": "MED-5059",
-          "score": 0.00027397327130334047,
-          "best_chunk_id": "MED-5059",
-          "best_chunk_rank": 8,
-          "title": "Evaluation of certain food additives. Seventy-first report of the Joint FAO/WHO Expert Committee on Food Additives."
-        },
-        {
-          "doc_id": "MED-721",
-          "score": 0.0002694417712344945,
-          "best_chunk_id": "MED-721",
-          "best_chunk_rank": 9,
-          "title": "Bismuth therapy in gastrointestinal diseases."
-        },
-        {
           "doc_id": "MED-3510",
-          "score": 0.00026857032806048485,
+          "score": 0.00038863637119595324,
           "best_chunk_id": "MED-3510",
-          "best_chunk_rank": 10,
+          "best_chunk_rank": 7,
           "title": "A risk-benefit assessment of cisapride in the treatment of gastrointestinal disorders."
+        },
+        {
+          "doc_id": "MED-3850",
+          "score": 0.0003831317987811808,
+          "best_chunk_id": "MED-3850",
+          "best_chunk_rank": 8,
+          "title": "Excretion, isolation and structure of a new phenolic constituent of female urine."
+        },
+        {
+          "doc_id": "MED-1278",
+          "score": 0.00038091906885416674,
+          "best_chunk_id": "MED-1278",
+          "best_chunk_rank": 9,
+          "title": "Does α-Amino-β-methylaminopropionic Acid (BMAA) Play a Role in Neurodegeneration?"
+        },
+        {
+          "doc_id": "MED-4607",
+          "score": 0.0003730986506653156,
+          "best_chunk_id": "MED-4607",
+          "best_chunk_rank": 10,
+          "title": "Effects of sorbic acid and its salts on chromosome aberrations, sister chromatid exchanges and gene mutations in cultured Chinese hamster cells."
         }
       ]
     },
@@ -721,81 +721,81 @@
       "gold_rank": null,
       "top_documents": [
         {
-          "doc_id": "MED-3136",
-          "score": 0.00033260621517330197,
-          "best_chunk_id": "MED-3136",
-          "best_chunk_rank": 1,
-          "title": "Influence of frequent and long-term bean consumption on colonic function and fermentation."
-        },
-        {
           "doc_id": "MED-4619",
-          "score": 0.0002820777152690368,
+          "score": 0.0012896350310008784,
           "best_chunk_id": "MED-4619",
-          "best_chunk_rank": 2,
+          "best_chunk_rank": 1,
           "title": "Selective induction of apoptosis of human oral cancer cell lines by avocado extracts via a ROS-mediated mechanism."
         },
         {
           "doc_id": "MED-3138",
-          "score": 0.00028194917493251577,
+          "score": 0.0004114466995476866,
           "best_chunk_id": "MED-3138",
-          "best_chunk_rank": 3,
+          "best_chunk_rank": 2,
           "title": "Perceptions of flatulence from bean consumption among adults in 3 feeding studies"
         },
         {
-          "doc_id": "MED-3132",
-          "score": 0.00028037523107002707,
-          "best_chunk_id": "MED-3132",
+          "doc_id": "MED-3136",
+          "score": 0.0004030742110809377,
+          "best_chunk_id": "MED-3136",
+          "best_chunk_rank": 3,
+          "title": "Influence of frequent and long-term bean consumption on colonic function and fermentation."
+        },
+        {
+          "doc_id": "MED-4991",
+          "score": 0.00038694353081873933,
+          "best_chunk_id": "MED-4991",
           "best_chunk_rank": 4,
-          "title": "Legume promotion in counselling: an e-mail survey of dietitians."
-        },
-        {
-          "doc_id": "MED-724",
-          "score": 0.0002781587370342026,
-          "best_chunk_id": "MED-724",
-          "best_chunk_rank": 5,
-          "title": "Flatulence--causes, relation to diet and remedies."
-        },
-        {
-          "doc_id": "MED-719",
-          "score": 0.0002781587370342026,
-          "best_chunk_id": "MED-719",
-          "best_chunk_rank": 6,
-          "title": "Flatulence--causes, relation to diet and remedies."
-        },
-        {
-          "doc_id": "MED-4689",
-          "score": 0.0002549759035302924,
-          "best_chunk_id": "MED-4689",
-          "best_chunk_rank": 7,
-          "title": "The total antioxidant content of more than 3100 foods, beverages, spices, herbs and supplements used worldwide"
-        },
-        {
-          "doc_id": "MED-2951",
-          "score": 0.0002549759035302924,
-          "best_chunk_id": "MED-2951",
-          "best_chunk_rank": 8,
-          "title": "The total antioxidant content of more than 3100 foods, beverages, spices, herbs and supplements used worldwide"
+          "title": "Bean consumption is associated with greater nutrient intake, reduced systolic blood pressure, lower body weight, and a smaller waist circumference ..."
         },
         {
           "doc_id": "MED-2570",
-          "score": 0.0002479151239949076,
+          "score": 0.0003844630024817022,
           "best_chunk_id": "MED-2570",
-          "best_chunk_rank": 9,
+          "best_chunk_rank": 5,
           "title": "In vitro investigations of the potential health benefits of Australian-grown faba beans (Vicia faba L.): chemopreventative capacity and inhibitory ..."
         },
         {
-          "doc_id": "MED-720",
-          "score": 0.00024701912306296326,
-          "best_chunk_id": "MED-720",
+          "doc_id": "MED-3132",
+          "score": 0.00037591305356614026,
+          "best_chunk_id": "MED-3132",
+          "best_chunk_rank": 6,
+          "title": "Legume promotion in counselling: an e-mail survey of dietitians."
+        },
+        {
+          "doc_id": "MED-719",
+          "score": 0.0003640179241665701,
+          "best_chunk_id": "MED-719",
+          "best_chunk_rank": 7,
+          "title": "Flatulence--causes, relation to diet and remedies."
+        },
+        {
+          "doc_id": "MED-724",
+          "score": 0.0003640179241665701,
+          "best_chunk_id": "MED-724",
+          "best_chunk_rank": 8,
+          "title": "Flatulence--causes, relation to diet and remedies."
+        },
+        {
+          "doc_id": "MED-2010",
+          "score": 0.0003375831438243561,
+          "best_chunk_id": "MED-2010",
+          "best_chunk_rank": 9,
+          "title": "Nutritional quality of legumes, and their role in cardiometabolic risk prevention: a review."
+        },
+        {
+          "doc_id": "MED-5079",
+          "score": 0.0003368848153445621,
+          "best_chunk_id": "MED-5079",
           "best_chunk_rank": 10,
-          "title": "The effect of oral alpha-galactosidase on intestinal gas production and gas-related symptoms."
+          "title": "Pinto bean consumption reduces biomarkers for heart disease risk."
         }
       ]
     }
   ],
   "summary": {
-    "success_at_10_available": 220,
-    "failure_at_10_available": 103,
+    "success_at_10_available": 215,
+    "failure_at_10_available": 108,
     "saved_per_group_max": 5
   }
 }

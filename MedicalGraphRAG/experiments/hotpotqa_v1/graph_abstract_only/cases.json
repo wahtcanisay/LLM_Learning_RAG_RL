@@ -402,74 +402,74 @@
       "question": "Who is older, Annie Morton or Terry Richardson?",
       "gold_doc_id": "Annie Morton",
       "gold_title": "Annie Morton",
-      "gold_rank": null,
+      "gold_rank": 17,
       "top_documents": [
         {
           "doc_id": "Lady Gaga x Terry Richardson",
-          "score": 5.4899496750072145e-05,
+          "score": 5.5706665741410464e-05,
           "best_chunk_id": "Lady Gaga x Terry Richardson",
           "best_chunk_rank": 1,
           "title": "Lady Gaga x Terry Richardson"
         },
         {
           "doc_id": "Garth Richardson",
-          "score": 5.486938248981069e-05,
+          "score": 5.564816032000551e-05,
           "best_chunk_id": "Garth Richardson",
           "best_chunk_rank": 2,
           "title": "Garth Richardson"
         },
         {
           "doc_id": "Leo Richardson",
-          "score": 5.4036011941525774e-05,
+          "score": 5.402910361097157e-05,
           "best_chunk_id": "Leo Richardson",
           "best_chunk_rank": 3,
           "title": "Leo Richardson"
         },
         {
           "doc_id": "Kevin Richardson (footballer)",
-          "score": 5.403589691940212e-05,
+          "score": 5.363142894209868e-05,
           "best_chunk_id": "Kevin Richardson (footballer)",
           "best_chunk_rank": 4,
           "title": "Kevin Richardson (footballer)"
         },
         {
           "doc_id": "Richardson, Texas",
-          "score": 5.2352786222915226e-05,
+          "score": 5.35654325165694e-05,
           "best_chunk_id": "Richardson, Texas",
           "best_chunk_rank": 5,
           "title": "Richardson, Texas"
         },
         {
           "doc_id": "Lewis Richardson (Hollyoaks)",
-          "score": 5.207899926065088e-05,
+          "score": 5.339407554833171e-05,
           "best_chunk_id": "Lewis Richardson (Hollyoaks)",
           "best_chunk_rank": 6,
           "title": "Lewis Richardson (Hollyoaks)"
         },
         {
-          "doc_id": "Patricia Richardson",
-          "score": 5.078689547813845e-05,
-          "best_chunk_id": "Patricia Richardson",
+          "doc_id": "Peter Richardson (filmmaker)",
+          "score": 5.308140468298168e-05,
+          "best_chunk_id": "Peter Richardson (filmmaker)",
           "best_chunk_rank": 7,
+          "title": "Peter Richardson (filmmaker)"
+        },
+        {
+          "doc_id": "Patricia Richardson",
+          "score": 5.221609988270184e-05,
+          "best_chunk_id": "Patricia Richardson",
+          "best_chunk_rank": 8,
           "title": "Patricia Richardson"
         },
         {
-          "doc_id": "Act Your Age (radio series)",
-          "score": 5.0560987271569e-05,
-          "best_chunk_id": "Act Your Age (radio series)",
-          "best_chunk_rank": 8,
-          "title": "Act Your Age (radio series)"
-        },
-        {
           "doc_id": "Elliot Richardson",
-          "score": 5.024153819761473e-05,
+          "score": 5.103955467517888e-05,
           "best_chunk_id": "Elliot Richardson",
           "best_chunk_rank": 9,
           "title": "Elliot Richardson"
         },
         {
           "doc_id": "Joely Richardson",
-          "score": 4.945537505837786e-05,
+          "score": 4.934349870080538e-05,
           "best_chunk_id": "Joely Richardson",
           "best_chunk_rank": 10,
           "title": "Joely Richardson"
@@ -485,73 +485,73 @@
       "top_documents": [
         {
           "doc_id": "Morten Borgersen",
-          "score": 5.749152695404917e-05,
+          "score": 4.379496098216611e-05,
           "best_chunk_id": "Morten Borgersen",
           "best_chunk_rank": 1,
           "title": "Morten Borgersen"
         },
         {
-          "doc_id": "Monisha Kaltenborn",
-          "score": 5.396480338655378e-05,
-          "best_chunk_id": "Monisha Kaltenborn",
+          "doc_id": "All in This Tea",
+          "score": 4.377669551110273e-05,
+          "best_chunk_id": "All in This Tea",
           "best_chunk_rank": 2,
+          "title": "All in This Tea"
+        },
+        {
+          "doc_id": "Oh, What a Lovely Tea Party",
+          "score": 3.960418970460801e-05,
+          "best_chunk_id": "Oh, What a Lovely Tea Party",
+          "best_chunk_rank": 3,
+          "title": "Oh, What a Lovely Tea Party"
+        },
+        {
+          "doc_id": "Monisha Kaltenborn",
+          "score": 3.868577277432177e-05,
+          "best_chunk_id": "Monisha Kaltenborn",
+          "best_chunk_rank": 4,
           "title": "Monisha Kaltenborn"
         },
         {
-          "doc_id": "Svein Tindberg",
-          "score": 5.366279011075234e-05,
-          "best_chunk_id": "Svein Tindberg",
-          "best_chunk_rank": 3,
-          "title": "Svein Tindberg"
-        },
-        {
-          "doc_id": "Rønnaug Alten",
-          "score": 5.352047404670416e-05,
-          "best_chunk_id": "Rønnaug Alten",
-          "best_chunk_rank": 4,
-          "title": "Rønnaug Alten"
-        },
-        {
-          "doc_id": "ByKolles Racing",
-          "score": 5.244327885170817e-05,
-          "best_chunk_id": "ByKolles Racing",
+          "doc_id": "Josann McGibbon",
+          "score": 3.803065049092235e-05,
+          "best_chunk_id": "Josann McGibbon",
           "best_chunk_rank": 5,
-          "title": "ByKolles Racing"
-        },
-        {
-          "doc_id": "Scuderia Toro Rosso",
-          "score": 5.2384072729884735e-05,
-          "best_chunk_id": "Scuderia Toro Rosso",
-          "best_chunk_rank": 6,
-          "title": "Scuderia Toro Rosso"
+          "title": "Josann McGibbon"
         },
         {
           "doc_id": "Sucker Punch (2011 film)",
-          "score": 5.152282349499101e-05,
+          "score": 3.798909310382985e-05,
           "best_chunk_id": "Sucker Punch (2011 film)",
-          "best_chunk_rank": 7,
+          "best_chunk_rank": 6,
           "title": "Sucker Punch (2011 film)"
         },
         {
-          "doc_id": "Priscilla Martel",
-          "score": 5.138352134195427e-05,
-          "best_chunk_id": "Priscilla Martel",
+          "doc_id": "Orange Field Tea Factory",
+          "score": 3.7802504479042126e-05,
+          "best_chunk_id": "Orange Field Tea Factory",
+          "best_chunk_rank": 7,
+          "title": "Orange Field Tea Factory"
+        },
+        {
+          "doc_id": "Diamela Eltit",
+          "score": 3.780047838163511e-05,
+          "best_chunk_id": "Diamela Eltit",
           "best_chunk_rank": 8,
-          "title": "Priscilla Martel"
+          "title": "Diamela Eltit"
         },
         {
           "doc_id": "Moneyball (film)",
-          "score": 5.1232898417534825e-05,
+          "score": 3.775012511945681e-05,
           "best_chunk_id": "Moneyball (film)",
           "best_chunk_rank": 9,
           "title": "Moneyball (film)"
         },
         {
-          "doc_id": "Tomcats Screaming Outside",
-          "score": 5.106639662134863e-05,
-          "best_chunk_id": "Tomcats Screaming Outside",
+          "doc_id": "Tea (meal)",
+          "score": 3.739955954151759e-05,
+          "best_chunk_id": "Tea (meal)",
           "best_chunk_rank": 10,
-          "title": "Tomcats Screaming Outside"
+          "title": "Tea (meal)"
         }
       ]
     },
@@ -635,167 +635,167 @@
       ]
     },
     {
-      "query_id": "5a80721b554299485f5985ef",
-      "question": "The Livesey Hal War Memorial commemorates the fallen of which war, that had over 60 million casualties?",
-      "gold_doc_id": "Livesey Hall War Memorial",
-      "gold_title": "Livesey Hall War Memorial",
-      "gold_rank": null,
+      "query_id": "5ab859a955429934fafe6d7b",
+      "question": "Who is the writer of this song that was inspired by words on a tombstone and was the first track on the box set Back to Mono?",
+      "gold_doc_id": "Back to Mono (1958–1969)",
+      "gold_title": "Back to Mono (1958–1969)",
+      "gold_rank": 18,
       "top_documents": [
         {
-          "doc_id": "Operation Halyard",
-          "score": 7.548463483698022e-05,
-          "best_chunk_id": "Operation Halyard",
+          "doc_id": "A Letter from Death Row (album)",
+          "score": 0.5009651780128479,
+          "best_chunk_id": "A Letter from Death Row (album)",
           "best_chunk_rank": 1,
-          "title": "Operation Halyard"
+          "title": "A Letter from Death Row (album)"
         },
         {
-          "doc_id": "Ōban Star-Racers",
-          "score": 6.93317211606246e-05,
-          "best_chunk_id": "Ōban Star-Racers",
+          "doc_id": "Domino (Van Morrison song)",
+          "score": 0.4945003390312195,
+          "best_chunk_id": "Domino (Van Morrison song)",
           "best_chunk_rank": 2,
-          "title": "Ōban Star-Racers"
+          "title": "Domino (Van Morrison song)"
         },
         {
-          "doc_id": "Chawinda",
-          "score": 6.201497626281544e-05,
-          "best_chunk_id": "Chawinda",
+          "doc_id": "Bill Grainer",
+          "score": 0.48764023184776306,
+          "best_chunk_id": "Bill Grainer",
           "best_chunk_rank": 3,
-          "title": "Chawinda"
+          "title": "Bill Grainer"
         },
         {
-          "doc_id": "Halloween on Franklin Street",
-          "score": 6.145739187938377e-05,
-          "best_chunk_id": "Halloween on Franklin Street",
+          "doc_id": "I Love You (The Zombies song)",
+          "score": 0.48697349429130554,
+          "best_chunk_id": "I Love You (The Zombies song)",
           "best_chunk_rank": 4,
-          "title": "Halloween on Franklin Street"
+          "title": "I Love You (The Zombies song)"
         },
         {
-          "doc_id": "Bald eagle",
-          "score": 6.059762883266478e-05,
-          "best_chunk_id": "Bald eagle",
+          "doc_id": "Here with Me (The Killers song)",
+          "score": 0.4838032126426697,
+          "best_chunk_id": "Here with Me (The Killers song)",
           "best_chunk_rank": 5,
-          "title": "Bald eagle"
+          "title": "Here with Me (The Killers song)"
         },
         {
-          "doc_id": "Black Taj Mahal",
-          "score": 5.977371553129652e-05,
-          "best_chunk_id": "Black Taj Mahal",
+          "doc_id": "The Funeral Pudding",
+          "score": 0.4796454608440399,
+          "best_chunk_id": "The Funeral Pudding",
           "best_chunk_rank": 6,
-          "title": "Black Taj Mahal"
+          "title": "The Funeral Pudding"
         },
         {
-          "doc_id": "Robinson Ekspeditionen 2010",
-          "score": 5.865995304074299e-05,
-          "best_chunk_id": "Robinson Ekspeditionen 2010",
+          "doc_id": "Sonora's Death Row",
+          "score": 0.47798702120780945,
+          "best_chunk_id": "Sonora's Death Row",
           "best_chunk_rank": 7,
-          "title": "Robinson Ekspeditionen 2010"
+          "title": "Sonora's Death Row"
         },
         {
-          "doc_id": "Music of Iowa",
-          "score": 5.85158178843314e-05,
-          "best_chunk_id": "Music of Iowa",
+          "doc_id": "Veteran of the Psychic Wars",
+          "score": 0.47057247161865234,
+          "best_chunk_id": "Veteran of the Psychic Wars",
           "best_chunk_rank": 8,
-          "title": "Music of Iowa"
+          "title": "Veteran of the Psychic Wars"
         },
         {
-          "doc_id": "Lester Lautenschlaeger",
-          "score": 5.702150143371293e-05,
-          "best_chunk_id": "Lester Lautenschlaeger",
+          "doc_id": "Corey Chorus",
+          "score": 0.4648056626319885,
+          "best_chunk_id": "Corey Chorus",
           "best_chunk_rank": 9,
-          "title": "Lester Lautenschlaeger"
+          "title": "Corey Chorus"
         },
         {
-          "doc_id": "Beck v. Eiland-Hall",
-          "score": 5.683103603266886e-05,
-          "best_chunk_id": "Beck v. Eiland-Hall",
+          "doc_id": "Back from the Grave, Volume 7",
+          "score": 0.46318092942237854,
+          "best_chunk_id": "Back from the Grave, Volume 7",
           "best_chunk_rank": 10,
-          "title": "Beck v. Eiland-Hall"
+          "title": "Back from the Grave, Volume 7"
         }
       ]
     },
     {
-      "query_id": "5a760ab65542994ccc918697",
-      "question": "Alfred Balk served as the secretary of the Committee on the Employment of Minority Groups in the News Media under which United States Vice President?",
-      "gold_doc_id": "Alfred Balk",
-      "gold_title": "Alfred Balk",
-      "gold_rank": 87,
+      "query_id": "5a7320565542991f9a20c61d",
+      "question": "who is younger Keith Bostic or Jerry Glanville ?",
+      "gold_doc_id": "Jerry Glanville",
+      "gold_title": "Jerry Glanville",
+      "gold_rank": 35,
       "top_documents": [
         {
-          "doc_id": "Public Affairs Operations Center",
-          "score": 6.997377176423217e-05,
-          "best_chunk_id": "Public Affairs Operations Center",
+          "doc_id": "Keith Bostic",
+          "score": 0.4892917573451996,
+          "best_chunk_id": "Keith Bostic",
           "best_chunk_rank": 1,
-          "title": "Public Affairs Operations Center"
+          "title": "Keith Bostic"
         },
         {
-          "doc_id": "Neurofilament",
-          "score": 6.704996200655913e-05,
-          "best_chunk_id": "Neurofilament",
+          "doc_id": "Keith Bilbrey",
+          "score": 0.4711802303791046,
+          "best_chunk_id": "Keith Bilbrey",
           "best_chunk_rank": 2,
-          "title": "Neurofilament"
+          "title": "Keith Bilbrey"
         },
         {
-          "doc_id": "North Korea Strategy Center",
-          "score": 6.021183779437241e-05,
-          "best_chunk_id": "North Korea Strategy Center",
+          "doc_id": "Jerry Bingham",
+          "score": 0.44989249110221863,
+          "best_chunk_id": "Jerry Bingham",
           "best_chunk_rank": 3,
-          "title": "North Korea Strategy Center"
+          "title": "Jerry Bingham"
         },
         {
-          "doc_id": "Comedy Film Nerds",
-          "score": 5.9558747377805824e-05,
-          "best_chunk_id": "Comedy Film Nerds",
+          "doc_id": "Marshall Rohner",
+          "score": 0.44007277488708496,
+          "best_chunk_id": "Marshall Rohner",
           "best_chunk_rank": 4,
-          "title": "Comedy Film Nerds"
+          "title": "Marshall Rohner"
         },
         {
-          "doc_id": "Jacob Dolson Cox",
-          "score": 5.906057669633556e-05,
-          "best_chunk_id": "Jacob Dolson Cox",
+          "doc_id": "Keith Slettedahl",
+          "score": 0.42962679266929626,
+          "best_chunk_id": "Keith Slettedahl",
           "best_chunk_rank": 5,
-          "title": "Jacob Dolson Cox"
+          "title": "Keith Slettedahl"
         },
         {
-          "doc_id": "990WBOB",
-          "score": 5.8734552189306274e-05,
-          "best_chunk_id": "990WBOB",
+          "doc_id": "Britt Leach",
+          "score": 0.4285409152507782,
+          "best_chunk_id": "Britt Leach",
           "best_chunk_rank": 6,
-          "title": "990WBOB"
+          "title": "Britt Leach"
         },
         {
-          "doc_id": "Turner Broadcasting System, Inc. v. FCC",
-          "score": 5.8616422223662326e-05,
-          "best_chunk_id": "Turner Broadcasting System, Inc. v. FCC",
+          "doc_id": "Raybon Brothers",
+          "score": 0.42512109875679016,
+          "best_chunk_id": "Raybon Brothers",
           "best_chunk_rank": 7,
-          "title": "Turner Broadcasting System, Inc. v. FCC"
+          "title": "Raybon Brothers"
         },
         {
-          "doc_id": "The Sean Hannity Show",
-          "score": 5.680090716409056e-05,
-          "best_chunk_id": "The Sean Hannity Show",
+          "doc_id": "Jesse Sandoval",
+          "score": 0.4207046627998352,
+          "best_chunk_id": "Jesse Sandoval",
           "best_chunk_rank": 8,
-          "title": "The Sean Hannity Show"
+          "title": "Jesse Sandoval"
         },
         {
-          "doc_id": "Karl Frisch",
-          "score": 5.6617846312483706e-05,
-          "best_chunk_id": "Karl Frisch",
+          "doc_id": "Butch Cage and Willie B. Thomas",
+          "score": 0.4206219017505646,
+          "best_chunk_id": "Butch Cage and Willie B. Thomas",
           "best_chunk_rank": 9,
-          "title": "Karl Frisch"
+          "title": "Butch Cage and Willie B. Thomas"
         },
         {
-          "doc_id": "Marblemedia",
-          "score": 5.599948970424347e-05,
-          "best_chunk_id": "Marblemedia",
+          "doc_id": "Jonny Browning",
+          "score": 0.4202724099159241,
+          "best_chunk_id": "Jonny Browning",
           "best_chunk_rank": 10,
-          "title": "Marblemedia"
+          "title": "Jonny Browning"
         }
       ]
     }
   ],
   "summary": {
-    "success_at_10_available": 6733,
-    "failure_at_10_available": 672,
+    "success_at_10_available": 6855,
+    "failure_at_10_available": 550,
     "saved_per_group_max": 5
   }
 }

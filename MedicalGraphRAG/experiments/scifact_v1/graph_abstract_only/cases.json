@@ -159,160 +159,81 @@
       ]
     },
     {
-      "query_id": "36",
-      "question": "A deficiency of vitamin B12 increases blood levels of homocysteine.",
-      "gold_doc_id": "5152028",
-      "gold_title": "Folic acid improves endothelial function in coronary artery disease via mechanisms largely independent of homocysteine lowering.",
-      "gold_rank": 9,
-      "top_documents": [
-        {
-          "doc_id": "37424881",
-          "score": 0.0009502644077239916,
-          "best_chunk_id": "37424881",
-          "best_chunk_rank": 1,
-          "title": "The effect of folate fortification on folic acid-based homocysteine-lowering intervention and stroke risk: a meta-analysis."
-        },
-        {
-          "doc_id": "42441846",
-          "score": 0.0009347809182344125,
-          "best_chunk_id": "42441846",
-          "best_chunk_rank": 2,
-          "title": "Gene--nutrition interactions in coronary artery disease: correlation between the MTHFR C677T polymorphism and folate and homocysteine status in a Korean population."
-        },
-        {
-          "doc_id": "18557974",
-          "score": 0.0008421667659418463,
-          "best_chunk_id": "18557974",
-          "best_chunk_rank": 3,
-          "title": "British Journal of Nutrition (2003), 89, 295–301 q The Authors 2003 DOI: 10.1079/BJN2002776 Plasma homocysteine concentration is decreased by dietary intervention*"
-        },
-        {
-          "doc_id": "10557471",
-          "score": 0.0006965935932042434,
-          "best_chunk_id": "10557471",
-          "best_chunk_rank": 4,
-          "title": "Association between folate intake from different food sources in Norway and homocysteine status in a dietary intervention among young male adults."
-        },
-        {
-          "doc_id": "41646286",
-          "score": 0.0006733625537330179,
-          "best_chunk_id": "41646286",
-          "best_chunk_rank": 5,
-          "title": "Folate affects apoptosis in human trophoblastic cells."
-        },
-        {
-          "doc_id": "21636085",
-          "score": 0.0005822455685510454,
-          "best_chunk_id": "21636085",
-          "best_chunk_rank": 6,
-          "title": "The effect of folic acid supplementation on plasma homocysteine in an elderly population."
-        },
-        {
-          "doc_id": "15615957",
-          "score": 0.0005724446385210516,
-          "best_chunk_id": "15615957",
-          "best_chunk_rank": 7,
-          "title": "Original Article"
-        },
-        {
-          "doc_id": "8595678",
-          "score": 0.0005639169450836265,
-          "best_chunk_id": "8595678",
-          "best_chunk_rank": 8,
-          "title": "Effect modification by population dietary folate on the association between MTHFR genotype, homocysteine, and stroke risk: a meta-analysis of genetic studies and randomised trials"
-        },
-        {
-          "doc_id": "11705328",
-          "score": 0.0005568306684975874,
-          "best_chunk_id": "11705328",
-          "best_chunk_rank": 9,
-          "title": "Randomized trial of folic acid supplementation and serum homocysteine levels."
-        },
-        {
-          "doc_id": "3215494",
-          "score": 0.0005402815563224859,
-          "best_chunk_id": "3215494",
-          "best_chunk_rank": 10,
-          "title": "Hyperhomocysteinemia and atherosclerotic vascular disease: pathophysiology, screening, and treatment. off."
-        }
-      ]
-    },
-    {
       "query_id": "48",
       "question": "A total of 1,000 people in the UK are asymptomatic carriers of vCJD infection.",
       "gold_doc_id": "13734012",
       "gold_title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey",
-      "gold_rank": 9,
+      "gold_rank": 2,
       "top_documents": [
         {
           "doc_id": "18617259",
-          "score": 0.000603667660801912,
+          "score": 0.00313615254463609,
           "best_chunk_id": "18617259",
           "best_chunk_rank": 1,
           "title": "Research Letters"
         },
         {
-          "doc_id": "23203102",
-          "score": 0.00028138993625119273,
-          "best_chunk_id": "23203102",
+          "doc_id": "13734012",
+          "score": 0.00040496085231744275,
+          "best_chunk_id": "13734012",
           "best_chunk_rank": 2,
-          "title": "Transmission of sporadic Creutzfeldt-Jakob disease by blood transfusion: risk factor or possible biases."
+          "title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey"
         },
         {
-          "doc_id": "29955650",
-          "score": 0.00028012505052471944,
-          "best_chunk_id": "29955650",
+          "doc_id": "4463811",
+          "score": 0.00040332438882862467,
+          "best_chunk_id": "4463811",
           "best_chunk_rank": 3,
-          "title": "Study of infectious intestinal disease in England: rates in the community, presenting to general practice, and reported to national surveillance. The Infectious Intestinal Disease Study Executive."
+          "title": "Low methionine ingestion by rats extends life span."
         },
         {
           "doc_id": "11349166",
-          "score": 0.00027050899712980096,
+          "score": 0.00037667475366098547,
           "best_chunk_id": "11349166",
           "best_chunk_rank": 4,
           "title": "Lack of evidence of transfusion transmission of Creutzfeldt-Jakob disease in a US surveillance study."
         },
         {
-          "doc_id": "3078080",
-          "score": 0.0002519683341856427,
-          "best_chunk_id": "3078080",
+          "doc_id": "23203102",
+          "score": 0.0003582074839293117,
+          "best_chunk_id": "23203102",
           "best_chunk_rank": 5,
-          "title": "Rapid and Sensitive RT-QuIC Detection of Human Creutzfeldt-Jakob Disease Using Cerebrospinal Fluid"
-        },
-        {
-          "doc_id": "24512064",
-          "score": 0.0002495974933856612,
-          "best_chunk_id": "24512064",
-          "best_chunk_rank": 6,
-          "title": "HTLV-I/II associated disease in England and Wales, 1993-7: retrospective review of serology requests."
-        },
-        {
-          "doc_id": "21902910",
-          "score": 0.00024876026289026175,
-          "best_chunk_id": "21902910",
-          "best_chunk_rank": 7,
-          "title": "Knowledge and Practice of Standard Precautions and Awareness Regarding Post-Exposure Prophylaxis for HIV among Interns of a Medical College in West Bengal, India."
+          "title": "Transmission of sporadic Creutzfeldt-Jakob disease by blood transfusion: risk factor or possible biases."
         },
         {
           "doc_id": "3698758",
-          "score": 0.0002467287823047222,
+          "score": 0.0003294978221302832,
           "best_chunk_id": "3698758",
-          "best_chunk_rank": 8,
+          "best_chunk_rank": 6,
           "title": "Hepatitis C virus and blood transfusion: past and present risks."
         },
         {
-          "doc_id": "13734012",
-          "score": 0.0002447391903822986,
-          "best_chunk_id": "13734012",
-          "best_chunk_rank": 9,
-          "title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey"
+          "doc_id": "11603066",
+          "score": 0.00032492496642830683,
+          "best_chunk_id": "11603066",
+          "best_chunk_rank": 7,
+          "title": "Using Structural Information to Change the Phosphotransfer Specificity of a Two-Component Chemotaxis Signalling Complex"
         },
         {
-          "doc_id": "7647224",
-          "score": 0.00023961608232711746,
-          "best_chunk_id": "7647224",
+          "doc_id": "29955650",
+          "score": 0.0003233153290501007,
+          "best_chunk_id": "29955650",
+          "best_chunk_rank": 8,
+          "title": "Study of infectious intestinal disease in England: rates in the community, presenting to general practice, and reported to national surveillance. The Infectious Intestinal Disease Study Executive."
+        },
+        {
+          "doc_id": "24512064",
+          "score": 0.0003148980154641081,
+          "best_chunk_id": "24512064",
+          "best_chunk_rank": 9,
+          "title": "HTLV-I/II associated disease in England and Wales, 1993-7: retrospective review of serology requests."
+        },
+        {
+          "doc_id": "13322804",
+          "score": 0.0003066953708877823,
+          "best_chunk_id": "13322804",
           "best_chunk_rank": 10,
-          "title": "Hepatitis C Virus (HCV) Vertical Transmission in 12-Month-Old Infants Born to HCV-Infected Women and Assessment of Maternal Risk Factors"
+          "title": "Novel syndromes associated with JC virus infection of neurons and meningeal cells: no longer a gray area."
         }
       ]
     },
@@ -392,6 +313,85 @@
           "best_chunk_id": "86602746",
           "best_chunk_rank": 10,
           "title": "MicroRNAs: small RNAs with a big role in gene regulation"
+        }
+      ]
+    },
+    {
+      "query_id": "50",
+      "question": "AIRE is expressed in some skin tumors.",
+      "gold_doc_id": "12580014",
+      "gold_title": "Keratin-dependent regulation of Aire and gene expression in skin tumor keratinocytes",
+      "gold_rank": 5,
+      "top_documents": [
+        {
+          "doc_id": "18488986",
+          "score": 0.0013934572856098841,
+          "best_chunk_id": "18488986",
+          "best_chunk_rank": 1,
+          "title": "The Immune Response to Melanoma Is Limited by Thymic Selection of Self-Antigens"
+        },
+        {
+          "doc_id": "19736671",
+          "score": 0.0008035652876209328,
+          "best_chunk_id": "19736671",
+          "best_chunk_rank": 2,
+          "title": "Evolution of metastasis revealed by mutational landscapes of chemically induced skin cancers"
+        },
+        {
+          "doc_id": "43014661",
+          "score": 0.0007584220555653877,
+          "best_chunk_id": "43014661",
+          "best_chunk_rank": 3,
+          "title": "Increased susceptibility to UV-induced skin carcinogenesis in polymerase eta-deficient mice."
+        },
+        {
+          "doc_id": "17844478",
+          "score": 0.0007100319256587195,
+          "best_chunk_id": "17844478",
+          "best_chunk_rank": 4,
+          "title": "Autocrine VEGF Signaling Synergizes with EGFR in Tumor Cells to Promote Epithelial Cancer Development"
+        },
+        {
+          "doc_id": "12580014",
+          "score": 0.0003080328248877878,
+          "best_chunk_id": "12580014",
+          "best_chunk_rank": 5,
+          "title": "Keratin-dependent regulation of Aire and gene expression in skin tumor keratinocytes"
+        },
+        {
+          "doc_id": "12489130",
+          "score": 0.0002784695459240856,
+          "best_chunk_id": "12489130",
+          "best_chunk_rank": 6,
+          "title": "Growth and invasion of human melanomas in human skin grafted to immunodeficient mice."
+        },
+        {
+          "doc_id": "29124963",
+          "score": 0.00027189284515918247,
+          "best_chunk_id": "29124963",
+          "best_chunk_rank": 7,
+          "title": "EML4-ALK translocation predicts better outcome in lung adenocarcinoma patients with wild-type EGFR."
+        },
+        {
+          "doc_id": "25738896",
+          "score": 0.0002711130592099617,
+          "best_chunk_id": "25738896",
+          "best_chunk_rank": 8,
+          "title": "Aire deficiency promotes TRP-1-specific immune rejection of melanoma."
+        },
+        {
+          "doc_id": "36950726",
+          "score": 0.0002623246007278253,
+          "best_chunk_id": "36950726",
+          "best_chunk_rank": 9,
+          "title": "Loss of 5-hydroxymethylcytosine and ten-eleven translocation 2 protein expression in malignant melanoma."
+        },
+        {
+          "doc_id": "39559521",
+          "score": 0.00026046639911543395,
+          "best_chunk_id": "39559521",
+          "best_chunk_rank": 10,
+          "title": "Control of central and peripheral tolerance by Aire."
         }
       ]
     }
@@ -556,160 +556,160 @@
       ]
     },
     {
+      "query_id": "36",
+      "question": "A deficiency of vitamin B12 increases blood levels of homocysteine.",
+      "gold_doc_id": "5152028",
+      "gold_title": "Folic acid improves endothelial function in coronary artery disease via mechanisms largely independent of homocysteine lowering.",
+      "gold_rank": 11,
+      "top_documents": [
+        {
+          "doc_id": "37424881",
+          "score": 0.005173282745359241,
+          "best_chunk_id": "37424881",
+          "best_chunk_rank": 1,
+          "title": "The effect of folate fortification on folic acid-based homocysteine-lowering intervention and stroke risk: a meta-analysis."
+        },
+        {
+          "doc_id": "42441846",
+          "score": 0.005166533540517571,
+          "best_chunk_id": "42441846",
+          "best_chunk_rank": 2,
+          "title": "Gene--nutrition interactions in coronary artery disease: correlation between the MTHFR C677T polymorphism and folate and homocysteine status in a Korean population."
+        },
+        {
+          "doc_id": "18557974",
+          "score": 0.002632001665910796,
+          "best_chunk_id": "18557974",
+          "best_chunk_rank": 3,
+          "title": "British Journal of Nutrition (2003), 89, 295–301 q The Authors 2003 DOI: 10.1079/BJN2002776 Plasma homocysteine concentration is decreased by dietary intervention*"
+        },
+        {
+          "doc_id": "33409100",
+          "score": 0.001828014051692173,
+          "best_chunk_id": "33409100",
+          "best_chunk_rank": 4,
+          "title": "Effect of homocysteine lowering on mortality and vascular disease in advanced chronic kidney disease and end-stage renal disease: a randomized controlled trial."
+        },
+        {
+          "doc_id": "21636085",
+          "score": 0.0016731003798654159,
+          "best_chunk_id": "21636085",
+          "best_chunk_rank": 5,
+          "title": "The effect of folic acid supplementation on plasma homocysteine in an elderly population."
+        },
+        {
+          "doc_id": "10557471",
+          "score": 0.0016334938248417936,
+          "best_chunk_id": "10557471",
+          "best_chunk_rank": 6,
+          "title": "Association between folate intake from different food sources in Norway and homocysteine status in a dietary intervention among young male adults."
+        },
+        {
+          "doc_id": "41646286",
+          "score": 0.0014483413387646465,
+          "best_chunk_id": "41646286",
+          "best_chunk_rank": 7,
+          "title": "Folate affects apoptosis in human trophoblastic cells."
+        },
+        {
+          "doc_id": "24049225",
+          "score": 0.00136529813476728,
+          "best_chunk_id": "24049225",
+          "best_chunk_rank": 8,
+          "title": "No net renal extraction of homocysteine in fasting humans."
+        },
+        {
+          "doc_id": "8595678",
+          "score": 0.0013508775495107656,
+          "best_chunk_id": "8595678",
+          "best_chunk_rank": 9,
+          "title": "Effect modification by population dietary folate on the association between MTHFR genotype, homocysteine, and stroke risk: a meta-analysis of genetic studies and randomised trials"
+        },
+        {
+          "doc_id": "3215494",
+          "score": 0.0012956339749182165,
+          "best_chunk_id": "3215494",
+          "best_chunk_rank": 10,
+          "title": "Hyperhomocysteinemia and atherosclerotic vascular disease: pathophysiology, screening, and treatment. off."
+        }
+      ]
+    },
+    {
       "query_id": "42",
       "question": "A high microerythrocyte count raises vulnerability to severe anemia in homozygous alpha (+)- thalassemia trait subjects.",
       "gold_doc_id": "18174210",
       "gold_title": "Increased Microerythrocyte Count in Homozygous α+-Thalassaemia Contributes to Protection against Severe Malarial Anaemia",
-      "gold_rank": 20,
+      "gold_rank": 16,
       "top_documents": [
         {
           "doc_id": "40913091",
-          "score": 0.001141553923949166,
+          "score": 0.006165031920352053,
           "best_chunk_id": "40913091",
           "best_chunk_rank": 1,
           "title": "GENOTYPING OF THALASSEMIA IN MICROCYTIC HYPOCHROMIC ANEMIA PATIENTS FROM SOUTHWEST REGION OF IRAN"
         },
         {
           "doc_id": "6315132",
-          "score": 0.0010272576589255538,
+          "score": 0.0054846764972907875,
           "best_chunk_id": "6315132",
           "best_chunk_rank": 2,
           "title": "KLF1-null neonates display hydrops fetalis and a deranged erythroid transcriptome."
         },
         {
-          "doc_id": "39506601",
-          "score": 0.00041514205132380417,
-          "best_chunk_id": "39506601",
-          "best_chunk_rank": 3,
-          "title": "Novel roles for KLF1 in erythropoiesis revealed by mRNA-seq."
-        },
-        {
           "doc_id": "12240507",
-          "score": 0.00037996465219957765,
+          "score": 0.0009057569373646112,
           "best_chunk_id": "12240507",
-          "best_chunk_rank": 4,
+          "best_chunk_rank": 3,
           "title": "Disruption of the 5S RNP–Mdm2 interaction significantly improves the erythroid defect in a mouse model for Diamond-Blackfan anemia"
         },
         {
-          "doc_id": "27162821",
-          "score": 0.0003607349812874912,
-          "best_chunk_id": "27162821",
-          "best_chunk_rank": 5,
-          "title": "Percentile curves for hemoglobin and red cell volume in infancy and childhood."
-        },
-        {
-          "doc_id": "4449524",
-          "score": 0.00035505286380478813,
-          "best_chunk_id": "4449524",
-          "best_chunk_rank": 6,
-          "title": "Hemoglobin concentration in white, black, and Oriental children: is there a need for separate criteria in screening for anemia?"
-        },
-        {
-          "doc_id": "45218443",
-          "score": 0.0003401588916530445,
-          "best_chunk_id": "45218443",
-          "best_chunk_rank": 7,
-          "title": "Thalassemia and malaria: new insights into an old problem."
-        },
-        {
-          "doc_id": "10128893",
-          "score": 0.0003329425524840178,
-          "best_chunk_id": "10128893",
-          "best_chunk_rank": 8,
-          "title": "Long-term survival of beta thalassemia major patients treated with hematopoietic stem cell transplantation compared with survival with conventional treatment."
+          "doc_id": "39506601",
+          "score": 0.0007739035676464083,
+          "best_chunk_id": "39506601",
+          "best_chunk_rank": 4,
+          "title": "Novel roles for KLF1 in erythropoiesis revealed by mRNA-seq."
         },
         {
           "doc_id": "25388309",
-          "score": 0.0003301155123067668,
+          "score": 0.0007389269053159664,
           "best_chunk_id": "25388309",
-          "best_chunk_rank": 9,
+          "best_chunk_rank": 5,
           "title": "Pharmacological characterization of 1-(5-chloro-6-(trifluoromethoxy)-1H-benzoimidazol-2-yl)-1H-pyrazole-4-carboxylic acid (JNJ-42041935), a potent and selective hypoxia-inducible factor prolyl hydroxylase inhibitor."
         },
         {
-          "doc_id": "27889071",
-          "score": 0.0003098711105027042,
-          "best_chunk_id": "27889071",
-          "best_chunk_rank": 10,
-          "title": "Microcytosis, iron deficiency and thalassaemia in a multi-ethnic community: a pilot study."
-        }
-      ]
-    },
-    {
-      "query_id": "51",
-      "question": "ALDH1 expression is associated with better breast cancer outcomes.",
-      "gold_doc_id": "45638119",
-      "gold_title": "ALDH1 is a marker of normal and malignant human mammary stem cells and a predictor of poor clinical outcome.",
-      "gold_rank": 25,
-      "top_documents": [
-        {
-          "doc_id": "40735046",
-          "score": 0.00026647459719717626,
-          "best_chunk_id": "40735046",
-          "best_chunk_rank": 1,
-          "title": "Periodic screening for breast cancer: the HIP Randomized Controlled Trial. Health Insurance Plan."
-        },
-        {
-          "doc_id": "27240667",
-          "score": 0.00026383754691221723,
-          "best_chunk_id": "27240667",
-          "best_chunk_rank": 2,
-          "title": "Breast cancer mortality trends in the United States according to estrogen receptor status and age at diagnosis."
-        },
-        {
-          "doc_id": "16734530",
-          "score": 0.00026045814583567083,
-          "best_chunk_id": "16734530",
-          "best_chunk_rank": 3,
-          "title": "The Association between Single-Nucleotide Polymorphisms of ORAI1 Gene and Breast Cancer in a Taiwanese Population"
-        },
-        {
-          "doc_id": "2140497",
-          "score": 0.00025661365731346434,
-          "best_chunk_id": "2140497",
-          "best_chunk_rank": 4,
-          "title": "Independent Association of Lobular Involution and Mammographic Breast Density With Breast Cancer Risk"
-        },
-        {
-          "doc_id": "27123743",
-          "score": 0.00024381292620319044,
-          "best_chunk_id": "27123743",
-          "best_chunk_rank": 5,
-          "title": "Role of birthweight in the etiology of breast cancer."
-        },
-        {
-          "doc_id": "15721252",
-          "score": 0.00023923935913253857,
-          "best_chunk_id": "15721252",
+          "doc_id": "37731372",
+          "score": 0.0005856344517657641,
+          "best_chunk_id": "37731372",
           "best_chunk_rank": 6,
-          "title": "PD 0332991, a selective cyclin D kinase 4/6 inhibitor, preferentially inhibits proliferation of luminal estrogen receptor-positive human breast cancer cell lines in vitro"
+          "title": "Pregnancy in dialysis patients: a review of outcomes, complications, and management."
         },
         {
-          "doc_id": "313403",
-          "score": 0.00023654729682091427,
-          "best_chunk_id": "313403",
+          "doc_id": "4449524",
+          "score": 0.0005149756365232463,
+          "best_chunk_id": "4449524",
           "best_chunk_rank": 7,
-          "title": "High-Infiltration of Tumor-Associated Macrophages Predicts Unfavorable Clinical Outcome for Node-Negative Breast Cancer"
+          "title": "Hemoglobin concentration in white, black, and Oriental children: is there a need for separate criteria in screening for anemia?"
         },
         {
-          "doc_id": "13831842",
-          "score": 0.0002345068100381934,
-          "best_chunk_id": "13831842",
+          "doc_id": "27162821",
+          "score": 0.0005063802320783317,
+          "best_chunk_id": "27162821",
           "best_chunk_rank": 8,
-          "title": "Pooled analysis of prospective cohort studies on height, weight, and breast cancer risk."
+          "title": "Percentile curves for hemoglobin and red cell volume in infancy and childhood."
         },
         {
-          "doc_id": "17648235",
-          "score": 0.00023412346525606773,
-          "best_chunk_id": "17648235",
+          "doc_id": "8842332",
+          "score": 0.0005001316001561082,
+          "best_chunk_id": "8842332",
           "best_chunk_rank": 9,
-          "title": "Autocrine WNT signaling contributes to breast cancer cell proliferation via the canonical WNT pathway and EGFR transactivation"
+          "title": "Contemporary type 1 diabetes pregnancy outcomes: impact of obesity and glycaemic control."
         },
         {
-          "doc_id": "24341590",
-          "score": 0.0002334511971217792,
-          "best_chunk_id": "24341590",
+          "doc_id": "45218443",
+          "score": 0.00048607846030334777,
+          "best_chunk_id": "45218443",
           "best_chunk_rank": 10,
-          "title": "Association between CYP2D6 polymorphisms and outcomes among women with early stage breast cancer treated with tamoxifen."
+          "title": "Thalassemia and malaria: new insights into an old problem."
         }
       ]
     },
@@ -718,84 +718,84 @@
       "question": "ALDH1 expression is associated with poorer prognosis in breast cancer.",
       "gold_doc_id": "45638119",
       "gold_title": "ALDH1 is a marker of normal and malignant human mammary stem cells and a predictor of poor clinical outcome.",
-      "gold_rank": 68,
+      "gold_rank": 23,
       "top_documents": [
         {
-          "doc_id": "27240667",
-          "score": 0.00037593083848331464,
-          "best_chunk_id": "27240667",
-          "best_chunk_rank": 1,
-          "title": "Breast cancer mortality trends in the United States according to estrogen receptor status and age at diagnosis."
-        },
-        {
-          "doc_id": "2140497",
-          "score": 0.0003603240327955943,
-          "best_chunk_id": "2140497",
-          "best_chunk_rank": 2,
-          "title": "Independent Association of Lobular Involution and Mammographic Breast Density With Breast Cancer Risk"
-        },
-        {
           "doc_id": "40735046",
-          "score": 0.0003422536407276056,
+          "score": 0.0007124971809030384,
           "best_chunk_id": "40735046",
-          "best_chunk_rank": 3,
+          "best_chunk_rank": 1,
           "title": "Periodic screening for breast cancer: the HIP Randomized Controlled Trial. Health Insurance Plan."
         },
         {
-          "doc_id": "15721252",
-          "score": 0.00032630728462798716,
-          "best_chunk_id": "15721252",
+          "doc_id": "16734530",
+          "score": 0.0006734469768809734,
+          "best_chunk_id": "16734530",
+          "best_chunk_rank": 2,
+          "title": "The Association between Single-Nucleotide Polymorphisms of ORAI1 Gene and Breast Cancer in a Taiwanese Population"
+        },
+        {
+          "doc_id": "27123743",
+          "score": 0.0006180471432267008,
+          "best_chunk_id": "27123743",
+          "best_chunk_rank": 3,
+          "title": "Role of birthweight in the etiology of breast cancer."
+        },
+        {
+          "doc_id": "313403",
+          "score": 0.0005803000311699323,
+          "best_chunk_id": "313403",
           "best_chunk_rank": 4,
-          "title": "PD 0332991, a selective cyclin D kinase 4/6 inhibitor, preferentially inhibits proliferation of luminal estrogen receptor-positive human breast cancer cell lines in vitro"
+          "title": "High-Infiltration of Tumor-Associated Macrophages Predicts Unfavorable Clinical Outcome for Node-Negative Breast Cancer"
         },
         {
-          "doc_id": "6550579",
-          "score": 0.0003255779227865087,
-          "best_chunk_id": "6550579",
+          "doc_id": "25973484",
+          "score": 0.000565993579603144,
+          "best_chunk_id": "25973484",
           "best_chunk_rank": 5,
-          "title": "A central role for HER3 in HER2-amplified breast cancer: implications for targeted therapy."
+          "title": "Breast cancer and obesity: an update."
         },
         {
-          "doc_id": "3329824",
-          "score": 0.0003226552477891299,
-          "best_chunk_id": "3329824",
+          "doc_id": "34066665",
+          "score": 0.000527246623966913,
+          "best_chunk_id": "34066665",
           "best_chunk_rank": 6,
-          "title": "Incidence and risk of central nervous system metastases as site of first recurrence in patients with HER2-positive breast cancer treated with adjuvant trastuzumab."
+          "title": "Crosstalk between the estrogen receptor and the HER tyrosine kinase receptor family: molecular mechanism and clinical implications for endocrine therapy resistance."
         },
         {
-          "doc_id": "24341590",
-          "score": 0.0003222088953306237,
-          "best_chunk_id": "24341590",
+          "doc_id": "22482820",
+          "score": 0.0005093311378175141,
+          "best_chunk_id": "22482820",
           "best_chunk_rank": 7,
-          "title": "Association between CYP2D6 polymorphisms and outcomes among women with early stage breast cancer treated with tamoxifen."
+          "title": "An overview of the effective combination therapies for the treatment of breast cancer."
         },
         {
-          "doc_id": "13831842",
-          "score": 0.0003212649419181748,
-          "best_chunk_id": "13831842",
+          "doc_id": "2140497",
+          "score": 0.00046677889327777255,
+          "best_chunk_id": "2140497",
           "best_chunk_rank": 8,
-          "title": "Pooled analysis of prospective cohort studies on height, weight, and breast cancer risk."
+          "title": "Independent Association of Lobular Involution and Mammographic Breast Density With Breast Cancer Risk"
         },
         {
-          "doc_id": "16322674",
-          "score": 0.0003212011092475723,
-          "best_chunk_id": "16322674",
+          "doc_id": "27240667",
+          "score": 0.0004517438058722786,
+          "best_chunk_id": "27240667",
           "best_chunk_rank": 9,
-          "title": "Birth Size and Breast Cancer Risk: Re-analysis of Individual Participant Data from 32 Studies"
+          "title": "Breast cancer mortality trends in the United States according to estrogen receptor status and age at diagnosis."
         },
         {
-          "doc_id": "13069283",
-          "score": 0.00031554150078465487,
-          "best_chunk_id": "13069283",
+          "doc_id": "17648235",
+          "score": 0.0004499089248253105,
+          "best_chunk_id": "17648235",
           "best_chunk_rank": 10,
-          "title": "Influence of CYP2D6 Polymorphisms on Serum Levels of Tamoxifen Metabolites in Spanish Women with Breast Cancer"
+          "title": "Autocrine WNT signaling contributes to breast cancer cell proliferation via the canonical WNT pathway and EGFR transactivation"
         }
       ]
     }
   ],
   "summary": {
-    "success_at_10_available": 211,
-    "failure_at_10_available": 89,
+    "success_at_10_available": 217,
+    "failure_at_10_available": 83,
     "saved_per_group_max": 5
   }
 }

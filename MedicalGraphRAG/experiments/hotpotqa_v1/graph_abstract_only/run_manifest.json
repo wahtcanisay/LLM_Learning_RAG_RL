@@ -1,5 +1,5 @@
 {
-  "git_commit": "4442303",
+  "git_commit": "e2b111d",
   "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
   "host_python_version": "3.12.3",
   "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
@@ -17,7 +17,7 @@
     "--output-dir",
     "experiments/hotpotqa_v1/graph_abstract_only",
     "--git-commit",
-    "4442303",
+    "e2b111d",
     "--docker-image",
     "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
   ],
@@ -46,9 +46,9 @@
     "entity_to_sentences_sha256": "410b4ded82d450953b9a477f42b0034d1da1007f8921ab799d4272bcc36c6d28",
     "sentence_to_entities_sha256": "2792157b434ec4e8f367015bb603dea11282ffbbbe90fa82391ea8d0ac5859f0",
     "config": {
-      "damping": 0.85,
-      "passage_ratio": 1.5,
-      "passage_node_weight": 0.5,
+      "damping": 0.5,
+      "passage_ratio": 2.0,
+      "passage_node_weight": 0.05,
       "iteration_threshold": 0.5,
       "top_k_sentence": 1,
       "max_iterations": 3
@@ -84,20 +84,20 @@
     "ner_model": "en_ner_bc5cdr_md",
     "embedding_model": "models/all-mpnet-base-v2",
     "graph_sha256": "caf59e296b7979265db3e9d4e4dd4537bc8a79ca919b5993c953daff18828ece",
-    "graph_build_report_sha256": "8dc187a3fb9d71babe7de7ebb665401383c024dddc3ab5d4c361ca4399f301a4",
+    "graph_build_report_sha256": "8f0dd3d1ab6a48046c390523bb434b286b6c227c7068511ce3aa010bf017e08f",
     "dataset_manifest_sha256": "18e14d03aea7c2a47b91d44a027d5ad9deb35b53ec0a74e425f0cf2e8dfc2aec",
     "questions_sha256": "11e3507f64b416c9957ff8ed3b9b527ba8f9ee1df88f0221e28b8cd9c6982f06",
-    "rankings_sha256": "cc1cc1b7258eb27a51cd54debd94c608c1904d7a8a0265a229954244dbca3ca5",
+    "rankings_sha256": "65dca2588db3bb76e724d06ff93b4e854e221048ef8f0d5be35a2807e53fa354",
     "config": {
-      "damping": 0.85,
-      "passage_ratio": 1.5,
-      "passage_node_weight": 0.5,
+      "damping": 0.5,
+      "passage_ratio": 2.0,
+      "passage_node_weight": 0.05,
       "iteration_threshold": 0.5,
       "top_k_sentence": 1,
       "max_iterations": 3
     }
   },
-  "index_report_sha256": "8dc187a3fb9d71babe7de7ebb665401383c024dddc3ab5d4c361ca4399f301a4",
+  "index_report_sha256": "8f0dd3d1ab6a48046c390523bb434b286b6c227c7068511ce3aa010bf017e08f",
   "dataset_manifest_sha256": "18e14d03aea7c2a47b91d44a027d5ad9deb35b53ec0a74e425f0cf2e8dfc2aec",
   "dataset_artifact_hashes": {
     "questions.jsonl": "11e3507f64b416c9957ff8ed3b9b527ba8f9ee1df88f0221e28b8cd9c6982f06",
@@ -105,8 +105,8 @@
     "chunks.jsonl": "976e67e108ae087eddcceaa06ba9251667386b3d5f9a0bd845956a72fd3d68e9",
     "qrels.tsv": "2879f88d79616fc62a3645beb704a9cd54b9bf03ffa352e27a7e1cf03c011722"
   },
-  "generated_at_utc": "2026-08-05T05:58:30.945199+00:00",
-  "rankings_sha256": "cc1cc1b7258eb27a51cd54debd94c608c1904d7a8a0265a229954244dbca3ca5",
+  "generated_at_utc": "2026-08-05T09:03:55.397944+00:00",
+  "rankings_sha256": "65dca2588db3bb76e724d06ff93b4e854e221048ef8f0d5be35a2807e53fa354",
   "question_count": 7405,
   "document_count": 66581,
   "chunk_metadata_count": 66581,
@@ -119,9 +119,9 @@
     "ner_model": "en_ner_bc5cdr_md",
     "embedding_model": "models/all-mpnet-base-v2",
     "config": {
-      "damping": 0.85,
-      "passage_ratio": 1.5,
-      "passage_node_weight": 0.5,
+      "damping": 0.5,
+      "passage_ratio": 2.0,
+      "passage_node_weight": 0.05,
       "iteration_threshold": 0.5,
       "top_k_sentence": 1,
       "max_iterations": 3

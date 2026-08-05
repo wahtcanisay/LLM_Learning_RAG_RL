@@ -16,6 +16,7 @@ from medical_graphrag.retrieval.bm25 import (
     export_pyserini_collection,
     validate_frozen_dataset,
 )
+from medical_graphrag.run_pipeline import RUNNERS
 
 
 PQA_URL = "https://raw.githubusercontent.com/pubmedqa/pubmedqa/master/data/ori_pqal.json"
@@ -106,6 +107,18 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate_reranker.add_argument("--output-dir", type=Path, required=True)
     evaluate_reranker.add_argument("--git-commit", required=True)
     evaluate_reranker.add_argument("--docker-image", required=True)
+
+    run = subparsers.add_parser(
+        "run",
+        help="End-to-end pipeline: build → search → evaluate for one retriever.",
+    )
+    run.add_argument("retriever", choices=sorted(RUNNERS))
+    run.add_argument("--dataset", required=True, help="frozen dataset name under data/processed/")
+    run.add_argument("--git-commit", required=True)
+    run.add_argument("--docker-image", default="pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel")
+    run.add_argument("--top-k", type=int, default=100)
+    run.add_argument("--rrf-k", type=int, default=60)
+    run.add_argument("--top-n", type=int, default=50)
     return parser
 
 
@@ -133,7 +146,30 @@ def main() -> int:
         return _evaluate_graph_command(args)
     if args.command == "evaluate-reranker":
         return _evaluate_reranker_command(args)
+    if args.command == "run":
+        return _run_command(args)
     return 2
+
+
+def _run_command(args: argparse.Namespace) -> int:
+    """Wiring for `run`: dispatch to the pipeline runner for one retriever.
+
+    Each runner accepts only the pipeline parameters it uses; build the kwargs
+    per-retriever so an unused flag (e.g. ``rrf_k`` for bm25) never leaks.
+    """
+    runner = RUNNERS[args.retriever]
+    kwargs: dict[str, object] = {
+        "git_commit": args.git_commit,
+        "docker_image": args.docker_image,
+    }
+    if args.retriever in ("bm25", "dense", "graph", "hybrid", "reranker"):
+        kwargs["top_k"] = args.top_k
+    if args.retriever == "hybrid":
+        kwargs["rrf_k"] = args.rrf_k
+    if args.retriever == "reranker":
+        kwargs["top_n"] = args.top_n
+    runner(args.dataset, **kwargs)
+    return 0
 
 
 def _evaluate_reranker_command(args: argparse.Namespace) -> int:

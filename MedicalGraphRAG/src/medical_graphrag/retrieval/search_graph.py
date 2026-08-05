@@ -1,25 +1,19 @@
-"""Run LinearGraphRetriever.search over every question inside the container.
+"""Graph retrieval over a built LinearGraphRetriever index, extracted from the
+old ``scripts/search_graph.py`` into a library function.
 
-Run with the project venv python: `/opt/venv/bin/python`. Standalone script.
-Validates the graph index report hash bindings, retrieves top-k chunks per
-question (timed), and writes ``raw_rankings.jsonl`` plus ``search_run.json``
-with every artifact SHA-256.
+``run_search`` validates the graph index report hash bindings, retrieves
+top-k chunks per question (timed), and writes ``raw_rankings.jsonl`` plus
+``search_run.json`` with every artifact SHA-256.
 """
-import argparse
 import json
-import sys
 import time
 from collections import Counter
 from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
-
-from medical_graphrag.data.io import sha256_file  # noqa: E402
-from medical_graphrag.retrieval.graph import (  # noqa: E402
+from medical_graphrag.data.io import sha256_file
+from medical_graphrag.retrieval.graph import (
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_NER_MODEL,
     GraphConfig,
@@ -97,25 +91,25 @@ def search_one(
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--index", type=Path, required=True)
-    parser.add_argument("--questions", type=Path, required=True)
-    parser.add_argument("--chunks", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--report", type=Path, required=True)
-    parser.add_argument("--index-report", type=Path, required=True)
-    parser.add_argument("--top-k", type=int, default=100)
-    parser.add_argument("--ner-model", default=DEFAULT_NER_MODEL)
-    parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
-    args = parser.parse_args()
-
-    index_report = validate_index(args.index, args.questions, args.index_report)
-    if args.ner_model != index_report["ner_model"]:
+def run_search(
+    *,
+    index: Path,
+    index_report: Path,
+    questions: Path,
+    chunks: Path,
+    output: Path,
+    report: Path,
+    top_k: int = 100,
+    ner_model: str = DEFAULT_NER_MODEL,
+    embedding_model: str = DEFAULT_EMBEDDING_MODEL,
+) -> dict[str, object]:
+    """Retrieve top-k passages per question via LinearGraphRetriever."""
+    index_report_data = validate_index(index, questions, index_report)
+    if ner_model != index_report_data["ner_model"]:
         raise ValueError("requested ner model does not match index report")
-    if args.embedding_model != index_report["embedding_model"]:
+    if embedding_model != index_report_data["embedding_model"]:
         raise ValueError("requested embedding model does not match index report")
-    index_config = index_report["config"]
+    index_config = index_report_data["config"]
     config = GraphConfig(
         damping=index_config["damping"],
         passage_ratio=index_config["passage_ratio"],
@@ -123,54 +117,42 @@ def main() -> int:
         iteration_threshold=index_config["iteration_threshold"],
         top_k_sentence=index_config["top_k_sentence"],
         max_iterations=index_config["max_iterations"],
-        ner_model=args.ner_model,
-        embedding_model=args.embedding_model,
+        ner_model=ner_model,
+        embedding_model=embedding_model,
     )
-    retriever = LinearGraphRetriever(args.index, config=config)
+    retriever = LinearGraphRetriever(index, config=config)
 
-    questions = _read_jsonl(args.questions)
-    chunks = _read_jsonl(args.chunks)
-    chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in chunks}
+    questions_rows = _read_jsonl(questions)
+    chunks_rows = _read_jsonl(chunks)
+    chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in chunks_rows}
     missing = [p for p in retriever.passage_ids if p not in chunk_to_doc]
     if missing:
         raise ValueError(f"{len(missing)} index passages missing from --chunks")
-    rows = [
-        search_one(retriever, row, chunk_to_doc, args.top_k) for row in questions
-    ]
+    rows = [search_one(retriever, row, chunk_to_doc, top_k) for row in questions_rows]
     if len({row["query_id"] for row in rows}) != len(rows):
         raise ValueError("duplicate query_id in search output")
-    hit_summary = summarize_hit_counts(rows, requested_top_k=args.top_k)
+    hit_summary = summarize_hit_counts(rows, requested_top_k=top_k)
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
         "".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows),
         encoding="utf-8",
     )
-    rankings_sha256 = sha256_file(args.output)
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(
-        json.dumps(
-            {
-                "command": sys.argv,
-                "query_count": len(rows),
-                **hit_summary,
-                "text_mode": index_report["text_mode"],
-                "ner_model": index_report["ner_model"],
-                "embedding_model": index_report["embedding_model"],
-                "graph_sha256": index_report["graph_sha256"],
-                "graph_build_report_sha256": sha256_file(args.index_report),
-                "dataset_manifest_sha256": index_report["dataset_manifest_sha256"],
-                "questions_sha256": sha256_file(args.questions),
-                "rankings_sha256": rankings_sha256,
-                "config": index_report["config"],
-            },
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    rankings_sha256 = sha256_file(output)
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report_data = {
+        "command": ["search_graph.run_search", str(questions), str(output)],
+        "query_count": len(rows),
+        **hit_summary,
+        "text_mode": index_report_data["text_mode"],
+        "ner_model": index_report_data["ner_model"],
+        "embedding_model": index_report_data["embedding_model"],
+        "graph_sha256": index_report_data["graph_sha256"],
+        "graph_build_report_sha256": sha256_file(index_report),
+        "dataset_manifest_sha256": index_report_data["dataset_manifest_sha256"],
+        "questions_sha256": sha256_file(questions),
+        "rankings_sha256": rankings_sha256,
+        "config": index_report_data["config"],
+    }
+    report.write_text(json.dumps(report_data, indent=2) + "\n", encoding="utf-8")
+    return report_data

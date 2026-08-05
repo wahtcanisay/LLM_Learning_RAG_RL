@@ -1,0 +1,339 @@
+"""End-to-end retrieval pipelines: one call per retriever over a frozen dataset.
+
+This is the unified evaluate interface — the successor to the per-retriever
+scripts under ``scripts/`` (build_* / search_* / rerank_candidates). Each
+``run_*`` function drives the full  build → search → evaluate  chain for one
+retriever and one frozen dataset, in-process, preserving the same audit chain
+(hash-bound reports consumed by ``evaluate_*_run``).
+
+The dataset argument is a name under ``data/processed/`` (e.g. ``hotpotqa_v1``).
+``root`` defaults to the project root (parents[1] of this file); override for
+tests.
+"""
+import json
+import platform
+import sys
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+from medical_graphrag.data.io import sha256_file
+from medical_graphrag.evaluation.bm25 import evaluate_bm25_run
+from medical_graphrag.evaluation.dense import evaluate_dense_run
+from medical_graphrag.evaluation.graph import evaluate_graph_run
+from medical_graphrag.evaluation.hybrid import evaluate_hybrid_run
+from medical_graphrag.evaluation.reranker import evaluate_reranker_run
+from medical_graphrag.retrieval.bm25 import (
+    export_pyserini_collection,
+    validate_frozen_dataset,
+)
+from medical_graphrag.retrieval.dense import (
+    DEFAULT_EMBEDDING_MODEL as DENSE_DEFAULT_EMBEDDING_MODEL,
+    build_dense_index,
+)
+from medical_graphrag.retrieval.graph import (
+    DEFAULT_EMBEDDING_MODEL as GRAPH_DEFAULT_EMBEDDING_MODEL,
+)
+from medical_graphrag.retrieval.graph import DEFAULT_NER_MODEL, GraphConfig, build_graph_index
+from medical_graphrag.retrieval.rerank import run_rerank
+from medical_graphrag.retrieval.reranker import DEFAULT_RERANKER_MODEL
+from medical_graphrag.retrieval.search_bm25 import build_lucene_index, run_search as run_bm25_search
+from medical_graphrag.retrieval.search_dense import run_search as run_dense_search
+from medical_graphrag.retrieval.search_graph import run_search as run_graph_search
+
+ROOT = Path(__file__).resolve().parents[2]
+DOCKER_IMAGE_DEFAULT = "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel"
+
+
+def _dataset_dir(dataset: str, root: Path = ROOT) -> Path:
+    return root / "data" / "processed" / dataset
+
+
+def _build_context(
+    *,
+    git_commit: str,
+    docker_image: str,
+    command: list[str],
+    extra: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    context: dict[str, Any] = {
+        "git_commit": git_commit,
+        "host_platform": platform.platform(),
+        "host_python_version": platform.python_version(),
+        "docker_image": docker_image,
+        "evaluation_command": command,
+    }
+    if extra:
+        context.update(extra)
+    return context
+
+
+def run_bm25(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    k1: float = 0.9,
+    b: float = 0.4,
+    threads: int = 8,
+) -> dict[str, Any]:
+    """Build the Lucene index, search, and evaluate BM25 on ``dataset``."""
+    dataset_dir = _dataset_dir(dataset, root)
+    stage = dataset_dir.parent / f"../outputs/{dataset}/bm25"
+    # outputs/<dataset>/bm25
+    out_dir = root / "outputs" / dataset / "bm25"
+    idx_dir = root / "indexes" / dataset / "bm25"
+    exp_dir = root / "experiments" / dataset / "bm25"
+
+    export_pyserini_collection(dataset_dir, out_dir)
+    build_lucene_index(
+        collection=out_dir / "collection",
+        index=idx_dir,
+        report=out_dir / "index_build.json",
+        export_report=out_dir / "export_report.json",
+        threads=threads,
+    )
+    run_bm25_search(
+        index=idx_dir,
+        index_report=out_dir / "index_build.json",
+        questions=dataset_dir / "questions.jsonl",
+        metadata=out_dir / "chunk_metadata.jsonl",
+        output=out_dir / "raw_rankings.jsonl",
+        report=out_dir / "search_run.json",
+        top_k=top_k,
+        k1=k1,
+        b=b,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "bm25", "--dataset", dataset],
+        extra={
+            "index": json.loads((out_dir / "index_build.json").read_text(encoding="utf-8")),
+            "search": json.loads((out_dir / "search_run.json").read_text(encoding="utf-8")),
+            "index_report_sha256": sha256_file(out_dir / "index_build.json"),
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_bm25_run(
+        dataset_dir,
+        out_dir / "chunk_metadata.jsonl",
+        out_dir / "raw_rankings.jsonl",
+        exp_dir,
+        run_context=context,
+    )
+
+
+def run_dense(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    embedding_model: str = DENSE_DEFAULT_EMBEDDING_MODEL,
+    batch_size: int = 64,
+) -> dict[str, Any]:
+    """Build the FAISS index, search, and evaluate Dense on ``dataset``."""
+    dataset_dir = _dataset_dir(dataset, root)
+    out_dir = root / "outputs" / dataset / "dense_abstract_only"
+    exp_dir = root / "experiments" / dataset / "dense_abstract_only"
+
+    build_dense_index(
+        dataset_dir,
+        out_dir,
+        model_name=embedding_model,
+        batch_size=batch_size,
+    )
+    run_dense_search(
+        index=out_dir / "index.faiss",
+        embeddings=out_dir / "chunk_embeddings.npy",
+        index_report=out_dir / "index_build.json",
+        questions=dataset_dir / "questions.jsonl",
+        metadata=out_dir / "chunk_metadata.jsonl",
+        output=out_dir / "raw_rankings.jsonl",
+        report=out_dir / "search_run.json",
+        top_k=top_k,
+        embedding_model=embedding_model,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "dense", "--dataset", dataset],
+        extra={
+            "index": json.loads((out_dir / "index_build.json").read_text(encoding="utf-8")),
+            "search": json.loads((out_dir / "search_run.json").read_text(encoding="utf-8")),
+            "index_report_sha256": sha256_file(out_dir / "index_build.json"),
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_dense_run(
+        dataset_dir,
+        out_dir / "chunk_metadata.jsonl",
+        out_dir / "raw_rankings.jsonl",
+        exp_dir,
+        run_context=context,
+    )
+
+
+def run_graph(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    config: GraphConfig | None = None,
+    batch_size: int = 64,
+) -> dict[str, Any]:
+    """Build the graph index, search, and evaluate Graph on ``dataset``."""
+    dataset_dir = _dataset_dir(dataset, root)
+    idx_dir = root / "indexes" / dataset / "graph_abstract_only"
+    out_dir = root / "outputs" / dataset / "graph_abstract_only"
+    exp_dir = root / "experiments" / dataset / "graph_abstract_only"
+
+    build_graph_index(dataset_dir, idx_dir, config=config, batch_size=batch_size)
+    run_graph_search(
+        index=idx_dir,
+        index_report=idx_dir / "graph_build.json",
+        questions=dataset_dir / "questions.jsonl",
+        chunks=dataset_dir / "chunks.jsonl",
+        output=out_dir / "raw_rankings.jsonl",
+        report=out_dir / "search_run.json",
+        top_k=top_k,
+        ner_model=(config.ner_model if config else DEFAULT_NER_MODEL),
+        embedding_model=(config.embedding_model if config else GRAPH_DEFAULT_EMBEDDING_MODEL),
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "graph", "--dataset", dataset],
+        extra={
+            "index": json.loads((idx_dir / "graph_build.json").read_text(encoding="utf-8")),
+            "search": json.loads((out_dir / "search_run.json").read_text(encoding="utf-8")),
+            "index_report_sha256": sha256_file(idx_dir / "graph_build.json"),
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_graph_run(
+        dataset_dir,
+        out_dir / "raw_rankings.jsonl",
+        exp_dir,
+        run_context=context,
+    )
+
+
+def run_hybrid(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    rrf_k: int = 60,
+) -> dict[str, Any]:
+    """Run BM25 + Dense, then fuse with RRF and evaluate Hybrid on ``dataset``."""
+    run_bm25(dataset, git_commit=git_commit, docker_image=docker_image, root=root, top_k=top_k)
+    run_dense(dataset, git_commit=git_commit, docker_image=docker_image, root=root, top_k=top_k)
+
+    dataset_dir = _dataset_dir(dataset, root)
+    bm25_dir = root / "outputs" / dataset / "bm25"
+    dense_dir = root / "outputs" / dataset / "dense_abstract_only"
+    exp_dir = root / "experiments" / dataset / "hybrid_rrf"
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "hybrid", "--dataset", dataset],
+        extra={
+            "bm25": {
+                "index": json.loads((bm25_dir / "index_build.json").read_text(encoding="utf-8")),
+                "search": json.loads((bm25_dir / "search_run.json").read_text(encoding="utf-8")),
+                "index_report_sha256": sha256_file(bm25_dir / "index_build.json"),
+            },
+            "dense": {
+                "index": json.loads(
+                    (dense_dir / "index_build.json").read_text(encoding="utf-8")
+                ),
+                "search": json.loads(
+                    (dense_dir / "search_run.json").read_text(encoding="utf-8")
+                ),
+                "index_report_sha256": sha256_file(dense_dir / "index_build.json"),
+            },
+        },
+    )
+    return evaluate_hybrid_run(
+        dataset_dir,
+        bm25_dir / "raw_rankings.jsonl",
+        dense_dir / "raw_rankings.jsonl",
+        dense_dir / "chunk_metadata.jsonl",
+        exp_dir,
+        k=rrf_k,
+        run_context=context,
+    )
+
+
+def run_reranker(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    top_n: int = 50,
+    model: str = DEFAULT_RERANKER_MODEL,
+) -> dict[str, Any]:
+    """Run BM25 + Dense + Graph, rerank the union with Qwen3-Reranker, evaluate."""
+    run_bm25(dataset, git_commit=git_commit, docker_image=docker_image, root=root, top_k=top_k)
+    run_dense(dataset, git_commit=git_commit, docker_image=docker_image, root=root, top_k=top_k)
+    run_graph(dataset, git_commit=git_commit, docker_image=docker_image, root=root, top_k=top_k)
+
+    dataset_dir = _dataset_dir(dataset, root)
+    bm25_dir = root / "outputs" / dataset / "bm25"
+    dense_dir = root / "outputs" / dataset / "dense_abstract_only"
+    graph_out = root / "outputs" / dataset / "graph_abstract_only"
+    graph_idx = root / "indexes" / dataset / "graph_abstract_only"
+    rr_dir = root / "outputs" / dataset / "reranker_qwen"
+    exp_dir = root / "experiments" / dataset / "reranker_qwen"
+
+    rerank_report = run_rerank(
+        bm25_rankings=bm25_dir / "raw_rankings.jsonl",
+        dense_rankings=dense_dir / "raw_rankings.jsonl",
+        graph_rankings=graph_out / "raw_rankings.jsonl",
+        bm25_search_report=bm25_dir / "search_run.json",
+        dense_search_report=dense_dir / "search_run.json",
+        graph_search_report=graph_out / "search_run.json",
+        questions=dataset_dir / "questions.jsonl",
+        documents=dataset_dir / "documents.jsonl",
+        chunks=dataset_dir / "chunks.jsonl",
+        dataset_manifest=dataset_dir / "manifest.json",
+        output=rr_dir / "reranked.jsonl",
+        report=rr_dir / "rerank_report.json",
+        top_n=top_n,
+        model=model,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "reranker", "--dataset", dataset],
+        extra={
+            "reranker": rerank_report,
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_reranker_run(
+        dataset_dir,
+        rr_dir / "reranked.jsonl",
+        exp_dir,
+        run_context=context,
+    )
+
+
+RUNNERS: dict[str, Callable[..., dict[str, Any]]] = {
+    "bm25": run_bm25,
+    "dense": run_dense,
+    "graph": run_graph,
+    "hybrid": run_hybrid,
+    "reranker": run_reranker,
+}

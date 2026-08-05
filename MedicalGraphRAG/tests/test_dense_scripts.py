@@ -1,32 +1,20 @@
-import importlib.util
+"""Tests for the dense search library functions (extracted to src)."""
 import json
 from pathlib import Path
 
 import pytest
 
 from medical_graphrag.data.io import sha256_file
-
-
-ROOT = Path(__file__).parents[1]
-
-
-def _load(name: str):
-    path = ROOT / "scripts" / f"{name}.py"
-    spec = importlib.util.spec_from_file_location(name, path)
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
-
-
-def test_standalone_scripts_add_project_src_to_import_path() -> None:
-    for name in ("build_faiss_dense_index", "search_faiss_dense"):
-        module = _load(name)
-        assert str(ROOT / "src") in module.sys.path
+from medical_graphrag.retrieval.search_dense import (
+    package_version,
+    search_one,
+    summarize_hit_counts,
+    validate_index,
+    _read_jsonl,
+)
 
 
 def test_search_reads_embedding_version_from_distribution_metadata() -> None:
-    module = _load("search_faiss_dense")
     requested: list[str] = []
 
     def resolver(package: str) -> str:
@@ -34,16 +22,15 @@ def test_search_reads_embedding_version_from_distribution_metadata() -> None:
         return "2.2.2"
 
     assert (
-        module.package_version("sentence-transformers", resolver=resolver) == "2.2.2"
+        package_version("sentence-transformers", resolver=resolver) == "2.2.2"
     )
     assert requested == ["sentence-transformers"]
 
 
 def test_search_summary_reports_full_top_k_rankings() -> None:
-    module = _load("search_faiss_dense")
     rows = [{"hits": [{} for _ in range(100)]} for _ in range(2)]
 
-    summary = module.summarize_hit_counts(rows, requested_top_k=100)
+    summary = summarize_hit_counts(rows, requested_top_k=100)
 
     assert summary == {
         "requested_top_k": 100,
@@ -55,8 +42,6 @@ def test_search_summary_reports_full_top_k_rankings() -> None:
 
 
 def test_search_one_maps_index_to_chunk_and_doc() -> None:
-    module = _load("search_faiss_dense")
-
     class FakeEmbedder:
         def encode(self, text: str, normalize_embeddings: bool, show_progress_bar: bool):
             assert text == "alpha?"
@@ -71,7 +56,7 @@ def test_search_one_maps_index_to_chunk_and_doc() -> None:
 
             return (np.array([[0.9, 0.8]]), np.array([[1, 0]]))
 
-    result = module.search_one(
+    result = search_one(
         FakeEmbedder(),
         FakeIndex(),
         {"query_id": "q1", "question": "alpha?", "split": "dev"},
@@ -91,8 +76,6 @@ def test_search_one_maps_index_to_chunk_and_doc() -> None:
 
 
 def test_search_one_stops_at_faiss_padding() -> None:
-    module = _load("search_faiss_dense")
-
     class FakeEmbedder:
         def encode(self, text: str, normalize_embeddings: bool, show_progress_bar: bool):
             return [0.1, 0.2, 0.3]
@@ -103,7 +86,7 @@ def test_search_one_stops_at_faiss_padding() -> None:
 
             return (np.array([[0.9, -1.0]]), np.array([[1, -1]]))
 
-    result = module.search_one(
+    result = search_one(
         FakeEmbedder(),
         FakeIndex(),
         {"query_id": "q1", "question": "alpha?", "split": "dev"},
@@ -119,7 +102,6 @@ def test_search_one_stops_at_faiss_padding() -> None:
 
 
 def test_search_input_validation_rejects_modified_index(tmp_path: Path) -> None:
-    module = _load("search_faiss_dense")
     index = tmp_path / "index.faiss"
     index.write_bytes(b"index")
     embeddings = tmp_path / "chunk_embeddings.npy"
@@ -144,11 +126,10 @@ def test_search_input_validation_rejects_modified_index(tmp_path: Path) -> None:
     index.write_bytes(b"tampered")
 
     with pytest.raises(ValueError, match="index SHA-256 mismatch"):
-        module.validate_index(index, embeddings, metadata, questions, report)
+        validate_index(index, embeddings, metadata, questions, report)
 
 
 def test_search_input_validation_rejects_modified_embeddings(tmp_path: Path) -> None:
-    module = _load("search_faiss_dense")
     index = tmp_path / "index.faiss"
     index.write_bytes(b"index")
     embeddings = tmp_path / "chunk_embeddings.npy"
@@ -173,4 +154,4 @@ def test_search_input_validation_rejects_modified_embeddings(tmp_path: Path) -> 
     embeddings.write_bytes(b"tampered")
 
     with pytest.raises(ValueError, match="embeddings SHA-256 mismatch"):
-        module.validate_index(index, embeddings, metadata, questions, report)
+        validate_index(index, embeddings, metadata, questions, report)

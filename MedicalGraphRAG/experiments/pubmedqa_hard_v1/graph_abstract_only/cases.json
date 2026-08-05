@@ -9,73 +9,152 @@
       "top_documents": [
         {
           "doc_id": "PMID:7482275",
-          "score": 0.0011983973936256014,
+          "score": 0.0041846014109828645,
           "best_chunk_id": "PMID:7482275#0",
           "best_chunk_rank": 1,
           "title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?"
         },
         {
-          "doc_id": "PMID:19504993",
-          "score": 0.00019677495599177393,
-          "best_chunk_id": "PMID:19504993#1",
+          "doc_id": "PMID:24270957",
+          "score": 0.00023715089757866457,
+          "best_chunk_id": "PMID:24270957#2",
           "best_chunk_rank": 2,
+          "title": "Is combined therapy more effective than growth hormone or hyperbaric oxygen alone in the healing of left ischemic and non-ischemic colonic anastomoses?"
+        },
+        {
+          "doc_id": "PMID:19504993",
+          "score": 0.00023025292316685428,
+          "best_chunk_id": "PMID:19504993#0",
+          "best_chunk_rank": 3,
           "title": "It's Fournier's gangrene still dangerous?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n1133_20962",
-          "score": 0.0001967730380369731,
-          "best_chunk_id": "MEDRAG:pubmed23n1133_20962#1",
-          "best_chunk_rank": 3,
-          "title": "Evaluation of oxidative stress in degenerative rotator cuff tears."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0412_21300",
-          "score": 0.000182452826335283,
-          "best_chunk_id": "MEDRAG:pubmed23n0412_21300#0",
-          "best_chunk_rank": 6,
-          "title": "How effective is training in compression bandaging techniques?"
-        },
-        {
           "doc_id": "MEDRAG:pubmed23n0869_24016",
-          "score": 0.000182217216737875,
+          "score": 0.00023013119359733774,
           "best_chunk_id": "MEDRAG:pubmed23n0869_24016#1",
-          "best_chunk_rank": 7,
+          "best_chunk_rank": 4,
           "title": "Sulodexide for treating venous leg ulcers."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0310_400",
-          "score": 0.00017896307485902737,
-          "best_chunk_id": "MEDRAG:pubmed23n0310_400#0",
+          "doc_id": "MEDRAG:pubmed23n0275_1614",
+          "score": 0.0002269337171101611,
+          "best_chunk_id": "MEDRAG:pubmed23n0275_1614#1",
+          "best_chunk_rank": 5,
+          "title": "Acute asphyxia affects neutrophil number and function in the rat."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0275_4448",
+          "score": 0.00021888565611956795,
+          "best_chunk_id": "MEDRAG:pubmed23n0275_4448#0",
           "best_chunk_rank": 8,
+          "title": "[Initial experiences with extracorporeal shockwave lithotripsy (ESWL) in treatment of tendinosis calcarea of the shoulder]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_20962",
+          "score": 0.0002181851278111255,
+          "best_chunk_id": "MEDRAG:pubmed23n1133_20962#1",
+          "best_chunk_rank": 9,
+          "title": "Evaluation of oxidative stress in degenerative rotator cuff tears."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0794_3339",
+          "score": 0.00021699081376107236,
+          "best_chunk_id": "MEDRAG:pubmed23n0794_3339#0",
+          "best_chunk_rank": 10,
+          "title": "Pediatric burn wound impetigo after grafting."
+        },
+        {
+          "doc_id": "PMID:11862129",
+          "score": 0.00021552749033976076,
+          "best_chunk_id": "PMID:11862129#2",
+          "best_chunk_rank": 11,
+          "title": "Do clinical variables predict pathologic radiographs in the first episode of wheezing?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0562_8095",
+          "score": 0.00021530790621374592,
+          "best_chunk_id": "MEDRAG:pubmed23n0562_8095#0",
+          "best_chunk_rank": 12,
+          "title": "[Efficacy of moxifloxacin in the treatment of secondary peritonitis]."
+        }
+      ]
+    },
+    {
+      "query_id": "7497757",
+      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_doc_id": "PMID:7497757",
+      "gold_title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_rank": 4,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_1166",
+          "score": 0.0014715787354950005,
+          "best_chunk_id": "MEDRAG:pubmed23n0154_1166#0",
+          "best_chunk_rank": 1,
+          "title": "Rat liver adenyl cyclase activity in various thyroid states."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_400",
+          "score": 0.0003002858242677628,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_400#0",
+          "best_chunk_rank": 2,
           "title": "Forced-air warming is no more effective than conventional methods for raising postoperative core temperature after cardiac surgery."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0202_3861",
-          "score": 0.00017712213219646869,
-          "best_chunk_id": "MEDRAG:pubmed23n0202_3861#0",
+          "doc_id": "MEDRAG:pubmed23n0515_11805",
+          "score": 0.000286793369100109,
+          "best_chunk_id": "MEDRAG:pubmed23n0515_11805#0",
+          "best_chunk_rank": 3,
+          "title": "Profound hypothermia with alpha-stat pH management during open-heart surgery is associated with choreoathetosis."
+        },
+        {
+          "doc_id": "PMID:7497757",
+          "score": 0.00026594014273199305,
+          "best_chunk_id": "PMID:7497757#0",
+          "best_chunk_rank": 4,
+          "title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?"
+        },
+        {
+          "doc_id": "PMID:17054994",
+          "score": 0.0002647645915812001,
+          "best_chunk_id": "PMID:17054994#0",
+          "best_chunk_rank": 5,
+          "title": "Does frozen section alter surgical management of multinodular thyroid disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_9647",
+          "score": 0.00023136900145943892,
+          "best_chunk_id": "MEDRAG:pubmed23n0548_9647#0",
+          "best_chunk_rank": 8,
+          "title": "Memory improvement with treatment of hypothyroidism."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_19893",
+          "score": 0.00022988285716074315,
+          "best_chunk_id": "MEDRAG:pubmed23n0412_19893#0",
           "best_chunk_rank": 9,
-          "title": "Single blind comparative study of ranitidine and cimetidine in patients with gastric ulcer. The Belgian Peptic Ulcer Study Group."
+          "title": "[Role of the Swan-Ganz pulmonary artery (PA) catheter in evaluation of hemodynamic changes during myocardial revascularization in patients with low left ventricular function]."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0615_13812",
-          "score": 0.000173654690382701,
-          "best_chunk_id": "MEDRAG:pubmed23n0615_13812#0",
+          "doc_id": "MEDRAG:pubmed23n0200_87",
+          "score": 0.0002265706522679204,
+          "best_chunk_id": "MEDRAG:pubmed23n0200_87#0",
           "best_chunk_rank": 10,
-          "title": "[Profiles of lipid oxidation by a free radical mechanism in patients with bacterial sore throat]."
+          "title": "The management of accidental hypothermia."
         },
         {
-          "doc_id": "PMID:25779009",
-          "score": 0.00017205949018017235,
-          "best_chunk_id": "PMID:25779009#1",
+          "doc_id": "MEDRAG:pubmed23n0412_12537",
+          "score": 0.00022469111176636773,
+          "best_chunk_id": "MEDRAG:pubmed23n0412_12537#1",
           "best_chunk_rank": 11,
-          "title": "Bactericidal activity of 3 cutaneous/mucosal antiseptic solutions in the presence of interfering substances: Improvement of the NF EN 13727 European Standard?"
+          "title": "Comparison of a prototype esophageal oximetry probe with two conventional digital pulse oximetry monitors in aortocoronary bypass patients."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0526_2825",
-          "score": 0.00017204156848953816,
-          "best_chunk_id": "MEDRAG:pubmed23n0526_2825#0",
+          "doc_id": "PMID:17462393",
+          "score": 0.00021732398771386833,
+          "best_chunk_id": "PMID:17462393#0",
           "best_chunk_rank": 12,
-          "title": "Wound-healing defect of CD18(-/-) mice due to a decrease in TGF-beta1 and myofibroblast differentiation."
+          "title": "Does normothermic normokalemic simultaneous antegrade/retrograde perfusion improve myocardial oxygenation and energy metabolism for hypertrophied hearts?"
         }
       ]
     },
@@ -88,73 +167,152 @@
       "top_documents": [
         {
           "doc_id": "PMID:7547656",
-          "score": 0.0004060056811590792,
+          "score": 0.0011512636294932449,
           "best_chunk_id": "PMID:7547656#0",
           "best_chunk_rank": 1,
           "title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?"
         },
         {
           "doc_id": "PMID:10577397",
-          "score": 0.0003756275918118059,
+          "score": 0.0010564883509864764,
           "best_chunk_id": "PMID:10577397#2",
           "best_chunk_rank": 3,
           "title": "Is a pressor necessary during aortic perfusion and oxygenation therapy of cardiac arrest?"
         },
         {
           "doc_id": "PMID:8910148",
-          "score": 0.00032513942390403357,
+          "score": 0.0009157532156823162,
           "best_chunk_id": "PMID:8910148#1",
-          "best_chunk_rank": 6,
+          "best_chunk_rank": 4,
           "title": "Transesophageal echocardiographic assessment of left ventricular function in brain-dead patients: are marginally acceptable hearts suitable for transplantation?"
         },
         {
           "doc_id": "PMID:17578985",
-          "score": 0.0002471626654063421,
+          "score": 0.0005099976920422245,
           "best_chunk_id": "PMID:17578985#1",
           "best_chunk_rank": 7,
           "title": "Parasacral sciatic nerve block: does the elicited motor response predict the success rate?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0548_24180",
-          "score": 0.00024708901345456746,
-          "best_chunk_id": "MEDRAG:pubmed23n0548_24180#0",
+          "doc_id": "MEDRAG:pubmed23n0460_256",
+          "score": 0.00043750895036526367,
+          "best_chunk_id": "MEDRAG:pubmed23n0460_256#0",
           "best_chunk_rank": 8,
-          "title": "Up-regulation of the endothelin receptor A in placental tissue from first trimester delayed miscarriages."
+          "title": "INSECT STING ANAPHYLAXIS."
         },
         {
           "doc_id": "MEDRAG:pubmed23n0154_1166",
-          "score": 0.00024633647615827605,
+          "score": 0.00040413132431259225,
           "best_chunk_id": "MEDRAG:pubmed23n0154_1166#0",
           "best_chunk_rank": 9,
           "title": "Rat liver adenyl cyclase activity in various thyroid states."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0008_12179",
-          "score": 0.00023841787935854826,
-          "best_chunk_id": "MEDRAG:pubmed23n0008_12179#0",
+          "doc_id": "MEDRAG:pubmed23n0310_15489",
+          "score": 0.00039784503833354643,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_15489#0",
           "best_chunk_rank": 10,
-          "title": "Uteroplacental blood flow during alkalosis in the sheep."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0148_888",
-          "score": 0.00022959991825143136,
-          "best_chunk_id": "MEDRAG:pubmed23n0148_888#0",
-          "best_chunk_rank": 11,
-          "title": "[Behavior of neutral 17-ketosteroids in the urine of female pigs]."
+          "title": "Haemodynamic and catecholamine changes during rapid sevoflurane induction with tidal volume breathing."
         },
         {
           "doc_id": "MEDRAG:pubmed23n0008_12341",
-          "score": 0.0002286301883864619,
+          "score": 0.0003649027931373465,
           "best_chunk_id": "MEDRAG:pubmed23n0008_12341#0",
-          "best_chunk_rank": 12,
+          "best_chunk_rank": 11,
           "title": "Kinetics of sulfite-induced anaerobic degradation of epinephrine."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0310_15489",
-          "score": 0.0002229719333464732,
-          "best_chunk_id": "MEDRAG:pubmed23n0310_15489#0",
-          "best_chunk_rank": 13,
-          "title": "Haemodynamic and catecholamine changes during rapid sevoflurane induction with tidal volume breathing."
+          "doc_id": "MEDRAG:pubmed23n0008_12179",
+          "score": 0.0003227545373795831,
+          "best_chunk_id": "MEDRAG:pubmed23n0008_12179#0",
+          "best_chunk_rank": 12,
+          "title": "Uteroplacental blood flow during alkalosis in the sheep."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0202_2690",
+          "score": 0.0002891437136725153,
+          "best_chunk_id": "MEDRAG:pubmed23n0202_2690#0",
+          "best_chunk_rank": 14,
+          "title": "Beta adrenoceptor mediation of the enhancing effect of norepinephrine on the murine primary antibody response in vitro."
+        }
+      ]
+    },
+    {
+      "query_id": "7664228",
+      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_doc_id": "PMID:7664228",
+      "gold_title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0562_3442",
+          "score": 0.0007378903682598738,
+          "best_chunk_id": "MEDRAG:pubmed23n0562_3442#0",
+          "best_chunk_rank": 1,
+          "title": "Update on Helicobacter pylori treatment."
+        },
+        {
+          "doc_id": "PMID:7664228",
+          "score": 0.00027745905474643316,
+          "best_chunk_id": "PMID:7664228#3",
+          "best_chunk_rank": 2,
+          "title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?"
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "score": 0.00026440587030812825,
+          "best_chunk_id": "PMID:24666444#0",
+          "best_chunk_rank": 3,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "score": 0.0002541969398147765,
+          "best_chunk_id": "PMID:17610439#0",
+          "best_chunk_rank": 4,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "PMID:26516021",
+          "score": 0.0002472523743629361,
+          "best_chunk_id": "PMID:26516021#2",
+          "best_chunk_rank": 5,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "PMID:7860319",
+          "score": 0.0002383231009178642,
+          "best_chunk_id": "PMID:7860319#0",
+          "best_chunk_rank": 7,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "PMID:9920954",
+          "score": 0.00023802200881464685,
+          "best_chunk_id": "PMID:9920954#2",
+          "best_chunk_rank": 8,
+          "title": "Do \"America's Best Hospitals\" perform better for acute myocardial infarction?"
+        },
+        {
+          "doc_id": "PMID:20605051",
+          "score": 0.00023690032652053588,
+          "best_chunk_id": "PMID:20605051#0",
+          "best_chunk_rank": 9,
+          "title": "Does case-mix based reimbursement stimulate the development of process-oriented care delivery?"
+        },
+        {
+          "doc_id": "PMID:17323047",
+          "score": 0.00023539580200040327,
+          "best_chunk_id": "PMID:17323047#0",
+          "best_chunk_rank": 11,
+          "title": "Does invasive diagnosis of nosocomial pneumonia during off-hours delay treatment?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "score": 0.00023398608159944895,
+          "best_chunk_id": "MEDRAG:pubmed23n0310_8311#0",
+          "best_chunk_rank": 12,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
         }
       ]
     },
@@ -236,566 +394,408 @@
           "title": "Has the prevalence of health care services use increased over the last decade (2001-2009) in elderly people?"
         }
       ]
-    },
-    {
-      "query_id": "8165771",
-      "question": "Ultrasound in squamous cell carcinoma of the penis; a useful addition to clinical staging?",
-      "gold_doc_id": "PMID:8165771",
-      "gold_title": "Ultrasound in squamous cell carcinoma of the penis; a useful addition to clinical staging?",
-      "gold_rank": 1,
-      "top_documents": [
-        {
-          "doc_id": "PMID:8165771",
-          "score": 0.0013087697373674872,
-          "best_chunk_id": "PMID:8165771#0",
-          "best_chunk_rank": 1,
-          "title": "Ultrasound in squamous cell carcinoma of the penis; a useful addition to clinical staging?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0660_21047",
-          "score": 0.00025884485108879015,
-          "best_chunk_id": "MEDRAG:pubmed23n0660_21047#0",
-          "best_chunk_rank": 2,
-          "title": "[Treatment of lymph nodes in epidermoid carcinoma of the penis: review of literature by the Committee of Cancerology of the French Association of Urology-External Genital Organs Group (CCAFU-OGE)]."
-        },
-        {
-          "doc_id": "PMID:26348845",
-          "score": 0.00022211931812639874,
-          "best_chunk_id": "PMID:26348845#0",
-          "best_chunk_rank": 3,
-          "title": "Pap smears with glandular cell abnormalities: Are they detected by rapid prescreening?"
-        },
-        {
-          "doc_id": "PMID:22706226",
-          "score": 0.00021767552864534716,
-          "best_chunk_id": "PMID:22706226#2",
-          "best_chunk_rank": 4,
-          "title": "Could different follow-up modalities play a role in the diagnosis of asymptomatic endometrial cancer relapses?"
-        },
-        {
-          "doc_id": "PMID:15530261",
-          "score": 0.0002149068890710993,
-          "best_chunk_id": "PMID:15530261#0",
-          "best_chunk_rank": 5,
-          "title": "Does screening or surveillance for primary hepatocellular carcinoma with ultrasonography improve the prognosis of patients?"
-        },
-        {
-          "doc_id": "PMID:16564683",
-          "score": 0.0002133133159892335,
-          "best_chunk_id": "PMID:16564683#0",
-          "best_chunk_rank": 6,
-          "title": "Is there any interest to perform ultrasonography in boys with undescended testis?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0072_2117",
-          "score": 0.00020570127453649743,
-          "best_chunk_id": "MEDRAG:pubmed23n0072_2117#0",
-          "best_chunk_rank": 8,
-          "title": "[The role of lymphography in detecting lymphogenic metastases in patients with ovarian dysgerminomas]."
-        },
-        {
-          "doc_id": "PMID:10759659",
-          "score": 0.00020464303700486365,
-          "best_chunk_id": "PMID:10759659#0",
-          "best_chunk_rank": 9,
-          "title": "The nurse cystoscopist: a feasible option?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0462_369",
-          "score": 0.00020269631092801496,
-          "best_chunk_id": "MEDRAG:pubmed23n0462_369#0",
-          "best_chunk_rank": 10,
-          "title": "TREATMENT OF SQUAMOUS CELL CARCINOMA OF THE SKIN BY ELECTRODESICCATION AND CURETTAGE."
-        },
-        {
-          "doc_id": "PMID:11296674",
-          "score": 0.00020181606188058248,
-          "best_chunk_id": "PMID:11296674#0",
-          "best_chunk_rank": 11,
-          "title": "Prostatic syndrome and pleural effusion: are they different diseases?"
-        }
-      ]
-    },
-    {
-      "query_id": "8199520",
-      "question": "Are physicians meeting the needs of family caregivers of the frail elderly?",
-      "gold_doc_id": "PMID:8199520",
-      "gold_title": "Are physicians meeting the needs of family caregivers of the frail elderly?",
-      "gold_rank": 1,
-      "top_documents": [
-        {
-          "doc_id": "PMID:8199520",
-          "score": 0.8409325480461121,
-          "best_chunk_id": "PMID:8199520#0",
-          "best_chunk_rank": 1,
-          "title": "Are physicians meeting the needs of family caregivers of the frail elderly?"
-        },
-        {
-          "doc_id": "PMID:18378554",
-          "score": 0.6107549071311951,
-          "best_chunk_id": "PMID:18378554#2",
-          "best_chunk_rank": 6,
-          "title": "Are wandering and physically nonaggressive agitation equivalent?"
-        },
-        {
-          "doc_id": "PMID:21789019",
-          "score": 0.5990480780601501,
-          "best_chunk_id": "PMID:21789019#2",
-          "best_chunk_rank": 7,
-          "title": "Do elderly cancer patients have different care needs compared with younger ones?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0991_19636",
-          "score": 0.5816817283630371,
-          "best_chunk_id": "MEDRAG:pubmed23n0991_19636#0",
-          "best_chunk_rank": 8,
-          "title": "[Roll With the Punches: Applying Resilience to Caregiver's Burden]."
-        },
-        {
-          "doc_id": "PMID:21592383",
-          "score": 0.5712885856628418,
-          "best_chunk_id": "PMID:21592383#1",
-          "best_chunk_rank": 9,
-          "title": "Canada's Compassionate Care Benefit: is it an adequate public health response to addressing the issue of caregiver burden in end-of-life care?"
-        },
-        {
-          "doc_id": "PMID:22303473",
-          "score": 0.5562077760696411,
-          "best_chunk_id": "PMID:22303473#1",
-          "best_chunk_rank": 11,
-          "title": "Does a family meetings intervention prevent depression and anxiety in family caregivers of dementia patients?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0310_3562",
-          "score": 0.5552635192871094,
-          "best_chunk_id": "MEDRAG:pubmed23n0310_3562#0",
-          "best_chunk_rank": 12,
-          "title": "Are emergency department patients thinking about advance directives?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0515_216",
-          "score": 0.5478948354721069,
-          "best_chunk_id": "MEDRAG:pubmed23n0515_216#0",
-          "best_chunk_rank": 13,
-          "title": "Persevering: the experience of well elderly women overcoming the barriers to the U.S. health care system."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n1097_544",
-          "score": 0.5457558631896973,
-          "best_chunk_id": "MEDRAG:pubmed23n1097_544#0",
-          "best_chunk_rank": 15,
-          "title": "\"I Didn't Meet My Mother; I Saw My Mother\": The Challenges Facing Long-Term Care Residents and Their Families in the Age of COVID-19."
-        },
-        {
-          "doc_id": "PMID:22188074",
-          "score": 0.5448769927024841,
-          "best_chunk_id": "PMID:22188074#3",
-          "best_chunk_rank": 16,
-          "title": "Do instrumental activities of daily living predict dementia at 1- and 2-year follow-up?"
-        }
-      ]
     }
   ],
   "failure": [
-    {
-      "query_id": "7497757",
-      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
-      "gold_doc_id": "PMID:7497757",
-      "gold_title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
-      "gold_rank": 12,
-      "top_documents": [
-        {
-          "doc_id": "MEDRAG:pubmed23n0154_1166",
-          "score": 0.0003926851503126161,
-          "best_chunk_id": "MEDRAG:pubmed23n0154_1166#0",
-          "best_chunk_rank": 1,
-          "title": "Rat liver adenyl cyclase activity in various thyroid states."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0310_400",
-          "score": 0.00027161918168122157,
-          "best_chunk_id": "MEDRAG:pubmed23n0310_400#0",
-          "best_chunk_rank": 2,
-          "title": "Forced-air warming is no more effective than conventional methods for raising postoperative core temperature after cardiac surgery."
-        },
-        {
-          "doc_id": "PMID:17054994",
-          "score": 0.00023948896648309258,
-          "best_chunk_id": "PMID:17054994#0",
-          "best_chunk_rank": 3,
-          "title": "Does frozen section alter surgical management of multinodular thyroid disease?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0515_11805",
-          "score": 0.00022804269538835695,
-          "best_chunk_id": "MEDRAG:pubmed23n0515_11805#0",
-          "best_chunk_rank": 4,
-          "title": "Profound hypothermia with alpha-stat pH management during open-heart surgery is associated with choreoathetosis."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0548_9647",
-          "score": 0.00019872360327453478,
-          "best_chunk_id": "MEDRAG:pubmed23n0548_9647#0",
-          "best_chunk_rank": 5,
-          "title": "Memory improvement with treatment of hypothyroidism."
-        },
-        {
-          "doc_id": "PMID:24666444",
-          "score": 0.0001821629637556251,
-          "best_chunk_id": "PMID:24666444#2",
-          "best_chunk_rank": 7,
-          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
-        },
-        {
-          "doc_id": "PMID:11882828",
-          "score": 0.0001816375516261418,
-          "best_chunk_id": "PMID:11882828#1",
-          "best_chunk_rank": 8,
-          "title": "Does tranexamic acid reduce desmopressin-induced hyperfibrinolysis?"
-        },
-        {
-          "doc_id": "PMID:22504515",
-          "score": 0.0001790510631825775,
-          "best_chunk_id": "PMID:22504515#2",
-          "best_chunk_rank": 9,
-          "title": "Endovenous laser ablation in the treatment of small saphenous varicose veins: does site of access influence early outcomes?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0412_12537",
-          "score": 0.00017853150308154065,
-          "best_chunk_id": "MEDRAG:pubmed23n0412_12537#1",
-          "best_chunk_rank": 10,
-          "title": "Comparison of a prototype esophageal oximetry probe with two conventional digital pulse oximetry monitors in aortocoronary bypass patients."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0553_5381",
-          "score": 0.00017621726372946556,
-          "best_chunk_id": "MEDRAG:pubmed23n0553_5381#1",
-          "best_chunk_rank": 11,
-          "title": "Aerobic influence on neuromuscular function and tolerance during passive hyperthermia."
-        }
-      ]
-    },
-    {
-      "query_id": "7664228",
-      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
-      "gold_doc_id": "PMID:7664228",
-      "gold_title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
-      "gold_rank": 13,
-      "top_documents": [
-        {
-          "doc_id": "PMID:24666444",
-          "score": 0.00023030119491482043,
-          "best_chunk_id": "PMID:24666444#0",
-          "best_chunk_rank": 1,
-          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
-        },
-        {
-          "doc_id": "PMID:21080127",
-          "score": 0.00021620173303950538,
-          "best_chunk_id": "PMID:21080127#0",
-          "best_chunk_rank": 2,
-          "title": "Can implant retention be recommended for treatment of infected TKA?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n1133_8030",
-          "score": 0.0002137837290347966,
-          "best_chunk_id": "MEDRAG:pubmed23n1133_8030#1",
-          "best_chunk_rank": 3,
-          "title": "Are 5-level triage systems improved by using a symptom based approach?-a Danish cohort study."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0962_20422",
-          "score": 0.00020080808593826997,
-          "best_chunk_id": "MEDRAG:pubmed23n0962_20422#0",
-          "best_chunk_rank": 5,
-          "title": "How Much Cardiopulmonary Resuscitation Does a Pediatric Emergency Provider Perform in 1 Year? A Video-Based Analysis."
-        },
-        {
-          "doc_id": "PMID:25986020",
-          "score": 0.00020045653577037287,
-          "best_chunk_id": "PMID:25986020#0",
-          "best_chunk_rank": 6,
-          "title": "Is zero central line-associated bloodstream infection rate sustainable?"
-        },
-        {
-          "doc_id": "PMID:25007420",
-          "score": 0.00019800487105685506,
-          "best_chunk_id": "PMID:25007420#0",
-          "best_chunk_rank": 7,
-          "title": "Are there mental health differences between francophone and non-francophone populations in manitoba?"
-        },
-        {
-          "doc_id": "PMID:19852337",
-          "score": 0.00019568278197510357,
-          "best_chunk_id": "PMID:19852337#0",
-          "best_chunk_rank": 8,
-          "title": "Does elective re-siting of intravenous cannulae decrease peripheral thrombophlebitis?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0562_3442",
-          "score": 0.00019406435443359551,
-          "best_chunk_id": "MEDRAG:pubmed23n0562_3442#0",
-          "best_chunk_rank": 9,
-          "title": "Update on Helicobacter pylori treatment."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0885_6896",
-          "score": 0.00019076083833121404,
-          "best_chunk_id": "MEDRAG:pubmed23n0885_6896#0",
-          "best_chunk_rank": 10,
-          "title": "A pseudo-random patient sampling method evaluated."
-        },
-        {
-          "doc_id": "PMID:24061619",
-          "score": 0.00018868942070309494,
-          "best_chunk_id": "PMID:24061619#2",
-          "best_chunk_rank": 11,
-          "title": "Location and number of sutures placed for hiatal hernia repair during laparoscopic adjustable gastric banding: does it matter?"
-        }
-      ]
-    },
     {
       "query_id": "11570976",
       "question": "Is it Crohn's disease?",
       "gold_doc_id": "PMID:11570976",
       "gold_title": "Is it Crohn's disease?",
-      "gold_rank": 26,
+      "gold_rank": 42,
       "top_documents": [
         {
-          "doc_id": "MEDRAG:pubmed23n0294_13805",
-          "score": 0.00029371179677345396,
-          "best_chunk_id": "MEDRAG:pubmed23n0294_13805#0",
+          "doc_id": "MEDRAG:pubmed23n0120_508",
+          "score": 0.0006825653826516582,
+          "best_chunk_id": "MEDRAG:pubmed23n0120_508#0",
           "best_chunk_rank": 1,
-          "title": "Effect of pregnancy on the clinical course of a cohort of women with inflammatory bowel disease."
+          "title": "A simple blood sample method for measuring oral zinc absorption in clinical practice."
         },
         {
           "doc_id": "MEDRAG:pubmed23n0120_16583",
-          "score": 0.0002925193568215889,
+          "score": 0.0006803708628997923,
           "best_chunk_id": "MEDRAG:pubmed23n0120_16583#0",
           "best_chunk_rank": 2,
           "title": "Internal carotid artery occlusion in association with Crohn's disease."
         },
         {
-          "doc_id": "PMID:18802997",
-          "score": 0.0002848017096268204,
-          "best_chunk_id": "PMID:18802997#1",
-          "best_chunk_rank": 3,
-          "title": "Can calprotectin predict relapse risk in inflammatory bowel disease?"
-        },
-        {
           "doc_id": "PMID:9347843",
-          "score": 0.0002845869057123512,
-          "best_chunk_id": "PMID:9347843#1",
-          "best_chunk_rank": 4,
+          "score": 0.0006608418109800625,
+          "best_chunk_id": "PMID:9347843#0",
+          "best_chunk_rank": 3,
           "title": "Laparoscopic-assisted ileocolic resections in patients with Crohn's disease: are abscesses, phlegmons, or recurrent disease contraindications?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0120_508",
-          "score": 0.000281756315890656,
-          "best_chunk_id": "MEDRAG:pubmed23n0120_508#0",
-          "best_chunk_rank": 6,
-          "title": "A simple blood sample method for measuring oral zinc absorption in clinical practice."
+          "doc_id": "PMID:18802997",
+          "score": 0.0006326071171123224,
+          "best_chunk_id": "PMID:18802997#1",
+          "best_chunk_rank": 5,
+          "title": "Can calprotectin predict relapse risk in inflammatory bowel disease?"
         },
         {
           "doc_id": "PMID:10811329",
-          "score": 0.0002573487869122964,
+          "score": 0.0005216616755001378,
           "best_chunk_id": "PMID:10811329#2",
-          "best_chunk_rank": 7,
+          "best_chunk_rank": 6,
           "title": "Are 99mTc leukocyte scintigraphy and SBFT studies useful in children suspected of having inflammatory bowel disease?"
         },
         {
+          "doc_id": "MEDRAG:pubmed23n0294_13805",
+          "score": 0.00048312515707368906,
+          "best_chunk_id": "MEDRAG:pubmed23n0294_13805#0",
+          "best_chunk_rank": 7,
+          "title": "Effect of pregnancy on the clinical course of a cohort of women with inflammatory bowel disease."
+        },
+        {
           "doc_id": "MEDRAG:pubmed23n0148_307",
-          "score": 0.0002483206222435455,
+          "score": 0.00045960709890702683,
           "best_chunk_id": "MEDRAG:pubmed23n0148_307#0",
           "best_chunk_rank": 8,
           "title": "Indices of granulocyte activity in inflammatory bowel disease."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0154_266",
-          "score": 0.0002420735719670272,
-          "best_chunk_id": "MEDRAG:pubmed23n0154_266#0",
-          "best_chunk_rank": 9,
-          "title": "Unprocessed bran in treatment of diverticular disease of the colon."
-        },
-        {
           "doc_id": "PMID:17593459",
-          "score": 0.00023777215451913214,
-          "best_chunk_id": "PMID:17593459#0",
-          "best_chunk_rank": 10,
+          "score": 0.00033360525218665703,
+          "best_chunk_id": "PMID:17593459#2",
+          "best_chunk_rank": 9,
           "title": "Is double-balloon enteroscopy an accurate method to diagnose small-bowel disorders?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0275_16853",
-          "score": 0.00023144198409443654,
-          "best_chunk_id": "MEDRAG:pubmed23n0275_16853#0",
+          "doc_id": "MEDRAG:pubmed23n0991_11212",
+          "score": 0.00027535598739911703,
+          "best_chunk_id": "MEDRAG:pubmed23n0991_11212#0",
           "best_chunk_rank": 12,
-          "title": "Efficacy of CT in distinguishing small-bowel obstruction from other causes of small-bowel dilatation."
+          "title": "Effectiveness of sigmoidoscopy for assessing ulcerative colitis disease activity and therapeutic response."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_266",
+          "score": 0.00026875080321509177,
+          "best_chunk_id": "MEDRAG:pubmed23n0154_266#0",
+          "best_chunk_rank": 13,
+          "title": "Unprocessed bran in treatment of diverticular disease of the colon."
         }
       ]
     },
     {
-      "query_id": "15774570",
-      "question": "Does increased use of private health care reduce the demand for NHS care?",
-      "gold_doc_id": "PMID:15774570",
-      "gold_title": "Does increased use of private health care reduce the demand for NHS care?",
-      "gold_rank": null,
+      "query_id": "18359123",
+      "question": "Is it better to be big?",
+      "gold_doc_id": "PMID:18359123",
+      "gold_title": "Is it better to be big?",
+      "gold_rank": 57,
       "top_documents": [
         {
-          "doc_id": "PMID:21481154",
-          "score": 0.0004911971219050223,
-          "best_chunk_id": "PMID:21481154#2",
+          "doc_id": "PMID:18607272",
+          "score": 0.3542144000530243,
+          "best_chunk_id": "PMID:18607272#0",
           "best_chunk_rank": 1,
-          "title": "Improvements in survival of gynaecological cancer in the Anglia region of England: are these an effect of centralisation of care and use of multidisciplinary management?"
+          "title": "Body perception: do parents, their children, and their children's physicians perceive body image differently?"
         },
         {
-          "doc_id": "PMID:28359277",
-          "score": 0.0002795877426231114,
-          "best_chunk_id": "PMID:28359277#2",
-          "best_chunk_rank": 2,
-          "title": "Do healthier lifestyles lead to less utilization of healthcare resources?"
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0869_4293",
-          "score": 0.0002726232143419604,
-          "best_chunk_id": "MEDRAG:pubmed23n0869_4293#0",
+          "doc_id": "PMID:21123461",
+          "score": 0.31534403562545776,
+          "best_chunk_id": "PMID:21123461#3",
           "best_chunk_rank": 3,
-          "title": "Agency nurses cheaper than NHS staff."
+          "title": "Are adult body circumferences associated with height?"
         },
         {
-          "doc_id": "PMID:20488985",
-          "score": 0.00025360750720330994,
-          "best_chunk_id": "PMID:20488985#2",
+          "doc_id": "MEDRAG:pubmed23n0968_6893",
+          "score": 0.31286460161209106,
+          "best_chunk_id": "MEDRAG:pubmed23n0968_6893#0",
           "best_chunk_rank": 4,
-          "title": "The English antibiotic awareness campaigns: did they change the public's knowledge of and attitudes to antibiotic use?"
+          "title": "Brain and Body Size Relations among Spotted Hyenas (Crocuta crocuta)."
         },
         {
-          "doc_id": "PMID:26370095",
-          "score": 0.0002427206101810717,
-          "best_chunk_id": "PMID:26370095#4",
+          "doc_id": "MEDRAG:pubmed23n0552_3124",
+          "score": 0.2994890511035919,
+          "best_chunk_id": "MEDRAG:pubmed23n0552_3124#0",
           "best_chunk_rank": 5,
-          "title": "Are financial incentives cost-effective to support smoking cessation during pregnancy?"
+          "title": "Differential parental weight and height contributions to offspring birthweight and weight gain in infancy."
         },
         {
-          "doc_id": "PMID:24237112",
-          "score": 0.0002259715590257571,
-          "best_chunk_id": "PMID:24237112#3",
-          "best_chunk_rank": 6,
-          "title": "Do provider service networks result in lower expenditures compared with HMOs or primary care case management in Florida's Medicaid program?"
-        },
-        {
-          "doc_id": "PMID:24666444",
-          "score": 0.0002238452813184776,
-          "best_chunk_id": "PMID:24666444#0",
+          "doc_id": "PMID:17595200",
+          "score": 0.27985823154449463,
+          "best_chunk_id": "PMID:17595200#0",
           "best_chunk_rank": 7,
-          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+          "title": "Is there an intrauterine influence on obesity?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0200_607",
-          "score": 0.0002121959187230142,
-          "best_chunk_id": "MEDRAG:pubmed23n0200_607#0",
+          "doc_id": "PMID:25034219",
+          "score": 0.2747170627117157,
+          "best_chunk_id": "PMID:25034219#1",
+          "best_chunk_rank": 8,
+          "title": "Does maternal obesity have an influence on feeding behavior of obese children?"
+        },
+        {
+          "doc_id": "PMID:22813804",
+          "score": 0.27306613326072693,
+          "best_chunk_id": "PMID:22813804#0",
           "best_chunk_rank": 9,
-          "title": "A study of the work of a medical social worker in a group medical practice."
+          "title": "Does obesity impact the pattern and outcome of trauma in children?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0869_3286",
-          "score": 0.00020460659238746837,
-          "best_chunk_id": "MEDRAG:pubmed23n0869_3286#0",
+          "doc_id": "MEDRAG:pubmed23n0615_12053",
+          "score": 0.272483766078949,
+          "best_chunk_id": "MEDRAG:pubmed23n0615_12053#0",
           "best_chunk_rank": 10,
-          "title": "Listings."
+          "title": "Waist circumference in relation to body perception reported by Finnish adolescent girls and their mothers."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_1025",
+          "score": 0.26475873589515686,
+          "best_chunk_id": "MEDRAG:pubmed23n0968_1025#0",
+          "best_chunk_rank": 11,
+          "title": "Individual differences in appeal of energy dense foods predicts lower body mass change during adolescence."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0962_20407",
+          "score": 0.26264679431915283,
+          "best_chunk_id": "MEDRAG:pubmed23n0962_20407#0",
+          "best_chunk_rank": 13,
+          "title": "Survival of the Fastest: The Multivariate Optimization of Performance Phenotypes."
+        }
+      ]
+    },
+    {
+      "query_id": "18540901",
+      "question": "Transient tachypnea of the newborn (TTN): a role for polymorphisms in the beta-adrenergic receptor (ADRB) encoding genes?",
+      "gold_doc_id": "PMID:18540901",
+      "gold_title": "Transient tachypnea of the newborn (TTN): a role for polymorphisms in the beta-adrenergic receptor (ADRB) encoding genes?",
+      "gold_rank": 22,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0148_558",
+          "score": 0.0011380888868712648,
+          "best_chunk_id": "MEDRAG:pubmed23n0148_558#0",
+          "best_chunk_rank": 1,
+          "title": "The effect of ethacrynic acid on the guinea-pig and rat isolated vas deferens."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0991_5510",
+          "score": 0.0009727673181209754,
+          "best_chunk_id": "MEDRAG:pubmed23n0991_5510#0",
+          "best_chunk_rank": 2,
+          "title": "High rate of hypertension control among treated patients attending a teaching primary healthcare centre in Jordan."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_1996",
+          "score": 0.0002709014468921763,
+          "best_chunk_id": "MEDRAG:pubmed23n1133_1996#0",
+          "best_chunk_rank": 3,
+          "title": "Postnatal recurrence and transesophageal inducibility of prenatally treated fetal supraventricular tachycardia."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_10068",
+          "score": 0.0002688431099202139,
+          "best_chunk_id": "MEDRAG:pubmed23n0548_10068#0",
+          "best_chunk_rank": 4,
+          "title": "Development of the ovine fetal cardiovascular defense to hypoxemia towards full term."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_19944",
+          "score": 0.0002677246643056178,
+          "best_chunk_id": "MEDRAG:pubmed23n1133_19944#1",
+          "best_chunk_rank": 5,
+          "title": "Divergent effects of initial ventilation with delayed cord clamping on systemic and pulmonary arterial flows in the birth transition of preterm lambs."
+        },
+        {
+          "doc_id": "PMID:12970636",
+          "score": 0.000256117340067802,
+          "best_chunk_id": "PMID:12970636#2",
+          "best_chunk_rank": 8,
+          "title": "Does early discharge with nurse home visits affect adequacy of newborn metabolic screening?"
+        },
+        {
+          "doc_id": "PMID:16465002",
+          "score": 0.0002554827452328372,
+          "best_chunk_id": "PMID:16465002#3",
+          "best_chunk_rank": 9,
+          "title": "Dose end-tidal carbon dioxide measurement correlate with arterial carbon dioxide in extremely low birth weight infants in the first week of life?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_14266",
+          "score": 0.0002530330760806441,
+          "best_chunk_id": "MEDRAG:pubmed23n0120_14266#0",
+          "best_chunk_rank": 11,
+          "title": "Vasopressin-induced bradycardia in fetal and adult sheep is not dependent on an increase in blood pressure."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0460_33",
+          "score": 0.0002489969291711636,
+          "best_chunk_id": "MEDRAG:pubmed23n0460_33#0",
+          "best_chunk_rank": 12,
+          "title": "ATRIAL SEPTAL DEFECT IN INFANCY."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1097_3929",
+          "score": 0.0002461502712557805,
+          "best_chunk_id": "MEDRAG:pubmed23n1097_3929#1",
+          "best_chunk_rank": 13,
+          "title": "Quantifying Upper Aerodigestive Sequelae in Esophageal Atresia/Tracheoesophageal Fistula Neonates."
+        }
+      ]
+    },
+    {
+      "query_id": "18708308",
+      "question": "Can surgeon familiarization with current evidence lead to a change in practice?",
+      "gold_doc_id": "PMID:18708308",
+      "gold_title": "Can surgeon familiarization with current evidence lead to a change in practice?",
+      "gold_rank": 15,
+      "top_documents": [
+        {
+          "doc_id": "PMID:26516021",
+          "score": 0.6078130006790161,
+          "best_chunk_id": "PMID:26516021#0",
+          "best_chunk_rank": 1,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0526_23336",
+          "score": 0.5890200734138489,
+          "best_chunk_id": "MEDRAG:pubmed23n0526_23336#0",
+          "best_chunk_rank": 2,
+          "title": "Evolution of methodological standards in surgical trials."
+        },
+        {
+          "doc_id": "PMID:23379759",
+          "score": 0.5814915299415588,
+          "best_chunk_id": "PMID:23379759#1",
+          "best_chunk_rank": 3,
+          "title": "Can early second-look tympanoplasty reduce the rate of conversion to modified radical mastoidectomy?"
+        },
+        {
+          "doc_id": "PMID:19712912",
+          "score": 0.5734373927116394,
+          "best_chunk_id": "PMID:19712912#4",
+          "best_chunk_rank": 4,
+          "title": "Has the 80-hour workweek improved surgical resident education in New England?"
+        },
+        {
+          "doc_id": "PMID:9645785",
+          "score": 0.5570947527885437,
+          "best_chunk_id": "PMID:9645785#1",
+          "best_chunk_rank": 5,
+          "title": "Is a mandatory general surgery rotation necessary in the surgical clerkship?"
         },
         {
           "doc_id": "MEDRAG:pubmed23n0885_21607",
-          "score": 0.00020393925435439495,
+          "score": 0.5485744476318359,
           "best_chunk_id": "MEDRAG:pubmed23n0885_21607#0",
-          "best_chunk_rank": 11,
+          "best_chunk_rank": 6,
           "title": "Performance and learning curve of a surgical care practitioner in completing hip aspirations."
+        },
+        {
+          "doc_id": "PMID:16678696",
+          "score": 0.5410032272338867,
+          "best_chunk_id": "PMID:16678696#0",
+          "best_chunk_rank": 7,
+          "title": "Continuity of care experience of residents in an academic vascular department: are trainees learning complete surgical care?"
+        },
+        {
+          "doc_id": "PMID:15041506",
+          "score": 0.5151224136352539,
+          "best_chunk_id": "PMID:15041506#1",
+          "best_chunk_rank": 11,
+          "title": "Is fear of anaphylactic shock discouraging surgeons from more widely adopting percutaneous and laparoscopic techniques in the treatment of liver hydatid cyst?"
+        },
+        {
+          "doc_id": "PMID:10354335",
+          "score": 0.5140160322189331,
+          "best_chunk_id": "PMID:10354335#3",
+          "best_chunk_rank": 12,
+          "title": "Can medical students contribute to quality assurance programmes in day surgery?"
+        },
+        {
+          "doc_id": "PMID:11380492",
+          "score": 0.5131073594093323,
+          "best_chunk_id": "PMID:11380492#1",
+          "best_chunk_rank": 13,
+          "title": "Transsphenoidal pituitary surgery in Cushing's disease: can we predict outcome?"
         }
       ]
     },
     {
-      "query_id": "18222909",
-      "question": "Are pectins involved in cold acclimation and de-acclimation of winter oil-seed rape plants?",
-      "gold_doc_id": "PMID:18222909",
-      "gold_title": "Are pectins involved in cold acclimation and de-acclimation of winter oil-seed rape plants?",
-      "gold_rank": null,
+      "query_id": "20064872",
+      "question": "Can the prognosis of polymyalgia rheumatica be predicted at disease onset?",
+      "gold_doc_id": "PMID:20064872",
+      "gold_title": "Can the prognosis of polymyalgia rheumatica be predicted at disease onset?",
+      "gold_rank": 15,
       "top_documents": [
         {
-          "doc_id": "MEDRAG:pubmed23n0120_10034",
-          "score": 0.0003138950111988957,
-          "best_chunk_id": "MEDRAG:pubmed23n0120_10034#0",
+          "doc_id": "PMID:11053064",
+          "score": 0.0012251119416285335,
+          "best_chunk_id": "PMID:11053064#0",
           "best_chunk_rank": 1,
-          "title": "Kinetics and inhibition studies of catechol O-methyltransferase from the yeast Candida tropicalis."
+          "title": "Fatigue in primary Sjögren's syndrome: is there a link with the fibromyalgia syndrome?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0660_14910",
-          "score": 0.0002391500668748472,
-          "best_chunk_id": "MEDRAG:pubmed23n0660_14910#0",
+          "doc_id": "MEDRAG:pubmed23n1133_19999",
+          "score": 0.00025840515754844073,
+          "best_chunk_id": "MEDRAG:pubmed23n1133_19999#0",
           "best_chunk_rank": 2,
-          "title": "A subset of cytokinin two-component signaling system plays a role in cold temperature stress response in Arabidopsis."
+          "title": "Patient experienced symptom state in rheumatoid arthritis: sensitivity to change in disease activity and impact."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0991_9634",
-          "score": 0.00021383007313419827,
-          "best_chunk_id": "MEDRAG:pubmed23n0991_9634#0",
+          "doc_id": "PMID:17601244",
+          "score": 0.00024178377079220748,
+          "best_chunk_id": "PMID:17601244#0",
           "best_chunk_rank": 3,
-          "title": "The Transcription Factor INDUCER OF CBF EXPRESSION1 Interacts with ABSCISIC ACID INSENSITIVE5 and DELLA Proteins to Fine-Tune Abscisic Acid Signaling during Seed Germination in Arabidopsis."
+          "title": "Are there associations of health status, disease activity and damage in SLE patients?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0869_1249",
-          "score": 0.0002122720446828317,
-          "best_chunk_id": "MEDRAG:pubmed23n0869_1249#0",
+          "doc_id": "MEDRAG:pubmed23n0275_18319",
+          "score": 0.0002370789182587576,
+          "best_chunk_id": "MEDRAG:pubmed23n0275_18319#0",
           "best_chunk_rank": 4,
-          "title": "Fungal endophytes of Catharanthus roseus enhance vindoline content by modulating structural and regulatory genes related to terpenoid indole alkaloid biosynthesis."
+          "title": "Use of the Stoke Index to differentiate between disease-modifying agents and non-steroidal anti-inflammatory drugs in rheumatoid arthritis."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0553_8130",
-          "score": 0.00020796302532849784,
-          "best_chunk_id": "MEDRAG:pubmed23n0553_8130#1",
+          "doc_id": "MEDRAG:pubmed23n0660_9751",
+          "score": 0.00022354469032007473,
+          "best_chunk_id": "MEDRAG:pubmed23n0660_9751#0",
           "best_chunk_rank": 5,
-          "title": "The PTI1-like kinase ZmPti1a from maize (Zea mays L.) co-localizes with callose at the plasma membrane of pollen and facilitates a competitive advantage to the male gametophyte."
+          "title": "Sicca symptoms, and lacrimal and salivary flow in Albanian patients with rheumatoid arthritis."
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0991_23422",
-          "score": 0.00020301747602272617,
-          "best_chunk_id": "MEDRAG:pubmed23n0991_23422#0",
+          "doc_id": "PMID:26784147",
+          "score": 0.00021722118429645573,
+          "best_chunk_id": "PMID:26784147#2",
+          "best_chunk_rank": 6,
+          "title": "Target Serum Urate: Do Gout Patients Know Their Goal?"
+        },
+        {
+          "doc_id": "PMID:16968876",
+          "score": 0.00021458229045541143,
+          "best_chunk_id": "PMID:16968876#2",
           "best_chunk_rank": 7,
-          "title": "Evolutionary Analyses Reveal Diverged Patterns of <i>SQUAMOSA</i> Promoter Binding Protein-Like (<i>SPL</i>) Gene Family in <i>Oryza</i> Genus."
+          "title": "Is a patient's self-reported health-related quality of life a prognostic factor for survival in non-small-cell lung cancer patients?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0412_3133",
-          "score": 0.00020122085304688457,
-          "best_chunk_id": "MEDRAG:pubmed23n0412_3133#0",
-          "best_chunk_rank": 8,
-          "title": "Simultaneous existence of cinnamomin (a type II RIP) and small amount of its free A- and B-chain in mature seeds of camphor tree."
-        },
-        {
-          "doc_id": "MEDRAG:pubmed23n0373_13277",
-          "score": 0.0001965824948469141,
-          "best_chunk_id": "MEDRAG:pubmed23n0373_13277#0",
+          "doc_id": "PMID:14655021",
+          "score": 0.00021264992606828318,
+          "best_chunk_id": "PMID:14655021#0",
           "best_chunk_rank": 9,
-          "title": "Utilization of by-products from the tequila industry. Part 2: Potential value of Agave tequilana Weber azul leaves."
+          "title": "Juvenile ankylosing spondylitis--is it the same disease as adult ankylosing spondylitis?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0154_1262",
-          "score": 0.0001963301053196089,
-          "best_chunk_id": "MEDRAG:pubmed23n0154_1262#0",
+          "doc_id": "PMID:25499207",
+          "score": 0.00020871073745714632,
+          "best_chunk_id": "PMID:25499207#6",
           "best_chunk_rank": 10,
-          "title": "Protein, nucleic acid and starch metabolism in the duckweed, Spirodela oligorrhiza, treated with cytokinins."
+          "title": "Is neck pain associated with worse health-related quality of life 6 months later?"
         },
         {
-          "doc_id": "MEDRAG:pubmed23n0373_6012",
-          "score": 0.00019537992673404627,
-          "best_chunk_id": "MEDRAG:pubmed23n0373_6012#0",
-          "best_chunk_rank": 11,
-          "title": "A new saponin from the leaves and stems of Panax quinquefolium L. collected in Canada."
+          "doc_id": "MEDRAG:pubmed23n0660_21939",
+          "score": 0.00020785389706534505,
+          "best_chunk_id": "MEDRAG:pubmed23n0660_21939#0",
+          "best_chunk_rank": 12,
+          "title": "Pain in hand osteoarthritis is associated with inflammation: the value of ultrasound."
         }
       ]
     }
   ],
   "summary": {
-    "success_at_10_available": 479,
-    "failure_at_10_available": 21,
+    "success_at_10_available": 491,
+    "failure_at_10_available": 9,
     "saved_per_group_max": 5
   }
 }

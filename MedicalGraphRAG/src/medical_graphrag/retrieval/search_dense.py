@@ -1,14 +1,13 @@
-"""Search the FAISS IndexFlatIP index for every question inside the container.
+"""Dense retrieval over a FAISS IndexFlatIP index, extracted from the old
+``scripts/search_faiss_dense.py`` into a library function.
 
-Run inside the `llm-pytorch` container. Standalone script: adds `src/` to
-``sys.path``. Encodes each query with the same embedding model used at index
-build time, retrieves up to ``--top-k`` chunks, and writes ``raw_rankings.jsonl``
-plus ``search_run.json``. The search report binds every artifact SHA-256 so the
-local ``evaluate-dense`` step can verify nothing was swapped.
+``run_search`` validates the index report hash bindings, encodes each query
+with the same embedding model used at index build time, retrieves up to
+``top_k`` chunks, and writes ``raw_rankings.jsonl`` plus ``search_run.json``.
+The search report binds every artifact SHA-256 so ``evaluate-dense`` can verify
+nothing was swapped.
 """
-import argparse
 import json
-import sys
 import time
 from collections import Counter
 from collections.abc import Mapping
@@ -16,12 +15,8 @@ from importlib.metadata import version as distribution_version
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "src") not in sys.path:
-    sys.path.insert(0, str(ROOT / "src"))
-
-from medical_graphrag.data.io import sha256_file  # noqa: E402
-from medical_graphrag.retrieval.dense import DEFAULT_EMBEDDING_MODEL  # noqa: E402
+from medical_graphrag.data.io import sha256_file
+from medical_graphrag.retrieval.dense import DEFAULT_EMBEDDING_MODEL
 
 
 def package_version(
@@ -125,110 +120,92 @@ def search_one(
     }
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--index", required=True)
-    parser.add_argument("--embeddings", required=True)
-    parser.add_argument("--questions", type=Path, required=True)
-    parser.add_argument("--metadata", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--report", type=Path, required=True)
-    parser.add_argument("--index-report", type=Path, required=True)
-    parser.add_argument("--top-k", type=int, default=100)
-    parser.add_argument("--embedding-model", default=DEFAULT_EMBEDDING_MODEL)
-    args = parser.parse_args()
-
-    index_path = Path(args.index)
-    embeddings_path = Path(args.embeddings)
-    index_report = validate_index(
-        index_path,
-        embeddings_path,
-        args.metadata,
-        args.questions,
-        args.index_report,
+def run_search(
+    *,
+    index: Path,
+    embeddings: Path,
+    index_report: Path,
+    questions: Path,
+    metadata: Path,
+    output: Path,
+    report: Path,
+    top_k: int = 100,
+    embedding_model: str = DEFAULT_EMBEDDING_MODEL,
+) -> dict[str, object]:
+    """Encode every question, retrieve with FAISS, write rankings + report."""
+    index_report_data = validate_index(
+        index, embeddings, metadata, questions, index_report
     )
 
     import faiss
 
     from sentence_transformers import SentenceTransformer
 
-    if args.embedding_model != index_report["embedding_model"]:
+    if embedding_model != index_report_data["embedding_model"]:
         raise ValueError(
             "requested embedding model does not match index report: "
-            f"{args.embedding_model!r} != {index_report['embedding_model']!r}"
+            f"{embedding_model!r} != {index_report_data['embedding_model']!r}"
         )
-    if args.top_k > int(index_report["chunk_count"]):
+    if top_k > int(index_report_data["chunk_count"]):
         raise ValueError(
-            f"requested top_k {args.top_k} exceeds index chunk count "
-            f"{index_report['chunk_count']}"
+            f"requested top_k {top_k} exceeds index chunk count "
+            f"{index_report_data['chunk_count']}"
         )
-    index = faiss.read_index(str(index_path))
-    embedder = SentenceTransformer(args.embedding_model)
-    questions = _read_jsonl(args.questions)
-    metadata = _read_jsonl(args.metadata)
-    chunk_id_by_index = [str(row["chunk_id"]) for row in metadata]
+    faiss_index = faiss.read_index(str(index))
+    embedder = SentenceTransformer(embedding_model)
+    questions_rows = _read_jsonl(questions)
+    metadata_rows = _read_jsonl(metadata)
+    chunk_id_by_index = [str(row["chunk_id"]) for row in metadata_rows]
     if len(set(chunk_id_by_index)) != len(chunk_id_by_index):
         raise ValueError("duplicate chunk_id in metadata")
-    chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in metadata}
-    if index_report["chunk_count"] != len(chunk_id_by_index):
+    chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in metadata_rows}
+    if index_report_data["chunk_count"] != len(chunk_id_by_index):
         raise ValueError("metadata count does not match index report")
 
     rows = [
         search_one(
             embedder,
-            index,
+            faiss_index,
             row,
             chunk_id_by_index,
             chunk_to_doc,
-            args.top_k,
-            normalize=bool(index_report["normalized"]),
+            top_k,
+            normalize=bool(index_report_data["normalized"]),
         )
-        for row in questions
+        for row in questions_rows
     ]
     if len({row["query_id"] for row in rows}) != len(rows):
         raise ValueError("duplicate query_id in search output")
-    hit_summary = summarize_hit_counts(rows, requested_top_k=args.top_k)
+    hit_summary = summarize_hit_counts(rows, requested_top_k=top_k)
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
         "".join(
             json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n"
             for row in rows
         ),
         encoding="utf-8",
     )
-    rankings_sha256 = sha256_file(args.output)
-    args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(
-        json.dumps(
-            {
-                "command": sys.argv,
-                "query_count": len(rows),
-                **hit_summary,
-                "embedding_model": index_report["embedding_model"],
-                "dim": index_report["dim"],
-                "normalized": index_report["normalized"],
-                "index_type": index_report["index_type"],
-                "sentence_transformers_version": package_version(
-                    "sentence-transformers"
-                ),
-                "faiss_version": package_version("faiss-cpu"),
-                "text_mode": index_report["text_mode"],
-                "metadata_sha256": index_report["metadata_sha256"],
-                "embeddings_sha256": index_report["embeddings_sha256"],
-                "index_sha256": index_report["index_sha256"],
-                "index_report_sha256": sha256_file(args.index_report),
-                "dataset_manifest_sha256": index_report["dataset_manifest_sha256"],
-                "questions_sha256": sha256_file(args.questions),
-                "rankings_sha256": rankings_sha256,
-            },
-            indent=2,
-        )
-        + "\n",
-        encoding="utf-8",
-    )
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
+    rankings_sha256 = sha256_file(output)
+    report.parent.mkdir(parents=True, exist_ok=True)
+    report_data = {
+        "command": ["search_dense.run_search", str(questions), str(output)],
+        "query_count": len(rows),
+        **hit_summary,
+        "embedding_model": index_report_data["embedding_model"],
+        "dim": index_report_data["dim"],
+        "normalized": index_report_data["normalized"],
+        "index_type": index_report_data["index_type"],
+        "sentence_transformers_version": package_version("sentence-transformers"),
+        "faiss_version": package_version("faiss-cpu"),
+        "text_mode": index_report_data["text_mode"],
+        "metadata_sha256": index_report_data["metadata_sha256"],
+        "embeddings_sha256": index_report_data["embeddings_sha256"],
+        "index_sha256": index_report_data["index_sha256"],
+        "index_report_sha256": sha256_file(index_report),
+        "dataset_manifest_sha256": index_report_data["dataset_manifest_sha256"],
+        "questions_sha256": sha256_file(questions),
+        "rankings_sha256": rankings_sha256,
+    }
+    report.write_text(json.dumps(report_data, indent=2) + "\n", encoding="utf-8")
+    return report_data

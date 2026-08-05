@@ -29,14 +29,19 @@ TEXT_MODE = "abstract_only"
 
 
 class GraphConfig:
-    """Retrieval hyper-parameters (initial values follow LinearRAG medical)."""
+    """Retrieval hyper-parameters (aligned to LinearRAG official defaults).
+
+    Values now match ``LinearRAG/src/config.py`` defaults as used by the
+    official ``run.py`` (which passes ``passage_ratio=2`` via CLI and leaves
+    ``damping`` / ``passage_node_weight`` at their config defaults).
+    """
 
     def __init__(
         self,
         *,
-        damping: float = 0.85,
-        passage_ratio: float = 1.5,
-        passage_node_weight: float = 0.5,
+        damping: float = 0.5,
+        passage_ratio: float = 2.0,
+        passage_node_weight: float = 0.05,
         iteration_threshold: float = 0.5,
         top_k_sentence: int = 1,
         max_iterations: int = 3,
@@ -69,12 +74,18 @@ def _load_nlp(model_name: str):
 
 
 def extract_entities(nlp, texts: list[str], *, batch_size: int = 64) -> list[list[str]]:
-    """Return a per-text list of de-duplicated, order-preserving entity strings."""
+    """Return a per-text list of de-duplicated, order-preserving entity strings.
+
+    Ordinal/cardinal entities are excluded, matching LinearRAG's official
+    ``extract_entities_sentences`` (they are numerous and low-discrimination).
+    """
     results: list[list[str]] = []
     for doc in nlp.pipe(texts, batch_size=batch_size):
         seen: set[str] = set()
         entities: list[str] = []
         for ent in doc.ents:
+            if ent.label_ in ("ORDINAL", "CARDINAL"):
+                continue
             text = ent.text.strip()
             if text and text not in seen:
                 seen.add(text)
@@ -332,6 +343,8 @@ class LinearGraphRetriever:
         seen: set[str] = set()
         entities: list[str] = []
         for ent in doc.ents:
+            if ent.label_ in ("ORDINAL", "CARDINAL"):
+                continue
             text = ent.text.strip()
             if text and text not in seen:
                 seen.add(text)

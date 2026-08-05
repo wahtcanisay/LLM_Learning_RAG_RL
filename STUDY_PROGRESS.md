@@ -224,6 +224,8 @@ scripts/run_sft.sh
 8. **HotpotQA 图检索多跳验证（负结果）**：BM25（R@10 0.738 / MRR 0.798 / nDCG 0.663）、Dense（0.711/0.817/0.668）、Graph（0.680/0.784/0.638）、**Hybrid（0.800/0.852/0.731）——RRF 融合大幅胜出（R@10 +0.089 vs 单路最好 Dense）**。图检索第四个基准依然垫底；可能原因是 BC5CDR 医学 NER 在通用维基上实体稀疏（11,250 实体/66,581 段落）。
 10. **HotpotQA Hybrid2 完成**：**R@10 0.898 / MRR 0.955 / nDCG 0.865，全面碾压 Hybrid（0.800/0.852/0.731）**——cross-encoder 重排在多跳场景价值最显著（R@10 +0.098、nDCG +0.134）。五路齐。
 9. **LinearRAG medical 数据集调查**：`LinearRAG/dataset/medical/`（225 chunks + 2,062 问 4 种题型）evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集（1,000 问）与我们的 hotpotqa_v1 同源，无额外价值。→ medical 仅定性，hotpotqa_v1 为多跳验证主力。
+10. **LinearRAG 论文检索效果调研**：论文检索指标只在 Medical (GraphRAG-Bench/NCCN) 上报告，是 **RAGAS 风格 Evidence Recall（LLM 判断，非标准 IR 指标）**，top-k=5、all-mpnet。复现需 LLM API（阶段 3 后）+ GraphRAG-Bench 官方数据。我们已有的 hotpotqa 标准 IR 指标是论文没有的视角（补充而非复现）。
+11. **GraphRAG 对齐 LinearRAG 官方（重跑中）**：发现移植时用错默认参数——官方 `damping=0.5 / passage_node_weight=0.05 / passage_ratio=2`（run.py），我们用 `0.85/0.5/1.5`；且官方 NER 排除 ORDINAL/CARDINAL。已全部对齐官方默认（`graph.py`/`build_graph_index.py`/测试更新）。重跑结果：scifact R@10 0.705（原 0.682，+0.023）、nfcorpus R@10 0.158（原 0.157）、pubmedqa R@10 0.982（原 0.958，+0.024）；hotpotqa 重跑中。
 
 **下一步（按序）：**
 1. FRAMES 轻接已完成（仅保留 questions/答案/金标标题映射，不建语料，待端到端评测）；
@@ -267,8 +269,8 @@ scripts/run_sft.sh
 | Dense all-mpnet (IndexFlatIP) | official test (500) | 0.966 | 0.992 | 0.994 | 0.977786 | 0.981885 | 16.080 ms |
 | Hybrid RRF (BM25+Dense, k=60) | dev (500) | 0.958 | 0.990 | 0.996 | 0.972905 | 0.978649 | 离线融合 n/a |
 | Hybrid RRF (BM25+Dense, k=60) | official test (500) | 0.960 | 0.990 | 0.992 | 0.973833 | 0.978454 | 离线融合 n/a |
-| Graph (BC5CDR Entity-Passage + PPR) | dev (500) | 0.796 | 0.928 | 0.960 | 0.856575 | 0.881938 | 173.1 ms |
-| Graph (BC5CDR Entity-Passage + PPR) | official test (500) | 0.800 | 0.942 | 0.958 | 0.861929 | 0.885909 | 168.690 ms |
+| Graph (BC5CDR Entity-Passage + PPR) | dev (500) | 0.768 | 0.956 | 0.976 | 0.850134 | 0.881531 | 168.0 ms |
+| Graph (BC5CDR Entity-Passage + PPR) | official test (500) | 0.790 | 0.966 | 0.982 | 0.864191 | 0.893553 | 168.0 ms |
 
 ### NFCorpus（BEIR，多相关 qrels，test 323）
 
@@ -277,7 +279,7 @@ scripts/run_sft.sh
 | BM25 | 0.150 | 0.516 | 0.313 |
 | Dense all-mpnet (IndexFlatIP) | 0.159 | 0.502 | 0.325 |
 | Hybrid RRF (BM25+Dense, k=60) | **0.172** | **0.552** | **0.354** |
-| Graph (BC5CDR Entity-Passage + PPR) | 0.157 | 0.483 | 0.314 |
+| Graph (BC5CDR Entity-Passage + PPR) | 0.158 | 0.477 | 0.312 |
 
 独立复算多相关指标误差 0/1e-16。
 
@@ -288,7 +290,7 @@ scripts/run_sft.sh
 | BM25 | 0.791 | 0.630 | 0.664 |
 | Dense all-mpnet (IndexFlatIP) | 0.769 | 0.594 | 0.633 |
 | Hybrid RRF (BM25+Dense, k=60) | 0.838 | 0.669 | 0.705 |
-| Graph (BC5CDR Entity-Passage + PPR) | 0.682 | 0.458 | 0.507 |
+| Graph (BC5CDR Entity-Passage + PPR) | 0.705 | 0.456 | 0.509 |
 | **Hybrid2 (Qwen3-Reranker)** | **0.895** | **0.740** | **0.772** |
 
 （commit `4442303`；graph 检索在 scifact 上垫底——科学声明核查里词项/语义匹配强，实体传播信号弱。）
@@ -299,7 +301,7 @@ scripts/run_sft.sh
 |---|---:|---:|---:|
 | BM25 | 0.738 | 0.798 | 0.663 |
 | Dense all-mpnet (IndexFlatIP) | 0.711 | 0.817 | 0.668 |
-| Graph (BC5CDR Entity-Passage + PPR) | 0.680 | 0.784 | 0.638 |
+| Graph (BC5CDR Entity-Passage + PPR) | 0.695 | 0.797 | 0.650 |
 | Hybrid RRF (BM25+Dense, k=60) | 0.800 | 0.852 | 0.731 |
 | **Hybrid2 (Qwen3-Reranker)** | **0.898** | **0.955** | **0.865** |
 
