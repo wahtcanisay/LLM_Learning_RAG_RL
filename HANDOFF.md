@@ -2,7 +2,7 @@
 
 更新时间：2026-08-05
 项目根目录：`D:\code_list\some tricks\LLMLeanring`
-分支：`main`（已推送）／ `feat/reranker-hybrid2`（进行中）
+分支：`main`（已推送至 GitHub `wahtcanisay/LLM_Learning_RAG_RL`）
 
 > 本文件是唯一交接文档。之前的 `HANDOFF_DENSE_BASELINE.md`、`HANDOFF_HYBRID.md`、`HANDOFF_LINEARRAG.md`、`HANDOFF_NFCORPUS.md`、`HANDOFF_DEEPSEEK_V4_FLASH.md` 已合并删除。
 
@@ -20,15 +20,15 @@
 | 4 | Search-R1 搜索强化学习 | ⏳ |
 | 5 | MedSearch-R1 医学搜索智能体 | ⏳ |
 
-**检索层全部完成并审计**：4 检索器（BM25 / Dense / Hybrid / Graph）× 2 基准（pubmedqa_hard_v1 / nfcorpus_v1）。**当前正在做 Hybrid2：Qwen3-Reranker 三路候选重排**（`feat/reranker-hybrid2` 分支）。
+**检索层全部完成并审计**：5 检索器（BM25 / Dense / Hybrid / Graph / Hybrid2）× 4 基准（pubmedqa_hard_v1 / nfcorpus_v1 / scifact_v1 / hotpotqa_v1）。**检索层已收敛为统一接口 `cli run <retriever> --dataset <name>`**（脚本已抽取到 src）。
 
 ## 2. 运行环境（重要）
 
 - 容器：`llm-pytorch`（WSL2 Docker）。
 - Python 环境：**`/opt/venv`**（`--system-site-packages`，继承 torch / sentence-transformers / faiss；新增 igraph、scispacy、en_ner_bc5cdr_md、Qwen3-Reranker）。**检索/构建/重排脚本一律用 `/opt/venv/bin/python`**。
-- 本地模型（git 忽略）：`MedicalGraphRAG/models/all-mpnet-base-v2`（Dense/图用）、`MedicalGraphRAG/models/Qwen3-Reranker-0.6B`（Hybrid2 用，下载中）。
-- 评测 CLI：`python -m medical_graphrag.cli evaluate-{bm25,dense,hybrid,graph,reranker}`。
-- 测试：`/opt/venv/bin/python -m pytest`（当前 75+ 测试）。
+- 本地模型（git 忽略）：`MedicalGraphRAG/models/all-mpnet-base-v2`（Dense/图用）、`MedicalGraphRAG/models/Qwen3-Reranker-0.6B`（Hybrid2 用，已下载）。
+- 统一评测入口：`python -m medical_graphrag.cli run <retriever> --dataset <name>`（bm25/dense/hybrid/graph/reranker）。
+- 测试：`/opt/venv/bin/python -m pytest`（当前 79 测试）。
 
 ## 3. 已完成阶段（精简）
 
@@ -117,17 +117,19 @@
 1. **HotpotQA Hybrid2 完成**（R@10 0.898 / MRR 0.955 / nDCG 0.865，全面碾压 Hybrid 0.800/0.852/0.731）；FRAMES 轻接已完成（`data/processed/frames_v1/questions_with_gold.json`，824 问/金标映射，不建语料）。
 2. **trec_covid 放弃检索**：原始语料 24.6% 文档 `text` 为空（仅标题的会议摘要记录，非连续文本），title 回退无检索价值。
 3. **LinearRAG medical 仅定性**：`LinearRAG/dataset/medical/` evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集与 hotpotqa_v1 同源无额外价值。
-4. **MIRAGE 端到端**（仓库已拉取到 `MIRAGE/`，git 忽略可重建；等阶段 3 有 LLM 再跑 QA Accuracy）。
-5. 阶段 3 MedicalGPT SFT（GPT 并行线预习中）。之后阶段 4 Search-R1、阶段 5 MedSearch-R1。
+4. **接口重构完成**（commit `5efb6e8`）：7 个 scripts 抽取到 `src/retrieval/` 库函数 + `run_pipeline.py` 编排层，`cli run` 成为唯一 evaluate 入口；根 README 已删，完整文档在 `MedicalGraphRAG/README.md`（含简历版项目总结）。
+5. **已推送 GitHub**（`wahtcanisay/LLM_Learning_RAG_RL`，main 与 origin 同步）。
+6. **MIRAGE 端到端**（仓库已拉取到 `MIRAGE/`，git 忽略可重建；等阶段 3 有 LLM 再跑 QA Accuracy）。
+7. 阶段 3 MedicalGPT SFT（GPT 并行线预习中）。之后阶段 4 Search-R1、阶段 5 MedSearch-R1。**Search-R1 模型选型待定**：默认 qwen3-0.5B 过小，调研官方模型规模与 7B RL 显存需求。
 
 **关键结论**：检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）× 多基准（pubmedqa/nfcorpus/scifact/hotpotqa）完备。基准选择显著影响结论：pubmedqa Dense 最优、nfcorpus/scifact/hotpotqa Hybrid2 最优；**图检索在全部四个基准均未胜出**（HotpotQA 上 BC5CDR 医学 NER 在通用维基上实体稀疏，实体传播信号弱——诚实负结果）。**Hybrid2 (Qwen3-Reranker) 在多跳场景（hotpotqa）碾压**（R@10 0.898 / nDCG 0.865，vs Hybrid 0.800/0.731），cross-encoder 重排价值在多跳场景最显著；**Hybrid RRF 也大幅超过单路**（R@10 0.800 vs Dense 0.711），词项+语义两路互补。
 
 ## 6. 给下一位 Agent 的开场指令
 
 ```text
-先读根目录 README.md、STUDY_PROGRESS.md、HANDOFF.md。
+先读 MedicalGraphRAG/README.md、STUDY_PROGRESS.md、HANDOFF.md。
 检索层已完备（BM25/Dense/Hybrid/Graph/Hybrid2 × pubmedqa + nfcorpus + scifact + hotpotqa，全部审计合并），
-评测支持多相关 qrels。HotpotQA 多跳基准已接入（7,405 问/66,581 文档/14,810 qrels）。
+评测支持多相关 qrels。统一 evaluate 入口：cli run <retriever> --dataset <name>。
 环境用 /opt/venv/bin/python；不要重跑或重构已审计基线。
 任何新指标必须来自真实脚本输出 + 哈希审计。
 ```

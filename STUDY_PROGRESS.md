@@ -225,12 +225,14 @@ scripts/run_sft.sh
 10. **HotpotQA Hybrid2 完成**：**R@10 0.898 / MRR 0.955 / nDCG 0.865，全面碾压 Hybrid（0.800/0.852/0.731）**——cross-encoder 重排在多跳场景价值最显著（R@10 +0.098、nDCG +0.134）。五路齐。
 9. **LinearRAG medical 数据集调查**：`LinearRAG/dataset/medical/`（225 chunks + 2,062 问 4 种题型）evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集（1,000 问）与我们的 hotpotqa_v1 同源，无额外价值。→ medical 仅定性，hotpotqa_v1 为多跳验证主力。
 10. **LinearRAG 论文检索效果调研**：论文检索指标只在 Medical (GraphRAG-Bench/NCCN) 上报告，是 **RAGAS 风格 Evidence Recall（LLM 判断，非标准 IR 指标）**，top-k=5、all-mpnet。复现需 LLM API（阶段 3 后）+ GraphRAG-Bench 官方数据。我们已有的 hotpotqa 标准 IR 指标是论文没有的视角（补充而非复现）。
-11. **GraphRAG 对齐 LinearRAG 官方（重跑中）**：发现移植时用错默认参数——官方 `damping=0.5 / passage_node_weight=0.05 / passage_ratio=2`（run.py），我们用 `0.85/0.5/1.5`；且官方 NER 排除 ORDINAL/CARDINAL。已全部对齐官方默认（`graph.py`/`build_graph_index.py`/测试更新）。重跑结果：scifact R@10 0.705（原 0.682，+0.023）、nfcorpus R@10 0.158（原 0.157）、pubmedqa R@10 0.982（原 0.958，+0.024）；hotpotqa 重跑中。
+11. **GraphRAG 对齐 LinearRAG 官方（已完成）**：发现移植时用错默认参数——官方 `damping=0.5 / passage_node_weight=0.05 / passage_ratio=2`（run.py），我们用 `0.85/0.5/1.5`；且官方 NER 排除 ORDINAL/CARDINAL。已全部对齐官方默认（`graph.py`/`build_graph_index.py`/测试更新）。重跑结果：pubmedqa R@10 0.982（原 0.958，+0.024）、scifact 0.705（原 0.682，+0.023）、hotpotqa 0.695（原 0.680，+0.015）、nfcorpus 0.158（原 0.157）。
+12. **接口重构 + 统一 evaluate**（commit `5efb6e8`）：7 个 scripts（build_faiss/build_graph/build_pyserini/search_x3/rerank）抽取到 `src/medical_graphrag/retrieval/` 库函数，新增 `run_pipeline.py` 编排层，**`cli run <retriever> --dataset <name>` 成为唯一 evaluate 入口**；test_*_scripts.py 迁移到测 src 函数；79 tests 全绿。
+13. **README 简历版总结 + 上传 GitHub**（commit `fe89a64`）：README 补充数据清洗小节 + 末尾简历版项目总结（三点：数据集清洗 / 检索 pipeline 三段 / 相对 baseline 提升）；根 README 已删，文档集中在 `MedicalGraphRAG/README.md`；**已推送 GitHub** `wahtcanisay/LLM_Learning_RAG_RL`（main 同步）。
 
 **下一步（按序）：**
-1. FRAMES 轻接已完成（仅保留 questions/答案/金标标题映射，不建语料，待端到端评测）；
+1. **Search-R1 模型选型**：默认 qwen3-0.5B 过小，调研官方 Search-R1 模型规模 + 7B RL 显存需求，确定折中方案；
 2. MIRAGE 端到端（已拉取仓库，等阶段 3 有 LLM 再跑）；
-3. 阶段 3 MedicalGPT SFT（GPT 并行线）。
+3. 阶段 3 MedicalGPT SFT（GPT 并行线，即将进入）。
 
 **现有基准结果汇总**：`pubmedqa_hard_v1` Dense 最优；`nfcorpus_v1` Hybrid2 最优；`scifact_v1` Hybrid2 最优；`hotpotqa_v1` Hybrid2 最优。图检索在全部四个基准均未胜出。检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）完备，评测支持多相关 qrels。
 
