@@ -212,13 +212,18 @@ scripts/run_sft.sh
 
 # 下一步
 
-阶段 2 方案 B 调整：原定 GraphRAG-Bench Medical（`linearrag_medical_v1`）**因无文档级 gold 不可行**（evidence 是改写文本，逐字/归一化/embedding 映射均不可靠，无法建 qrels）。改用公开带标注的 **BEIR/NFCorpus**（医学 IR，323 test / 3633 docs，每题平均 38 相关文档），并泛化评测指标支持**多相关 qrels**（Recall@k=|gold∩topk|/|gold|，MRR=首个相关文档倒数，nDCG 多相关；单 gold 向后兼容，75 测试全过）。
+**2026-08-05 三个发现：**
 
-NFCorpus 四路对比（test 323）：**Hybrid（R@10 0.172 / MRR 0.552 / nDCG 0.354）> Dense（0.159/0.502/0.325）> BM25（0.150/0.516/0.313）≈ Graph（0.157/0.483/0.314）**。关键观察：`pubmedqa_hard_v1` 上 Hybrid<Dense（BM25 太弱被稀释），**NFCorpus 上 Hybrid>两路单路**（BM25/Dense 势均力敌时 RRF 互补）——**基准选择显著影响结论**；图检索在两个基准均未胜出。
+1. **nfcorpus 召回低是基准上限所致，非检索器问题**：每题中位 16 / 平均 38 相关文档（占 3,633 的 ~1%），R@10 硬上限仅 10/38=0.263；我们达到上限的 57~65%（Hybrid 最高 65%），BM25 nDCG@10 0.313 与公开 BEIR ~0.325 一致。结论：检索器没做错，是基准残酷。
+2. **LinearRAG 内置 medical 数据定性检索通过（人工评判）**：用 all-mpnet 在其 225 chunks 上做 Dense 检索——Fact Retrieval 题（"最常见的皮肤癌"）top1 直接含答案；Complex Reasoning 题（"浅肤色+器官移植→BCC 风险"）top2 含"免疫抑制→器官移植→BCC 高风险"、top1 含浅肤色风险，**两段证据都召回到 top-2，多跳检索有效**。印证"数据决定检索价值"。
+3. **外部医学测评框架**：**MedRAG/MIRAGE**（Findings of ACL 2024，`Teddy-XiongGZ/MedRAG`，7,663 题 × 5 医学 QA 集 × 多语料 × 多检索器 × 多 LLM，官方评测代码、有 QA Accuracy 端到端指标）与 **MedBench**（清华中文医学平台，含 RAGAgent 维度）可复用。
 
-下一步：阶段 3 MedicalGPT SFT（并行线已开始预习）；Reranker（Qwen3-Reranker）排在检索基线完备后。当前指标均来自封闭/公开基准，全量 PubMed 实验暂缓。
+**下一步：**
+1. 拉取 MIRAGE 基准并围绕它做实验测试（医学 RAG 官方标准，比自建基准更权威）；
+2. 完成 Hybrid2：Qwen3-Reranker 三路候选重排（`feat/reranker-hybrid2`，加载适配中）；
+3. 阶段 3 MedicalGPT SFT（GPT 并行线预习中，与阶段 1/2 互不替代）。
 
-MedicalGPT 阶段 3 预习是另一条并行线（用户安排，与阶段 1/2 互不替代），不影响阶段 1/2 完成门槛。Reranker（专用 Qwen3-Reranker）排在 Dense/Hybrid/LinearRAG 全部完成后。当前所有指标均来自封闭 5,000 文档 / 1,000 题基准，全量 PubMed 实验暂缓，不把封闭结果外推。BM25 解释门禁按学习者决定跳过，不计为已掌握。
+NFCorpus 四路对比（test 323）：**Hybrid（nDCG 0.354）> Dense（0.325）> BM25（0.313）≈ Graph（0.314）**；`pubmedqa_hard_v1` 上 **Dense（nDCG 0.982）> Hybrid（0.979）> BM25（0.955）> Graph（0.881）**。基准选择显著影响结论；图检索两个基准均未胜出。阶段 1/2 检索层完备并审计。
 
 # 待补知识
 
