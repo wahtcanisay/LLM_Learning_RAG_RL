@@ -212,18 +212,21 @@ scripts/run_sft.sh
 
 # 下一步
 
-**2026-08-05 三个发现：**
+**2026-08-05 进展：**
 
-1. **nfcorpus 召回低是基准上限所致，非检索器问题**：每题中位 16 / 平均 38 相关文档（占 3,633 的 ~1%），R@10 硬上限仅 10/38=0.263；我们达到上限的 57~65%（Hybrid 最高 65%），BM25 nDCG@10 0.313 与公开 BEIR ~0.325 一致。结论：检索器没做错，是基准残酷。
-2. **LinearRAG 内置 medical 数据定性检索通过（人工评判）**：用 all-mpnet 在其 225 chunks 上做 Dense 检索——Fact Retrieval 题（"最常见的皮肤癌"）top1 直接含答案；Complex Reasoning 题（"浅肤色+器官移植→BCC 风险"）top2 含"免疫抑制→器官移植→BCC 高风险"、top1 含浅肤色风险，**两段证据都召回到 top-2，多跳检索有效**。印证"数据决定检索价值"。
-3. **外部医学测评框架**：**MedRAG/MIRAGE**（Findings of ACL 2024，`Teddy-XiongGZ/MedRAG`，7,663 题 × 5 医学 QA 集 × 多语料 × 多检索器 × 多 LLM，官方评测代码、有 QA Accuracy 端到端指标）与 **MedBench**（清华中文医学平台，含 RAGAgent 维度）可复用。
+1. **nfcorpus 召回低是基准上限所致**（每题 ~38 相关，R@10 上限 0.263，我们达 57~65%）；BM25 nDCG 0.313 与公开 BEIR 一致。
+2. **LinearRAG 内置 medical 定性检索通过**（多跳题两段证据都召回到 top-2）。
+3. **Hybrid2 完成**：Qwen3-Reranker 三路重排（CrossEncoder 加载），nfcorpus 上 **nDCG 0.384 > Hybrid RRF 0.354 > Dense 0.325 > BM25 0.313**——cross-encoder 重排胜出，已审计合并。
+4. **BEIR 多数据集接入（进行中）**：泛化 `build_beir.py`；构建 `scifact_v1`（300 题/5,183 文档/339 qrels）与 `trec_covid_v1`（50 题/171,332 文档/24,673 qrels）；**bioasq 因 HF 仓库 401（门禁）下载失败**，待找替代源。
+5. **scifact 前三路**：**Hybrid（R@10 0.838）> BM25（0.791）> Dense（0.769）**——科学声明核查里词项匹配强，但 RRF 融合仍胜（两路互补），与 nfcorpus 一致。
 
-**下一步：**
-1. 拉取 MIRAGE 基准并围绕它做实验测试（医学 RAG 官方标准，比自建基准更权威）；
-2. 完成 Hybrid2：Qwen3-Reranker 三路候选重排（`feat/reranker-hybrid2`，加载适配中）；
-3. 阶段 3 MedicalGPT SFT（GPT 并行线预习中，与阶段 1/2 互不替代）。
+**下一步（按序）：**
+1. scifact 补 Graph + Hybrid2（凑齐五路）；trec_covid 跑检索（171k 文档，Graph 太重先跳过）；
+2. 接入 HotpotQA + FRAMES（多跳硬 gold，写清洗脚本），验证图检索多跳价值；
+3. MIRAGE 端到端（已拉取仓库，等阶段 3 有 LLM 再跑）；
+4. 阶段 3 MedicalGPT SFT（GPT 并行线）。
 
-NFCorpus 四路对比（test 323）：**Hybrid（nDCG 0.354）> Dense（0.325）> BM25（0.313）≈ Graph（0.314）**；`pubmedqa_hard_v1` 上 **Dense（nDCG 0.982）> Hybrid（0.979）> BM25（0.955）> Graph（0.881）**。基准选择显著影响结论；图检索两个基准均未胜出。阶段 1/2 检索层完备并审计。
+**现有基准结果汇总**：`pubmedqa_hard_v1` Dense 最优；`nfcorpus_v1` Hybrid2 最优；`scifact_v1` Hybrid 最优（BM25>Dense）。图检索在已有基准均未胜出。检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）完备，评测支持多相关 qrels。
 
 # 待补知识
 

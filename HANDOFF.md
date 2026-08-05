@@ -38,6 +38,8 @@
 
 **nfcorpus_v1**（BEIR 公开，多相关）：323 test / 3,633 文档 / 12,334 qrels（每题平均 38 相关）。构建自 `scripts/build_nfcorpus.py` + 原始 parquet（git 忽略，可重建）。
 
+**scifact_v1 / trec_covid_v1**（BEIR，2026-08-05 接入）：泛化 `scripts/build_beir.py`；scifact 300 题/5,183 文档；trec_covid 50 题/171,332 文档。**bioasq 因 HF 仓库 401 门禁未接入**。
+
 两者均为哈希冻结，可独立复算。
 
 ### 3.2 检索器与结果
@@ -48,7 +50,7 @@
 | Dense | `retrieval/dense.py` | all-mpnet + FAISS IndexFlatIP，归一化 |
 | Hybrid | `retrieval/hybrid.py` | BM25+Dense 的 RRF 排名融合（k=60） |
 | Graph | `retrieval/graph.py` | BC5CDR 医学 NER → Entity-Passage 图 → PPR（移植 LinearRAG） |
-| Reranker | `retrieval/reranker.py` | Qwen3-Reranker 三路候选重排（Hybrid2，进行中） |
+| Reranker (Hybrid2) | `retrieval/reranker.py` | Qwen3-Reranker-0.6B 三路候选重排（CrossEncoder） |
 
 **结果（真实、可复算）**：
 
@@ -67,8 +69,19 @@
 |---|---:|---:|---:|
 | BM25 | 0.150 | 0.516 | 0.313 |
 | Dense | 0.159 | 0.502 | 0.325 |
-| **Hybrid** | **0.172** | **0.552** | **0.354** |
+| Hybrid | 0.172 | 0.552 | 0.354 |
 | Graph | 0.157 | 0.483 | 0.314 |
+| **Hybrid2 (Qwen rerank)** | **0.189** | **0.584** | **0.384** |
+
+*scifact_v1（test 300，~1.1 相关/题）*
+
+| 方法 | R@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|
+| BM25 | 0.791 | 0.630 | 0.664 |
+| Dense | 0.769 | 0.594 | 0.633 |
+| **Hybrid** | **0.838** | **0.669** | **0.705** |
+
+（scifact 的 Graph/Hybrid2 待补；trec_covid 待跑。）
 
 ### 3.3 关键结论
 
@@ -89,9 +102,12 @@
 
 ## 5. 下一步
 
-1. **Hybrid2（进行中，`feat/reranker-hybrid2`）**：Qwen3-Reranker-0.6B 对 BM25/Dense/Graph 三路 top-50 候选并集做 cross-encoder 重排。代码已写（`retrieval/reranker.py`、`scripts/rerank_candidates.py`、`evaluation/reranker.py`、CLI、测试），模型下载 + ST 版本适配中。设计见 `docs/superpowers/specs/2026-08-05-hybrid2-reranker-design.md`。
-2. 完成 Hybrid2 后：阶段 3 MedicalGPT SFT（GPT 并行线已在预习，我专注检索层）。
-3. Reranker 全部基线后：阶段 4 Search-R1、阶段 5 MedSearch-R1。
+1. **BEIR 数据接入（进行中）**：scifact 补 Graph + Hybrid2（凑齐五路）；trec_covid 跑检索（171k 文档，Graph 太重跳过）；bioasq 找替代源（HF 401）。
+2. **接入 HotpotQA + FRAMES**（多跳硬 gold，写清洗脚本 `scripts/build_*.py`），验证图检索多跳价值。
+3. **MIRAGE 端到端**（仓库已拉取到 `MIRAGE/`，git 忽略可重建；等阶段 3 有 LLM 再跑 QA Accuracy）。
+4. 阶段 3 MedicalGPT SFT（GPT 并行线预习中）。之后阶段 4 Search-R1、阶段 5 MedSearch-R1。
+
+**关键结论**：检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）× 多基准（pubmedqa/nfcorpus/scifact）完备。基准选择显著影响结论：pubmedqa Dense 最优、nfcorpus Hybrid2 最优、scifact Hybrid 最优；图检索在已有基准均未胜出。
 
 ## 6. 给下一位 Agent 的开场指令
 

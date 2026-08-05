@@ -1,0 +1,811 @@
+{
+  "success": [
+    {
+      "query_id": "3",
+      "question": "1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants.",
+      "gold_doc_id": "14717500",
+      "gold_title": "Rare Variants Create Synthetic Genome-Wide Associations",
+      "gold_rank": 3,
+      "gold_chunk_excerpt": "Genome-wide association studies (GWAS) have now identified at least 2,000 common variants that appear associated with common diseases or related traits (http://www.genome.gov/gwastudies), hundreds of which have been convincingly replicated. It is generally thought that the associated markers reflect the effect of a nearby common (minor allele frequency >0.05) causal site, which is associated with the marker, leading to extensive resequencing efforts to find causal sites. We propose as an alterna",
+      "top_documents": [
+        {
+          "doc_id": "4414547",
+          "score": 16.495500564575195,
+          "best_chunk_id": "4414547",
+          "best_chunk_rank": 1,
+          "title": "Mosaic PPM1D mutations are associated with predisposition to breast and ovarian cancer"
+        },
+        {
+          "doc_id": "3672261",
+          "score": 16.464099884033203,
+          "best_chunk_id": "3672261",
+          "best_chunk_rank": 2,
+          "title": "Natural variation in the parameters of innate immune cells is preferentially driven by genetic factors"
+        },
+        {
+          "doc_id": "14717500",
+          "score": 15.751399993896484,
+          "best_chunk_id": "14717500",
+          "best_chunk_rank": 3,
+          "title": "Rare Variants Create Synthetic Genome-Wide Associations"
+        },
+        {
+          "doc_id": "4378885",
+          "score": 14.540499687194824,
+          "best_chunk_id": "4378885",
+          "best_chunk_rank": 4,
+          "title": "Understanding mechanisms underlying human gene expression variation with RNA sequencing"
+        },
+        {
+          "doc_id": "2739854",
+          "score": 14.442899703979492,
+          "best_chunk_id": "2739854",
+          "best_chunk_rank": 5,
+          "title": "Rare and common variants: twenty arguments"
+        },
+        {
+          "doc_id": "23389795",
+          "score": 14.202799797058105,
+          "best_chunk_id": "23389795",
+          "best_chunk_rank": 6,
+          "title": "Common and rare variants in multifactorial susceptibility to common diseases"
+        },
+        {
+          "doc_id": "4632921",
+          "score": 13.639699935913086,
+          "best_chunk_id": "4632921",
+          "best_chunk_rank": 7,
+          "title": "Large-Scale Profiling Reveals the Influence of Genetic Variation on Gene Expression in Human Induced Pluripotent Stem Cells."
+        },
+        {
+          "doc_id": "15155862",
+          "score": 12.614500045776367,
+          "best_chunk_id": "15155862",
+          "best_chunk_rank": 8,
+          "title": "Longitudinal Genome-Wide Association of Cardiovascular Disease Risk Factors in the Bogalusa Heart Study"
+        },
+        {
+          "doc_id": "2107238",
+          "score": 12.44379997253418,
+          "best_chunk_id": "2107238",
+          "best_chunk_rank": 9,
+          "title": "The Sequence Alignment/Map format and SAMtools"
+        },
+        {
+          "doc_id": "13519661",
+          "score": 11.555899620056152,
+          "best_chunk_id": "13519661",
+          "best_chunk_rank": 10,
+          "title": "Linkage Disequilibrium Mapping of       CHEK2: Common Variation and Breast Cancer Risk     "
+        }
+      ]
+    },
+    {
+      "query_id": "5",
+      "question": "1/2000 in UK have abnormal PrP positivity.",
+      "gold_doc_id": "13734012",
+      "gold_title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "OBJECTIVES To carry out a further survey of archived appendix samples to understand better the differences between existing estimates of the prevalence of subclinical infection with prions after the bovine spongiform encephalopathy epizootic and to see whether a broader birth cohort was affected, and to understand better the implications for the management of blood and blood products and for the handling of surgical instruments. DESIGN Irreversibly unlinked and anonymised large scale survey of a",
+      "top_documents": [
+        {
+          "doc_id": "13734012",
+          "score": 11.810099601745605,
+          "best_chunk_id": "13734012",
+          "best_chunk_rank": 1,
+          "title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey"
+        },
+        {
+          "doc_id": "18617259",
+          "score": 8.623499870300293,
+          "best_chunk_id": "18617259",
+          "best_chunk_rank": 2,
+          "title": "Research Letters"
+        },
+        {
+          "doc_id": "12438901",
+          "score": 6.4390997886657715,
+          "best_chunk_id": "12438901",
+          "best_chunk_rank": 3,
+          "title": "Long-term effects of continuing adjuvant tamoxifen to 10 years versus stopping at 5 years after diagnosis of oestrogen receptor-positive breast cancer: ATLAS, a randomised trial"
+        },
+        {
+          "doc_id": "1203035",
+          "score": 6.1570000648498535,
+          "best_chunk_id": "1203035",
+          "best_chunk_rank": 4,
+          "title": "Basal keratinocyte tetrasomy in low-grade squamous intra-epithelial lesions of the cervix is restricted to high and intermediate risk HPV infection but is not type-specific"
+        },
+        {
+          "doc_id": "42240424",
+          "score": 5.841000080108643,
+          "best_chunk_id": "42240424",
+          "best_chunk_rank": 5,
+          "title": "The effects of prion protein proteolysis and disaggregation on the strain properties of hamster scrapie."
+        },
+        {
+          "doc_id": "17333231",
+          "score": 5.791600227355957,
+          "best_chunk_id": "17333231",
+          "best_chunk_rank": 6,
+          "title": "The sheddase ADAM10 is a potent modulator of prion disease"
+        },
+        {
+          "doc_id": "695938",
+          "score": 5.26609992980957,
+          "best_chunk_id": "695938",
+          "best_chunk_rank": 7,
+          "title": "Grass plants bind, retain, uptake, and transport infectious prions."
+        },
+        {
+          "doc_id": "11880289",
+          "score": 5.265999794006348,
+          "best_chunk_id": "11880289",
+          "best_chunk_rank": 8,
+          "title": "Effect of mammographic screening from age 40 years on breast cancer mortality in the UK Age trial at 17 years' follow-up: a randomised controlled trial."
+        },
+        {
+          "doc_id": "11271123",
+          "score": 5.258200168609619,
+          "best_chunk_id": "11271123",
+          "best_chunk_rank": 9,
+          "title": "Molecular characterization of endometrial cancer: a correlative study assessing microsatellite instability, MLH1 hypermethylation, DNA mismatch repair protein expression, and PTEN, PIK3CA, KRAS, and BRAF mutation analysis."
+        },
+        {
+          "doc_id": "1292369",
+          "score": 5.188300132751465,
+          "best_chunk_id": "1292369",
+          "best_chunk_rank": 10,
+          "title": "Biochemical Properties of Highly Neuroinvasive Prion Strains"
+        }
+      ]
+    },
+    {
+      "query_id": "36",
+      "question": "A deficiency of vitamin B12 increases blood levels of homocysteine.",
+      "gold_doc_id": "5152028",
+      "gold_title": "Folic acid improves endothelial function in coronary artery disease via mechanisms largely independent of homocysteine lowering.",
+      "gold_rank": 7,
+      "gold_chunk_excerpt": "BACKGROUND Homocysteine is a risk factor for coronary artery disease (CAD), although a causal relation remains to be proven. The importance of determining direct causality rests in the fact that plasma homocysteine can be safely and inexpensively reduced by 25% with folic acid. This reduction is maximally achieved by doses of 0.4 mg/d. High-dose folic acid (5 mg/d) improves endothelial function in CAD, although the mechanism is controversial. It has been proposed that improvement occurs through ",
+      "top_documents": [
+        {
+          "doc_id": "42441846",
+          "score": 15.135299682617188,
+          "best_chunk_id": "42441846",
+          "best_chunk_rank": 1,
+          "title": "Gene--nutrition interactions in coronary artery disease: correlation between the MTHFR C677T polymorphism and folate and homocysteine status in a Korean population."
+        },
+        {
+          "doc_id": "33409100",
+          "score": 12.460399627685547,
+          "best_chunk_id": "33409100",
+          "best_chunk_rank": 2,
+          "title": "Effect of homocysteine lowering on mortality and vascular disease in advanced chronic kidney disease and end-stage renal disease: a randomized controlled trial."
+        },
+        {
+          "doc_id": "18557974",
+          "score": 10.834799766540527,
+          "best_chunk_id": "18557974",
+          "best_chunk_rank": 3,
+          "title": "British Journal of Nutrition (2003), 89, 295–301 q The Authors 2003 DOI: 10.1079/BJN2002776 Plasma homocysteine concentration is decreased by dietary intervention*"
+        },
+        {
+          "doc_id": "37424881",
+          "score": 10.52180004119873,
+          "best_chunk_id": "37424881",
+          "best_chunk_rank": 4,
+          "title": "The effect of folate fortification on folic acid-based homocysteine-lowering intervention and stroke risk: a meta-analysis."
+        },
+        {
+          "doc_id": "16252863",
+          "score": 10.267900466918945,
+          "best_chunk_id": "16252863",
+          "best_chunk_rank": 5,
+          "title": "Preventing coronary heart disease: B vitamins and homocysteine."
+        },
+        {
+          "doc_id": "18256197",
+          "score": 9.085700035095215,
+          "best_chunk_id": "18256197",
+          "best_chunk_rank": 6,
+          "title": "Homocysteine and the risk of ischemic stroke in a triethnic cohort: the NOrthern MAnhattan Study."
+        },
+        {
+          "doc_id": "11705328",
+          "score": 8.37720012664795,
+          "best_chunk_id": "11705328",
+          "best_chunk_rank": 7,
+          "title": "Randomized trial of folic acid supplementation and serum homocysteine levels."
+        },
+        {
+          "doc_id": "23267371",
+          "score": 7.939799785614014,
+          "best_chunk_id": "23267371",
+          "best_chunk_rank": 8,
+          "title": "Vitamin D: The \"sunshine\" vitamin."
+        },
+        {
+          "doc_id": "21636085",
+          "score": 7.760499954223633,
+          "best_chunk_id": "21636085",
+          "best_chunk_rank": 9,
+          "title": "The effect of folic acid supplementation on plasma homocysteine in an elderly population."
+        },
+        {
+          "doc_id": "13312471",
+          "score": 7.486299991607666,
+          "best_chunk_id": "13312471",
+          "best_chunk_rank": 10,
+          "title": "Vitamin D insufficiency and the blunted PTH response in established osteoporosis: the role of magnesium deficiency"
+        }
+      ]
+    },
+    {
+      "query_id": "42",
+      "question": "A high microerythrocyte count raises vulnerability to severe anemia in homozygous alpha (+)- thalassemia trait subjects.",
+      "gold_doc_id": "18174210",
+      "gold_title": "Increased Microerythrocyte Count in Homozygous α+-Thalassaemia Contributes to Protection against Severe Malarial Anaemia",
+      "gold_rank": 2,
+      "gold_chunk_excerpt": "BACKGROUND The heritable haemoglobinopathy alpha(+)-thalassaemia is caused by the reduced synthesis of alpha-globin chains that form part of normal adult haemoglobin (Hb). Individuals homozygous for alpha(+)-thalassaemia have microcytosis and an increased erythrocyte count. Alpha(+)-thalassaemia homozygosity confers considerable protection against severe malaria, including severe malarial anaemia (SMA) (Hb concentration < 50 g/l), but does not influence parasite count. We tested the hypothesis t",
+      "top_documents": [
+        {
+          "doc_id": "40913091",
+          "score": 17.639699935913086,
+          "best_chunk_id": "40913091",
+          "best_chunk_rank": 1,
+          "title": "GENOTYPING OF THALASSEMIA IN MICROCYTIC HYPOCHROMIC ANEMIA PATIENTS FROM SOUTHWEST REGION OF IRAN"
+        },
+        {
+          "doc_id": "18174210",
+          "score": 12.70989990234375,
+          "best_chunk_id": "18174210",
+          "best_chunk_rank": 2,
+          "title": "Increased Microerythrocyte Count in Homozygous α+-Thalassaemia Contributes to Protection against Severe Malarial Anaemia"
+        },
+        {
+          "doc_id": "17821387",
+          "score": 10.860699653625488,
+          "best_chunk_id": "17821387",
+          "best_chunk_rank": 3,
+          "title": "Applicability of current staging/categorization of α-synuclein pathology and their clinical relevance"
+        },
+        {
+          "doc_id": "4449524",
+          "score": 8.190299987792969,
+          "best_chunk_id": "4449524",
+          "best_chunk_rank": 4,
+          "title": "Hemoglobin concentration in white, black, and Oriental children: is there a need for separate criteria in screening for anemia?"
+        },
+        {
+          "doc_id": "45218443",
+          "score": 8.010499954223633,
+          "best_chunk_id": "45218443",
+          "best_chunk_rank": 5,
+          "title": "Thalassemia and malaria: new insights into an old problem."
+        },
+        {
+          "doc_id": "27162821",
+          "score": 7.746600151062012,
+          "best_chunk_id": "27162821",
+          "best_chunk_rank": 6,
+          "title": "Percentile curves for hemoglobin and red cell volume in infancy and childhood."
+        },
+        {
+          "doc_id": "6315132",
+          "score": 6.685400009155273,
+          "best_chunk_id": "6315132",
+          "best_chunk_rank": 7,
+          "title": "KLF1-null neonates display hydrops fetalis and a deranged erythroid transcriptome."
+        },
+        {
+          "doc_id": "10128893",
+          "score": 6.407800197601318,
+          "best_chunk_id": "10128893",
+          "best_chunk_rank": 8,
+          "title": "Long-term survival of beta thalassemia major patients treated with hematopoietic stem cell transplantation compared with survival with conventional treatment."
+        },
+        {
+          "doc_id": "24770122",
+          "score": 6.275700092315674,
+          "best_chunk_id": "24770122",
+          "best_chunk_rank": 9,
+          "title": "Chronic daily headache. A clinical and psychological profile before and after treatment."
+        },
+        {
+          "doc_id": "10029891",
+          "score": 6.1753997802734375,
+          "best_chunk_id": "10029891",
+          "best_chunk_rank": 10,
+          "title": "Th2 cytokine response in Major Depressive Disorder patients before treatment"
+        }
+      ]
+    },
+    {
+      "query_id": "48",
+      "question": "A total of 1,000 people in the UK are asymptomatic carriers of vCJD infection.",
+      "gold_doc_id": "13734012",
+      "gold_title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey",
+      "gold_rank": 1,
+      "gold_chunk_excerpt": "OBJECTIVES To carry out a further survey of archived appendix samples to understand better the differences between existing estimates of the prevalence of subclinical infection with prions after the bovine spongiform encephalopathy epizootic and to see whether a broader birth cohort was affected, and to understand better the implications for the management of blood and blood products and for the handling of surgical instruments. DESIGN Irreversibly unlinked and anonymised large scale survey of a",
+      "top_documents": [
+        {
+          "doc_id": "13734012",
+          "score": 11.755499839782715,
+          "best_chunk_id": "13734012",
+          "best_chunk_rank": 1,
+          "title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey"
+        },
+        {
+          "doc_id": "18617259",
+          "score": 10.409000396728516,
+          "best_chunk_id": "18617259",
+          "best_chunk_rank": 2,
+          "title": "Research Letters"
+        },
+        {
+          "doc_id": "11349166",
+          "score": 6.880000114440918,
+          "best_chunk_id": "11349166",
+          "best_chunk_rank": 3,
+          "title": "Lack of evidence of transfusion transmission of Creutzfeldt-Jakob disease in a US surveillance study."
+        },
+        {
+          "doc_id": "18340282",
+          "score": 6.580900192260742,
+          "best_chunk_id": "18340282",
+          "best_chunk_rank": 4,
+          "title": "Gene–environment interactions in 7610 women with breast cancer: prospective evidence from the Million Women Study"
+        },
+        {
+          "doc_id": "3672261",
+          "score": 6.417799949645996,
+          "best_chunk_id": "3672261",
+          "best_chunk_rank": 5,
+          "title": "Natural variation in the parameters of innate immune cells is preferentially driven by genetic factors"
+        },
+        {
+          "doc_id": "15648443",
+          "score": 6.30049991607666,
+          "best_chunk_id": "15648443",
+          "best_chunk_rank": 6,
+          "title": "Long-term effect of aspirin on cancer risk in carriers of hereditary colorectal cancer: an analysis from the CAPP2 randomised controlled trial"
+        },
+        {
+          "doc_id": "13959707",
+          "score": 6.114699840545654,
+          "best_chunk_id": "13959707",
+          "best_chunk_rank": 7,
+          "title": "The Ratio of Monocytes to Lymphocytes in Peripheral Blood Correlates with Increased Susceptibility to Clinical Malaria in Kenyan Children"
+        },
+        {
+          "doc_id": "11718220",
+          "score": 6.048299789428711,
+          "best_chunk_id": "11718220",
+          "best_chunk_rank": 8,
+          "title": "Effectiveness of thigh-length graduated compression stockings to reduce the risk of deep vein thrombosis after stroke (CLOTS trial 1): a multicentre, randomised controlled trial"
+        },
+        {
+          "doc_id": "26016929",
+          "score": 6.041900157928467,
+          "best_chunk_id": "26016929",
+          "best_chunk_rank": 9,
+          "title": "Effectiveness of screening older people for impaired vision in community setting: systematic review of evidence from randomised controlled trials."
+        },
+        {
+          "doc_id": "857189",
+          "score": 5.875999927520752,
+          "best_chunk_id": "857189",
+          "best_chunk_rank": 10,
+          "title": "Autosomal dominant immune dysregulation syndrome in humans with CTLA4 mutations"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "1",
+      "question": "0-dimensional biomaterials show inductive properties.",
+      "gold_doc_id": "31715818",
+      "gold_title": "New opportunities: the use of nanotechnologies to manipulate and track stem cells.",
+      "gold_rank": null,
+      "gold_chunk_excerpt": "Nanotechnologies are emerging platforms that could be useful in measuring, understanding, and manipulating stem cells. Examples include magnetic nanoparticles and quantum dots for stem cell labeling and in vivo tracking; nanoparticles, carbon nanotubes, and polyplexes for the intracellular delivery of genes/oligonucleotides and protein/peptides; and engineered nanometer-scale scaffolds for stem cell differentiation and transplantation. This review examines the use of nanotechnologies for stem ce",
+      "top_documents": [
+        {
+          "doc_id": "10608397",
+          "score": 6.601500034332275,
+          "best_chunk_id": "10608397",
+          "best_chunk_rank": 1,
+          "title": "High-performance neuroprosthetic control by an individual with tetraplegia."
+        },
+        {
+          "doc_id": "34386619",
+          "score": 5.253799915313721,
+          "best_chunk_id": "34386619",
+          "best_chunk_rank": 2,
+          "title": "The first gene of the Bacillus subtilis clpC operon, ctsR, encodes a negative regulator of its own operon and other class III heat shock genes."
+        },
+        {
+          "doc_id": "43385013",
+          "score": 5.072500228881836,
+          "best_chunk_id": "43385013",
+          "best_chunk_rank": 3,
+          "title": "Epithelial and mesenchymal subpopulations within normal basal breast cell lines exhibit distinct stem cell/progenitor properties."
+        },
+        {
+          "doc_id": "18953920",
+          "score": 4.6479997634887695,
+          "best_chunk_id": "18953920",
+          "best_chunk_rank": 4,
+          "title": "The Epithelial-Mesenchymal Transition Generates Cells with Properties of Stem Cells"
+        },
+        {
+          "doc_id": "21257564",
+          "score": 4.643400192260742,
+          "best_chunk_id": "21257564",
+          "best_chunk_rank": 5,
+          "title": "How long will long-term potentiation last?"
+        },
+        {
+          "doc_id": "95764370",
+          "score": 4.627299785614014,
+          "best_chunk_id": "95764370",
+          "best_chunk_rank": 6,
+          "title": "Modification in the chemical bath deposition apparatus, growth and characterization of CdS semiconducting thin films for photovoltaic applications"
+        },
+        {
+          "doc_id": "3770726",
+          "score": 4.58650016784668,
+          "best_chunk_id": "3770726",
+          "best_chunk_rank": 7,
+          "title": "Microfluidic platform to evaluate migration of cells from patients with DYT1 dystonia."
+        },
+        {
+          "doc_id": "6550579",
+          "score": 4.445799827575684,
+          "best_chunk_id": "6550579",
+          "best_chunk_rank": 8,
+          "title": "A central role for HER3 in HER2-amplified breast cancer: implications for targeted therapy."
+        },
+        {
+          "doc_id": "23126677",
+          "score": 4.382800102233887,
+          "best_chunk_id": "23126677",
+          "best_chunk_rank": 9,
+          "title": "Circulating plasma microRNAs as a screening method for detection of colorectal adenomas."
+        },
+        {
+          "doc_id": "40212412",
+          "score": 4.373000144958496,
+          "best_chunk_id": "40212412",
+          "best_chunk_rank": 10,
+          "title": "Periosteal bone formation--a neglected determinant of bone strength."
+        }
+      ]
+    },
+    {
+      "query_id": "13",
+      "question": "5% of perinatal mortality is due to low birth weight.",
+      "gold_doc_id": "1606628",
+      "gold_title": "Estimates of global prevalence of childhood underweight in 1990 and 2015.",
+      "gold_rank": 56,
+      "gold_chunk_excerpt": "CONTEXT One key target of the United Nations Millennium Development goals is to reduce the prevalence of underweight among children younger than 5 years by half between 1990 and 2015. OBJECTIVE To estimate trends in childhood underweight by geographic regions of the world. DESIGN, SETTING, AND PARTICIPANTS Time series study of prevalence of underweight, defined as weight 2 SDs below the mean weight for age of the National Center for Health Statistics and World Health Organization (WHO) reference",
+      "top_documents": [
+        {
+          "doc_id": "1263446",
+          "score": 11.036299705505371,
+          "best_chunk_id": "1263446",
+          "best_chunk_rank": 1,
+          "title": "Determinants of neonatal mortality in Indonesia"
+        },
+        {
+          "doc_id": "7662395",
+          "score": 10.9128999710083,
+          "best_chunk_id": "7662395",
+          "best_chunk_rank": 2,
+          "title": "Perinatal mortality in rural China: retrospective cohort study."
+        },
+        {
+          "doc_id": "17450673",
+          "score": 9.898300170898438,
+          "best_chunk_id": "17450673",
+          "best_chunk_rank": 3,
+          "title": "Intrauterine environments and breast cancer risk: meta-analysis and systematic review"
+        },
+        {
+          "doc_id": "12779444",
+          "score": 8.319600105285645,
+          "best_chunk_id": "12779444",
+          "best_chunk_rank": 4,
+          "title": "Effect of screening on cervical cancer mortality in England and Wales: analysis of trends with an age period cohort model."
+        },
+        {
+          "doc_id": "28633594",
+          "score": 8.215700149536133,
+          "best_chunk_id": "28633594",
+          "best_chunk_rank": 5,
+          "title": "International standards for fetal growth based on serial ultrasound measurements: the Fetal Growth Longitudinal Study of the INTERGROWTH-21st Project."
+        },
+        {
+          "doc_id": "8842332",
+          "score": 8.1048002243042,
+          "best_chunk_id": "8842332",
+          "best_chunk_rank": 6,
+          "title": "Contemporary type 1 diabetes pregnancy outcomes: impact of obesity and glycaemic control."
+        },
+        {
+          "doc_id": "25182647",
+          "score": 7.964600086212158,
+          "best_chunk_id": "25182647",
+          "best_chunk_rank": 7,
+          "title": "Maternal and perinatal outcome in severe pregnancy-related liver disease."
+        },
+        {
+          "doc_id": "30786800",
+          "score": 7.742000102996826,
+          "best_chunk_id": "30786800",
+          "best_chunk_rank": 8,
+          "title": "Lipid-based nutrient supplement increases the birth size of infants of primiparous women in Ghana."
+        },
+        {
+          "doc_id": "19799455",
+          "score": 7.3790998458862305,
+          "best_chunk_id": "19799455",
+          "best_chunk_rank": 9,
+          "title": "Ascorbic-acid transporter Slc23a1 is essential for vitamin C transport into the brain and for perinatal survival"
+        },
+        {
+          "doc_id": "34544514",
+          "score": 7.3730998039245605,
+          "best_chunk_id": "34544514",
+          "best_chunk_rank": 10,
+          "title": "Ibuprofen for the treatment of patent ductus arteriosus in preterm or low birth weight (or both) infants."
+        }
+      ]
+    },
+    {
+      "query_id": "132",
+      "question": "Aspirin inhibits the production of PGE2.",
+      "gold_doc_id": "7975937",
+      "gold_title": "Cyclooxygenase-Dependent Tumor Growth through Evasion of Immunity",
+      "gold_rank": 79,
+      "gold_chunk_excerpt": "The mechanisms by which melanoma and other cancer cells evade anti-tumor immunity remain incompletely understood. Here, we show that the growth of tumors formed by mutant Braf(V600E) mouse melanoma cells in an immunocompetent host requires their production of prostaglandin E2, which suppresses immunity and fuels tumor-promoting inflammation. Genetic ablation of cyclooxygenases (COX) or prostaglandin E synthases in Braf(V600E) mouse melanoma cells, as well as in Nras(G12D) melanoma or in breast o",
+      "top_documents": [
+        {
+          "doc_id": "27615329",
+          "score": 7.123700141906738,
+          "best_chunk_id": "27615329",
+          "best_chunk_rank": 1,
+          "title": "Prostaglandin E2 as an inhibitory modulator of fibrogenesis in human lung allografts."
+        },
+        {
+          "doc_id": "21181273",
+          "score": 6.729899883270264,
+          "best_chunk_id": "21181273",
+          "best_chunk_rank": 2,
+          "title": "15-Hydroxyprostaglandin dehydrogenase is down-regulated in colorectal cancer."
+        },
+        {
+          "doc_id": "6945691",
+          "score": 6.703000068664551,
+          "best_chunk_id": "6945691",
+          "best_chunk_rank": 3,
+          "title": "The modulation of human natural killer cell activity by prostaglandins."
+        },
+        {
+          "doc_id": "58006489",
+          "score": 6.683700084686279,
+          "best_chunk_id": "58006489",
+          "best_chunk_rank": 4,
+          "title": "Prostaglandin E2 mediates sensory nerve regulation of bone homeostasis"
+        },
+        {
+          "doc_id": "45401535",
+          "score": 6.095300197601318,
+          "best_chunk_id": "45401535",
+          "best_chunk_rank": 5,
+          "title": "Candida albicans-Staphylococcus aureus polymicrobial peritonitis modulates host innate immunity."
+        },
+        {
+          "doc_id": "54482327",
+          "score": 5.962200164794922,
+          "best_chunk_id": "54482327",
+          "best_chunk_rank": 6,
+          "title": "Morin Exhibits Anti-Inflammatory Effects on IL-1β-Stimulated Human Osteoarthritis Chondrocytes by Activating the Nrf2 Signaling Pathway"
+        },
+        {
+          "doc_id": "6407356",
+          "score": 5.644999980926514,
+          "best_chunk_id": "6407356",
+          "best_chunk_rank": 7,
+          "title": "Coxibs and other nonsteroidal anti-inflammatory drugs in animal models of cancer chemoprevention."
+        },
+        {
+          "doc_id": "3866315",
+          "score": 5.372900009155273,
+          "best_chunk_id": "3866315",
+          "best_chunk_rank": 8,
+          "title": "Novel Functional Sets of Lipid-Derived Mediators with Antiinflammatory Actions Generated from Omega-3 Fatty Acids via Cyclooxygenase 2–Nonsteroidal Antiinflammatory Drugs and Transcellular Processing"
+        },
+        {
+          "doc_id": "7613033",
+          "score": 5.1921000480651855,
+          "best_chunk_id": "7613033",
+          "best_chunk_rank": 9,
+          "title": "Aspirin in the chemoprevention of colorectal neoplasia: an overview."
+        },
+        {
+          "doc_id": "15648443",
+          "score": 5.188600063323975,
+          "best_chunk_id": "15648443",
+          "best_chunk_rank": 10,
+          "title": "Long-term effect of aspirin on cancer risk in carriers of hereditary colorectal cancer: an analysis from the CAPP2 randomised controlled trial"
+        }
+      ]
+    },
+    {
+      "query_id": "183",
+      "question": "Bone marrow cells contribute to adult macrophage compartments.",
+      "gold_doc_id": "12827098",
+      "gold_title": "Tissue-resident macrophages self-maintain locally throughout adult life with minimal contribution from circulating monocytes.",
+      "gold_rank": 11,
+      "gold_chunk_excerpt": "Despite accumulating evidence suggesting local self-maintenance of tissue macrophages in the steady state, the dogma remains that tissue macrophages derive from monocytes. Using parabiosis and fate-mapping approaches, we confirmed that monocytes do not show significant contribution to tissue macrophages in the steady state. Similarly, we found that after depletion of lung macrophages, the majority of repopulation occurred by stochastic cellular proliferation in situ in a macrophage colony-stimul",
+      "top_documents": [
+        {
+          "doc_id": "8137081",
+          "score": 11.311599731445312,
+          "best_chunk_id": "8137081",
+          "best_chunk_rank": 1,
+          "title": "Effects of repeated social stress on leukocyte distribution in bone marrow, peripheral blood and spleen"
+        },
+        {
+          "doc_id": "17271462",
+          "score": 8.887200355529785,
+          "best_chunk_id": "17271462",
+          "best_chunk_rank": 2,
+          "title": "Tie2/Angiopoietin-1 Signaling Regulates Hematopoietic Stem Cell Quiescence in the Bone Marrow Niche"
+        },
+        {
+          "doc_id": "10078024",
+          "score": 8.475299835205078,
+          "best_chunk_id": "10078024",
+          "best_chunk_rank": 3,
+          "title": "Leptin-receptor-expressing mesenchymal stromal cells represent the main source of bone formed by adult bone marrow."
+        },
+        {
+          "doc_id": "44562221",
+          "score": 8.268500328063965,
+          "best_chunk_id": "44562221",
+          "best_chunk_rank": 4,
+          "title": "Tissue-specific alterations in the glucocorticoid sensitivity of immune cells following repeated social defeat in mice"
+        },
+        {
+          "doc_id": "1122198",
+          "score": 8.263099670410156,
+          "best_chunk_id": "1122198",
+          "best_chunk_rank": 5,
+          "title": "Increased atherosclerosis in mice reconstituted with apolipoprotein E null macrophages."
+        },
+        {
+          "doc_id": "6270720",
+          "score": 8.256699562072754,
+          "best_chunk_id": "6270720",
+          "best_chunk_rank": 6,
+          "title": "Myeloid differentiation factor-88/interleukin-1 signaling controls cardiac fibrosis and heart failure progression in inflammatory dilated cardiomyopathy."
+        },
+        {
+          "doc_id": "188911",
+          "score": 8.244199752807617,
+          "best_chunk_id": "188911",
+          "best_chunk_rank": 7,
+          "title": "Generation of large numbers of dendritic cells from mouse bone marrow cultures supplemented with granulocyte/macrophage colony-stimulating factor"
+        },
+        {
+          "doc_id": "3118719",
+          "score": 8.228500366210938,
+          "best_chunk_id": "3118719",
+          "best_chunk_rank": 8,
+          "title": "Regulation and function of the E-cadherin/catenin complex in cells of the monocyte-macrophage lineage and DCs."
+        },
+        {
+          "doc_id": "24707550",
+          "score": 8.163200378417969,
+          "best_chunk_id": "24707550",
+          "best_chunk_rank": 9,
+          "title": "A systemic granulomatous response to Schistosoma mansoni eggs alters responsiveness of bone-marrow-derived macrophages to Toll-like receptor agonists."
+        },
+        {
+          "doc_id": "46193388",
+          "score": 8.130999565124512,
+          "best_chunk_id": "46193388",
+          "best_chunk_rank": 10,
+          "title": "Turning blood into brain: cells bearing neuronal antigens generated in vivo from bone marrow."
+        }
+      ]
+    },
+    {
+      "query_id": "212",
+      "question": "CR is associated with higher methylation age.",
+      "gold_doc_id": "22038539",
+      "gold_title": "Caloric restriction delays age-related methylation drift",
+      "gold_rank": 11,
+      "gold_chunk_excerpt": "In mammals, caloric restriction consistently results in extended lifespan. Epigenetic information encoded by DNA methylation is tightly regulated, but shows a striking drift associated with age that includes both gains and losses of DNA methylation at various sites. Here, we report that epigenetic drift is conserved across species and the rate of drift correlates with lifespan when comparing mice, rhesus monkeys, and humans. Twenty-two to 30-year-old rhesus monkeys exposed to 30% caloric restric",
+      "top_documents": [
+        {
+          "doc_id": "1754001",
+          "score": 7.082699775695801,
+          "best_chunk_id": "1754001",
+          "best_chunk_rank": 1,
+          "title": "Yeast sirtuins and the regulation of aging."
+        },
+        {
+          "doc_id": "23017040",
+          "score": 6.806000232696533,
+          "best_chunk_id": "23017040",
+          "best_chunk_rank": 2,
+          "title": "Methionine restriction decreases visceral fat mass and preserves insulin action in aging male Fischer 344 rats independent of energy restriction."
+        },
+        {
+          "doc_id": "42387637",
+          "score": 6.4899001121521,
+          "best_chunk_id": "42387637",
+          "best_chunk_rank": 3,
+          "title": "Rapid DNA methylation changes after exposure to traffic particles."
+        },
+        {
+          "doc_id": "6042706",
+          "score": 6.372300148010254,
+          "best_chunk_id": "6042706",
+          "best_chunk_rank": 4,
+          "title": "Effects of a high-fat diet exposure in utero on the metabolic syndrome-like phenomenon in mouse offspring through epigenetic changes in adipocytokine gene expression."
+        },
+        {
+          "doc_id": "23665162",
+          "score": 5.805799961090088,
+          "best_chunk_id": "23665162",
+          "best_chunk_rank": 5,
+          "title": "Association of hypomethylation of LINE-1 repetitive element in blood leukocyte DNA with an increased risk of hepatocellular carcinoma"
+        },
+        {
+          "doc_id": "9558539",
+          "score": 5.792399883270264,
+          "best_chunk_id": "9558539",
+          "best_chunk_rank": 6,
+          "title": "CD44v6 is a marker of constitutive and reprogrammed cancer stem cells driving colon cancer metastasis."
+        },
+        {
+          "doc_id": "4434951",
+          "score": 5.789000034332275,
+          "best_chunk_id": "4434951",
+          "best_chunk_rank": 7,
+          "title": "Diverse interventions that extend mouse lifespan suppress shared age-associated epigenetic changes at critical gene regulatory regions"
+        },
+        {
+          "doc_id": "14475235",
+          "score": 5.678599834442139,
+          "best_chunk_id": "14475235",
+          "best_chunk_rank": 8,
+          "title": "Age-Associated Sperm DNA Methylation Alterations: Possible Implications in Offspring Disease Susceptibility"
+        },
+        {
+          "doc_id": "21170174",
+          "score": 5.634099960327148,
+          "best_chunk_id": "21170174",
+          "best_chunk_rank": 9,
+          "title": "Crossover and noncrossover pathways in mouse meiosis."
+        },
+        {
+          "doc_id": "9291668",
+          "score": 5.573299884796143,
+          "best_chunk_id": "9291668",
+          "best_chunk_rank": 10,
+          "title": " DNA methylation and healthy human aging"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 243,
+    "failure_at_10_available": 57,
+    "saved_per_group_max": 5
+  }
+}
