@@ -102,20 +102,22 @@
 
 ## 5. 下一步
 
-1. **BEIR 数据接入（进行中）**：scifact 补 Graph + Hybrid2（凑齐五路）；trec_covid 跑检索（171k 文档，Graph 太重跳过）；bioasq 找替代源（HF 401）。
-2. **接入 HotpotQA + FRAMES**（多跳硬 gold，写清洗脚本 `scripts/build_*.py`），验证图检索多跳价值。
-3. **MIRAGE 端到端**（仓库已拉取到 `MIRAGE/`，git 忽略可重建；等阶段 3 有 LLM 再跑 QA Accuracy）。
-4. 阶段 3 MedicalGPT SFT（GPT 并行线预习中）。之后阶段 4 Search-R1、阶段 5 MedSearch-R1。
+1. **HotpotQA 补 Hybrid2**（Qwen3-Reranker 三路重排，运行中）；FRAMES 轻接已完成（`data/processed/frames_v1/questions_with_gold.json`，824 问/金标映射，不建语料）。
+2. **trec_covid 放弃检索**：原始语料 24.6% 文档 `text` 为空（仅标题的会议摘要记录，非连续文本），title 回退无检索价值。
+3. **LinearRAG medical 仅定性**：`LinearRAG/dataset/medical/` evidence 为改写文本，全量匹配仅 0.35% 可对齐 chunk，无法建可靠 qrels；官方 `evaluate.py` 本就不使用 evidence。官方 HF `Zly0523/linear-rag` 的 hotpotqa 子集与 hotpotqa_v1 同源无额外价值。
+4. **MIRAGE 端到端**（仓库已拉取到 `MIRAGE/`，git 忽略可重建；等阶段 3 有 LLM 再跑 QA Accuracy）。
+5. 阶段 3 MedicalGPT SFT（GPT 并行线预习中）。之后阶段 4 Search-R1、阶段 5 MedSearch-R1。
 
-**关键结论**：检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）× 多基准（pubmedqa/nfcorpus/scifact）完备。基准选择显著影响结论：pubmedqa Dense 最优、nfcorpus Hybrid2 最优、scifact Hybrid 最优；图检索在已有基准均未胜出。
+**关键结论**：检索层 5 路（BM25/Dense/Hybrid/Graph/Hybrid2）× 多基准（pubmedqa/nfcorpus/scifact/hotpotqa）完备。基准选择显著影响结论：pubmedqa Dense 最优、nfcorpus/scifact Hybrid2 最优、hotpotqa Hybrid 最优；**图检索在全部四个基准均未胜出**（HotpotQA 上 BC5CDR 医学 NER 在通用维基上实体稀疏，实体传播信号弱——诚实负结果）。**Hybrid RRF 在多跳场景（hotpotqa）大幅胜出**（R@10 0.800 vs 单路最好 Dense 0.711），词项+语义两路互补价值显著。
 
 ## 6. 给下一位 Agent 的开场指令
 
 ```text
 先读根目录 README.md、STUDY_PROGRESS.md、HANDOFF.md。
-检索层已完备（BM25/Dense/Hybrid/Graph × pubmedqa + nfcorpus，全部审计合并），
-评测支持多相关 qrels。当前分支 feat/reranker-hybrid2 在做 Hybrid2：
-Qwen3-Reranker 三路候选重排（代码已写，模型下载 + 加载适配中）。
+检索层已完备（BM25/Dense/Hybrid/Graph/Hybrid2 × pubmedqa + nfcorpus + scifact + hotpotqa，全部审计合并），
+评测支持多相关 qrels。HotpotQA 多跳基准已接入（7,405 问/66,581 文档/14,810 qrels）。
 环境用 /opt/venv/bin/python；不要重跑或重构已审计基线。
 任何新指标必须来自真实脚本输出 + 哈希审计。
 ```
+
+
