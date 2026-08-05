@@ -162,19 +162,39 @@ R = R_answer
 
 ## 7. 单卡 32GB 预算
 
-第一版硬件配置目标：
+第一版硬件配置目标（硬件：RTX 5090 32GB）：
 
 | 配置项 | 起步设置 |
 |---|---|
-| Backbone | Qwen2.5-3B 或同级 3B；稳定后再尝试 Qwen3-4B |
+| Backbone | **Qwen2.5-3B 起步，稳定后再尝试 Qwen3-4B / Qwen2.5-7B** |
 | 微调 | QLoRA 4-bit 或经实测可行的 BF16 LoRA |
 | 最大上下文 | 2048～4096 tokens |
 | 最大工具轮数 | 2，稳定后增加到 4 |
-| 每题 rollout | 2，显存允许后尝试 4 |
+| 每题 rollout | **≥ 4（用户明确要求）**，显存允许后尝试 6 |
 | micro batch | 1 |
 | 梯度累积 | 根据有效 batch 调整并记录 |
 | Gradient Checkpointing | 开启 |
 | 检索服务 | 优先 CPU/独立进程，避免与训练争抢显存 |
+
+### 7.1 模型选型依据（2026-08-05 调研）
+
+**官方 Search-R1**（arXiv 2503.09516）主模型为 Qwen2.5-7B（7 数据集平均 +26%），Qwen2.5-3B 验证 +21%，Qwen2.5-14B 附录。instruct 版收敛快，base 版 RL 后最终性能相当。
+
+**32GB 单卡 + rollout≥4 显存估算**（QLoRA 4-bit + ctx 2048，经验法则）：
+
+| 模型 | 训练+rollout 估算 | 32GB 占比 | 判断 |
+|---|---:|---:|---|
+| Qwen2.5-3B | ~11GB | 34% | ✅ 宽裕，可加 rollout/batch |
+| Qwen3-4B | ~13GB | 41% | ✅ 宽裕 |
+| Qwen2.5-7B | ~20GB | 63% | ⚠️ 可行，rollout 4 为舒适上限 |
+| Qwen3-8B | ~22GB | 69% | ⚠️ 挤 |
+
+**决策**：3B 起步跑通完整管线 → 稳定后上 4B/7B。理由：
+1. RL 训练高度依赖迭代调试（reward hacking、停止条件、工具格式），小模型便宜快速；
+2. 7B 的 rollout 受 NF4 反量化拖慢 1.5-2×，调试期成本高；
+3. 与 §12 路线"阶段 4：Search-R1 3B"一致。
+
+**工具链**：MedicalGPT 已内置 GRPO（`training/grpo_training.py`，TRL GRPOTrainer，支持 QLoRA/4bit/LoRA r 可配），模型名传 `--model_name_or_path` 即可切换 3B/4B/7B，无需改训练代码。
 
 任何显存和训练时间数字都必须由实际运行记录。遇到 OOM 时按既定顺序缩短序列、减少 rollout、减小 batch、确认梯度检查点和量化，再考虑更换模型。
 
@@ -239,7 +259,7 @@ R = R_answer
 | 奖励鼓励不搜索直接猜 | 分题型统计搜索行为；单独调节成本奖励 |
 | Agent 引用无关证据 | 独立评测证据命中和答案正确率 |
 | 合成轨迹形成闭环自证 | 合成数据仅作冷启动；真实测试集最终评估 |
-| 单卡 rollout OOM | 3B、QLoRA、rollout=2、短上下文逐步扩展 |
+| 单卡 rollout OOM | 3B、QLoRA、rollout=4、短上下文逐步扩展；仍 OOM 则降 rollout=2 或减 batch |
 | 医疗措辞被误解为临床产品 | README 明确研究用途和非临床声明 |
 
 ## 12. 与学习路线的关系
