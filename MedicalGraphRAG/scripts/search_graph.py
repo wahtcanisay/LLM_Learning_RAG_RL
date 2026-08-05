@@ -154,6 +154,7 @@ def main() -> int:
                 "command": sys.argv,
                 "query_count": len(rows),
                 **hit_summary,
+                "text_mode": index_report["text_mode"],
                 "ner_model": index_report["ner_model"],
                 "embedding_model": index_report["embedding_model"],
                 "graph_sha256": index_report["graph_sha256"],

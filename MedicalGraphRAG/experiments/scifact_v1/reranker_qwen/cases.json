@@ -1,0 +1,491 @@
+{
+  "success": [
+    {
+      "query_id": "1",
+      "question": "0-dimensional biomaterials show inductive properties.",
+      "gold_doc_id": "31715818",
+      "gold_rank": 6,
+      "top_documents": [
+        {
+          "doc_id": "4346436",
+          "score": -3.8125
+        },
+        {
+          "doc_id": "21456232",
+          "score": -4.0625
+        },
+        {
+          "doc_id": "19855358",
+          "score": -5.0
+        },
+        {
+          "doc_id": "1065627",
+          "score": -5.3125
+        },
+        {
+          "doc_id": "40212412",
+          "score": -5.3125
+        },
+        {
+          "doc_id": "31715818",
+          "score": -5.375
+        },
+        {
+          "doc_id": "121581019",
+          "score": -5.5625
+        },
+        {
+          "doc_id": "17388232",
+          "score": -6.15625
+        },
+        {
+          "doc_id": "43990286",
+          "score": -6.3125
+        },
+        {
+          "doc_id": "13231899",
+          "score": -6.53125
+        }
+      ]
+    },
+    {
+      "query_id": "3",
+      "question": "1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants.",
+      "gold_doc_id": "14717500",
+      "gold_rank": 5,
+      "top_documents": [
+        {
+          "doc_id": "2739854",
+          "score": 5.4375
+        },
+        {
+          "doc_id": "23389795",
+          "score": 2.4375
+        },
+        {
+          "doc_id": "1388704",
+          "score": 2.125
+        },
+        {
+          "doc_id": "2107238",
+          "score": 0.125
+        },
+        {
+          "doc_id": "14717500",
+          "score": -0.4375
+        },
+        {
+          "doc_id": "4414547",
+          "score": -1.6875
+        },
+        {
+          "doc_id": "20280410",
+          "score": -2.125
+        },
+        {
+          "doc_id": "32181055",
+          "score": -2.25
+        },
+        {
+          "doc_id": "17088791",
+          "score": -2.3125
+        },
+        {
+          "doc_id": "15153602",
+          "score": -2.875
+        }
+      ]
+    },
+    {
+      "query_id": "5",
+      "question": "1/2000 in UK have abnormal PrP positivity.",
+      "gold_doc_id": "13734012",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "13734012",
+          "score": 5.1875
+        },
+        {
+          "doc_id": "18617259",
+          "score": 3.5
+        },
+        {
+          "doc_id": "17333231",
+          "score": -0.625
+        },
+        {
+          "doc_id": "1292369",
+          "score": -1.25
+        },
+        {
+          "doc_id": "1583041",
+          "score": -1.25
+        },
+        {
+          "doc_id": "42240424",
+          "score": -2.125
+        },
+        {
+          "doc_id": "695938",
+          "score": -2.25
+        },
+        {
+          "doc_id": "11349166",
+          "score": -3.4375
+        },
+        {
+          "doc_id": "1203035",
+          "score": -5.71875
+        },
+        {
+          "doc_id": "19824183",
+          "score": -6.09375
+        }
+      ]
+    },
+    {
+      "query_id": "36",
+      "question": "A deficiency of vitamin B12 increases blood levels of homocysteine.",
+      "gold_doc_id": "5152028",
+      "gold_rank": 10,
+      "top_documents": [
+        {
+          "doc_id": "33409100",
+          "score": 5.3125
+        },
+        {
+          "doc_id": "42441846",
+          "score": 4.375
+        },
+        {
+          "doc_id": "37424881",
+          "score": 4.1875
+        },
+        {
+          "doc_id": "18557974",
+          "score": 3.5
+        },
+        {
+          "doc_id": "3215494",
+          "score": 3.3125
+        },
+        {
+          "doc_id": "21636085",
+          "score": 3.1875
+        },
+        {
+          "doc_id": "12130200",
+          "score": 2.5
+        },
+        {
+          "doc_id": "16252863",
+          "score": 2.5
+        },
+        {
+          "doc_id": "18256197",
+          "score": 2.1875
+        },
+        {
+          "doc_id": "11705328",
+          "score": 2.0
+        }
+      ]
+    },
+    {
+      "query_id": "42",
+      "question": "A high microerythrocyte count raises vulnerability to severe anemia in homozygous alpha (+)- thalassemia trait subjects.",
+      "gold_doc_id": "18174210",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "18174210",
+          "score": 9.0
+        },
+        {
+          "doc_id": "40913091",
+          "score": 5.3125
+        },
+        {
+          "doc_id": "27889071",
+          "score": 5.0625
+        },
+        {
+          "doc_id": "45218443",
+          "score": -0.5
+        },
+        {
+          "doc_id": "6315132",
+          "score": -1.0625
+        },
+        {
+          "doc_id": "4449524",
+          "score": -1.75
+        },
+        {
+          "doc_id": "10128893",
+          "score": -2.75
+        },
+        {
+          "doc_id": "27162821",
+          "score": -2.75
+        },
+        {
+          "doc_id": "39506601",
+          "score": -3.0625
+        },
+        {
+          "doc_id": "26064662",
+          "score": -3.625
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "13",
+      "question": "5% of perinatal mortality is due to low birth weight.",
+      "gold_doc_id": "1606628",
+      "gold_rank": 28,
+      "top_documents": [
+        {
+          "doc_id": "1263446",
+          "score": 3.5625
+        },
+        {
+          "doc_id": "7662395",
+          "score": 3.125
+        },
+        {
+          "doc_id": "17450673",
+          "score": 1.25
+        },
+        {
+          "doc_id": "11748341",
+          "score": 1.0625
+        },
+        {
+          "doc_id": "33740844",
+          "score": 0.125
+        },
+        {
+          "doc_id": "35714909",
+          "score": -0.1875
+        },
+        {
+          "doc_id": "4791384",
+          "score": -1.1875
+        },
+        {
+          "doc_id": "30786800",
+          "score": -1.3125
+        },
+        {
+          "doc_id": "33257464",
+          "score": -1.9375
+        },
+        {
+          "doc_id": "28633594",
+          "score": -2.125
+        }
+      ]
+    },
+    {
+      "query_id": "132",
+      "question": "Aspirin inhibits the production of PGE2.",
+      "gold_doc_id": "7975937",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "3866315",
+          "score": 5.125
+        },
+        {
+          "doc_id": "2443495",
+          "score": 4.5
+        },
+        {
+          "doc_id": "9159125",
+          "score": 3.75
+        },
+        {
+          "doc_id": "27615329",
+          "score": 1.875
+        },
+        {
+          "doc_id": "21181273",
+          "score": 1.75
+        },
+        {
+          "doc_id": "58006489",
+          "score": 1.625
+        },
+        {
+          "doc_id": "6945691",
+          "score": 1.5
+        },
+        {
+          "doc_id": "343052",
+          "score": 0.75
+        },
+        {
+          "doc_id": "20732789",
+          "score": 0.25
+        },
+        {
+          "doc_id": "45401535",
+          "score": 0.125
+        }
+      ]
+    },
+    {
+      "query_id": "239",
+      "question": "Cellular aging closely links to an older appearance.",
+      "gold_doc_id": "14079881",
+      "gold_rank": 19,
+      "top_documents": [
+        {
+          "doc_id": "516867",
+          "score": 5.875
+        },
+        {
+          "doc_id": "19343151",
+          "score": 3.625
+        },
+        {
+          "doc_id": "34747208",
+          "score": 3.5
+        },
+        {
+          "doc_id": "615047",
+          "score": 3.3125
+        },
+        {
+          "doc_id": "9559146",
+          "score": 3.1875
+        },
+        {
+          "doc_id": "3230557",
+          "score": 2.75
+        },
+        {
+          "doc_id": "1848452",
+          "score": 2.625
+        },
+        {
+          "doc_id": "25419778",
+          "score": 2.3125
+        },
+        {
+          "doc_id": "9291668",
+          "score": 2.25
+        },
+        {
+          "doc_id": "16630060",
+          "score": 1.9375
+        }
+      ]
+    },
+    {
+      "query_id": "294",
+      "question": "Crossover hot spots are not found within gene promoters in Saccharomyces cerevisiae.",
+      "gold_doc_id": "10874408",
+      "gold_rank": 68,
+      "top_documents": [
+        {
+          "doc_id": "32638085",
+          "score": 4.0
+        },
+        {
+          "doc_id": "1259280",
+          "score": 3.6875
+        },
+        {
+          "doc_id": "2817000",
+          "score": 2.9375
+        },
+        {
+          "doc_id": "10086360",
+          "score": 2.3125
+        },
+        {
+          "doc_id": "3367829",
+          "score": 2.125
+        },
+        {
+          "doc_id": "35861290",
+          "score": 2.125
+        },
+        {
+          "doc_id": "17240457",
+          "score": 0.75
+        },
+        {
+          "doc_id": "9704467",
+          "score": 0.75
+        },
+        {
+          "doc_id": "4305576",
+          "score": 0.625
+        },
+        {
+          "doc_id": "9451052",
+          "score": 0.5
+        }
+      ]
+    },
+    {
+      "query_id": "421",
+      "question": "Flexible molecules experience greater steric hindrance in the tumor microenviroment than rigid molecules.",
+      "gold_doc_id": "11172205",
+      "gold_rank": 79,
+      "top_documents": [
+        {
+          "doc_id": "1065627",
+          "score": 2.875
+        },
+        {
+          "doc_id": "6944800",
+          "score": 1.3125
+        },
+        {
+          "doc_id": "4346436",
+          "score": 1.0625
+        },
+        {
+          "doc_id": "32742683",
+          "score": 1.0
+        },
+        {
+          "doc_id": "10812605",
+          "score": 0.625
+        },
+        {
+          "doc_id": "15727984",
+          "score": -0.75
+        },
+        {
+          "doc_id": "25435456",
+          "score": -0.8125
+        },
+        {
+          "doc_id": "952111",
+          "score": -1.0
+        },
+        {
+          "doc_id": "12866641",
+          "score": -2.75
+        },
+        {
+          "doc_id": "8963413",
+          "score": -2.75
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 271,
+    "failure_at_10_available": 29,
+    "saved_per_group_max": 5
+  }
+}

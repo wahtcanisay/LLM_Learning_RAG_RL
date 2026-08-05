@@ -1,0 +1,801 @@
+{
+  "success": [
+    {
+      "query_id": "3",
+      "question": "1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants.",
+      "gold_doc_id": "14717500",
+      "gold_title": "Rare Variants Create Synthetic Genome-Wide Associations",
+      "gold_rank": 7,
+      "top_documents": [
+        {
+          "doc_id": "23389795",
+          "score": 0.6630716919898987,
+          "best_chunk_id": "23389795",
+          "best_chunk_rank": 1,
+          "title": "Common and rare variants in multifactorial susceptibility to common diseases"
+        },
+        {
+          "doc_id": "3662132",
+          "score": 0.6603090167045593,
+          "best_chunk_id": "3662132",
+          "best_chunk_rank": 2,
+          "title": "Fast and accurate short read alignment with Burrows–Wheeler transform"
+        },
+        {
+          "doc_id": "1388704",
+          "score": 0.632567286491394,
+          "best_chunk_id": "1388704",
+          "best_chunk_rank": 3,
+          "title": "The essence of SNPs."
+        },
+        {
+          "doc_id": "5650232",
+          "score": 0.628821611404419,
+          "best_chunk_id": "5650232",
+          "best_chunk_rank": 4,
+          "title": "BEDTools: a flexible suite of utilities for comparing genomic features"
+        },
+        {
+          "doc_id": "3444507",
+          "score": 0.6266647577285767,
+          "best_chunk_id": "3444507",
+          "best_chunk_rank": 5,
+          "title": "Integrative Genomics Viewer (IGV): high-performance genomics data visualization and exploration"
+        },
+        {
+          "doc_id": "13914198",
+          "score": 0.6149448156356812,
+          "best_chunk_id": "13914198",
+          "best_chunk_rank": 6,
+          "title": "Haplotype estimation using sequencing reads."
+        },
+        {
+          "doc_id": "14717500",
+          "score": 0.6134595274925232,
+          "best_chunk_id": "14717500",
+          "best_chunk_rank": 7,
+          "title": "Rare Variants Create Synthetic Genome-Wide Associations"
+        },
+        {
+          "doc_id": "2107238",
+          "score": 0.6072407960891724,
+          "best_chunk_id": "2107238",
+          "best_chunk_rank": 8,
+          "title": "The Sequence Alignment/Map format and SAMtools"
+        },
+        {
+          "doc_id": "15153602",
+          "score": 0.5941397547721863,
+          "best_chunk_id": "15153602",
+          "best_chunk_rank": 9,
+          "title": "Haplotype-based variant detection from short-read sequencing"
+        },
+        {
+          "doc_id": "7838799",
+          "score": 0.5882381200790405,
+          "best_chunk_id": "7838799",
+          "best_chunk_rank": 10,
+          "title": "GeneTrack--a genomic data processing and visualization framework."
+        }
+      ]
+    },
+    {
+      "query_id": "5",
+      "question": "1/2000 in UK have abnormal PrP positivity.",
+      "gold_doc_id": "13734012",
+      "gold_title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "13734012",
+          "score": 0.31597039103507996,
+          "best_chunk_id": "13734012",
+          "best_chunk_rank": 1,
+          "title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey"
+        },
+        {
+          "doc_id": "27466734",
+          "score": 0.30512747168540955,
+          "best_chunk_id": "27466734",
+          "best_chunk_rank": 2,
+          "title": "Development and validation of QRISK3 risk prediction algorithms to estimate future risk of cardiovascular disease: prospective cohort study"
+        },
+        {
+          "doc_id": "2739854",
+          "score": 0.2942931354045868,
+          "best_chunk_id": "2739854",
+          "best_chunk_rank": 3,
+          "title": "Rare and common variants: twenty arguments"
+        },
+        {
+          "doc_id": "28338268",
+          "score": 0.2904682457447052,
+          "best_chunk_id": "28338268",
+          "best_chunk_rank": 4,
+          "title": "Dominant optic atrophy, deafness, ptosis, ophthalmoplegia, dystaxia, and myopathy. A new syndrome."
+        },
+        {
+          "doc_id": "18617259",
+          "score": 0.2870453894138336,
+          "best_chunk_id": "18617259",
+          "best_chunk_rank": 5,
+          "title": "Research Letters"
+        },
+        {
+          "doc_id": "15663829",
+          "score": 0.28520217537879944,
+          "best_chunk_id": "15663829",
+          "best_chunk_rank": 6,
+          "title": "Mendelian Randomization Study of B-Type Natriuretic Peptide and Type 2 Diabetes: Evidence of Causal Association from Population Studies"
+        },
+        {
+          "doc_id": "1967017",
+          "score": 0.28167924284935,
+          "best_chunk_id": "1967017",
+          "best_chunk_rank": 7,
+          "title": "A Candidate Gene Approach Identifies the TRAF1/C5 Region as a Risk Factor for Rheumatoid Arthritis"
+        },
+        {
+          "doc_id": "70490",
+          "score": 0.28150346875190735,
+          "best_chunk_id": "70490",
+          "best_chunk_rank": 8,
+          "title": "Simplifying likelihood ratios"
+        },
+        {
+          "doc_id": "43629704",
+          "score": 0.27805712819099426,
+          "best_chunk_id": "43629704",
+          "best_chunk_rank": 9,
+          "title": "Prevention of coronary heart disease with pravastatin in men with hypercholesterolemia. West of Scotland Coronary Prevention Study Group."
+        },
+        {
+          "doc_id": "23389795",
+          "score": 0.2761808931827545,
+          "best_chunk_id": "23389795",
+          "best_chunk_rank": 10,
+          "title": "Common and rare variants in multifactorial susceptibility to common diseases"
+        }
+      ]
+    },
+    {
+      "query_id": "36",
+      "question": "A deficiency of vitamin B12 increases blood levels of homocysteine.",
+      "gold_doc_id": "5152028",
+      "gold_title": "Folic acid improves endothelial function in coronary artery disease via mechanisms largely independent of homocysteine lowering.",
+      "gold_rank": 9,
+      "top_documents": [
+        {
+          "doc_id": "37424881",
+          "score": 0.0009502644077239916,
+          "best_chunk_id": "37424881",
+          "best_chunk_rank": 1,
+          "title": "The effect of folate fortification on folic acid-based homocysteine-lowering intervention and stroke risk: a meta-analysis."
+        },
+        {
+          "doc_id": "42441846",
+          "score": 0.0009347809182344125,
+          "best_chunk_id": "42441846",
+          "best_chunk_rank": 2,
+          "title": "Gene--nutrition interactions in coronary artery disease: correlation between the MTHFR C677T polymorphism and folate and homocysteine status in a Korean population."
+        },
+        {
+          "doc_id": "18557974",
+          "score": 0.0008421667659418463,
+          "best_chunk_id": "18557974",
+          "best_chunk_rank": 3,
+          "title": "British Journal of Nutrition (2003), 89, 295–301 q The Authors 2003 DOI: 10.1079/BJN2002776 Plasma homocysteine concentration is decreased by dietary intervention*"
+        },
+        {
+          "doc_id": "10557471",
+          "score": 0.0006965935932042434,
+          "best_chunk_id": "10557471",
+          "best_chunk_rank": 4,
+          "title": "Association between folate intake from different food sources in Norway and homocysteine status in a dietary intervention among young male adults."
+        },
+        {
+          "doc_id": "41646286",
+          "score": 0.0006733625537330179,
+          "best_chunk_id": "41646286",
+          "best_chunk_rank": 5,
+          "title": "Folate affects apoptosis in human trophoblastic cells."
+        },
+        {
+          "doc_id": "21636085",
+          "score": 0.0005822455685510454,
+          "best_chunk_id": "21636085",
+          "best_chunk_rank": 6,
+          "title": "The effect of folic acid supplementation on plasma homocysteine in an elderly population."
+        },
+        {
+          "doc_id": "15615957",
+          "score": 0.0005724446385210516,
+          "best_chunk_id": "15615957",
+          "best_chunk_rank": 7,
+          "title": "Original Article"
+        },
+        {
+          "doc_id": "8595678",
+          "score": 0.0005639169450836265,
+          "best_chunk_id": "8595678",
+          "best_chunk_rank": 8,
+          "title": "Effect modification by population dietary folate on the association between MTHFR genotype, homocysteine, and stroke risk: a meta-analysis of genetic studies and randomised trials"
+        },
+        {
+          "doc_id": "11705328",
+          "score": 0.0005568306684975874,
+          "best_chunk_id": "11705328",
+          "best_chunk_rank": 9,
+          "title": "Randomized trial of folic acid supplementation and serum homocysteine levels."
+        },
+        {
+          "doc_id": "3215494",
+          "score": 0.0005402815563224859,
+          "best_chunk_id": "3215494",
+          "best_chunk_rank": 10,
+          "title": "Hyperhomocysteinemia and atherosclerotic vascular disease: pathophysiology, screening, and treatment. off."
+        }
+      ]
+    },
+    {
+      "query_id": "48",
+      "question": "A total of 1,000 people in the UK are asymptomatic carriers of vCJD infection.",
+      "gold_doc_id": "13734012",
+      "gold_title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey",
+      "gold_rank": 9,
+      "top_documents": [
+        {
+          "doc_id": "18617259",
+          "score": 0.000603667660801912,
+          "best_chunk_id": "18617259",
+          "best_chunk_rank": 1,
+          "title": "Research Letters"
+        },
+        {
+          "doc_id": "23203102",
+          "score": 0.00028138993625119273,
+          "best_chunk_id": "23203102",
+          "best_chunk_rank": 2,
+          "title": "Transmission of sporadic Creutzfeldt-Jakob disease by blood transfusion: risk factor or possible biases."
+        },
+        {
+          "doc_id": "29955650",
+          "score": 0.00028012505052471944,
+          "best_chunk_id": "29955650",
+          "best_chunk_rank": 3,
+          "title": "Study of infectious intestinal disease in England: rates in the community, presenting to general practice, and reported to national surveillance. The Infectious Intestinal Disease Study Executive."
+        },
+        {
+          "doc_id": "11349166",
+          "score": 0.00027050899712980096,
+          "best_chunk_id": "11349166",
+          "best_chunk_rank": 4,
+          "title": "Lack of evidence of transfusion transmission of Creutzfeldt-Jakob disease in a US surveillance study."
+        },
+        {
+          "doc_id": "3078080",
+          "score": 0.0002519683341856427,
+          "best_chunk_id": "3078080",
+          "best_chunk_rank": 5,
+          "title": "Rapid and Sensitive RT-QuIC Detection of Human Creutzfeldt-Jakob Disease Using Cerebrospinal Fluid"
+        },
+        {
+          "doc_id": "24512064",
+          "score": 0.0002495974933856612,
+          "best_chunk_id": "24512064",
+          "best_chunk_rank": 6,
+          "title": "HTLV-I/II associated disease in England and Wales, 1993-7: retrospective review of serology requests."
+        },
+        {
+          "doc_id": "21902910",
+          "score": 0.00024876026289026175,
+          "best_chunk_id": "21902910",
+          "best_chunk_rank": 7,
+          "title": "Knowledge and Practice of Standard Precautions and Awareness Regarding Post-Exposure Prophylaxis for HIV among Interns of a Medical College in West Bengal, India."
+        },
+        {
+          "doc_id": "3698758",
+          "score": 0.0002467287823047222,
+          "best_chunk_id": "3698758",
+          "best_chunk_rank": 8,
+          "title": "Hepatitis C virus and blood transfusion: past and present risks."
+        },
+        {
+          "doc_id": "13734012",
+          "score": 0.0002447391903822986,
+          "best_chunk_id": "13734012",
+          "best_chunk_rank": 9,
+          "title": "Prevalent abnormal prion protein in human appendixes after bovine spongiform encephalopathy epizootic: large scale survey"
+        },
+        {
+          "doc_id": "7647224",
+          "score": 0.00023961608232711746,
+          "best_chunk_id": "7647224",
+          "best_chunk_rank": 10,
+          "title": "Hepatitis C Virus (HCV) Vertical Transmission in 12-Month-Old Infants Born to HCV-Infected Women and Assessment of Maternal Risk Factors"
+        }
+      ]
+    },
+    {
+      "query_id": "49",
+      "question": "ADAR1 binds to Dicer to cleave pre-miRNA.",
+      "gold_doc_id": "5953485",
+      "gold_title": "ADAR1 Forms a Complex with Dicer to Promote MicroRNA Processing and RNA-Induced Gene Silencing",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "5702790",
+          "score": 0.6872261166572571,
+          "best_chunk_id": "5702790",
+          "best_chunk_rank": 1,
+          "title": "Phosphate and R2D2 restrict the substrate specificity of Dicer-2, an ATP-driven ribonuclease."
+        },
+        {
+          "doc_id": "5953485",
+          "score": 0.6849058270454407,
+          "best_chunk_id": "5953485",
+          "best_chunk_rank": 2,
+          "title": "ADAR1 Forms a Complex with Dicer to Promote MicroRNA Processing and RNA-Induced Gene Silencing"
+        },
+        {
+          "doc_id": "23913146",
+          "score": 0.6555497646331787,
+          "best_chunk_id": "23913146",
+          "best_chunk_rank": 3,
+          "title": "Molecular mechanisms that funnel RNA precursors into endogenous small-interfering RNA and microRNA biogenesis pathways in Drosophila."
+        },
+        {
+          "doc_id": "8006440",
+          "score": 0.6156187653541565,
+          "best_chunk_id": "8006440",
+          "best_chunk_rank": 4,
+          "title": "Kinetic Analysis Reveals the Fate of a MicroRNA following Target Regulation in Mammalian Cells"
+        },
+        {
+          "doc_id": "12652963",
+          "score": 0.5903183817863464,
+          "best_chunk_id": "12652963",
+          "best_chunk_rank": 5,
+          "title": "miRNA-dependent gene silencing involving Ago2-mediated cleavage of a circular antisense RNA."
+        },
+        {
+          "doc_id": "2619579",
+          "score": 0.5708678364753723,
+          "best_chunk_id": "2619579",
+          "best_chunk_rank": 6,
+          "title": "The widespread regulation of microRNA biogenesis, function and decay"
+        },
+        {
+          "doc_id": "32556431",
+          "score": 0.5565187335014343,
+          "best_chunk_id": "32556431",
+          "best_chunk_rank": 7,
+          "title": "Virus-encoded microRNAs."
+        },
+        {
+          "doc_id": "7029990",
+          "score": 0.552200198173523,
+          "best_chunk_id": "7029990",
+          "best_chunk_rank": 8,
+          "title": "Stress-induced apoptosis associated with null mutation of ADAR1 RNA editing deaminase gene."
+        },
+        {
+          "doc_id": "1333643",
+          "score": 0.550879955291748,
+          "best_chunk_id": "1333643",
+          "best_chunk_rank": 9,
+          "title": "Genetic and Functional Diversification of Small RNA Pathways in Plants"
+        },
+        {
+          "doc_id": "86602746",
+          "score": 0.550302267074585,
+          "best_chunk_id": "86602746",
+          "best_chunk_rank": 10,
+          "title": "MicroRNAs: small RNAs with a big role in gene regulation"
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "1",
+      "question": "0-dimensional biomaterials show inductive properties.",
+      "gold_doc_id": "31715818",
+      "gold_title": "New opportunities: the use of nanotechnologies to manipulate and track stem cells.",
+      "gold_rank": 12,
+      "top_documents": [
+        {
+          "doc_id": "4346436",
+          "score": 0.39760568737983704,
+          "best_chunk_id": "4346436",
+          "best_chunk_rank": 1,
+          "title": "Nonlinear Elasticity in Biological Gels"
+        },
+        {
+          "doc_id": "40212412",
+          "score": 0.38890576362609863,
+          "best_chunk_id": "40212412",
+          "best_chunk_rank": 2,
+          "title": "Periosteal bone formation--a neglected determinant of bone strength."
+        },
+        {
+          "doc_id": "10607877",
+          "score": 0.3723810613155365,
+          "best_chunk_id": "10607877",
+          "best_chunk_rank": 3,
+          "title": "Mechanical modulation of receptor-ligand interactions at cell-cell interfaces."
+        },
+        {
+          "doc_id": "21456232",
+          "score": 0.3434627652168274,
+          "best_chunk_id": "21456232",
+          "best_chunk_rank": 4,
+          "title": "A graphene-based platform for induced pluripotent stem cells culture and differentiation."
+        },
+        {
+          "doc_id": "41982985",
+          "score": 0.33240795135498047,
+          "best_chunk_id": "41982985",
+          "best_chunk_rank": 5,
+          "title": "Altered TCR signaling from geometrically repatterned immunological synapses."
+        },
+        {
+          "doc_id": "32532238",
+          "score": 0.32833313941955566,
+          "best_chunk_id": "32532238",
+          "best_chunk_rank": 6,
+          "title": "Cellular adaptation to mechanical stress: role of integrins, Rho, cytoskeletal tension and mechanosensitive ion channels."
+        },
+        {
+          "doc_id": "927561",
+          "score": 0.3265036642551422,
+          "best_chunk_id": "927561",
+          "best_chunk_rank": 7,
+          "title": "Emergent structures and dynamics of cell colonies by contact inhibition of locomotion"
+        },
+        {
+          "doc_id": "23141360",
+          "score": 0.3257067799568176,
+          "best_chunk_id": "23141360",
+          "best_chunk_rank": 8,
+          "title": "Nature and anisotropy of cortical forces orienting Drosophila tissue morphogenesis"
+        },
+        {
+          "doc_id": "17388232",
+          "score": 0.32351967692375183,
+          "best_chunk_id": "17388232",
+          "best_chunk_rank": 9,
+          "title": "Mechanical regulation of cell function with geometrically modulated elastomeric substrates"
+        },
+        {
+          "doc_id": "2121272",
+          "score": 0.3211691975593567,
+          "best_chunk_id": "2121272",
+          "best_chunk_rank": 10,
+          "title": "Stresses at the cell-to-substrate interface during locomotion of fibroblasts"
+        }
+      ]
+    },
+    {
+      "query_id": "13",
+      "question": "5% of perinatal mortality is due to low birth weight.",
+      "gold_doc_id": "1606628",
+      "gold_title": "Estimates of global prevalence of childhood underweight in 1990 and 2015.",
+      "gold_rank": 13,
+      "top_documents": [
+        {
+          "doc_id": "11360768",
+          "score": 0.5588712692260742,
+          "best_chunk_id": "11360768",
+          "best_chunk_rank": 1,
+          "title": "Effects of interventions in pregnancy on maternal weight and obstetric outcomes: meta-analysis of randomised evidence"
+        },
+        {
+          "doc_id": "33740844",
+          "score": 0.5503189563751221,
+          "best_chunk_id": "33740844",
+          "best_chunk_rank": 2,
+          "title": "Effect of women's nutrition before and during early pregnancy on maternal and infant outcomes: a systematic review."
+        },
+        {
+          "doc_id": "4791384",
+          "score": 0.5468706488609314,
+          "best_chunk_id": "4791384",
+          "best_chunk_rank": 3,
+          "title": "Neonatal Mortality Levels for 193 Countries in 2009 with Trends since 1990: A Systematic Analysis of Progress, Projections, and Priorities"
+        },
+        {
+          "doc_id": "30786800",
+          "score": 0.5393826365470886,
+          "best_chunk_id": "30786800",
+          "best_chunk_rank": 4,
+          "title": "Lipid-based nutrient supplement increases the birth size of infants of primiparous women in Ghana."
+        },
+        {
+          "doc_id": "49429882",
+          "score": 0.534842312335968,
+          "best_chunk_id": "49429882",
+          "best_chunk_rank": 5,
+          "title": "Strategies for optimizing maternal nutrition to promote infant development"
+        },
+        {
+          "doc_id": "28633594",
+          "score": 0.527052640914917,
+          "best_chunk_id": "28633594",
+          "best_chunk_rank": 6,
+          "title": "International standards for fetal growth based on serial ultrasound measurements: the Fetal Growth Longitudinal Study of the INTERGROWTH-21st Project."
+        },
+        {
+          "doc_id": "70455704",
+          "score": 0.5201072096824646,
+          "best_chunk_id": "70455704",
+          "best_chunk_rank": 7,
+          "title": "Weight gain during pregnancy: reexamining the guidelines."
+        },
+        {
+          "doc_id": "439670",
+          "score": 0.5188666582107544,
+          "best_chunk_id": "439670",
+          "best_chunk_rank": 8,
+          "title": "Prepregnancy BMI and the risk of gestational diabetes: a systematic review of the literature with meta-analysis."
+        },
+        {
+          "doc_id": "26611834",
+          "score": 0.5083317160606384,
+          "best_chunk_id": "26611834",
+          "best_chunk_rank": 9,
+          "title": "A meta-analysis of depression during pregnancy and the risk of preterm birth, low birth weight, and intrauterine growth restriction."
+        },
+        {
+          "doc_id": "11748341",
+          "score": 0.5044364333152771,
+          "best_chunk_id": "11748341",
+          "best_chunk_rank": 10,
+          "title": "Evidence-based interventions for improvement of maternal and child nutrition: what can be done and at what cost?"
+        }
+      ]
+    },
+    {
+      "query_id": "42",
+      "question": "A high microerythrocyte count raises vulnerability to severe anemia in homozygous alpha (+)- thalassemia trait subjects.",
+      "gold_doc_id": "18174210",
+      "gold_title": "Increased Microerythrocyte Count in Homozygous α+-Thalassaemia Contributes to Protection against Severe Malarial Anaemia",
+      "gold_rank": 20,
+      "top_documents": [
+        {
+          "doc_id": "40913091",
+          "score": 0.001141553923949166,
+          "best_chunk_id": "40913091",
+          "best_chunk_rank": 1,
+          "title": "GENOTYPING OF THALASSEMIA IN MICROCYTIC HYPOCHROMIC ANEMIA PATIENTS FROM SOUTHWEST REGION OF IRAN"
+        },
+        {
+          "doc_id": "6315132",
+          "score": 0.0010272576589255538,
+          "best_chunk_id": "6315132",
+          "best_chunk_rank": 2,
+          "title": "KLF1-null neonates display hydrops fetalis and a deranged erythroid transcriptome."
+        },
+        {
+          "doc_id": "39506601",
+          "score": 0.00041514205132380417,
+          "best_chunk_id": "39506601",
+          "best_chunk_rank": 3,
+          "title": "Novel roles for KLF1 in erythropoiesis revealed by mRNA-seq."
+        },
+        {
+          "doc_id": "12240507",
+          "score": 0.00037996465219957765,
+          "best_chunk_id": "12240507",
+          "best_chunk_rank": 4,
+          "title": "Disruption of the 5S RNP–Mdm2 interaction significantly improves the erythroid defect in a mouse model for Diamond-Blackfan anemia"
+        },
+        {
+          "doc_id": "27162821",
+          "score": 0.0003607349812874912,
+          "best_chunk_id": "27162821",
+          "best_chunk_rank": 5,
+          "title": "Percentile curves for hemoglobin and red cell volume in infancy and childhood."
+        },
+        {
+          "doc_id": "4449524",
+          "score": 0.00035505286380478813,
+          "best_chunk_id": "4449524",
+          "best_chunk_rank": 6,
+          "title": "Hemoglobin concentration in white, black, and Oriental children: is there a need for separate criteria in screening for anemia?"
+        },
+        {
+          "doc_id": "45218443",
+          "score": 0.0003401588916530445,
+          "best_chunk_id": "45218443",
+          "best_chunk_rank": 7,
+          "title": "Thalassemia and malaria: new insights into an old problem."
+        },
+        {
+          "doc_id": "10128893",
+          "score": 0.0003329425524840178,
+          "best_chunk_id": "10128893",
+          "best_chunk_rank": 8,
+          "title": "Long-term survival of beta thalassemia major patients treated with hematopoietic stem cell transplantation compared with survival with conventional treatment."
+        },
+        {
+          "doc_id": "25388309",
+          "score": 0.0003301155123067668,
+          "best_chunk_id": "25388309",
+          "best_chunk_rank": 9,
+          "title": "Pharmacological characterization of 1-(5-chloro-6-(trifluoromethoxy)-1H-benzoimidazol-2-yl)-1H-pyrazole-4-carboxylic acid (JNJ-42041935), a potent and selective hypoxia-inducible factor prolyl hydroxylase inhibitor."
+        },
+        {
+          "doc_id": "27889071",
+          "score": 0.0003098711105027042,
+          "best_chunk_id": "27889071",
+          "best_chunk_rank": 10,
+          "title": "Microcytosis, iron deficiency and thalassaemia in a multi-ethnic community: a pilot study."
+        }
+      ]
+    },
+    {
+      "query_id": "51",
+      "question": "ALDH1 expression is associated with better breast cancer outcomes.",
+      "gold_doc_id": "45638119",
+      "gold_title": "ALDH1 is a marker of normal and malignant human mammary stem cells and a predictor of poor clinical outcome.",
+      "gold_rank": 25,
+      "top_documents": [
+        {
+          "doc_id": "40735046",
+          "score": 0.00026647459719717626,
+          "best_chunk_id": "40735046",
+          "best_chunk_rank": 1,
+          "title": "Periodic screening for breast cancer: the HIP Randomized Controlled Trial. Health Insurance Plan."
+        },
+        {
+          "doc_id": "27240667",
+          "score": 0.00026383754691221723,
+          "best_chunk_id": "27240667",
+          "best_chunk_rank": 2,
+          "title": "Breast cancer mortality trends in the United States according to estrogen receptor status and age at diagnosis."
+        },
+        {
+          "doc_id": "16734530",
+          "score": 0.00026045814583567083,
+          "best_chunk_id": "16734530",
+          "best_chunk_rank": 3,
+          "title": "The Association between Single-Nucleotide Polymorphisms of ORAI1 Gene and Breast Cancer in a Taiwanese Population"
+        },
+        {
+          "doc_id": "2140497",
+          "score": 0.00025661365731346434,
+          "best_chunk_id": "2140497",
+          "best_chunk_rank": 4,
+          "title": "Independent Association of Lobular Involution and Mammographic Breast Density With Breast Cancer Risk"
+        },
+        {
+          "doc_id": "27123743",
+          "score": 0.00024381292620319044,
+          "best_chunk_id": "27123743",
+          "best_chunk_rank": 5,
+          "title": "Role of birthweight in the etiology of breast cancer."
+        },
+        {
+          "doc_id": "15721252",
+          "score": 0.00023923935913253857,
+          "best_chunk_id": "15721252",
+          "best_chunk_rank": 6,
+          "title": "PD 0332991, a selective cyclin D kinase 4/6 inhibitor, preferentially inhibits proliferation of luminal estrogen receptor-positive human breast cancer cell lines in vitro"
+        },
+        {
+          "doc_id": "313403",
+          "score": 0.00023654729682091427,
+          "best_chunk_id": "313403",
+          "best_chunk_rank": 7,
+          "title": "High-Infiltration of Tumor-Associated Macrophages Predicts Unfavorable Clinical Outcome for Node-Negative Breast Cancer"
+        },
+        {
+          "doc_id": "13831842",
+          "score": 0.0002345068100381934,
+          "best_chunk_id": "13831842",
+          "best_chunk_rank": 8,
+          "title": "Pooled analysis of prospective cohort studies on height, weight, and breast cancer risk."
+        },
+        {
+          "doc_id": "17648235",
+          "score": 0.00023412346525606773,
+          "best_chunk_id": "17648235",
+          "best_chunk_rank": 9,
+          "title": "Autocrine WNT signaling contributes to breast cancer cell proliferation via the canonical WNT pathway and EGFR transactivation"
+        },
+        {
+          "doc_id": "24341590",
+          "score": 0.0002334511971217792,
+          "best_chunk_id": "24341590",
+          "best_chunk_rank": 10,
+          "title": "Association between CYP2D6 polymorphisms and outcomes among women with early stage breast cancer treated with tamoxifen."
+        }
+      ]
+    },
+    {
+      "query_id": "53",
+      "question": "ALDH1 expression is associated with poorer prognosis in breast cancer.",
+      "gold_doc_id": "45638119",
+      "gold_title": "ALDH1 is a marker of normal and malignant human mammary stem cells and a predictor of poor clinical outcome.",
+      "gold_rank": 68,
+      "top_documents": [
+        {
+          "doc_id": "27240667",
+          "score": 0.00037593083848331464,
+          "best_chunk_id": "27240667",
+          "best_chunk_rank": 1,
+          "title": "Breast cancer mortality trends in the United States according to estrogen receptor status and age at diagnosis."
+        },
+        {
+          "doc_id": "2140497",
+          "score": 0.0003603240327955943,
+          "best_chunk_id": "2140497",
+          "best_chunk_rank": 2,
+          "title": "Independent Association of Lobular Involution and Mammographic Breast Density With Breast Cancer Risk"
+        },
+        {
+          "doc_id": "40735046",
+          "score": 0.0003422536407276056,
+          "best_chunk_id": "40735046",
+          "best_chunk_rank": 3,
+          "title": "Periodic screening for breast cancer: the HIP Randomized Controlled Trial. Health Insurance Plan."
+        },
+        {
+          "doc_id": "15721252",
+          "score": 0.00032630728462798716,
+          "best_chunk_id": "15721252",
+          "best_chunk_rank": 4,
+          "title": "PD 0332991, a selective cyclin D kinase 4/6 inhibitor, preferentially inhibits proliferation of luminal estrogen receptor-positive human breast cancer cell lines in vitro"
+        },
+        {
+          "doc_id": "6550579",
+          "score": 0.0003255779227865087,
+          "best_chunk_id": "6550579",
+          "best_chunk_rank": 5,
+          "title": "A central role for HER3 in HER2-amplified breast cancer: implications for targeted therapy."
+        },
+        {
+          "doc_id": "3329824",
+          "score": 0.0003226552477891299,
+          "best_chunk_id": "3329824",
+          "best_chunk_rank": 6,
+          "title": "Incidence and risk of central nervous system metastases as site of first recurrence in patients with HER2-positive breast cancer treated with adjuvant trastuzumab."
+        },
+        {
+          "doc_id": "24341590",
+          "score": 0.0003222088953306237,
+          "best_chunk_id": "24341590",
+          "best_chunk_rank": 7,
+          "title": "Association between CYP2D6 polymorphisms and outcomes among women with early stage breast cancer treated with tamoxifen."
+        },
+        {
+          "doc_id": "13831842",
+          "score": 0.0003212649419181748,
+          "best_chunk_id": "13831842",
+          "best_chunk_rank": 8,
+          "title": "Pooled analysis of prospective cohort studies on height, weight, and breast cancer risk."
+        },
+        {
+          "doc_id": "16322674",
+          "score": 0.0003212011092475723,
+          "best_chunk_id": "16322674",
+          "best_chunk_rank": 9,
+          "title": "Birth Size and Breast Cancer Risk: Re-analysis of Individual Participant Data from 32 Studies"
+        },
+        {
+          "doc_id": "13069283",
+          "score": 0.00031554150078465487,
+          "best_chunk_id": "13069283",
+          "best_chunk_rank": 10,
+          "title": "Influence of CYP2D6 Polymorphisms on Serum Levels of Tamoxifen Metabolites in Spanish Women with Breast Cancer"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 211,
+    "failure_at_10_available": 89,
+    "saved_per_group_max": 5
+  }
+}

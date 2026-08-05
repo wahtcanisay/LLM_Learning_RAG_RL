@@ -1,4 +1,5 @@
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 
@@ -11,6 +12,17 @@ from medical_graphrag.retrieval.graph import (
     extract_entities,
     LinearGraphRetriever,
 )
+
+ROOT = Path(__file__).parents[1]
+
+
+def _load(name: str):
+    path = ROOT / "scripts" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
 
 def _sha(path: Path) -> str:
@@ -127,3 +139,42 @@ def test_graph_build_and_search_smoke(tmp_path: Path) -> None:
     assert len(passage_ids) == 2
     assert "c1" in passage_ids  # the passage that mentions aspirin and pain
     assert len(scores) == 2
+
+
+def test_search_graph_script_standalone_and_text_mode_gate(tmp_path: Path) -> None:
+    """search_graph 脚本可独立加载；validate_index 在哈希检查前先强制 abstract_only。
+
+    该门与 rerank_candidates._validate_source 对 graph search report 的 text_mode
+    要求配套：保证图检索链路与 BM25/Dense 一样固定 abstract_only 文本模式。
+    """
+    module = _load("search_graph")
+    assert str(ROOT / "src") in module.sys.path
+
+    index_dir = tmp_path / "index"
+    index_dir.mkdir()
+    # validate_index 依次哈希这些产物；占位文件让第二次断言走到 SHA-256 mismatch 而非 FileNotFoundError。
+    for filename in (
+        "graph.graphml",
+        "sentence_embeddings.npy",
+        "entity_embeddings.npy",
+        "passage_embeddings.npy",
+        "entities.jsonl",
+        "entity_to_sentences.jsonl",
+        "sentence_to_entities.jsonl",
+    ):
+        (index_dir / filename).write_bytes(b"placeholder")
+    index_report = tmp_path / "index_report.json"
+
+    # 非 abstract_only：在触碰任何文件哈希前就应被拒绝。
+    index_report.write_text(
+        json.dumps({"text_mode": "title_abstract"}), encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="abstract_only"):
+        module.validate_index(index_dir, tmp_path / "questions.jsonl", index_report)
+
+    # abstract_only：通过 text_mode 门，随后才做文件哈希绑定（缺文件→不同的错误）。
+    index_report.write_text(
+        json.dumps({"text_mode": "abstract_only"}), encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
+        module.validate_index(index_dir, tmp_path / "questions.jsonl", index_report)
