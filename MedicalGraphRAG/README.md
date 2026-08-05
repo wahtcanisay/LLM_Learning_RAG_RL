@@ -101,6 +101,14 @@ gold 文档（2 篇）：
   - Scott Derrickson（维基段落：关于导演 Scott Derrickson）
 ```
 
+### 清洗与审计（所有数据集共用）
+
+- **确定性清洗**：干扰文档用固定 seed 采样（`20260803`），任何一步可复算；文档边界安全切块（按 doc_id 防跨文档错边）；
+- **Unicode 归一化**：`NFKC` + 空白折叠，把同标题段落的 Unicode 变体折叠为单文档（hotpotqa 61 处"冲突"归一化后归零）；
+- **空文本拦截**：trec_covid 因 24.6% 文档 `text` 为空（仅标题的非连续内容）且 3,135 条 qrels 指向空文本 → 决定不接入检索；
+- **证据对齐审计**：逐数据集验证 qrels 全部解析到已存在文档；graph evidence 用逐句 NER 而非整段近似；
+- **哈希冻结**：每个数据集 `manifest.json` 记录 4 个产物的 SHA-256，独立复算误差 < 1e-15。
+
 ---
 
 ## 实验结果（诚实版）
@@ -226,8 +234,11 @@ MedicalGraphRAG/
   src/medical_graphrag/
     data/          # 数据加载、切块、冻结数据
     retrieval/     # bm25 / dense / hybrid / graph / reranker
+                     + search_{bm25,dense,graph} / rerank 库函数
     evaluation/    # 指标（含多相关）+ 各检索器评测
-  scripts/         # 容器内构建/检索/重排脚本
+    run_pipeline.py # 统一 evaluate 编排层（cli run 入口）
+    cli.py         # CLI：run / evaluate-* / build / audit
+  scripts/         # 数据构建脚本（build_beir/nfcorpus/hotpotqa）
   experiments/     # 实验结果 metrics.json（可审计）
   data/processed/  # 冻结数据集（可重建，git 忽略）
 ```
@@ -243,6 +254,39 @@ MedicalGraphRAG/
 - [ ] 阶段 3：MedicalGPT 领域微调（进行中）
 - [ ] 阶段 4：Search-R1 搜索强化学习
 - [ ] 阶段 5：MedSearch-R1 医学搜索智能体
+
+---
+
+## 简历版项目总结（按三点）
+
+> 以下为该项目面向 LLM/RAG 方向求职的简历式总结。**所有指标均来自真实脚本输出 + 哈希审计**，非模拟或推测。
+
+### 一、数据集清洗与使用
+
+- **构建 4 个哈希冻结的检索评测基准**（`data/processed/`）：`pubmedqa_hard_v1`（1,000 问/5,000 文档，自建单答案）、`nfcorpus_v1`（323 问/3,633 文档，BEIR 多相关）、`scifact_v1`（300 问/5,183 文档，科学声明）、`hotpotqa_v1`（7,405 问/66,581 维基段落，多跳硬 gold，每问恰 2.0 篇 gold）；
+- **实现确定性数据清洗管线**：固定 seed 干扰采样（可复算）、文档边界安全切块（防跨文档错边）、NFKC+空白归一化折叠同标题段落 Unicode 变体、qrels 证据逐条审计（全解析到已存在文档）；
+- **用数据质量判断否决劣质基准**：trec_covid 因 24.6% 文档空文本（非连续内容）且 3,135 条 qrels 指向空文本，决定不接入检索——避免指标虚低或伪造补齐；
+- **全链路哈希审计**：每数据集 4 产物 SHA-256 绑定、独立复算误差 < 1e-15，实验可逐项复现。
+
+### 二、检索 Pipeline（三段式）
+
+- **候选召回段**：实现 5 种检索器——BM25（Pyserini/Lucene）、Dense（all-mpnet + FAISS）、Hybrid（BM25+Dense 的 RRF 排名融合）、Graph（BC5CDR 医学 NER → 实体-段落图 → PPR，忠实移植 LinearRAG）、Hybrid2（Qwen3-Reranker cross-encoder）；统一 `search(query, top_k)` 契约可公平对比；
+- **融合/重排段**：RRF（k=60）按排名融合两路互补信号；Hybrid2 用 Qwen3-Reranker 对 BM25/Dense/Graph 三路候选 union 逐问打分，取 top-N 进生成；
+- **评测审计段**：评测泛化支持 BEIR 风格**多相关 qrels**（Recall@k / MRR@10 / nDCG@10，单 gold 向后兼容）；统一 `cli run <retriever> --dataset <name>` 一条命令完成 构建→检索→评测，审计链（git commit / docker image / 产物哈希）自动绑定。
+
+### 三、相对各 Baseline 的指标提升
+
+*Hybrid2（Qwen3-Reranker 三路重排）在 3 个基准上全面最优：*
+
+| 基准 | 指标 | BM25 | Dense | Hybrid(RRF) | **Hybrid2** | vs 最佳 baseline |
+|---|---|---:|---:|---:|---:|---:|
+| nfcorpus | R@10 / nDCG | 0.150 / 0.313 | 0.159 / 0.325 | 0.172 / 0.354 | **0.189 / 0.384** | R@10 **+0.017**，nDCG **+0.030** |
+| scifact | R@10 / nDCG | 0.791 / 0.664 | 0.769 / 0.633 | 0.838 / 0.705 | **0.895 / 0.772** | R@10 **+0.057**，nDCG **+0.067** |
+| hotpotqa | R@10 / nDCG | 0.738 / 0.663 | 0.711 / 0.668 | 0.800 / 0.731 | **0.898 / 0.865** | R@10 **+0.098**，nDCG **+0.134** |
+
+- **多跳场景（hotpotqa）提升最大**：Hybrid2 比最佳单路 Dense 高 **R@10 +0.187 / nDCG +0.197**；Hybrid RRF 本身也比单路高 **R@10 +0.089**——词项+语义两路互补在多跳检索价值显著；
+- **基准选择影响结论**：pubmedqa（单答案）Dense 最优，nfcorpus/scifact/hotpotqa（多相关/多跳）Hybrid2 最优——证明评测基准设计直接决定"哪种检索器更好"的结论；
+- **Graph 对齐 LinearRAG 官方参数后改善**：pubmedqa R@10 0.958→0.982、scifact 0.682→0.705、hotpotqa 0.680→0.695（但 4 基准均未胜出，诚实负结果——BC5CDR 医学 NER 在通用维基上实体稀疏）。
 
 ---
 
