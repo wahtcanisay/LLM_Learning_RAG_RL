@@ -900,6 +900,10 @@ def main():
         logger.info("Fine-tuning method: LoRA(PEFT)")
 
         # Set fp32 forward hook for lm_head
+        # 学习注释：量化模型（4bit/8bit）的 lm_head 在低精度下输出误差被放大，
+        # 而它在 causal LM 里负责把隐状态映射到词表 logits，直接决定生成质量。
+        # 注册 forward hook 把它强制转回 fp32，与「可训练参数转 fp32」共同构成
+        # 量化下的精度保护：中间计算低精度省显存，关键输出层高精度保正确性。
         output_layer = getattr(model, "lm_head")
         if isinstance(output_layer, torch.nn.Linear) and output_layer.weight.dtype != torch.float32:
             def fp32_forward_post_hook(module: torch.nn.Module, args: Tuple[torch.Tensor], output: torch.Tensor):
@@ -934,6 +938,9 @@ def main():
                 lora_dropout=script_args.lora_dropout,
                 modules_to_save=modules_to_save)
             model = get_peft_model(model, peft_config)
+        # 学习注释：LoRA adapter 通常继承基础模型的 dtype（如 BF16），但部分优化器/
+        # 混合精度策略在低精度下数值不稳定。这里把「可训练参数」单独强制转回 fp32，
+        # 保证梯度更新精度；冻结的 base 权重保持原 dtype 不动，省显存。
         for param in filter(lambda p: p.requires_grad, model.parameters()):
             param.data = param.data.to(torch.float32)
         model.print_trainable_parameters()
@@ -943,6 +950,10 @@ def main():
         print_trainable_parameters(model)
 
     # Initialize our Trainer
+    # 学习注释：gradient checkpointing 与 KV cache（use_cache）互斥。
+    # 训练时不需要缓存每层 KV 加速解码，关掉 use_cache 能显著省显存；
+    # 但推理时必须开 use_cache，否则解码会退化成逐 token 重算。这是
+    # 训练配置与推理配置一个典型的「同参数不同值」差异点。
     if training_args.gradient_checkpointing and getattr(model, "supports_gradient_checkpointing", False):
         model.gradient_checkpointing_enable()
         model.config.use_cache = False
@@ -950,6 +961,9 @@ def main():
     else:
         model.config.use_cache = True
         logger.info("Gradient checkpointing disabled.")
+    # 学习注释：LoRA/量化场景下输入 embedding 默认不要求梯度；配合 gradient
+    # checkpointing 反向时会因「输入无梯度」报错。enable_input_require_grads()
+    # 强制让输入 embedding 参与反向传播，是 PEFT + GC 组合的常见必修步骤。
     model.enable_input_require_grads()
     if not ddp and torch.cuda.device_count() > 1:
         # Keeps Trainer from trying its own DataParallelism when more than 1 gpu is available
