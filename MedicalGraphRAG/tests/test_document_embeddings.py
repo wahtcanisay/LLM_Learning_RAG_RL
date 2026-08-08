@@ -10,6 +10,7 @@ from medical_graphrag.retrieval.document_embeddings import (
     _window_ranges,
     build_document_embeddings,
     embed_documents_full,
+    ensure_document_embeddings,
 )
 
 
@@ -47,6 +48,19 @@ class _MockEmbedder:
                     v = v / n
             vecs.append(v)
         return np.array(vecs, dtype=np.float32)
+
+    def encode_token_windows(self, windows, *, batch_size, normalize_embeddings):
+        vecs = []
+        for window in windows:
+            vector = np.zeros(6, dtype=np.float32)
+            for token in window:
+                vector[ord(token) % 6] += 1.0
+            if normalize_embeddings:
+                norm = np.linalg.norm(vector)
+                if norm > 0:
+                    vector = vector / norm
+            vecs.append(vector)
+        return np.asarray(vecs, dtype=np.float32)
 
 
 class _NoRoundTripTokenizer(_MockTokenizer):
@@ -180,6 +194,7 @@ def test_build_document_embeddings_artifact(tmp_path: Path) -> None:
         dataset, out, model_name="mock", embedder=_MockEmbedder(), overlap_tokens=2
     )
     assert report["retrieval_unit"] == "document"
+    assert report["token_window_encoding"] == "token_ids_direct_v1"
     assert report["document_count"] == 2
     assert report["window_coverage"]["truncated_token_count"] == 0
     embeddings = np.load(out / "document_embeddings.npy")
@@ -189,3 +204,22 @@ def test_build_document_embeddings_artifact(tmp_path: Path) -> None:
     assert [m["doc_id"] for m in metadata] == ["d1", "d2"]
     assert report["embeddings_sha256"] == _sha(out / "document_embeddings.npy")
     assert report["metadata_sha256"] == _sha(out / "document_embedding_metadata.jsonl")
+
+
+def test_ensure_document_embeddings_rejects_overlap_mismatch(tmp_path: Path) -> None:
+    dataset = _write_dataset(tmp_path)
+    artifact = tmp_path / "artifact"
+    build_document_embeddings(
+        dataset,
+        artifact,
+        model_name="mock",
+        embedder=_MockEmbedder(),
+        overlap_tokens=2,
+    )
+    with pytest.raises(ValueError, match="overlap"):
+        ensure_document_embeddings(
+            dataset,
+            artifact,
+            model_name="mock",
+            overlap_tokens=1,
+        )

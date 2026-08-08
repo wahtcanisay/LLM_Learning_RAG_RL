@@ -49,6 +49,19 @@ class MockEmbedder:
         # 与 SentenceTransformer 一致:单字符串返回 1D,列表返回 2D
         return result[0] if single else result
 
+    def encode_token_windows(self, windows, *, batch_size, normalize_embeddings):
+        vectors = []
+        for window in windows:
+            vector = np.zeros(8, dtype=np.float32)
+            for token in window:
+                vector[ord(token) % 8] += 1.0
+            if normalize_embeddings:
+                norm = np.linalg.norm(vector)
+                if norm > 0:
+                    vector = vector / norm
+            vectors.append(vector)
+        return np.asarray(vectors, dtype=np.float32)
+
 
 _ENTITY_VOCAB = ("Aspirin", "vaccine", "vaccines", "pain", "osteoarthritis", "fever")
 

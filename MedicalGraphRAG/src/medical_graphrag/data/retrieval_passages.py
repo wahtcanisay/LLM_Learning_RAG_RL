@@ -79,6 +79,10 @@ def load_retrieval_passages(
         order = row.get("order")
         if order is None:
             raise ValueError(f"chunk {chunk_id} missing order")
+        if type(order) is not int or order < 0:
+            raise ValueError(
+                f"chunk {chunk_id} order must be a non-negative integer"
+            )
         if not chunk_id or chunk_id in seen_chunks:
             raise ValueError(f"chunk_id must be non-empty and unique: {chunk_id!r}")
         if not doc_id or not str(row.get("content", "")).strip():
@@ -87,7 +91,7 @@ def load_retrieval_passages(
         passages.append(RetrievalPassage(
             passage_id=chunk_id,
             doc_id=doc_id,
-            order=int(order),
+            order=order,
             title=str(row.get("title", "")),
             content=str(row["content"]),
             source=str(row.get("source", "")),

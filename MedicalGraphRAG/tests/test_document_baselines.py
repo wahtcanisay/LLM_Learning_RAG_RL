@@ -10,6 +10,7 @@ from medical_graphrag.evaluation.graph import write_graph_pair_cases
 from medical_graphrag.evaluation.retrieval import validate_hit_rows
 from medical_graphrag.retrieval.dense import build_dense_document_index
 from medical_graphrag.retrieval.document_embeddings import build_document_embeddings
+from medical_graphrag.retrieval.bm25 import export_document_collection
 from tests.mocks import MockEmbedder
 
 from tests.test_graph_document import _write_pubmedqa_dataset
@@ -77,6 +78,65 @@ def test_p0_8_three_consumers_same_embedding_report_sha(tmp_path: Path):
     assert graph_report["embedding_embeddings_sha256"] == dense_report[
         "embedding_embeddings_sha256"
     ]
+
+
+def test_dense_document_rejects_tampered_embedding_metadata(tmp_path: Path):
+    dataset = _write_pubmedqa_dataset(tmp_path)
+    artifact = tmp_path / "artifact"
+    build_document_embeddings(
+        dataset, artifact, model_name="mock", embedder=MockEmbedder()
+    )
+    metadata = artifact / "document_embedding_metadata.jsonl"
+    rows = metadata.read_text(encoding="utf-8").splitlines()
+    metadata.write_text("\n".join(reversed(rows)) + "\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="metadata SHA-256"):
+        build_dense_document_index(
+            dataset,
+            tmp_path / "dense",
+            document_embeddings_dir=artifact,
+        )
+
+
+def test_export_document_collection_preserves_frozen_document_order(tmp_path: Path):
+    dataset = tmp_path / "ordered_dataset"
+    dataset.mkdir()
+    doc_ids = [f"doc-{index}" for index in range(20)]
+    (dataset / "documents.jsonl").write_text(
+        "".join(
+            json.dumps({
+                "doc_id": doc_id,
+                "title": doc_id,
+                "content": f"content {doc_id}",
+                "source": "test",
+            }) + "\n"
+            for doc_id in doc_ids
+        ),
+        encoding="utf-8",
+    )
+    (dataset / "chunks.jsonl").write_text("", encoding="utf-8")
+    (dataset / "questions.jsonl").write_text("", encoding="utf-8")
+    (dataset / "qrels.tsv").write_text(
+        "query_id\tdoc_id\trelevance\n", encoding="utf-8"
+    )
+    names = ("questions.jsonl", "documents.jsonl", "chunks.jsonl", "qrels.tsv")
+    (dataset / "manifest.json").write_text(
+        json.dumps({
+            "counts": {"questions": 0, "documents": 20, "chunks": 0, "qrels": 0},
+            "artifact_hashes": {name: _sha(dataset / name) for name in names},
+        }),
+        encoding="utf-8",
+    )
+
+    output = tmp_path / "bm25"
+    export_document_collection(dataset, output)
+    metadata_ids = [
+        json.loads(line)["doc_id"]
+        for line in (output / "document_metadata.jsonl").read_text(
+            encoding="utf-8"
+        ).splitlines()
+    ]
+    assert metadata_ids == doc_ids
 
 
 def test_evaluate_document_run_happy_path(tmp_path: Path):

@@ -45,6 +45,18 @@ def test_similarity_edges_union_knn():
     assert ("d1", "d2") in pairs or ("d2", "d1") in pairs
 
 
+def test_similarity_edges_never_selects_more_than_k_per_source_when_self_is_absent():
+    embeddings = np.ones((4, 2), dtype=np.float32)
+    embeddings /= np.linalg.norm(embeddings, axis=1, keepdims=True)
+    edges = build_similarity_edges(
+        ["a", "b", "c", "d"], embeddings, k=1, min_cosine=0.5
+    )
+    # union-kNN contains at most n*k undirected pairs because every source
+    # contributes at most k non-self candidates, even when FAISS tie ordering
+    # omits that source's own row from the first k+1 results.
+    assert len(edges) <= 4
+
+
 def test_similarity_edges_no_self_loop_no_duplicate_pairs():
     emb = np.array([
         _unit([1.0, 0.0, 0.0]),
@@ -110,4 +122,10 @@ def test_adjacent_edges_duplicate_order_fails():
 def test_adjacent_edges_negative_order_fails():
     passages = [_p("A0", "A", -1)]
     with pytest.raises(ValueError, match="negative"):
+        build_adjacent_edges(passages)
+
+
+def test_adjacent_edges_missing_order_fails_with_contract_error():
+    passages = [_p("A0", "A", None), _p("A1", "A", 1)]
+    with pytest.raises(ValueError, match="negative/missing order"):
         build_adjacent_edges(passages)

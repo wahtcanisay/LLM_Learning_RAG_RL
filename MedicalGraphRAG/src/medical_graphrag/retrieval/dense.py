@@ -85,36 +85,14 @@ def build_dense_document_index(
     import faiss
     import numpy as np
 
-    from medical_graphrag.retrieval.document_embeddings import _percentile
+    from medical_graphrag.retrieval.document_embeddings import (
+        load_document_embedding_artifact,
+    )
 
     manifest = validate_frozen_dataset(dataset_dir)
-    artifact_report = json.loads(
-        (document_embeddings_dir / "document_embedding_report.json").read_text(
-            encoding="utf-8"
-        )
+    embeddings, doc_ids, artifact_report, embedding_report_sha256 = (
+        load_document_embedding_artifact(dataset_dir, document_embeddings_dir)
     )
-    if artifact_report.get("dataset_manifest_sha256") != sha256_file(
-        dataset_dir / "manifest.json"
-    ):
-        raise ValueError("embedding artifact does not match dataset manifest")
-    if artifact_report.get("source_artifact_sha256") != manifest["artifact_hashes"][
-        "documents.jsonl"
-    ]:
-        raise ValueError("embedding artifact does not match documents.jsonl")
-    embeddings_path = document_embeddings_dir / "document_embeddings.npy"
-    if artifact_report.get("embeddings_sha256") != sha256_file(embeddings_path):
-        raise ValueError("embedding artifact embeddings SHA-256 mismatch")
-    embeddings = np.load(embeddings_path)
-    metadata_rows = _read_jsonl(
-        document_embeddings_dir / "document_embedding_metadata.jsonl"
-    )
-    doc_ids = [str(row["doc_id"]) for row in metadata_rows]
-    if len(doc_ids) != artifact_report["document_count"] or len(set(doc_ids)) != len(
-        doc_ids
-    ):
-        raise ValueError("embedding metadata count/duplicates mismatch")
-    if embeddings.shape[0] != len(doc_ids):
-        raise ValueError("embedding row count does not match metadata")
 
     dim = int(embeddings.shape[1])
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -134,9 +112,7 @@ def build_dense_document_index(
         "dim": dim,
         "index_type": INDEX_TYPE,
         "document_count": len(doc_ids),
-        "embedding_report_sha256": sha256_file(
-            document_embeddings_dir / "document_embedding_report.json"
-        ),
+        "embedding_report_sha256": embedding_report_sha256,
         "embedding_embeddings_sha256": artifact_report["embeddings_sha256"],
         "index_sha256": sha256_file(index_path),
         "metadata_sha256": sha256_file(metadata_path),

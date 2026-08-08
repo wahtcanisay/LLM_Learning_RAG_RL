@@ -115,3 +115,30 @@ def test_chunk_loader_rejects_missing_order(tmp_path: Path) -> None:
     )
     with pytest.raises(ValueError, match="order"):
         load_retrieval_passages(dataset, "chunk")
+
+
+@pytest.mark.parametrize("bad_order", [1.5, True, -1])
+def test_chunk_loader_rejects_non_integer_or_negative_order(
+    tmp_path: Path, bad_order
+) -> None:
+    dataset = _write_dataset(tmp_path)
+    chunks_path = dataset / "chunks.jsonl"
+    row = {
+        "chunk_id": "PMID:1#9",
+        "doc_id": "PMID:1",
+        "order": bad_order,
+        "title": "t",
+        "content": "c",
+        "source": "s",
+    }
+    chunks_path.write_text(json.dumps(row) + "\n", encoding="utf-8")
+    names = ("questions.jsonl", "documents.jsonl", "chunks.jsonl", "qrels.tsv")
+    (dataset / "manifest.json").write_text(
+        json.dumps({
+            "counts": {"questions": 0, "documents": 2, "chunks": 1, "qrels": 0},
+            "artifact_hashes": {name: _sha(dataset / name) for name in names},
+        }),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="non-negative integer"):
+        load_retrieval_passages(dataset, "chunk")

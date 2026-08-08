@@ -33,6 +33,8 @@ from medical_graphrag.data.io import sha256_file, write_json, write_jsonl
 from medical_graphrag.retrieval.bm25 import validate_frozen_dataset
 
 AGGREGATION_RULE = "mean_window_then_l2"
+TOKEN_WINDOW_ENCODING = "token_ids_direct_v1"
+_NORM_TOLERANCE = 1e-3
 
 
 def _window_ranges(
@@ -82,9 +84,80 @@ def _coverage(
 
 def _num_special_tokens(tokenizer) -> int:
     """Number of special tokens a window adds (e.g. [CLS]+[SEP] = 2)."""
+    if hasattr(tokenizer, "num_special_tokens_to_add"):
+        return int(tokenizer.num_special_tokens_to_add(pair=False))
     full = tokenizer.encode("x", add_special_tokens=True)
     plain = tokenizer.encode("x", add_special_tokens=False)
     return len(full) - len(plain)
+
+
+def _special_token_affixes(tokenizer) -> tuple[list[int], list[int]]:
+    """Infer single-sequence special-token prefix/suffix without decoding IDs."""
+    plain = list(tokenizer.encode("x", add_special_tokens=False))
+    full = list(tokenizer.encode("x", add_special_tokens=True))
+    for start in range(len(full) - len(plain) + 1):
+        if full[start:start + len(plain)] == plain:
+            prefix = full[:start]
+            suffix = full[start + len(plain):]
+            if len(prefix) + len(suffix) == _num_special_tokens(tokenizer):
+                return prefix, suffix
+    raise ValueError("cannot infer tokenizer special-token layout")
+
+
+def _encode_token_windows(
+    embedder,
+    windows: list[list[int]],
+    *,
+    batch_size: int,
+) -> np.ndarray:
+    """Encode the exact token-ID windows without decode/re-tokenize drift.
+
+    Tests may inject ``encode_token_windows`` on a lightweight embedder.  A
+    real SentenceTransformer is evaluated through its public ``forward`` path
+    after the tokenizer adds special tokens and pads the already-frozen token
+    IDs.  This preserves the token windows proved by ``_coverage``.
+    """
+    injected = getattr(embedder, "encode_token_windows", None)
+    if callable(injected):
+        return np.asarray(
+            injected(
+                windows,
+                batch_size=batch_size,
+                normalize_embeddings=True,
+            ),
+            dtype="float32",
+        )
+
+    import torch
+    import torch.nn.functional as functional
+
+    tokenizer = embedder.tokenizer
+    embedder.eval()
+    special_prefix, special_suffix = _special_token_affixes(tokenizer)
+    encoded_batches: list[np.ndarray] = []
+    for start in range(0, len(windows), batch_size):
+        prepared = [
+            {
+                "input_ids": special_prefix + list(token_ids) + special_suffix,
+                "attention_mask": [
+                    1
+                ] * (len(special_prefix) + len(token_ids) + len(special_suffix)),
+            }
+            for token_ids in windows[start:start + batch_size]
+        ]
+        features = tokenizer.pad(prepared, padding=True, return_tensors="pt")
+        device = getattr(embedder, "device", None)
+        if device is not None:
+            features = {name: value.to(device) for name, value in features.items()}
+        with torch.inference_mode():
+            sentence_embeddings = embedder.forward(dict(features))["sentence_embedding"]
+            sentence_embeddings = functional.normalize(
+                sentence_embeddings, p=2, dim=1
+            )
+        encoded_batches.append(
+            sentence_embeddings.detach().cpu().numpy().astype("float32", copy=False)
+        )
+    return np.vstack(encoded_batches)
 
 
 def embed_documents_full(
@@ -134,15 +207,10 @@ def embed_documents_full(
 
     if not all_windows:
         raise ValueError("no token windows to embed")
-    # 所有窗口一次批量编码(避免逐文档小批量调用带来的巨大开销)
-    window_embeddings = np.asarray(
-        embedder.encode(
-            [tokenizer.decode(w, skip_special_tokens=True) for w in all_windows],
-            normalize_embeddings=True,
-            batch_size=batch_size,
-            show_progress_bar=False,
-        ),
-        dtype="float32",
+    window_embeddings = _encode_token_windows(
+        embedder,
+        all_windows,
+        batch_size=batch_size,
     )
     if window_embeddings.shape[0] != len(all_windows):
         raise ValueError("window embedding count does not match window count")
@@ -229,6 +297,7 @@ def build_document_embeddings(
         "source_artifact_sha256": manifest["artifact_hashes"]["documents.jsonl"],
         "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
         "aggregation_rule": AGGREGATION_RULE,
+        "token_window_encoding": TOKEN_WINDOW_ENCODING,
         "overlap_tokens": overlap_tokens,
         **{k: v for k, v in _model_identity(embedder, model_name).items()},
         "dim": int(embeddings.shape[1]),
@@ -247,6 +316,87 @@ def build_document_embeddings(
     return report
 
 
+def load_document_embedding_artifact(
+    dataset_dir: Path,
+    artifact_dir: Path,
+    *,
+    expected_model_name: str | None = None,
+    expected_overlap_tokens: int | None = None,
+) -> tuple[np.ndarray, list[str], dict[str, Any], str]:
+    """Load and fully validate the frozen document embedding artifact.
+
+    The dataset binding, metadata hash and row order, embedding hash/shape,
+    aggregation contract and optional requested build parameters must all
+    agree.  Consumers use this single loader so Dense, Graph and Similarity
+    cannot silently interpret the same matrix with different document IDs.
+    """
+    manifest = validate_frozen_dataset(dataset_dir)
+    report_path = artifact_dir / "document_embedding_report.json"
+    embeddings_path = artifact_dir / "document_embeddings.npy"
+    metadata_path = artifact_dir / "document_embedding_metadata.jsonl"
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+
+    if report.get("retrieval_unit") != "document":
+        raise ValueError("embedding artifact is not a document retrieval unit")
+    if report.get("source_artifact") != "documents.jsonl":
+        raise ValueError("embedding artifact source must be documents.jsonl")
+    if report.get("aggregation_rule") != AGGREGATION_RULE:
+        raise ValueError("embedding artifact aggregation rule mismatch")
+    if report.get("token_window_encoding") != TOKEN_WINDOW_ENCODING:
+        raise ValueError("embedding artifact token-window encoding mismatch")
+    if report.get("dataset_manifest_sha256") != sha256_file(
+        dataset_dir / "manifest.json"
+    ):
+        raise ValueError("embedding artifact does not match dataset manifest")
+    if report.get("source_artifact_sha256") != manifest["artifact_hashes"][
+        "documents.jsonl"
+    ]:
+        raise ValueError("embedding artifact does not match documents.jsonl")
+    if expected_model_name is not None and report.get("embedding_model") != expected_model_name:
+        raise ValueError("embedding artifact model does not match requested model")
+    if (
+        expected_overlap_tokens is not None
+        and report.get("overlap_tokens") != expected_overlap_tokens
+    ):
+        raise ValueError("embedding artifact overlap does not match requested overlap")
+    if report.get("embeddings_sha256") != sha256_file(embeddings_path):
+        raise ValueError("embedding artifact embeddings SHA-256 mismatch")
+    if report.get("metadata_sha256") != sha256_file(metadata_path):
+        raise ValueError("embedding artifact metadata SHA-256 mismatch")
+
+    document_rows = [
+        json.loads(line)
+        for line in (dataset_dir / "documents.jsonl").open(encoding="utf-8")
+        if line.strip()
+    ]
+    expected_doc_ids = [str(row["doc_id"]) for row in document_rows]
+    metadata_rows = [
+        json.loads(line)
+        for line in metadata_path.open(encoding="utf-8")
+        if line.strip()
+    ]
+    doc_ids = [str(row["doc_id"]) for row in metadata_rows]
+    if doc_ids != expected_doc_ids:
+        raise ValueError("embedding metadata doc_id order does not match documents.jsonl")
+    if report.get("document_count") != len(doc_ids):
+        raise ValueError("embedding artifact document count mismatch")
+
+    embeddings = np.load(embeddings_path, allow_pickle=False)
+    if embeddings.ndim != 2 or embeddings.shape[0] != len(doc_ids):
+        raise ValueError("embedding matrix shape does not match metadata")
+    if embeddings.shape[1] != report.get("dim"):
+        raise ValueError("embedding matrix dimension does not match report")
+    if not np.isfinite(embeddings).all():
+        raise ValueError("embedding matrix must contain only finite values")
+    norms = np.linalg.norm(embeddings, axis=1)
+    if not np.allclose(norms, 1.0, atol=_NORM_TOLERANCE):
+        raise ValueError("document embeddings must be L2-normalized")
+    coverage = report.get("window_coverage", {})
+    if coverage.get("truncated_token_count") != 0:
+        raise ValueError("embedding artifact contains truncated document tokens")
+    return embeddings, doc_ids, report, sha256_file(report_path)
+
+
 def ensure_document_embeddings(
     dataset_dir: Path,
     artifact_dir: Path,
@@ -263,21 +413,19 @@ def ensure_document_embeddings(
     """
     report_path = artifact_dir / "document_embedding_report.json"
     if report_path.exists():
-        try:
-            existing = json.loads(report_path.read_text(encoding="utf-8"))
-            manifest = validate_frozen_dataset(dataset_dir)
-            if (
-                existing.get("embedding_model") == model_name
-                and existing.get("dataset_manifest_sha256")
-                == sha256_file(dataset_dir / "manifest.json")
-                and existing.get("source_artifact_sha256")
-                == manifest["artifact_hashes"]["documents.jsonl"]
-                and existing.get("embeddings_sha256")
-                == sha256_file(artifact_dir / "document_embeddings.npy")
-            ):
-                return existing
-        except Exception:
-            pass
+        _, _, existing, _ = load_document_embedding_artifact(
+            dataset_dir,
+            artifact_dir,
+            expected_model_name=model_name,
+            expected_overlap_tokens=overlap_tokens,
+        )
+        return existing
+    partial_paths = (
+        artifact_dir / "document_embeddings.npy",
+        artifact_dir / "document_embedding_metadata.jsonl",
+    )
+    if any(path.exists() for path in partial_paths):
+        raise ValueError("partial document embedding artifact exists without report")
     return build_document_embeddings(
         dataset_dir,
         artifact_dir,

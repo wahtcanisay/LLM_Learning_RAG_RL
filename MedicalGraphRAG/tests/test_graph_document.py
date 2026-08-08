@@ -95,6 +95,39 @@ def test_graph_build_config_profiles():
     assert chunk_none.graph_profile == "chunk_entity_only_v1"
 
 
+def test_build_chunk_adjacent_records_gap_without_crossing_it(tmp_path: Path, mock_models):
+    embedder, nlp = mock_models
+    dataset = _write_pubmedqa_dataset(tmp_path)
+    chunks_path = dataset / "chunks.jsonl"
+    chunks = [json.loads(line) for line in chunks_path.read_text(encoding="utf-8").splitlines()]
+    chunks[1]["order"] = 2
+    chunks_path.write_text(
+        "".join(json.dumps(row) + "\n" for row in chunks), encoding="utf-8"
+    )
+    manifest_path = dataset / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["artifact_hashes"]["chunks.jsonl"] = sha256_file(chunks_path)
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    config = GraphBuildConfig(
+        retrieval_unit="chunk",
+        passage_edge_mode="adjacent",
+        embedding_model="mock",
+        ner_model="mock_ner",
+    )
+
+    report = build_graph_index(
+        dataset,
+        tmp_path / "graph_adjacent",
+        build_config=config,
+        embedder=embedder,
+        nlp=nlp,
+    )
+
+    assert report["edge_count_by_type"]["adjacent"] == 1
+    assert report["passage_passage_diagnostics"]["gap_count"] == 1
+    assert report["passage_passage_diagnostics"]["actual_edge_count"] == 1
+
+
 def test_build_document_similarity_index(tmp_path: Path, mock_models):
     embedder, nlp = mock_models
     dataset = _write_pubmedqa_dataset(tmp_path)
@@ -152,6 +185,39 @@ def test_build_document_requires_artifact(tmp_path: Path, mock_models):
         build_graph_index(
             dataset, tmp_path / "g", build_config=config, batch_size=4,
             embedder=embedder, nlp=nlp,
+        )
+
+
+def test_graph_document_rejects_embedding_metadata_order_mismatch(
+    tmp_path: Path, mock_models
+):
+    embedder, nlp = mock_models
+    dataset = _write_pubmedqa_dataset(tmp_path)
+    artifact = _build_artifact(dataset, tmp_path, embedder)
+    metadata_path = artifact / "document_embedding_metadata.jsonl"
+    metadata_rows = metadata_path.read_text(encoding="utf-8").splitlines()
+    metadata_path.write_text(
+        "\n".join(reversed(metadata_rows)) + "\n", encoding="utf-8"
+    )
+    artifact_report_path = artifact / "document_embedding_report.json"
+    artifact_report = json.loads(artifact_report_path.read_text(encoding="utf-8"))
+    artifact_report["metadata_sha256"] = sha256_file(metadata_path)
+    artifact_report_path.write_text(json.dumps(artifact_report), encoding="utf-8")
+    config = GraphBuildConfig(
+        retrieval_unit="document",
+        passage_edge_mode="none",
+        embedding_model="mock",
+        ner_model="mock_ner",
+    )
+
+    with pytest.raises(ValueError, match="doc_id order"):
+        build_graph_index(
+            dataset,
+            tmp_path / "g",
+            build_config=config,
+            embedder=embedder,
+            nlp=nlp,
+            document_embeddings_dir=artifact,
         )
 
 

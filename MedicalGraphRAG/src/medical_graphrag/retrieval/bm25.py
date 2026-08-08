@@ -206,6 +206,7 @@ def export_document_collection(dataset_dir: Path, output_dir: Path) -> dict[str,
     if len(documents) != manifest["counts"]["documents"]:
         raise ValueError("document count does not match manifest")
     seen: set[str] = set()
+    doc_ids: list[str] = []
     collection: list[dict[str, object]] = []
     for row in documents:
         doc_id = str(row["doc_id"]).strip()
@@ -213,12 +214,13 @@ def export_document_collection(dataset_dir: Path, output_dir: Path) -> dict[str,
         if doc_id in seen or not doc_id or not content:
             raise ValueError("documents must contain non-empty unique doc_id and content")
         seen.add(doc_id)
+        doc_ids.append(doc_id)
         collection.append({"id": doc_id, "contents": content})
 
     collection_path = output_dir / "collection/documents.jsonl"
     metadata_path = output_dir / "document_metadata.jsonl"
     write_jsonl(collection_path, collection)
-    write_jsonl(metadata_path, [{"doc_id": doc_id} for doc_id in seen])
+    write_jsonl(metadata_path, [{"doc_id": doc_id} for doc_id in doc_ids])
     report = {
         "retrieval_unit": "document",
         "source_artifact": "documents.jsonl",

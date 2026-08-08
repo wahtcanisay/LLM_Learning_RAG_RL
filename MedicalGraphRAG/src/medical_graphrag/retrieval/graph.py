@@ -234,6 +234,9 @@ def _load_document_embedding_artifact(
     document_embeddings_dir: Path,
     dataset_dir: Path,
     passage_count: int,
+    *,
+    expected_model_name: str,
+    expected_overlap_tokens: int,
 ) -> tuple[np.ndarray, dict[str, Any], str, str]:
     """Load the frozen document embedding artifact and validate its bindings.
 
@@ -241,31 +244,22 @@ def _load_document_embedding_artifact(
     embeddings_sha256)``. Fails closed on any dataset/manifest/count/hash
     mismatch (P0-8).
     """
-    report_path = document_embeddings_dir / "document_embedding_report.json"
-    report = json.loads(report_path.read_text(encoding="utf-8"))
-    if report.get("retrieval_unit") != "document":
-        raise ValueError("embedding artifact is not a document unit")
-    dataset_manifest = json.loads(
-        (dataset_dir / "manifest.json").read_text(encoding="utf-8")
+    from medical_graphrag.retrieval.document_embeddings import (
+        load_document_embedding_artifact,
     )
-    if report.get("dataset_manifest_sha256") != sha256_file(dataset_dir / "manifest.json"):
-        raise ValueError("embedding artifact does not match dataset manifest")
-    if report.get("source_artifact_sha256") != dataset_manifest["artifact_hashes"][
-        "documents.jsonl"
-    ]:
-        raise ValueError("embedding artifact does not match documents.jsonl")
-    if report.get("document_count") != passage_count:
-        raise ValueError("embedding artifact document count does not match passages")
-    embeddings_path = document_embeddings_dir / "document_embeddings.npy"
-    if report.get("embeddings_sha256") != sha256_file(embeddings_path):
-        raise ValueError("embedding artifact embeddings SHA-256 mismatch")
-    embeddings = np.load(embeddings_path)
+
+    embeddings, _doc_ids, report, report_sha256 = load_document_embedding_artifact(
+        dataset_dir,
+        document_embeddings_dir,
+        expected_model_name=expected_model_name,
+        expected_overlap_tokens=expected_overlap_tokens,
+    )
     if embeddings.shape[0] != passage_count:
         raise ValueError("embedding row count does not match passages")
     return (
         embeddings,
         report,
-        sha256_file(report_path),
+        report_sha256,
         report["embeddings_sha256"],
     )
 
@@ -334,7 +328,11 @@ def build_graph_index(
             )
         passage_embeddings, artifact_report, embedding_report_sha256, embedding_embeddings_sha256 = (
             _load_document_embedding_artifact(
-                document_embeddings_dir, dataset_dir, len(passages)
+                document_embeddings_dir,
+                dataset_dir,
+                len(passages),
+                expected_model_name=build_config.embedding_model,
+                expected_overlap_tokens=build_config.window_overlap_tokens,
             )
         )
         window_coverage = artifact_report.get("window_coverage", {})
@@ -456,7 +454,8 @@ def build_graph_index(
         doc_counts: dict[str, int] = defaultdict(int)
         for p in passages:
             doc_counts[p.doc_id] += 1
-        expected_adjacent = sum(max(c - 1, 0) for c in doc_counts.values())
+        candidate_adjacent = sum(max(c - 1, 0) for c in doc_counts.values())
+        expected_adjacent = candidate_adjacent - len(gaps)
         if expected_adjacent != len(adj_edges):
             raise ValueError(
                 f"adjacent expected {expected_adjacent} != actual {len(adj_edges)}"
@@ -467,6 +466,7 @@ def build_graph_index(
         passage_passage_edge_count = len(adj_edges)
         edge_count_by_type["adjacent"] = len(adj_edges)
         passage_passage_diagnostics = {
+            "candidate_pair_count": float(candidate_adjacent),
             "expected_edge_count": float(expected_adjacent),
             "actual_edge_count": float(len(adj_edges)),
             "gap_count": float(len(gaps)),

@@ -362,7 +362,7 @@ def _document_embedding_model() -> str:
 
 
 def _document_artifact_dir(dataset: str, root: Path) -> Path:
-    return root / "outputs" / dataset / "document_embeddings_v1"
+    return root / "outputs" / dataset / "document_embeddings_v2"
 
 
 def run_bm25_document(
@@ -378,9 +378,9 @@ def run_bm25_document(
 ) -> dict[str, Any]:
     """BM25-document: export full documents to Lucene, search, evaluate."""
     dataset_dir = _dataset_dir(dataset, root)
-    out_dir = root / "outputs" / dataset / "bm25_document_v1"
-    idx_dir = root / "indexes" / dataset / "bm25_document_v1"
-    exp_dir = root / "experiments" / dataset / "bm25_document_v1"
+    out_dir = root / "outputs" / dataset / "bm25_document_v2"
+    idx_dir = root / "indexes" / dataset / "bm25_document_v2"
+    exp_dir = root / "experiments" / dataset / "bm25_document_v2"
     export_document_collection(dataset_dir, out_dir)
     build_lucene_document_index(
         collection=out_dir / "collection",
@@ -429,8 +429,8 @@ def run_dense_document(
     """Dense-document: consume the frozen embedding artifact, FAISS, search, evaluate."""
     dataset_dir = _dataset_dir(dataset, root)
     artifact_dir = _document_artifact_dir(dataset, root)
-    out_dir = root / "outputs" / dataset / "dense_document_v1"
-    exp_dir = root / "experiments" / dataset / "dense_document_v1"
+    out_dir = root / "outputs" / dataset / "dense_document_v2"
+    exp_dir = root / "experiments" / dataset / "dense_document_v2"
     model = _document_embedding_model()
     ensure_document_embeddings(
         dataset_dir, artifact_dir, model_name=model,
@@ -482,7 +482,7 @@ def run_graph_document(
         raise ValueError("graph-document profile must be 'ep' or 'similarity'")
     dataset_dir = _dataset_dir(dataset, root)
     artifact_dir = _document_artifact_dir(dataset, root)
-    name = f"graph_document_{profile}_v1"
+    name = f"graph_document_{profile}_v2"
     idx_dir = root / "indexes" / dataset / name
     out_dir = root / "outputs" / dataset / name
     exp_dir = root / "experiments" / dataset / name
@@ -496,6 +496,7 @@ def run_graph_document(
         passage_edge_mode="similarity" if profile == "similarity" else "none",
         embedding_model=model,
         ner_model=DEFAULT_NER_MODEL,
+        window_overlap_tokens=overlap_tokens,
     )
     build_graph_index(
         dataset_dir, idx_dir, build_config=build_config, batch_size=batch_size,
@@ -543,9 +544,9 @@ def run_hybrid_document(
     run_dense_document(dataset, git_commit=git_commit, docker_image=docker_image,
                        root=root, top_k=top_k)
     dataset_dir = _dataset_dir(dataset, root)
-    bm25_dir = root / "outputs" / dataset / "bm25_document_v1"
-    dense_dir = root / "outputs" / dataset / "dense_document_v1"
-    exp_dir = root / "experiments" / dataset / "hybrid_document_v1"
+    bm25_dir = root / "outputs" / dataset / "bm25_document_v2"
+    dense_dir = root / "outputs" / dataset / "dense_document_v2"
+    exp_dir = root / "experiments" / dataset / "hybrid_document_v2"
     context = _build_context(
         git_commit=git_commit,
         docker_image=docker_image,
@@ -601,35 +602,35 @@ def run_reranker_document(
             base / name / "search_run.json"
         ).exists()
 
-    if not _ready("bm25_document_v1"):
+    if not _ready("bm25_document_v2"):
         run_bm25_document(dataset, git_commit=git_commit, docker_image=docker_image,
                           root=root, top_k=top_k)
-    if not _ready("dense_document_v1"):
+    if not _ready("dense_document_v2"):
         run_dense_document(dataset, git_commit=git_commit, docker_image=docker_image,
                            root=root, top_k=top_k)
     if sources in {"bdg", "bde"}:
         profile = "similarity" if sources == "bdg" else "ep"
-        graph_name = f"graph_document_{profile}_v1"
+        graph_name = f"graph_document_{profile}_v2"
         if not _ready(graph_name):
             run_graph_document(dataset, git_commit=git_commit, docker_image=docker_image,
                                root=root, profile=profile, top_k=top_k)
 
     dataset_dir = _dataset_dir(dataset, root)
-    name = f"reranker_document_{sources}_v1"
+    name = f"reranker_document_{sources}_v2"
     rr_dir = root / "outputs" / dataset / name
     exp_dir = root / "experiments" / dataset / name
     sources_paths = {
-        "bm25": base / "bm25_document_v1" / "raw_rankings.jsonl",
-        "dense": base / "dense_document_v1" / "raw_rankings.jsonl",
+        "bm25": base / "bm25_document_v2" / "raw_rankings.jsonl",
+        "dense": base / "dense_document_v2" / "raw_rankings.jsonl",
     }
     source_reports = {
-        "bm25": base / "bm25_document_v1" / "search_run.json",
-        "dense": base / "dense_document_v1" / "search_run.json",
+        "bm25": base / "bm25_document_v2" / "search_run.json",
+        "dense": base / "dense_document_v2" / "search_run.json",
     }
     if sources in {"bdg", "bde"}:
         profile = "similarity" if sources == "bdg" else "ep"
-        sources_paths["graph"] = base / f"graph_document_{profile}_v1" / "raw_rankings.jsonl"
-        source_reports["graph"] = base / f"graph_document_{profile}_v1" / "search_run.json"
+        sources_paths["graph"] = base / f"graph_document_{profile}_v2" / "raw_rankings.jsonl"
+        source_reports["graph"] = base / f"graph_document_{profile}_v2" / "search_run.json"
 
     rerank_report = run_rerank_document(
         sources=sources_paths,
@@ -664,9 +665,9 @@ def run_graph_pair_cases(
 ) -> dict[str, Any]:
     """Write the Graph-EP vs Graph-Sim paired case comparison (P1-5)."""
     dataset_dir = _dataset_dir(dataset, root)
-    ep_rankings = root / "outputs" / dataset / "graph_document_ep_v1" / "raw_rankings.jsonl"
-    sim_rankings = root / "outputs" / dataset / "graph_document_similarity_v1" / "raw_rankings.jsonl"
-    output = root / "experiments" / dataset / "graph_ep_vs_sim_v1" / "paired_cases.jsonl"
+    ep_rankings = root / "outputs" / dataset / "graph_document_ep_v2" / "raw_rankings.jsonl"
+    sim_rankings = root / "outputs" / dataset / "graph_document_similarity_v2" / "raw_rankings.jsonl"
+    output = root / "experiments" / dataset / "graph_ep_vs_sim_v2" / "paired_cases.jsonl"
     return write_graph_pair_cases(dataset_dir, ep_rankings, sim_rankings, output)
 
 

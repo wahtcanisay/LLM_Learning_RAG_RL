@@ -64,27 +64,32 @@ def build_similarity_edges(
     index.add(np.asarray(embeddings, dtype=np.float32))
     k_eff = min(k + 1, n)
     scores, idx = index.search(np.asarray(embeddings, dtype=np.float32), k_eff)
-    edges: dict[tuple[str, str], float] = {}
+    pairs: set[tuple[int, int]] = set()
     for i in range(n):
         # FAISS returns neighbours in descending score order; ties are broken
         # by index, which is stable for a fixed input order.
+        selected_non_self = 0
         for pos in range(k_eff):
             j = int(idx[i][pos])
             if j == i:
                 continue
+            if selected_non_self >= k:
+                break
+            selected_non_self += 1
             s = float(scores[i][pos])
             if s < min_cosine:
                 continue
-            a, b = passage_ids[i], passage_ids[j]
-            lo, hi = (a, b) if a <= b else (b, a)
-            if lo == hi:
-                continue
-            weight = min(max(s, min_cosine), 1.0) * scale
-            # union-kNN: a pair survives if either direction reached it; the
-            # stored weight is the re-computed symmetric cosine (s is symmetric
-            # for a fixed pair on unit vectors).
-            edges[(lo, hi)] = weight
-    return [(a, b, w) for (a, b), w in sorted(edges.items())]
+            pairs.add((min(i, j), max(i, j)))
+
+    # Membership comes from union-kNN, but the frozen embeddings are the source
+    # of truth for edge weights (spec section 6.5).
+    edges = []
+    for i, j in pairs:
+        a, b = passage_ids[i], passage_ids[j]
+        lo, hi = (a, b) if a <= b else (b, a)
+        weight = float(np.dot(embeddings[i], embeddings[j])) * scale
+        edges.append((lo, hi, weight))
+    return sorted(edges, key=lambda edge: (edge[0], edge[1]))
 
 
 def build_adjacent_edges(
@@ -106,10 +111,11 @@ def build_adjacent_edges(
     edges: list[tuple[str, str, float]] = []
     gaps: list[tuple[str, int, int]] = []
     for doc_id in sorted(by_doc):
-        group = sorted(by_doc[doc_id], key=lambda p: p.order)
-        orders = [p.order for p in group]
-        if any(order is None or order < 0 for order in orders):
+        raw_group = by_doc[doc_id]
+        if any(type(p.order) is not int or p.order < 0 for p in raw_group):
             raise ValueError(f"doc {doc_id} has negative/missing order")
+        group = sorted(raw_group, key=lambda p: p.order)
+        orders = [p.order for p in group]
         if len(set(orders)) != len(orders):
             raise ValueError(f"doc {doc_id} has duplicate order values")
         for prev, current in zip(group, group[1:]):
