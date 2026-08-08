@@ -1,0 +1,12 @@
+{
+  "dataset": "pubmedqa_hard_v1",
+  "retrieval_unit": "document",
+  "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+  "ner_model": "en_ner_bc5cdr_md",
+  "window_overlap_tokens": 32,
+  "similarity_k": 5,
+  "similarity_min_cosine": 0.50,
+  "similarity_edge_scale": 1.0,
+  "top_k": 100,
+  "rrf_k": 60
+}

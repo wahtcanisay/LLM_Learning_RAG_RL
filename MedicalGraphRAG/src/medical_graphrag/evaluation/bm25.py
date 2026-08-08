@@ -14,6 +14,7 @@ from medical_graphrag.evaluation.retrieval import (
     read_qrels,
     validate_hit_rows,
 )
+from medical_graphrag.evaluation.document import evaluate_document_run
 from medical_graphrag.retrieval.bm25 import collapse_chunk_hits, validate_frozen_dataset
 
 
@@ -227,3 +228,16 @@ def evaluate_bm25_run(
     write_json(output_dir / "run_manifest.json", run_manifest)
     write_json(output_dir / "cases.json", cases)
     return metrics
+
+
+def evaluate_bm25_document_run(
+    dataset_dir: Path,
+    rankings_path: Path,
+    output_dir: Path,
+    *,
+    run_context: dict[str, Any],
+) -> dict[str, Any]:
+    """Evaluate a BM25-document raw ranking (no chunk collapse)."""
+    return evaluate_document_run(
+        dataset_dir, rankings_path, output_dir, run_context=run_context
+    )

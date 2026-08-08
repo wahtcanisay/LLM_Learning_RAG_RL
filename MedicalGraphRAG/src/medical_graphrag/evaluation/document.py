@@ -1,9 +1,12 @@
-"""Dense/FAISS run evaluation, mirroring the BM25 evaluation contract.
+"""Shared document-level evaluation for the fair baselines (P0-5/P0-7).
 
-Shares ``evaluate_rankings`` and ``collapse_chunk_hits`` with BM25 so the two
-baselines use the exact same metric definition and chunk-to-document folding.
-The only differences are the run-report validation (dense binds the embedding
-model / index hashes) and the retriever section written into the manifest.
+Document-level raw rankings carry ``{doc_id, rank, score}`` hits (no
+chunk_id), so evaluation skips chunk→doc collapse and validates the document
+schema via ``validate_hit_rows(retrieval_unit="document")``.
+
+``evaluate_document_run`` is the single evaluation core for BM25-document,
+Dense-document and Hybrid-document; each runner passes its own audited
+``run_context`` (index + search reports bound to its own artifacts).
 """
 import math
 import statistics
@@ -21,13 +24,12 @@ from medical_graphrag.evaluation.retrieval import (
     read_qrels,
     validate_hit_rows,
 )
-from medical_graphrag.retrieval.bm25 import collapse_chunk_hits, validate_frozen_dataset
+from medical_graphrag.retrieval.bm25 import validate_frozen_dataset
 
 
-def _validate_run_context(
+def _validate_document_run_context(
     run_context: dict[str, Any],
     raw_rows: list[dict[str, Any]],
-    metadata_path: Path,
     rankings_path: Path,
     dataset_manifest_sha256: str,
     dataset_artifact_hashes: dict[str, str],
@@ -37,8 +39,6 @@ def _validate_run_context(
         search_report = run_context["search"]
     except KeyError as error:
         raise ValueError(f"missing run report: {error.args[0]}") from error
-    if search_report.get("index_sha256") != index_report.get("index_sha256"):
-        raise ValueError("search report does not match index report")
     if search_report.get("index_report_sha256") != run_context.get(
         "index_report_sha256"
     ):
@@ -48,19 +48,14 @@ def _validate_run_context(
             raise ValueError("run report does not match frozen dataset manifest")
     if index_report.get("dataset_artifact_hashes") != dataset_artifact_hashes:
         raise ValueError("index report does not match frozen dataset artifacts")
-    if search_report.get("metadata_sha256") != sha256_file(metadata_path):
-        raise ValueError("search report metadata SHA-256 mismatch")
+    if search_report.get("rankings_sha256") != sha256_file(rankings_path):
+        raise ValueError("search report rankings SHA-256 mismatch")
     if search_report.get("questions_sha256") != dataset_artifact_hashes.get(
         "questions.jsonl"
     ):
         raise ValueError("search report questions SHA-256 mismatch")
-    if search_report.get("rankings_sha256") != sha256_file(rankings_path):
-        raise ValueError("search report rankings SHA-256 mismatch")
-    if search_report.get("text_mode") != "abstract_only":
-        raise ValueError("search report must use abstract_only text mode")
-    for key in ("embedding_model", "dim", "normalized", "index_type"):
-        if search_report.get(key) != index_report.get(key):
-            raise ValueError(f"search report {key} does not match index report")
+    if str(search_report.get("retrieval_unit", "chunk")) != "document":
+        raise ValueError("search report must be a document retrieval unit")
     requested_top_k = int(search_report["requested_top_k"])
     if requested_top_k <= 0:
         raise ValueError("requested_top_k must be positive")
@@ -79,19 +74,25 @@ def _validate_run_context(
     reported_summary = {key: search_report.get(key) for key in actual_summary}
     if actual_summary != reported_summary:
         raise ValueError("search report hit summary mismatch")
-    validate_hit_rows(raw_rows)
+    validate_hit_rows(raw_rows, retrieval_unit="document")
     return search_report
 
 
-def evaluate_dense_run(
+def _document_rankings(raw_rows: list[dict[str, Any]]) -> dict[str, list[str]]:
+    return {
+        str(row["query_id"]): [str(hit["doc_id"]) for hit in row["hits"]]
+        for row in raw_rows
+    }
+
+
+def evaluate_document_run(
     dataset_dir: Path,
-    metadata_path: Path,
     rankings_path: Path,
     output_dir: Path,
     *,
-    min_unique_docs: int = 0,
     run_context: dict[str, Any],
 ) -> dict[str, Any]:
+    """Evaluate one document-level raw ranking file (no collapse)."""
     dataset_manifest = validate_frozen_dataset(dataset_dir)
     dataset_manifest_sha256 = sha256_file(dataset_dir / "manifest.json")
     questions = {
@@ -100,17 +101,14 @@ def evaluate_dense_run(
     documents = {
         str(row["doc_id"]): row for row in read_jsonl(dataset_dir / "documents.jsonl")
     }
-    chunks = read_jsonl(dataset_dir / "chunks.jsonl")
-    metadata = {str(row["chunk_id"]): row for row in read_jsonl(metadata_path)}
     raw_rows = read_jsonl(rankings_path)
     if len(raw_rows) != len(questions) or {
         str(row["query_id"]) for row in raw_rows
     } != set(questions):
         raise ValueError("ranking query set does not match questions")
-    search_report = _validate_run_context(
+    search_report = _validate_document_run_context(
         run_context,
         raw_rows,
-        metadata_path,
         rankings_path,
         dataset_manifest_sha256,
         dataset_manifest["artifact_hashes"],
@@ -122,7 +120,7 @@ def evaluate_dense_run(
     ):
         raise ValueError("qrels do not resolve an existing document for every question")
 
-    collapsed: dict[str, list[str]] = {}
+    collapsed = _document_rankings(raw_rows)
     latencies: dict[str, float] = {}
     detailed: dict[str, list[dict[str, object]]] = {}
     for row in raw_rows:
@@ -132,37 +130,28 @@ def evaluate_dense_run(
         latency = float(row["latency_ms"])
         if not math.isfinite(latency) or latency < 0:
             raise ValueError(f"invalid latency for {query_id}")
-        for hit in row["hits"]:
-            chunk_id = str(hit["chunk_id"])
-            if chunk_id in metadata and str(hit["doc_id"]) != str(
-                metadata[chunk_id]["doc_id"]
-            ):
-                raise ValueError(f"raw hit doc_id mismatch for {chunk_id}")
-        ranking = collapse_chunk_hits(
-            row["hits"], metadata, min_unique_docs=min_unique_docs
-        )
-        collapsed[query_id] = [str(item["doc_id"]) for item in ranking]
-        detailed[query_id] = [
-            {**item, "title": documents[str(item["doc_id"])]["title"]}
-            for item in ranking
-        ]
         latencies[query_id] = latency
+        detailed[query_id] = [
+            {
+                "doc_id": str(hit["doc_id"]),
+                "rank": int(hit["rank"]),
+                "score": float(hit["score"]),
+                "title": documents[str(hit["doc_id"])]["title"],
+            }
+            for hit in row["hits"]
+        ]
 
     metrics: dict[str, Any] = {}
     for split in ("dev", "test"):
         ids = [
-            query_id
-            for query_id, row in questions.items()
-            if row["split"] == split
+            query_id for query_id, row in questions.items() if row["split"] == split
         ]
         if not ids:
-            continue  # an empty split contributes no metrics
+            continue
         split_qrels = {query_id: qrels[query_id] for query_id in ids}
         split_rankings = {query_id: collapsed[query_id] for query_id in ids}
         values = [latencies[query_id] for query_id in ids]
-        split_metrics = evaluate_rankings(
-            split_qrels, split_rankings, ks=(1, 5, 10)
-        )
+        split_metrics = evaluate_rankings(split_qrels, split_rankings, ks=(1, 5, 10))
         metrics[split] = {
             "sample_count": len(ids),
             **split_metrics,
@@ -199,14 +188,6 @@ def evaluate_dense_run(
                 "gold_doc_id": qrels[query_id][0],
                 "gold_title": documents[qrels[query_id][0]]["title"],
                 "gold_rank": gold_ranks[query_id],
-                "gold_chunk_excerpt": next(
-                    (
-                        str(chunk["content"])[:500]
-                        for chunk in chunks
-                        if chunk["doc_id"] == qrels[query_id][0]
-                    ),
-                    "",
-                ),
                 "top_documents": detailed[query_id][:10],
             }
             for query_id in ids
@@ -223,34 +204,15 @@ def evaluate_dense_run(
         "rankings_sha256": sha256_file(rankings_path),
         "question_count": len(questions),
         "document_count": len(documents),
-        "chunk_metadata_count": len(metadata),
         "split_counts": {
             name: value["sample_count"] for name, value in metrics.items()
         },
-        "chunk_top_k": int(search_report["requested_top_k"]),
-        "aggregation": "max_chunk_score",
-        "dense": {
-            "embedding_model": search_report["embedding_model"],
-            "dim": int(search_report["dim"]),
-            "normalized": bool(search_report["normalized"]),
-            "index_type": search_report["index_type"],
-        },
-        "text_mode": search_report["text_mode"],
+        "top_k": int(search_report["requested_top_k"]),
+        "retrieval_unit": "document",
+        "aggregation": "none",
+        "text_mode": search_report.get("text_mode", "abstract_only"),
     }
     write_json(output_dir / "metrics.json", metrics)
     write_json(output_dir / "run_manifest.json", run_manifest)
     write_json(output_dir / "cases.json", cases)
     return metrics
-
-
-def evaluate_dense_document_run(
-    dataset_dir: Path,
-    rankings_path: Path,
-    output_dir: Path,
-    *,
-    run_context: dict[str, Any],
-) -> dict[str, Any]:
-    """Evaluate a Dense-document raw ranking (no chunk collapse)."""
-    return evaluate_document_run(
-        dataset_dir, rankings_path, output_dir, run_context=run_context
-    )

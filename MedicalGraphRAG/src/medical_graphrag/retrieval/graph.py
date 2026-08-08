@@ -1,40 +1,50 @@
 """LinearGraphRetriever: relation-free graph retrieval, a faithful port of
-LinearRAG's default non-vectorized retrieval core, adapted to the frozen
-``pubmedqa_hard_v1`` chunk data and the shared evaluation contract.
+LinearRAG's default non-vectorized retrieval core, adapted to the frozen chunk
+data and the shared evaluation contract.
 
-Offline build (one pass): medical NER over chunk content -> entities;
+Offline build (one pass): medical NER over passage content -> entities;
 sentence split + sentence embeddings -> Entity<->Sentence bridge;
 Entity-Passage edges (normalized co-occurrence) -> igraph with Entity and
 Passage nodes -> persisted graph + stores + hashed report.
 
+Two retrieval units (spec §3/§5):
+  * ``document``: one passage per frozen ``documents.jsonl`` row, passage_id =
+    doc_id, full abstract content. Document embeddings come from the SHARED
+    frozen artifact (``document_embeddings.py``) consumed by Dense, Similarity
+    kNN and Graph passage prior alike (P0-8).
+  * ``chunk``: one passage per frozen ``chunks.jsonl`` row (historical default).
+
+Passage-Passage edges are governed by ``GraphBuildConfig.passage_edge_mode``,
+mutually exclusive: ``none`` | ``similarity`` | ``adjacent`` (spec §6.3).
+
 Online search (per query): question NER -> seed entities (argmax over corpus
 entity embeddings) -> Entity->Sentence->Entity BFS propagation (semantic
 bridge) -> passage prior (normalized Dense + activated-entity reward) ->
-Personalized PageRank -> top-k passage (chunk) ids.
+Personalized PageRank -> top-k passage (doc/chunk) ids.
 """
 import json
 import math
 from collections import defaultdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 
 from medical_graphrag.data.io import sha256_file, write_json, write_jsonl
+from medical_graphrag.data.retrieval_passages import load_retrieval_passages
 from medical_graphrag.retrieval.bm25 import validate_frozen_dataset
 
 DEFAULT_EMBEDDING_MODEL = "models/all-mpnet-base-v2"
 DEFAULT_NER_MODEL = "en_ner_bc5cdr_md"
 TEXT_MODE = "abstract_only"
 
+GRAPH_SCHEMA_VERSION = 2
+
 
 class GraphConfig:
-    """Retrieval hyper-parameters (aligned to LinearRAG official defaults).
-
-    Values now match ``LinearRAG/src/config.py`` defaults as used by the
-    official ``run.py`` (which passes ``passage_ratio=2`` via CLI and leaves
-    ``damping`` / ``passage_node_weight`` at their config defaults).
-    """
+    """Online retrieval (PPR) hyper-parameters, kept separate from the offline
+    ``GraphBuildConfig`` (spec §9). Aligned to LinearRAG official defaults."""
 
     def __init__(
         self,
@@ -56,6 +66,63 @@ class GraphConfig:
         self.max_iterations = max_iterations
         self.embedding_model = embedding_model
         self.ner_model = ner_model
+
+
+@dataclass(frozen=True)
+class GraphBuildConfig:
+    """Offline graph-construction parameters (edge strategy), separate from the
+    online PPR ``GraphConfig`` (spec §9).
+
+    Validation (spec §9): document unit only supports ``none``/``similarity``;
+    chunk unit only supports ``none``/``adjacent``; similarity params must be in
+    range; ``window_overlap_tokens`` must be non-negative.
+    """
+
+    retrieval_unit: Literal["document", "chunk"]
+    passage_edge_mode: Literal["none", "similarity", "adjacent"]
+    embedding_model: str
+    ner_model: str
+    similarity_k: int = 5
+    similarity_min_cosine: float = 0.50
+    similarity_edge_scale: float = 1.0
+    window_overlap_tokens: int = 32
+
+    def __post_init__(self) -> None:
+        if self.retrieval_unit == "document":
+            if self.passage_edge_mode not in {"none", "similarity"}:
+                raise ValueError(
+                    "document retrieval_unit only supports none/similarity edge modes"
+                )
+        elif self.retrieval_unit == "chunk":
+            if self.passage_edge_mode not in {"none", "adjacent"}:
+                raise ValueError(
+                    "chunk retrieval_unit only supports none/adjacent edge modes"
+                )
+        else:
+            raise ValueError("retrieval_unit must be 'document' or 'chunk'")
+        if self.similarity_k < 1:
+            raise ValueError("similarity_k must be >= 1")
+        if not (0 <= self.similarity_min_cosine <= 1):
+            raise ValueError("similarity_min_cosine must be in [0, 1]")
+        if self.similarity_edge_scale <= 0:
+            raise ValueError("similarity_edge_scale must be > 0")
+        if self.window_overlap_tokens < 0:
+            raise ValueError("window_overlap_tokens must be >= 0")
+
+    @property
+    def graph_profile(self) -> str:
+        if self.retrieval_unit == "document":
+            return (
+                "document_ep_v1"
+                if self.passage_edge_mode == "none"
+                else "document_similarity_v1"
+            )
+        if self.passage_edge_mode == "adjacent":
+            return "linearrag_adjacent_v1"
+        return "chunk_entity_only_v1"
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 def _load_embedder(model_name: str):
@@ -127,43 +194,164 @@ def build_entity_passage_edges(
     return sorted(all_entities), edges
 
 
+def _percentile(sorted_values: list[float], q: float) -> float:
+    if not sorted_values:
+        return 0.0
+    k = int((len(sorted_values) - 1) * q)
+    return float(sorted_values[k])
+
+
+def _hash_dict(value: object) -> str:
+    import hashlib
+
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    ).hexdigest()
+
+
+def _weight_stats(weights: list[float]) -> dict[str, float]:
+    if not weights:
+        return {"count": 0}
+    return {
+        "count": float(len(weights)),
+        "sum": float(sum(weights)),
+        "min": float(min(weights)),
+        "mean": float(sum(weights) / len(weights)),
+        "p50": _percentile(sorted(weights), 0.50),
+        "p95": _percentile(sorted(weights), 0.95),
+        "max": float(max(weights)),
+    }
+
+
+def _count_exact_content_duplicates(passages) -> int:
+    from collections import Counter
+
+    counts = Counter(p.content for p in passages)
+    return sum(c * (c - 1) // 2 for c in counts.values() if c > 1)
+
+
+def _load_document_embedding_artifact(
+    document_embeddings_dir: Path,
+    dataset_dir: Path,
+    passage_count: int,
+) -> tuple[np.ndarray, dict[str, Any], str, str]:
+    """Load the frozen document embedding artifact and validate its bindings.
+
+    Returns ``(embeddings, artifact_report, embedding_report_sha256,
+    embeddings_sha256)``. Fails closed on any dataset/manifest/count/hash
+    mismatch (P0-8).
+    """
+    report_path = document_embeddings_dir / "document_embedding_report.json"
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    if report.get("retrieval_unit") != "document":
+        raise ValueError("embedding artifact is not a document unit")
+    dataset_manifest = json.loads(
+        (dataset_dir / "manifest.json").read_text(encoding="utf-8")
+    )
+    if report.get("dataset_manifest_sha256") != sha256_file(dataset_dir / "manifest.json"):
+        raise ValueError("embedding artifact does not match dataset manifest")
+    if report.get("source_artifact_sha256") != dataset_manifest["artifact_hashes"][
+        "documents.jsonl"
+    ]:
+        raise ValueError("embedding artifact does not match documents.jsonl")
+    if report.get("document_count") != passage_count:
+        raise ValueError("embedding artifact document count does not match passages")
+    embeddings_path = document_embeddings_dir / "document_embeddings.npy"
+    if report.get("embeddings_sha256") != sha256_file(embeddings_path):
+        raise ValueError("embedding artifact embeddings SHA-256 mismatch")
+    embeddings = np.load(embeddings_path)
+    if embeddings.shape[0] != passage_count:
+        raise ValueError("embedding row count does not match passages")
+    return (
+        embeddings,
+        report,
+        sha256_file(report_path),
+        report["embeddings_sha256"],
+    )
+
+
 def build_graph_index(
     dataset_dir: Path,
     output_dir: Path,
     *,
+    build_config: GraphBuildConfig | None = None,
     config: GraphConfig | None = None,
     batch_size: int = 64,
+    embedder: Any | None = None,
+    nlp: Any | None = None,
+    document_embeddings_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Run medical NER + sentence bridge + Entity-Passage edges, build and
-    persist the igraph, and return a hashed report.
+    """Run NER + sentence bridge + edges, build and persist the igraph.
 
-    Adjacent-passage edges are intentionally NOT added (v1): PubMedQA abstracts
-    are short and global ordering would create cross-document wrong edges.
+    ``build_config`` selects the retrieval unit and the Passage-Passage edge
+    mode. ``config`` is the online PPR ``GraphConfig`` (kept for backward
+    compatibility with historical runners). For the document unit,
+    ``document_embeddings_dir`` must point at the frozen artifact from
+    ``build_document_embeddings`` (P0-8).
     """
     import faiss
     import igraph as ig
 
+    if build_config is None:
+        build_config = GraphBuildConfig(
+            retrieval_unit="chunk",
+            passage_edge_mode="none",
+            embedding_model=(config.embedding_model if config else DEFAULT_EMBEDDING_MODEL),
+            ner_model=(config.ner_model if config else DEFAULT_NER_MODEL),
+        )
     if config is None:
-        config = GraphConfig()
-    manifest = validate_frozen_dataset(dataset_dir)
-    chunks = [
-        json.loads(line)
-        for line in (dataset_dir / "chunks.jsonl").open(encoding="utf-8")
-        if line.strip()
-    ]
-    if len(chunks) != manifest["counts"]["chunks"]:
-        raise ValueError("chunk count does not match manifest")
-    passage_ids = [str(row["chunk_id"]) for row in chunks]
-    texts = [str(row["content"]) for row in chunks]
+        config = GraphConfig(
+            ner_model=build_config.ner_model,
+            embedding_model=build_config.embedding_model,
+        )
 
-    nlp = _load_nlp(config.ner_model)
+    manifest = validate_frozen_dataset(dataset_dir)
+    passages = load_retrieval_passages(dataset_dir, build_config.retrieval_unit)
+    source_artifact = (
+        "documents.jsonl"
+        if build_config.retrieval_unit == "document"
+        else "chunks.jsonl"
+    )
+    expected_count = manifest["counts"]["documents" if build_config.retrieval_unit == "document" else "chunks"]
+    if len(passages) != expected_count:
+        raise ValueError("passage count does not match frozen dataset count")
+    passage_ids = [p.passage_id for p in passages]
+    texts = [p.content for p in passages]
+    doc_ids = [p.doc_id for p in passages]
+    orders = [p.order for p in passages]
+
+    nlp = nlp if nlp is not None else _load_nlp(build_config.ner_model)
     passage_entities = extract_entities(nlp, texts, batch_size=batch_size)
     sentences = split_sentences(nlp, texts)
-    del nlp
 
-    embedder = _load_embedder(config.embedding_model)
+    # --- embeddings -------------------------------------------------------
+    embedding_report_sha256 = None
+    embedding_embeddings_sha256 = None
+    if build_config.retrieval_unit == "document":
+        if document_embeddings_dir is None:
+            raise ValueError(
+                "document retrieval_unit requires document_embeddings_dir"
+            )
+        passage_embeddings, artifact_report, embedding_report_sha256, embedding_embeddings_sha256 = (
+            _load_document_embedding_artifact(
+                document_embeddings_dir, dataset_dir, len(passages)
+            )
+        )
+        window_coverage = artifact_report.get("window_coverage", {})
+    else:
+        embedder = embedder if embedder is not None else _load_embedder(build_config.embedding_model)
+        passage_embeddings = np.asarray(
+            embedder.encode(
+                texts,
+                normalize_embeddings=True,
+                batch_size=batch_size,
+                show_progress_bar=False,
+            ),
+            dtype="float32",
+        )
+        window_coverage = {}
 
-    # Sentence bridge: map entity <-> sentences, and embed sentences.
+    # --- sentence bridge ----------------------------------------------------
     sentence_ids: list[str] = []
     sentence_texts: list[str] = []
     sentence_to_entities: list[list[str]] = []
@@ -174,13 +362,13 @@ def build_graph_index(
             sid = f"{passage_ids[p_idx]}#s{s_idx}"
             sentence_ids.append(sid)
             sentence_texts.append(sentence)
-            # Only entities that actually appear in this sentence bridge it
-            # (closer to LinearRAG's per-sentence NER than whole-passage entities).
             sentence_entities = [e for e in passage_ents if e in sentence]
             sentence_to_entities.append(sentence_entities)
             for entity in sentence_entities:
                 entity_to_sentences[entity].append(sid)
 
+    if embedder is None:
+        embedder = _load_embedder(build_config.embedding_model)
     sentence_embeddings = np.asarray(
         embedder.encode(
             sentence_texts,
@@ -190,20 +378,9 @@ def build_graph_index(
         ),
         dtype="float32",
     )
-    passage_embeddings = np.asarray(
-        embedder.encode(
-            texts,
-            normalize_embeddings=True,
-            batch_size=batch_size,
-            show_progress_bar=False,
-        ),
-        dtype="float32",
-    )
 
-    # Entity-Passage edges + entity list.
+    # --- entity-passage edges + entity embeddings --------------------------
     all_entities, edges = build_entity_passage_edges(passage_ids, texts, passage_entities)
-
-    # Entity embeddings (for seed-entity matching).
     entity_embeddings = np.asarray(
         embedder.encode(
             all_entities,
@@ -214,25 +391,93 @@ def build_graph_index(
         dtype="float32",
     )
 
-    # igraph: Entity nodes then Passage nodes.
+    # --- igraph: Entity nodes then Passage nodes ----------------------------
     graph = ig.Graph(directed=False)
     entity_index = {e: i for i, e in enumerate(all_entities)}
     passage_index = {p: len(all_entities) + i for i, p in enumerate(passage_ids)}
     graph.add_vertices(len(all_entities) + len(passage_ids))
     graph.vs["name"] = list(all_entities) + passage_ids
-    graph.vs["content"] = [e for e in all_entities] + texts
+    graph.vs["content"] = list(all_entities) + texts
     edge_list: list[tuple[int, int]] = []
     edge_weights: list[float] = []
     for passage_id, entity_scores in edges.items():
         for entity, weight in entity_scores.items():
             edge_list.append((passage_index[passage_id], entity_index[entity]))
             edge_weights.append(weight)
+    entity_passage_edge_count = len(edge_list)
+
+    # --- passage-passage edges (mutually exclusive modes) -------------------
+    passage_passage_edge_count = 0
+    edge_count_by_type = {"entity_passage": entity_passage_edge_count, "similarity": 0, "adjacent": 0}
+    passage_passage_diagnostics: dict[str, float] = {}
+    from medical_graphrag.retrieval.graph_edges import (
+        build_adjacent_edges,
+        build_similarity_edges,
+    )
+
+    if build_config.passage_edge_mode == "similarity":
+        sim_edges = build_similarity_edges(
+            passage_ids,
+            passage_embeddings,
+            k=build_config.similarity_k,
+            min_cosine=build_config.similarity_min_cosine,
+            scale=build_config.similarity_edge_scale,
+        )
+        index_of = {pid: i for i, pid in enumerate(passage_ids)}
+        degree = [0] * len(passage_ids)
+        for a, b, _w in sim_edges:
+            edge_list.append((passage_index[a], passage_index[b]))
+            edge_weights.append(_w)
+            degree[index_of[a]] += 1
+            degree[index_of[b]] += 1
+        passage_passage_edge_count = len(sim_edges)
+        edge_count_by_type["similarity"] = len(sim_edges)
+        sim_weights = [w for _, _, w in sim_edges]
+        isolated = [pid for pid, d in zip(passage_ids, degree) if d == 0]
+        passage_passage_diagnostics = {
+            "edge_count": float(len(sim_edges)),
+            "isolated_count": float(len(isolated)),
+            "isolated_rate": float(len(isolated)) / max(len(passage_ids), 1),
+            "degree_min": _percentile(sorted(degree), 0.0),
+            "degree_mean": sum(degree) / max(len(degree), 1),
+            "degree_p50": _percentile(sorted(degree), 0.50),
+            "degree_p95": _percentile(sorted(degree), 0.95),
+            "degree_p99": _percentile(sorted(degree), 0.99),
+            "degree_max": _percentile(sorted(degree), 1.0),
+            "weight_min": _percentile(sorted(sim_weights), 0.0),
+            "weight_mean": sum(sim_weights) / max(len(sim_weights), 1),
+            "weight_p50": _percentile(sorted(sim_weights), 0.50),
+            "weight_p95": _percentile(sorted(sim_weights), 0.95),
+            "weight_max": _percentile(sorted(sim_weights), 1.0),
+            "exact_content_duplicate_pairs": float(_count_exact_content_duplicates(passages)),
+        }
+    elif build_config.passage_edge_mode == "adjacent":
+        adj_edges, gaps = build_adjacent_edges(passages)
+        doc_counts: dict[str, int] = defaultdict(int)
+        for p in passages:
+            doc_counts[p.doc_id] += 1
+        expected_adjacent = sum(max(c - 1, 0) for c in doc_counts.values())
+        if expected_adjacent != len(adj_edges):
+            raise ValueError(
+                f"adjacent expected {expected_adjacent} != actual {len(adj_edges)}"
+            )
+        for a, b, w in adj_edges:
+            edge_list.append((passage_index[a], passage_index[b]))
+            edge_weights.append(w)
+        passage_passage_edge_count = len(adj_edges)
+        edge_count_by_type["adjacent"] = len(adj_edges)
+        passage_passage_diagnostics = {
+            "expected_edge_count": float(expected_adjacent),
+            "actual_edge_count": float(len(adj_edges)),
+            "gap_count": float(len(gaps)),
+        }
+
     if edge_list:
         graph.add_edges(edge_list)
         graph.es["weight"] = edge_weights
     passage_node_indices = [passage_index[p] for p in passage_ids]
 
-    # Persist.
+    # --- persist -------------------------------------------------------------
     output_dir.mkdir(parents=True, exist_ok=True)
     graph_path = output_dir / "graph.graphml"
     graph.write_graphml(str(graph_path))
@@ -251,16 +496,46 @@ def build_graph_index(
     np.save(output_dir / "sentence_embeddings.npy", sentence_embeddings)
     np.save(output_dir / "entity_embeddings.npy", entity_embeddings)
     np.save(output_dir / "passage_embeddings.npy", passage_embeddings)
-    report = {
+
+    report: dict[str, Any] = {
+        "graph_schema_version": GRAPH_SCHEMA_VERSION,
+        "graph_profile": build_config.graph_profile,
+        "retrieval_unit": build_config.retrieval_unit,
+        "passage_edge_mode": build_config.passage_edge_mode,
+        "source_artifact": source_artifact,
+        "source_artifact_sha256": manifest["artifact_hashes"][source_artifact],
         "text_mode": TEXT_MODE,
-        "ner_model": config.ner_model,
-        "embedding_model": config.embedding_model,
+        "ner_model": build_config.ner_model,
+        "embedding_model": build_config.embedding_model,
         "entity_count": len(all_entities),
         "passage_count": len(passage_ids),
         "sentence_count": len(sentence_ids),
         "edge_count": len(edge_list),
-        "passage_entity_edge_mode": "normalized_cooccurrence",
-        "adjacent_passage_edges": False,
+        "entity_passage_edge_count": entity_passage_edge_count,
+        "passage_passage_edge_count": passage_passage_edge_count,
+        "edge_count_by_type": edge_count_by_type,
+        "edge_weight_stats_by_type": {
+            "entity_passage": _weight_stats(edge_weights[:entity_passage_edge_count]),
+            "similarity": (
+                _weight_stats(edge_weights[entity_passage_edge_count:])
+                if build_config.passage_edge_mode == "similarity"
+                else {"count": 0}
+            ),
+            "adjacent": (
+                _weight_stats(edge_weights[entity_passage_edge_count:])
+                if build_config.passage_edge_mode == "adjacent"
+                else {"count": 0}
+            ),
+        },
+        "passage_passage_diagnostics": passage_passage_diagnostics,
+        "adjacent_passage_edges": build_config.passage_edge_mode == "adjacent",
+        "window_coverage": window_coverage,
+        "embedding_report_sha256": embedding_report_sha256,
+        "embedding_embeddings_sha256": embedding_embeddings_sha256,
+        "build_config": {
+            **build_config.to_dict(),
+            "config_sha256": _hash_dict(build_config.to_dict()),
+        },
         "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
         "dataset_artifact_hashes": manifest["artifact_hashes"],
         "graph_sha256": sha256_file(graph_path),
@@ -297,7 +572,14 @@ class LinearGraphRetriever:
     the question yields no entities, falls back to Dense passage ranking.
     """
 
-    def __init__(self, index_dir: Path, *, config: GraphConfig | None = None):
+    def __init__(
+        self,
+        index_dir: Path,
+        *,
+        config: GraphConfig | None = None,
+        embedder: Any | None = None,
+        nlp: Any | None = None,
+    ):
         import igraph as ig
 
         if config is None:
@@ -307,8 +589,10 @@ class LinearGraphRetriever:
         self.report = json.loads(
             (self.index_dir / "graph_build.json").read_text(encoding="utf-8")
         )
-        self.embedder = _load_embedder(config.embedding_model)
-        self.nlp = _load_nlp(config.ner_model)
+        self.retrieval_unit = str(self.report.get("retrieval_unit", "chunk"))
+        self.passage_edge_mode = str(self.report.get("passage_edge_mode", "none"))
+        self.embedder = embedder if embedder is not None else _load_embedder(config.embedding_model)
+        self.nlp = nlp if nlp is not None else _load_nlp(config.ner_model)
         self.graph = ig.Graph.Read_GraphML(str(self.index_dir / "graph.graphml"))
         self.entity_list = [
             row["entity"] for row in _read_jsonl(self.index_dir / "entities.jsonl")
@@ -449,8 +733,6 @@ class LinearGraphRetriever:
                 occurrences = passage_text_lower.count(entity.lower())
                 if occurrences > 0:
                     denom = tier if tier >= 1 else 1
-                    # Clamp the entity score so negative seed similarities cannot
-                    # drive the log argument out of its domain.
                     total_bonus += max(entity_score, 0.0) * math.log(1 + occurrences) / denom
             score = self.config.passage_ratio * float(norm[p_idx]) + math.log(
                 max(1 + total_bonus, 1e-9)

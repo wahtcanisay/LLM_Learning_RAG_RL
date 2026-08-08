@@ -18,27 +18,52 @@ from pathlib import Path
 from typing import Any
 
 from medical_graphrag.data.io import sha256_file
-from medical_graphrag.evaluation.bm25 import evaluate_bm25_run
-from medical_graphrag.evaluation.dense import evaluate_dense_run
-from medical_graphrag.evaluation.graph import evaluate_graph_run
-from medical_graphrag.evaluation.hybrid import evaluate_hybrid_run
+from medical_graphrag.evaluation.bm25 import (
+    evaluate_bm25_document_run,
+    evaluate_bm25_run,
+)
+from medical_graphrag.evaluation.dense import (
+    evaluate_dense_document_run,
+    evaluate_dense_run,
+)
+from medical_graphrag.evaluation.graph import evaluate_graph_run, write_graph_pair_cases
+from medical_graphrag.evaluation.hybrid import (
+    evaluate_hybrid_document_run,
+    evaluate_hybrid_run,
+)
 from medical_graphrag.evaluation.reranker import evaluate_reranker_run
 from medical_graphrag.retrieval.bm25 import (
+    export_document_collection,
     export_pyserini_collection,
     validate_frozen_dataset,
 )
 from medical_graphrag.retrieval.dense import (
     DEFAULT_EMBEDDING_MODEL as DENSE_DEFAULT_EMBEDDING_MODEL,
+    build_dense_document_index,
     build_dense_index,
 )
+from medical_graphrag.retrieval.document_embeddings import ensure_document_embeddings
 from medical_graphrag.retrieval.graph import (
     DEFAULT_EMBEDDING_MODEL as GRAPH_DEFAULT_EMBEDDING_MODEL,
 )
-from medical_graphrag.retrieval.graph import DEFAULT_NER_MODEL, GraphConfig, build_graph_index
+from medical_graphrag.retrieval.graph import (
+    DEFAULT_NER_MODEL,
+    GraphBuildConfig,
+    GraphConfig,
+    build_graph_index,
+)
 from medical_graphrag.retrieval.rerank import run_rerank
 from medical_graphrag.retrieval.reranker import DEFAULT_RERANKER_MODEL
-from medical_graphrag.retrieval.search_bm25 import build_lucene_index, run_search as run_bm25_search
+from medical_graphrag.retrieval.search_bm25 import (
+    build_lucene_document_index,
+    build_lucene_index,
+    run_search as run_bm25_search,
+)
 from medical_graphrag.retrieval.search_dense import run_search as run_dense_search
+from medical_graphrag.retrieval.search_document import (
+    run_bm25_document_search,
+    run_dense_document_search,
+)
 from medical_graphrag.retrieval.search_graph import run_search as run_graph_search
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -330,10 +355,245 @@ def run_reranker(
     )
 
 
+def _document_embedding_model() -> str:
+    """Single embedding model shared by every document-level consumer (P0-8)."""
+    return DENSE_DEFAULT_EMBEDDING_MODEL
+
+
+def _document_artifact_dir(dataset: str, root: Path) -> Path:
+    return root / "outputs" / dataset / "document_embeddings_v1"
+
+
+def run_bm25_document(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    k1: float = 0.9,
+    b: float = 0.4,
+    threads: int = 8,
+) -> dict[str, Any]:
+    """BM25-document: export full documents to Lucene, search, evaluate."""
+    dataset_dir = _dataset_dir(dataset, root)
+    out_dir = root / "outputs" / dataset / "bm25_document_v1"
+    idx_dir = root / "indexes" / dataset / "bm25_document_v1"
+    exp_dir = root / "experiments" / dataset / "bm25_document_v1"
+    export_document_collection(dataset_dir, out_dir)
+    build_lucene_document_index(
+        collection=out_dir / "collection",
+        index=idx_dir,
+        report=out_dir / "index_build.json",
+        export_report=out_dir / "export_report.json",
+        threads=threads,
+    )
+    run_bm25_document_search(
+        index=idx_dir,
+        metadata=out_dir / "document_metadata.jsonl",
+        index_report=out_dir / "index_build.json",
+        questions=dataset_dir / "questions.jsonl",
+        output=out_dir / "raw_rankings.jsonl",
+        report=out_dir / "search_run.json",
+        top_k=top_k,
+        k1=k1,
+        b=b,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "bm25-document", "--dataset", dataset],
+        extra={
+            "index": json.loads((out_dir / "index_build.json").read_text(encoding="utf-8")),
+            "search": json.loads((out_dir / "search_run.json").read_text(encoding="utf-8")),
+            "index_report_sha256": sha256_file(out_dir / "index_build.json"),
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_bm25_document_run(
+        dataset_dir, out_dir / "raw_rankings.jsonl", exp_dir, run_context=context
+    )
+
+
+def run_dense_document(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    batch_size: int = 64,
+    overlap_tokens: int = 32,
+) -> dict[str, Any]:
+    """Dense-document: consume the frozen embedding artifact, FAISS, search, evaluate."""
+    dataset_dir = _dataset_dir(dataset, root)
+    artifact_dir = _document_artifact_dir(dataset, root)
+    out_dir = root / "outputs" / dataset / "dense_document_v1"
+    exp_dir = root / "experiments" / dataset / "dense_document_v1"
+    model = _document_embedding_model()
+    ensure_document_embeddings(
+        dataset_dir, artifact_dir, model_name=model,
+        overlap_tokens=overlap_tokens, batch_size=batch_size,
+    )
+    build_dense_document_index(
+        dataset_dir, out_dir, document_embeddings_dir=artifact_dir,
+        batch_size=batch_size,
+    )
+    run_dense_document_search(
+        index=out_dir / "index.faiss",
+        metadata=out_dir / "document_metadata.jsonl",
+        index_report=out_dir / "index_build.json",
+        questions=dataset_dir / "questions.jsonl",
+        output=out_dir / "raw_rankings.jsonl",
+        report=out_dir / "search_run.json",
+        top_k=top_k,
+        embedding_model=model,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "dense-document", "--dataset", dataset],
+        extra={
+            "index": json.loads((out_dir / "index_build.json").read_text(encoding="utf-8")),
+            "search": json.loads((out_dir / "search_run.json").read_text(encoding="utf-8")),
+            "index_report_sha256": sha256_file(out_dir / "index_build.json"),
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_dense_document_run(
+        dataset_dir, out_dir / "raw_rankings.jsonl", exp_dir, run_context=context
+    )
+
+
+def run_graph_document(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    profile: str = "similarity",
+    top_k: int = 100,
+    batch_size: int = 64,
+    overlap_tokens: int = 32,
+) -> dict[str, Any]:
+    """Graph-document: EP (no passage-passage edges) or Similarity (kNN soft edges)."""
+    if profile not in {"ep", "similarity"}:
+        raise ValueError("graph-document profile must be 'ep' or 'similarity'")
+    dataset_dir = _dataset_dir(dataset, root)
+    artifact_dir = _document_artifact_dir(dataset, root)
+    name = f"graph_document_{profile}_v1"
+    idx_dir = root / "indexes" / dataset / name
+    out_dir = root / "outputs" / dataset / name
+    exp_dir = root / "experiments" / dataset / name
+    model = _document_embedding_model()
+    ensure_document_embeddings(
+        dataset_dir, artifact_dir, model_name=model,
+        overlap_tokens=overlap_tokens, batch_size=batch_size,
+    )
+    build_config = GraphBuildConfig(
+        retrieval_unit="document",
+        passage_edge_mode="similarity" if profile == "similarity" else "none",
+        embedding_model=model,
+        ner_model=DEFAULT_NER_MODEL,
+    )
+    build_graph_index(
+        dataset_dir, idx_dir, build_config=build_config, batch_size=batch_size,
+        document_embeddings_dir=artifact_dir,
+    )
+    run_graph_search(
+        index=idx_dir,
+        index_report=idx_dir / "graph_build.json",
+        questions=dataset_dir / "questions.jsonl",
+        chunks=dataset_dir / "chunks.jsonl",
+        output=out_dir / "raw_rankings.jsonl",
+        report=out_dir / "search_run.json",
+        top_k=top_k,
+        ner_model=DEFAULT_NER_MODEL,
+        embedding_model=model,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "graph-document", "--dataset", dataset, "--profile", profile],
+        extra={
+            "index": json.loads((idx_dir / "graph_build.json").read_text(encoding="utf-8")),
+            "search": json.loads((out_dir / "search_run.json").read_text(encoding="utf-8")),
+            "index_report_sha256": sha256_file(idx_dir / "graph_build.json"),
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_graph_run(
+        dataset_dir, out_dir / "raw_rankings.jsonl", exp_dir, run_context=context
+    )
+
+
+def run_hybrid_document(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    rrf_k: int = 60,
+) -> dict[str, Any]:
+    """Hybrid-document: RRF-fuse BM25-document + Dense-document, evaluate."""
+    run_bm25_document(dataset, git_commit=git_commit, docker_image=docker_image,
+                      root=root, top_k=top_k)
+    run_dense_document(dataset, git_commit=git_commit, docker_image=docker_image,
+                       root=root, top_k=top_k)
+    dataset_dir = _dataset_dir(dataset, root)
+    bm25_dir = root / "outputs" / dataset / "bm25_document_v1"
+    dense_dir = root / "outputs" / dataset / "dense_document_v1"
+    exp_dir = root / "experiments" / dataset / "hybrid_document_v1"
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "hybrid-document", "--dataset", dataset],
+        extra={
+            "bm25": {
+                "index": json.loads((bm25_dir / "index_build.json").read_text(encoding="utf-8")),
+                "search": json.loads((bm25_dir / "search_run.json").read_text(encoding="utf-8")),
+                "index_report_sha256": sha256_file(bm25_dir / "index_build.json"),
+            },
+            "dense": {
+                "index": json.loads((dense_dir / "index_build.json").read_text(encoding="utf-8")),
+                "search": json.loads((dense_dir / "search_run.json").read_text(encoding="utf-8")),
+                "index_report_sha256": sha256_file(dense_dir / "index_build.json"),
+            },
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_hybrid_document_run(
+        dataset_dir,
+        bm25_dir / "raw_rankings.jsonl",
+        dense_dir / "raw_rankings.jsonl",
+        exp_dir,
+        k=rrf_k,
+        run_context=context,
+    )
+
+
+def run_graph_pair_cases(
+    dataset: str,
+    *,
+    root: Path = ROOT,
+) -> dict[str, Any]:
+    """Write the Graph-EP vs Graph-Sim paired case comparison (P1-5)."""
+    dataset_dir = _dataset_dir(dataset, root)
+    ep_rankings = root / "outputs" / dataset / "graph_document_ep_v1" / "raw_rankings.jsonl"
+    sim_rankings = root / "outputs" / dataset / "graph_document_similarity_v1" / "raw_rankings.jsonl"
+    output = root / "experiments" / dataset / "graph_ep_vs_sim_v1" / "paired_cases.jsonl"
+    return write_graph_pair_cases(dataset_dir, ep_rankings, sim_rankings, output)
+
+
 RUNNERS: dict[str, Callable[..., dict[str, Any]]] = {
     "bm25": run_bm25,
     "dense": run_dense,
     "graph": run_graph,
     "hybrid": run_hybrid,
     "reranker": run_reranker,
+    "bm25-document": run_bm25_document,
+    "dense-document": run_dense_document,
+    "graph-document": run_graph_document,
+    "hybrid-document": run_hybrid_document,
 }
