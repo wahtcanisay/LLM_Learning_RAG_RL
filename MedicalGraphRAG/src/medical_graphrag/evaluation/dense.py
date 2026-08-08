@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from medical_graphrag.data.io import sha256_file, write_json
+from medical_graphrag.evaluation.document import evaluate_document_run
 from medical_graphrag.evaluation.retrieval import (
     evaluate_rankings,
     first_gold_rank,
