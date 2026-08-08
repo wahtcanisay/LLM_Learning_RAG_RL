@@ -92,10 +92,17 @@
 - [x] Similarity 与 Adjacent 通过 graph profile 互斥，长文本 Adjacent 严格限同文档连续 order、权重 `1.0`；
 - [x] 明确同 retrieval unit 的 BM25/Dense/Hybrid/Graph 公平基线与历史结果隔离；
 - [x] 写出测试、审计、分阶段验收和 DS 回交材料；
-- [ ] 用户复核书面规格；
-- [ ] DS 基于批准规格编写 implementation plan，之后才修改代码。
+- [x] 用户复核书面规格；
+- [x] DS 提交 implementation plan `7b4c6cb`，Codex 完成审阅并判定存在阻断项，禁止按原计划直接实施；
+- [ ] DS 按审阅交接提交 Phase 1 v2 计划并完成代码，之后由 Codex 审阅代码与真实日志。
 
 # 已完成
+
+## Per-Dataset Edge Policy 实施计划审阅（2026-08-08）
+
+- 审阅 `docs/superpowers/plans/2026-08-08-per-dataset-edge-policy.md`（commit `7b4c6cb`），确认方向符合冻结设计，但存在测试必失败、ranking/report 契约不闭环、核心实现占位和三路 embedding 未真实共用等阻断问题。
+- 审阅交接保存于 `docs/superpowers/reviews/2026-08-08-per-dataset-edge-policy-plan-review.md`；要求 DS 先修订仅覆盖 PubMedQA Phase 1 的 v2 计划，再修改代码。
+- 本次未修改检索代码、未运行新实验、未产生新指标；下一门禁为 DS 回交代码 commit、pytest 日志、五路 runner 产物和 embedding artifact 哈希后，由 Codex 进行代码审阅。
 
 ## 单数据集边策略设计交接（2026-08-08）
 
@@ -324,3 +331,12 @@
 - official test 共有 8 题 gold 未进 Top-10；已保存其中 5 题的 Top-10 文档、分数、gold rank/title/chunk excerpt。
 
 已解决失败只保留根因和最终处理；后续新增失败必须附真实日志或可核验输出。
+# 2026-08-08 代码审阅更新
+
+- 已审阅 DS 的 per-dataset edge policy 实现，并在提交 `7377678` 修复影响实验正确性的核心问题。
+- 旧 v1 完整摘要 embedding 存在 decode 后重新分词导致的窗口漂移：PubMedQA 6,037 个窗口中 205 个不一致；旧 v1 指标不得作为最终结论。
+- 新实现直接编码冻结 token ID 窗口，Dense/Graph/Similarity 共用并严格校验同一 v2 embedding artifact。
+- Similarity 边权从冻结向量重算；Adjacent 只连接同文档连续 order，权重固定 `1.0`，不跨 gap。
+- Windows 针对性测试 `46 passed`；WSL Docker 为 `125 passed, 2 failed`，两项失败是 spaCy 3.8 与 BC5CDR 3.7 模型环境不兼容。
+- v2 BM25-document 已完成：test Recall@10 `0.990`、MRR@10 `0.9619`、nDCG@10 `0.9689`；随后 embedding 阶段未使用 GPU且未生成产物，Dense/Hybrid/Graph 尚未完成。
+- 详细审阅：`docs/superpowers/reviews/2026-08-08-per-dataset-edge-policy-code-review.md`。
