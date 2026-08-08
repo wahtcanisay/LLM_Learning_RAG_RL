@@ -133,6 +133,7 @@ def build_dense_document_index(
         "embedding_model": artifact_report["embedding_model"],
         "dim": dim,
         "index_type": INDEX_TYPE,
+        "document_count": len(doc_ids),
         "embedding_report_sha256": sha256_file(
             document_embeddings_dir / "document_embedding_report.json"
         ),
