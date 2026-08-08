@@ -83,34 +83,26 @@
 
 # 今日唯一任务
 
-2026-08-04：阅读 MedicalGPT 的 SFT 最小调用链（助手材料准备已完成，学习者复述尚未完成）：
-
-```text
-scripts/run_sft.sh
-→ 四组 dataclass 参数
-→ tokenizer / chat template
-→ JSONL conversations
-→ input_ids / attention_mask / labels
-→ IGNORE_INDEX loss mask
-→ 4-bit QLoRA / LoRA adapter
-→ DataCollator / Trainer
-→ checkpoint 与模型保存
-```
+2026-08-08：冻结“单数据集独立建库 + 摘要 document-level Similarity 软边 + 长文本同文档 Adjacent `1.0` 边”的设计，并形成交给 DS 的代码修改规格。旧的合并大库方案停止实施。
 
 # 完成标准
 
-- [x] 官方源码快照位于 `MedicalGPT/`，未下载模型或外部数据；
-- [x] `run_sft.sh` 与 `supervised_finetuning.py` 已加入关键中文学习注释；
-- [x] Python 与 Bash 静态语法检查通过；与原始快照比较确认源码变化只有注释；
-- [ ] 学习者能指出 `run_sft.sh` 中控制模型、数据、LoRA 和训练规模的参数；
-- [ ] 学习者能用自己的话解释 `train_on_inputs=False` 时，为什么用户输入仍在 `input_ids` 中、却不参与 loss；
-- [ ] 学习者能解释 LoRA 与 QLoRA 的区别，以及为什么 MedicalGPT GRPO 不是 Search-R1。
-
-## 今日检查题
-
-请先只回答一个问题：`train_on_inputs=False` 时，模型为什么仍然需要读取用户问题的 token，但这些 token 对应的 `labels` 要替换成 `IGNORE_INDEX`？
+- [x] 明确放弃合并大库、跨库图和 merged qrels；
+- [x] 摘要型数据使用完整 `documents.jsonl`，并规定 token-window 全覆盖聚合，禁止静默截断；
+- [x] Similarity 与 Adjacent 通过 graph profile 互斥，长文本 Adjacent 严格限同文档连续 order、权重 `1.0`；
+- [x] 明确同 retrieval unit 的 BM25/Dense/Hybrid/Graph 公平基线与历史结果隔离；
+- [x] 写出测试、审计、分阶段验收和 DS 回交材料；
+- [ ] 用户复核书面规格；
+- [ ] DS 基于批准规格编写 implementation plan，之后才修改代码。
 
 # 已完成
+
+## 单数据集边策略设计交接（2026-08-08）
+
+- 审计并废弃 `docs/superpowers/specs/2026-08-07-merged-library-build-switch-design.md` 的合并大库方向，保留文件作为决策历史但禁止实施。
+- 新规格位于 `docs/superpowers/specs/2026-08-08-per-dataset-document-edge-policy-design.md`：摘要型数据按完整 document 建 Similarity kNN 软边，textbooks/statpearls 按同文档连续 chunk 建 Adjacent `1.0` 边。
+- 发现并封堵完整摘要 embedding 的隐性截断风险：规定 tokenizer window 全覆盖、mean-window-then-L2 聚合，Dense/Graph/Similarity 共用同一冻结 document embedding。
+- 本次只修改设计与进度文档，未修改检索代码、未运行新实验、未产生任何新指标。
 
 ## MedicalGPT SFT 阅读材料准备（2026-08-04）
 

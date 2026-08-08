@@ -1,5 +1,9 @@
 # 合并建库 + 建库开关 + MedRAG 基线 设计（阶段 2 · 方案 A）
 
+> [!CAUTION]
+> **状态：已于 2026-08-08 废弃，不得进入 implementation plan 或代码实现。**
+> 用户决定放弃合并大库，改为每个数据集独立建库：摘要型数据按完整 document 构建 Similarity 软边，长文本保留同文档 Adjacent `1.0` 边。替代规格见 `2026-08-08-per-dataset-document-edge-policy-design.md`。
+
 ## 1. 目标
 
 把多个医疗数据集合并成**一个大库**，通过**建库开关（`edge_mode`）**为图检索注入多跳能力：
