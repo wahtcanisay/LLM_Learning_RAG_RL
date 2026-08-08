@@ -74,17 +74,48 @@ IMG=pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel
 
 产物目录（不覆盖历史 chunk 实验）：`experiments/pubmedqa_hard_v1/{bm25,dense,hybrid,graph_document_ep_v1,graph_document_similarity_v1}/` + `graph_ep_vs_sim_v1/paired_cases.jsonl`。
 
-## 5. 验收证据（审阅 §6）
+## 5. 验收证据（审阅 §6，2026-08-08 实测）
 
-- [x] 代码实现 commit：`9fa9a42`
-- [x] pytest 全量：114 passed（日志见容器 `MedicalGraphRAG`，`pytest -q` 输出）
-- [x] embedding artifact + report 路径与 SHA-256（见 §6）
-- [x] 三 consumer 同 hash 证明：`test_p0_8_three_consumers_same_embedding_report_sha`
-- [ ] 五路正式运行产物（见 §6，运行中）
-- [ ] Graph-EP vs Graph-Sim 成对案例文件
-- [ ] 新增/修改文件清单（§2）
+**1. v2 计划 commit**：`docs/superpowers/plans/2026-08-08-per-dataset-edge-policy-v2.md` @ `0758b4a`。
+
+**2. 代码实现 commit**（起止）：`9fa9a42`（主实现）→ `0659f38`（embedding 批量优化）→ `a92078d`（model_name 修复）→ `396dfc3`（document_count 字段）→ `2ca1e56`（dense import）→ `094c4dd`（实验产物入库）。
+
+**3. `git status --short`**：`M STUDY_PROGRESS.md`（用户维护，未动）；`?? docs/superpowers/reviews/`（审阅文档）；无其他未提交代码改动。
+
+**4. pytest**：`/opt/venv/bin/python -m pytest tests/ -q` → **114 passed, 5 warnings, 31.33s**（历史 79 + 新增 35，无回归）。
+
+**5. document embedding artifact**：
+- 路径：`MedicalGraphRAG/outputs/pubmedqa_hard_v1/document_embeddings_v1/`
+- report：`document_embedding_report.json`，文件 SHA-256 = `adbb1ad56330a62d11a166fb501a109c6b223c4397ac4fa12e708ee8ee89ed8d`
+- `embeddings_sha256 = 9a4f8376dffdee6b2399db478a7536addd23af8ea2495ab231c1a236c6cf3408`；`metadata_sha256 = 306a0a46...`
+- 5000 文档，dim 768，`window_coverage.truncated_token_count = 0`，window 均值 1.21
+
+**6. 三 consumer 同 hash（P0-8 证明）**：Dense index、Graph-EP、Graph-Sim 三份报告的 `embedding_report_sha256` 均为 `adbb1ad...`（= artifact report 文件 hash），`embedding_embeddings_sha256` 均为 `9a4f8376...`（= npy 文件 hash）。
+
+**7. 五路 runner 输出**（`experiments/pubmedqa_hard_v1/`，test 500）：
+
+| 方法 | R@1 | R@5 | R@10 | MRR | nDCG |
+|---|---:|---:|---:|---:|---:|
+| BM25-document | 0.944 | 0.988 | 0.990 | 0.962 | 0.969 |
+| Dense-document | 0.938 | 0.984 | 0.992 | 0.959 | 0.967 |
+| Hybrid-document | 0.960 | 0.992 | 0.992 | 0.974 | 0.979 |
+| Graph-EP-document | 0.660 | 0.910 | 0.972 | 0.768 | 0.818 |
+| Graph-Similarity-document | 0.674 | 0.874 | 0.938 | 0.756 | 0.800 |
+
+运行命令见 §4；产物目录含 `metrics.json / run_manifest.json / cases.json`。logs：`MedicalGraphRAG/logs/{dense_document,graph_ep,graph_sim,bm25_doc,hybrid_doc,graph_pairs}.log`。
+
+**8. 正式运行配置**：`configs/pubmedqa_hard_v1_document.json`；manifest `data/processed/pubmedqa_hard_v1/manifest.json`（SHA `cf9b7591...`）；raw rankings 在 `outputs/pubmedqa_hard_v1/*_v1/raw_rankings.jsonl`。
+
+**9. Graph-EP vs Graph-Sim 成对案例**：`experiments/pubmedqa_hard_v1/graph_ep_vs_sim_v1/paired_cases.jsonl`（713KB，500 题：**improve 35 / degrade 63 / no_change 402**）。
+
+**10. 新增/修改文件**：见 §2；`git diff --stat 7b4c6cb..HEAD` = 24 files, +3019/-97（代码）+ 15 个实验产物文件。
+
+**11. 已知限制 / 偏差**：
+- 查询编码静默截断：pubmedqa 个别 query 超 384 token（transformers 警告 432>384），五路用同一查询编码，公平但长查询尾部信息丢失；
+- **诚实负结果**：Similarity 软边比 Graph-EP 更差（R@10 0.938 vs 0.972，MRR 0.756 vs 0.768）；paired cases 显示 degrade 63 > improve 35。pubmedqa 的干扰摘要本就主题相近，kNN 相似边把 PPR 引向干扰摘要——本数据集上相似度边是负作用；
+- Phase 2（NFCorpus/SciFact）与 Phase 3（MedRAG adjacent）不在本轮（P1-1/P1-3）。
 
 ## 6. 已知限制 / 未完成项
 
-- Phase 2（NFCorpus/SciFact）与 Phase 3（MedRAG adjacent）不在本轮，待 Phase 1 代码审阅通过后另写计划（P1-1/P1-3）。
-- 正式实验若因环境未跑，将如实标注"未运行"及阻塞原因（审阅 §6 末条）。
+- Phase 2 / Phase 3 待 Phase 1 代码审阅通过后另写计划。
+- 相似度边参数（k/min_cosine/scale）为固定 v1 值，未扫参（审阅 §7.1 禁止用 test 调参）；后续可在独立 dev split 上单变量扫描。
