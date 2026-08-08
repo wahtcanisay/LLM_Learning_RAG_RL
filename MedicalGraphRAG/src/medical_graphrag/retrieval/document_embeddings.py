@@ -109,7 +109,8 @@ def embed_documents_full(
     if overlap_tokens >= max_window_len:
         raise ValueError("overlap_tokens must be < effective window tokens")
 
-    all_embeddings: list[np.ndarray] = []
+    all_windows: list[list[int]] = []
+    doc_ranges: list[tuple[int, int]] = []
     window_counts: list[int] = []
     total_truncated = 0
     for text in texts:
@@ -126,23 +127,34 @@ def embed_documents_full(
             raise ValueError("token-window construction left uncovered positions")
         total_truncated += truncated
         windows = [token_ids[start:end] for start, end in ranges]
-        window_embeddings = np.asarray(
-            embedder.encode(
-                [tokenizer.decode(w, skip_special_tokens=True) for w in windows],
-                normalize_embeddings=True,
-                batch_size=batch_size,
-                show_progress_bar=False,
-            ),
-            dtype="float32",
-        )
-        mean_vec = window_embeddings.mean(axis=0)
+        start = len(all_windows)
+        all_windows.extend(windows)
+        doc_ranges.append((start, len(all_windows)))
+        window_counts.append(len(windows))
+
+    if not all_windows:
+        raise ValueError("no token windows to embed")
+    # 所有窗口一次批量编码(避免逐文档小批量调用带来的巨大开销)
+    window_embeddings = np.asarray(
+        embedder.encode(
+            [tokenizer.decode(w, skip_special_tokens=True) for w in all_windows],
+            normalize_embeddings=True,
+            batch_size=batch_size,
+            show_progress_bar=False,
+        ),
+        dtype="float32",
+    )
+    if window_embeddings.shape[0] != len(all_windows):
+        raise ValueError("window embedding count does not match window count")
+    doc_embeddings: list[np.ndarray] = []
+    for start, end in doc_ranges:
+        mean_vec = window_embeddings[start:end].mean(axis=0)
         if normalize:
             norm = float(np.linalg.norm(mean_vec))
             if norm > 0:
                 mean_vec = mean_vec / norm
-        all_embeddings.append(np.asarray(mean_vec, dtype=np.float32))
-        window_counts.append(len(windows))
-    return np.vstack(all_embeddings), window_counts, int(total_truncated)
+        doc_embeddings.append(np.asarray(mean_vec, dtype=np.float32))
+    return np.vstack(doc_embeddings), window_counts, int(total_truncated)
 
 
 def _percentile(sorted_values: list[float], q: float) -> float:
