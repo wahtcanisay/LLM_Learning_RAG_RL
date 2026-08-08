@@ -164,14 +164,14 @@ def _percentile(sorted_values: list[float], q: float) -> float:
     return float(sorted_values[k])
 
 
-def _model_identity(embedder) -> dict[str, Any]:
+def _model_identity(embedder, model_name: str) -> dict[str, Any]:
     max_seq_length = int(embedder.get_max_seq_length() or 512)
     try:
         st_version = distribution_version("sentence-transformers")
     except Exception:
         st_version = "unknown"
     return {
-        "embedding_model": getattr(embedder, "_model_name", ""),
+        "embedding_model": model_name,
         "sentence_transformers_version": st_version,
         "max_seq_length": max_seq_length,
     }
@@ -230,7 +230,7 @@ def build_document_embeddings(
         "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
         "aggregation_rule": AGGREGATION_RULE,
         "overlap_tokens": overlap_tokens,
-        **{k: v for k, v in _model_identity(embedder).items()},
+        **{k: v for k, v in _model_identity(embedder, model_name).items()},
         "dim": int(embeddings.shape[1]),
         "document_count": len(doc_ids),
         "window_coverage": {
@@ -267,7 +267,8 @@ def ensure_document_embeddings(
             existing = json.loads(report_path.read_text(encoding="utf-8"))
             manifest = validate_frozen_dataset(dataset_dir)
             if (
-                existing.get("dataset_manifest_sha256")
+                existing.get("embedding_model") == model_name
+                and existing.get("dataset_manifest_sha256")
                 == sha256_file(dataset_dir / "manifest.json")
                 and existing.get("source_artifact_sha256")
                 == manifest["artifact_hashes"]["documents.jsonl"]
