@@ -161,7 +161,9 @@ class LinearRAG:
         for question_info in tqdm(questions, desc="Retrieving"):
             question = question_info["question"]
             # Store 中向量已归一化；问题也归一化后，点积可解释为余弦相似度。
-            question_embedding = self.config.embedding_model.encode(question,normalize_embeddings=True,show_progress_bar=False,batch_size=self.config.batch_size)
+            question_embedding = self.config.embedding_model.encode(question,normalize_embeddings=True,
+                                                                    show_progress_bar=False,
+                                                                    batch_size=self.config.batch_size)
             seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores = self.get_seed_entities(question)
             if len(seed_entities) != 0:
                 # 能把问题接入实体空间时，执行 LinearRAG 的核心图检索。
@@ -307,7 +309,7 @@ class LinearRAG:
         # entity_weights 的长度等于全部 igraph 顶点数，只有 Entity 位置会在此赋值。
         entity_weights = np.zeros(len(self.graph.vs["name"]))
         for seed_entity_idx,seed_entity,seed_entity_hash_id,seed_entity_score in zip(seed_entity_indices,seed_entities,seed_entity_hash_ids,seed_entity_scores):
-            actived_entities[seed_entity_hash_id] = (seed_entity_idx, seed_entity_score, 1)
+            actived_entities[seed_entity_hash_id] = (seed_entity_idx, seed_entity_score, 1) # (索引，分数， iter)
             seed_entity_node_idx = self.node_name_to_vertex_idx[seed_entity_hash_id]
             entity_weights[seed_entity_node_idx] = seed_entity_score    
         used_sentence_hash_ids = set()
@@ -317,8 +319,9 @@ class LinearRAG:
             new_entities = {}
             for entity_hash_id, (entity_id, entity_score, tier) in current_entities.items():
                 # 低分实体不再向外扩展，减少噪声与计算。
-                if entity_score < self.config.iteration_threshold:
+                if entity_score < self.config.iteration_threshold: # 前一步打分过低的entity被过滤
                     continue
+                # 取出对应的已激活的entity出现的sentence
                 sentence_hash_ids = [sid for sid in list(self.entity_hash_id_to_sentence_hash_ids[entity_hash_id]) if sid not in used_sentence_hash_ids]
                 if not sentence_hash_ids:
                     continue
@@ -327,10 +330,10 @@ class LinearRAG:
                 question_emb = question_embedding.reshape(-1, 1) if len(question_embedding.shape) == 1 else question_embedding
                 # 在当前实体关联的句子中，选择最符合问题语义的桥。
                 sentence_similarities = np.dot(sentence_embeddings, question_emb).flatten()
-                top_sentence_indices = np.argsort(sentence_similarities)[::-1][:self.config.top_k_sentence]
+                top_sentence_indices = np.argsort(sentence_similarities)[::-1][:self.config.top_k_sentence] # 取得前k条分数最高的sentence
                 for top_sentence_index in top_sentence_indices:
                     top_sentence_hash_id = sentence_hash_ids[top_sentence_index]
-                    top_sentence_score = sentence_similarities[top_sentence_index]
+                    top_sentence_score = sentence_similarities[top_sentence_index] # 相似度分数
                     used_sentence_hash_ids.add(top_sentence_hash_id)
                     entity_hash_ids_in_sentence = self.sentence_hash_id_to_entity_hash_ids[top_sentence_hash_id]
                     for next_entity_hash_id in entity_hash_ids_in_sentence:
@@ -676,7 +679,7 @@ class LinearRAG:
         seed_entity_hash_ids = []
         seed_entity_scores = []       
         for query_entity_idx in range(len(question_entities)):
-            entity_scores = similarities[:, query_entity_idx]
+            entity_scores = similarities[:, query_entity_idx] # 第idx个queryentity的所有分数
             best_entity_idx = np.argmax(entity_scores)
             best_entity_score = entity_scores[best_entity_idx]
             best_entity_hash_id = self.entity_hash_ids[best_entity_idx]
