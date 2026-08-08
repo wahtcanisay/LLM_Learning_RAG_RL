@@ -49,6 +49,31 @@ class _MockEmbedder:
         return np.array(vecs, dtype=np.float32)
 
 
+class _NoRoundTripTokenizer(_MockTokenizer):
+    def decode(self, token_ids, skip_special_tokens=True):
+        raise AssertionError("token windows must not be decoded and re-tokenized")
+
+
+class _TokenWindowEmbedder(_MockEmbedder):
+    def __init__(self):
+        self.tokenizer = _NoRoundTripTokenizer()
+        self.encoded_windows = None
+
+    def encode_token_windows(self, windows, *, batch_size, normalize_embeddings):
+        self.encoded_windows = [list(window) for window in windows]
+        vecs = []
+        for window in windows:
+            vector = np.zeros(6, dtype=np.float32)
+            for token in window:
+                vector[ord(token) % 6] += 1.0
+            if normalize_embeddings:
+                norm = np.linalg.norm(vector)
+                if norm > 0:
+                    vector = vector / norm
+            vecs.append(vector)
+        return np.asarray(vecs, dtype=np.float32)
+
+
 def test_window_ranges_cover_all_positions():
     ranges = _window_ranges(9, max_window_len=4, overlap_tokens=1)
     full, truncated = _coverage(9, ranges)
@@ -100,6 +125,17 @@ def test_embed_documents_full_single_window_matches_direct_encode():
     assert truncated == 0 and counts == [1]
     expected = embedder.encode("ab", normalize_embeddings=True)[0]
     assert np.allclose(embeddings[0], expected, atol=1e-5)
+
+
+def test_embed_documents_full_encodes_exact_token_id_windows_without_round_trip():
+    embedder = _TokenWindowEmbedder()
+    embeddings, counts, truncated = embed_documents_full(
+        ["abcdefghij"], embedder, overlap_tokens=2
+    )
+    assert embeddings.shape == (1, 6)
+    assert counts == [2]
+    assert truncated == 0
+    assert embedder.encoded_windows == [list("abcdef"), list("efghij")]
 
 
 def test_embed_documents_full_rejects_empty_text():

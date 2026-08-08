@@ -53,6 +53,7 @@ from medical_graphrag.retrieval.graph import (
     build_graph_index,
 )
 from medical_graphrag.retrieval.rerank import run_rerank
+from medical_graphrag.retrieval.rerank_document import run_rerank_document
 from medical_graphrag.retrieval.reranker import DEFAULT_RERANKER_MODEL
 from medical_graphrag.retrieval.search_bm25 import (
     build_lucene_document_index,
@@ -573,6 +574,89 @@ def run_hybrid_document(
     )
 
 
+def run_reranker_document(
+    dataset: str,
+    *,
+    git_commit: str,
+    docker_image: str = DOCKER_IMAGE_DEFAULT,
+    root: Path = ROOT,
+    top_k: int = 100,
+    top_n: int = 50,
+    sources: str = "bdg",
+    model: str = DEFAULT_RERANKER_MODEL,
+) -> dict[str, Any]:
+    """Document-level Hybrid2: rerank a candidate-union with Qwen3-Reranker.
+
+    ``sources`` selects the candidate sources: ``bd`` (BM25-doc + Dense-doc),
+    ``bdg`` (adds Graph-Similarity-doc — tests whether the soft-edge graph adds
+    recall a reranker can rescue), ``bde`` (adds Graph-EP-doc). Candidates are
+    already document-level, so no chunk→doc collapse is needed.
+    """
+    if sources not in {"bd", "bdg", "bde"}:
+        raise ValueError("reranker-document sources must be one of bd/bdg/bde")
+    base = root / "outputs" / dataset
+
+    def _ready(name: str) -> bool:
+        return (base / name / "raw_rankings.jsonl").exists() and (
+            base / name / "search_run.json"
+        ).exists()
+
+    if not _ready("bm25_document_v1"):
+        run_bm25_document(dataset, git_commit=git_commit, docker_image=docker_image,
+                          root=root, top_k=top_k)
+    if not _ready("dense_document_v1"):
+        run_dense_document(dataset, git_commit=git_commit, docker_image=docker_image,
+                           root=root, top_k=top_k)
+    if sources in {"bdg", "bde"}:
+        profile = "similarity" if sources == "bdg" else "ep"
+        graph_name = f"graph_document_{profile}_v1"
+        if not _ready(graph_name):
+            run_graph_document(dataset, git_commit=git_commit, docker_image=docker_image,
+                               root=root, profile=profile, top_k=top_k)
+
+    dataset_dir = _dataset_dir(dataset, root)
+    name = f"reranker_document_{sources}_v1"
+    rr_dir = root / "outputs" / dataset / name
+    exp_dir = root / "experiments" / dataset / name
+    sources_paths = {
+        "bm25": base / "bm25_document_v1" / "raw_rankings.jsonl",
+        "dense": base / "dense_document_v1" / "raw_rankings.jsonl",
+    }
+    source_reports = {
+        "bm25": base / "bm25_document_v1" / "search_run.json",
+        "dense": base / "dense_document_v1" / "search_run.json",
+    }
+    if sources in {"bdg", "bde"}:
+        profile = "similarity" if sources == "bdg" else "ep"
+        sources_paths["graph"] = base / f"graph_document_{profile}_v1" / "raw_rankings.jsonl"
+        source_reports["graph"] = base / f"graph_document_{profile}_v1" / "search_run.json"
+
+    rerank_report = run_rerank_document(
+        sources=sources_paths,
+        source_reports=source_reports,
+        questions=dataset_dir / "questions.jsonl",
+        documents=dataset_dir / "documents.jsonl",
+        dataset_manifest=dataset_dir / "manifest.json",
+        output=rr_dir / "reranked.jsonl",
+        report=rr_dir / "rerank_report.json",
+        top_n=top_n,
+        model=model,
+    )
+    context = _build_context(
+        git_commit=git_commit,
+        docker_image=docker_image,
+        command=["cli", "run", "reranker-document", "--dataset", dataset,
+                 "--sources", sources],
+        extra={
+            "reranker": rerank_report,
+            "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
+        },
+    )
+    return evaluate_reranker_run(
+        dataset_dir, rr_dir / "reranked.jsonl", exp_dir, run_context=context
+    )
+
+
 def run_graph_pair_cases(
     dataset: str,
     *,
@@ -596,4 +680,5 @@ RUNNERS: dict[str, Callable[..., dict[str, Any]]] = {
     "dense-document": run_dense_document,
     "graph-document": run_graph_document,
     "hybrid-document": run_hybrid_document,
+    "reranker-document": run_reranker_document,
 }

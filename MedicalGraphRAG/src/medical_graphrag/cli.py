@@ -122,6 +122,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--profile", choices=["ep", "similarity"], default="similarity",
                      help="graph-document edge strategy (ep = entity edges only, "
                           "similarity = similarity soft edges)")
+    run.add_argument("--sources", choices=["bd", "bdg", "bde"], default="bdg",
+                     help="reranker-document candidate sources "
+                          "(bd = bm25+dense, bdg = + graph-similarity, bde = + graph-ep)")
 
     graph_pairs = subparsers.add_parser(
         "graph-pairs",
@@ -178,14 +181,16 @@ def _run_command(args: argparse.Namespace) -> int:
     }
     if args.retriever in ("bm25", "dense", "graph", "hybrid", "reranker",
                           "bm25-document", "dense-document", "hybrid-document",
-                          "graph-document"):
+                          "graph-document", "reranker-document"):
         kwargs["top_k"] = args.top_k
     if args.retriever in ("hybrid", "hybrid-document"):
         kwargs["rrf_k"] = args.rrf_k
-    if args.retriever == "reranker":
+    if args.retriever in ("reranker", "reranker-document"):
         kwargs["top_n"] = args.top_n
     if args.retriever == "graph-document":
         kwargs["profile"] = args.profile
+    if args.retriever == "reranker-document":
+        kwargs["sources"] = args.sources
     runner(args.dataset, **kwargs)
     return 0
 
