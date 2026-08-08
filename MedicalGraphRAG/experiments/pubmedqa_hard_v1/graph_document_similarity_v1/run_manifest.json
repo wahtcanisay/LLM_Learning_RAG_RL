@@ -1,0 +1,181 @@
+{
+  "git_commit": "2ca1e56456e295091c7fe109fce59f1f7c2c3b5c",
+  "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "host_python_version": "3.12.3",
+  "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
+  "evaluation_command": [
+    "cli",
+    "run",
+    "graph-document",
+    "--dataset",
+    "pubmedqa_hard_v1",
+    "--profile",
+    "similarity"
+  ],
+  "index": {
+    "graph_schema_version": 2,
+    "graph_profile": "document_similarity_v1",
+    "retrieval_unit": "document",
+    "passage_edge_mode": "similarity",
+    "source_artifact": "documents.jsonl",
+    "source_artifact_sha256": "7f726e535e8d171c83446f7c7165994f6d408635b30e3f5b88b9cb44e199f3a9",
+    "text_mode": "abstract_only",
+    "ner_model": "en_ner_bc5cdr_md",
+    "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+    "entity_count": 11277,
+    "passage_count": 5000,
+    "sentence_count": 41363,
+    "edge_count": 35500,
+    "entity_passage_edge_count": 20974,
+    "passage_passage_edge_count": 14526,
+    "edge_count_by_type": {
+      "entity_passage": 20974,
+      "similarity": 14526,
+      "adjacent": 0
+    },
+    "edge_weight_stats_by_type": {
+      "entity_passage": {
+        "count": 20974.0,
+        "sum": 4328.0,
+        "min": 0.012987012987012988,
+        "mean": 0.20635071993897205,
+        "p50": 0.125,
+        "p95": 0.6666666666666666,
+        "max": 1.0
+      },
+      "similarity": {
+        "count": 14526.0,
+        "sum": 8513.914340257645,
+        "min": 0.5000016093254089,
+        "mean": 0.5861155404280356,
+        "p50": 0.5751396417617798,
+        "p95": 0.7019476294517517,
+        "max": 0.9041497707366943
+      },
+      "adjacent": {
+        "count": 0
+      }
+    },
+    "passage_passage_diagnostics": {
+      "edge_count": 14526.0,
+      "isolated_count": 233.0,
+      "isolated_rate": 0.0466,
+      "degree_min": 0.0,
+      "degree_mean": 5.8104,
+      "degree_p50": 5.0,
+      "degree_p95": 11.0,
+      "degree_p99": 15.0,
+      "degree_max": 34.0,
+      "weight_min": 0.5000016093254089,
+      "weight_mean": 0.5861155404280356,
+      "weight_p50": 0.5751396417617798,
+      "weight_p95": 0.7019476294517517,
+      "weight_max": 0.9041497707366943,
+      "exact_content_duplicate_pairs": 0.0
+    },
+    "adjacent_passage_edges": false,
+    "window_coverage": {
+      "window_count_min": 1,
+      "window_count_mean": 1.2074,
+      "window_count_p95": 2.0,
+      "window_count_max": 4,
+      "truncated_token_count": 0
+    },
+    "embedding_report_sha256": "adbb1ad56330a62d11a166fb501a109c6b223c4397ac4fa12e708ee8ee89ed8d",
+    "embedding_embeddings_sha256": "9a4f8376dffdee6b2399db478a7536addd23af8ea2495ab231c1a236c6cf3408",
+    "build_config": {
+      "retrieval_unit": "document",
+      "passage_edge_mode": "similarity",
+      "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+      "ner_model": "en_ner_bc5cdr_md",
+      "similarity_k": 5,
+      "similarity_min_cosine": 0.5,
+      "similarity_edge_scale": 1.0,
+      "window_overlap_tokens": 32,
+      "config_sha256": "106859ffce232bb81dcc47f3d6ff659e19f3d789dad6dff7ececbc74cb893d2b"
+    },
+    "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
+    "dataset_artifact_hashes": {
+      "questions.jsonl": "cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982",
+      "documents.jsonl": "7f726e535e8d171c83446f7c7165994f6d408635b30e3f5b88b9cb44e199f3a9",
+      "chunks.jsonl": "51d2757a1bf09328463a4c0363217d425883e132c550f05916d6d7130bdb0309",
+      "qrels.tsv": "96b87dbb46cd68fb92cabc4d6ce55ce5c41dc535d7a7b4fe77094957eae55a0a"
+    },
+    "graph_sha256": "156e9da7ad3bf2a0c0c8e5754745d6899843633362451c1ebf33948a38fb9ecf",
+    "sentence_embeddings_sha256": "bcd6656f0ea91fa6567194c9a2b3f0c5eee5039805c2b244b63360072b7f876f",
+    "entity_embeddings_sha256": "eab9a78f4fce7b88b7677248fe207e98f3cc74bd7ba9633b670a8c37a5e3ae9f",
+    "passage_embeddings_sha256": "9a4f8376dffdee6b2399db478a7536addd23af8ea2495ab231c1a236c6cf3408",
+    "entities_sha256": "1a6cd5a9af51e16cc800422146a7e2413349de45405d6f595353573bb7152fbe",
+    "entity_to_sentences_sha256": "55c2b13dd310754daa88439cd5a48567f59d5944c984b4cd24330bf846cf93bc",
+    "sentence_to_entities_sha256": "1d0e7872ad5cc613b3a2c04f265b3f1c72653492bafd308d21d5c2c0fbdcc943",
+    "config": {
+      "damping": 0.5,
+      "passage_ratio": 2.0,
+      "passage_node_weight": 0.05,
+      "iteration_threshold": 0.5,
+      "top_k_sentence": 1,
+      "max_iterations": 3
+    }
+  },
+  "search": {
+    "command": [
+      "search_graph.run_search",
+      "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/pubmedqa_hard_v1/questions.jsonl",
+      "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/pubmedqa_hard_v1/graph_document_similarity_v1/raw_rankings.jsonl"
+    ],
+    "query_count": 1000,
+    "requested_top_k": 100,
+    "min_hits": 100,
+    "max_hits": 100,
+    "short_ranking_count": 0,
+    "hit_count_histogram": {
+      "100": 1000
+    },
+    "retrieval_unit": "document",
+    "text_mode": "abstract_only",
+    "ner_model": "en_ner_bc5cdr_md",
+    "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+    "graph_sha256": "156e9da7ad3bf2a0c0c8e5754745d6899843633362451c1ebf33948a38fb9ecf",
+    "graph_build_report_sha256": "452e04d612eeca17a61046feba78ccbe40d165f92dc0e9a52ab42dea4f4e341a",
+    "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
+    "questions_sha256": "cb957619d30d8885e685e334652abbc6376263278c7de337c35cf3537ce56982",
+    "rankings_sha256": "d1fdbfa885235c90d74681ebf65b7f229fc62eba2e97f12f9df4228a19f958be",
+    "config": {
+      "damping": 0.5,
+      "passage_ratio": 2.0,
+      "passage_node_weight": 0.05,
+      "iteration_threshold": 0.5,
+      "top_k_sentence": 1,
+      "max_iterations": 3
+    }
+  },
+  "index_report_sha256": "452e04d612eeca17a61046feba78ccbe40d165f92dc0e9a52ab42dea4f4e341a",
+  "dataset_manifest_sha256": "cf9b75917bb6c73ff5e5d1862293e31caf86ec5d93c05c24f40760c83b727baa",
+  "generated_at_utc": "2026-08-08T06:22:57.922601+00:00",
+  "rankings_sha256": "d1fdbfa885235c90d74681ebf65b7f229fc62eba2e97f12f9df4228a19f958be",
+  "question_count": 1000,
+  "document_count": 5000,
+  "chunk_metadata_count": 7562,
+  "split_counts": {
+    "dev": 500,
+    "test": 500
+  },
+  "top_k": 100,
+  "retrieval_unit": "document",
+  "aggregation": "none",
+  "graph": {
+    "ner_model": "en_ner_bc5cdr_md",
+    "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+    "config": {
+      "damping": 0.5,
+      "passage_ratio": 2.0,
+      "passage_node_weight": 0.05,
+      "iteration_threshold": 0.5,
+      "top_k_sentence": 1,
+      "max_iterations": 3
+    },
+    "passage_edge_mode": "similarity",
+    "adjacent_passage_edges": false
+  },
+  "text_mode": "abstract_only"
+}

@@ -1,0 +1,701 @@
+{
+  "success": [
+    {
+      "query_id": "7482275",
+      "question": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_doc_id": "PMID:7482275",
+      "gold_title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7482275",
+          "score": 0.00577243326808162,
+          "rank": 1,
+          "title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0869_24016",
+          "score": 0.0003217766060484864,
+          "rank": 2,
+          "title": "Sulodexide for treating venous leg ulcers."
+        },
+        {
+          "doc_id": "PMID:19504993",
+          "score": 0.00031784192373937294,
+          "rank": 3,
+          "title": "It's Fournier's gangrene still dangerous?"
+        },
+        {
+          "doc_id": "PMID:26418796",
+          "score": 0.0003160024665298074,
+          "rank": 4,
+          "title": "Do Wound Cultures Give Information About the Microbiology of Blood Cultures in Severe Burn Patients?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_3751",
+          "score": 0.0003122062473374265,
+          "rank": 5,
+          "title": "A bibliometric analysis of clinical research on fracture-related infection."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0275_4448",
+          "score": 0.0003120893201816986,
+          "rank": 6,
+          "title": "[Initial experiences with extracorporeal shockwave lithotripsy (ESWL) in treatment of tendinosis calcarea of the shoulder]."
+        },
+        {
+          "doc_id": "PMID:25406780",
+          "score": 0.0003114622040423629,
+          "rank": 7,
+          "title": "Does skin care frequency affect the severity of incontinence-associated dermatitis in critically ill patients?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1141_4993",
+          "score": 0.00031129429252806275,
+          "rank": 8,
+          "title": "[Effectiveness analysis of disposable skin stretch closure in treatment of difficult to close skin and soft tissue defects]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0794_3339",
+          "score": 0.0003097012074182947,
+          "rank": 9,
+          "title": "Pediatric burn wound impetigo after grafting."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0526_16583",
+          "score": 0.000309605613501129,
+          "rank": 10,
+          "title": "Bacteriology of surgical wound infections in a tertiary care hospital in Turkey."
+        }
+      ]
+    },
+    {
+      "query_id": "7497757",
+      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_doc_id": "PMID:7497757",
+      "gold_title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_1166",
+          "score": 0.002227125113884323,
+          "rank": 1,
+          "title": "Rat liver adenyl cyclase activity in various thyroid states."
+        },
+        {
+          "doc_id": "PMID:7497757",
+          "score": 0.0004606243957269051,
+          "rank": 2,
+          "title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_400",
+          "score": 0.000446637908176356,
+          "rank": 3,
+          "title": "Forced-air warming is no more effective than conventional methods for raising postoperative core temperature after cardiac surgery."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0515_11805",
+          "score": 0.00042537548909893407,
+          "rank": 4,
+          "title": "Profound hypothermia with alpha-stat pH management during open-heart surgery is associated with choreoathetosis."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_9647",
+          "score": 0.00035895539346911937,
+          "rank": 5,
+          "title": "Memory improvement with treatment of hypothyroidism."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_19893",
+          "score": 0.00035030116866987263,
+          "rank": 6,
+          "title": "[Role of the Swan-Ganz pulmonary artery (PA) catheter in evaluation of hemodynamic changes during myocardial revascularization in patients with low left ventricular function]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0373_201",
+          "score": 0.00034109322143038525,
+          "rank": 7,
+          "title": "[Intraoperative and early postoperative results after laparoscopic implantation of aortofemoral bifurcation prostheses]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0200_87",
+          "score": 0.0003368306279276104,
+          "rank": 8,
+          "title": "The management of accidental hypothermia."
+        },
+        {
+          "doc_id": "PMID:17054994",
+          "score": 0.00032849907897480846,
+          "rank": 9,
+          "title": "Does frozen section alter surgical management of multinodular thyroid disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_12537",
+          "score": 0.00032437891251939095,
+          "rank": 10,
+          "title": "Comparison of a prototype esophageal oximetry probe with two conventional digital pulse oximetry monitors in aortocoronary bypass patients."
+        }
+      ]
+    },
+    {
+      "query_id": "7547656",
+      "question": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_doc_id": "PMID:7547656",
+      "gold_title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "PMID:10577397",
+          "score": 0.002169594411012771,
+          "rank": 1,
+          "title": "Is a pressor necessary during aortic perfusion and oxygenation therapy of cardiac arrest?"
+        },
+        {
+          "doc_id": "PMID:7547656",
+          "score": 0.0019324135161826557,
+          "rank": 2,
+          "title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?"
+        },
+        {
+          "doc_id": "PMID:17578985",
+          "score": 0.0011323622406990996,
+          "rank": 3,
+          "title": "Parasacral sciatic nerve block: does the elicited motor response predict the success rate?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0460_256",
+          "score": 0.0011133021838211684,
+          "rank": 4,
+          "title": "INSECT STING ANAPHYLAXIS."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_12341",
+          "score": 0.001084568313706537,
+          "rank": 5,
+          "title": "Kinetics of sulfite-induced anaerobic degradation of epinephrine."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_15489",
+          "score": 0.0008148614992693767,
+          "rank": 6,
+          "title": "Haemodynamic and catecholamine changes during rapid sevoflurane induction with tidal volume breathing."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_12179",
+          "score": 0.0004593579449519391,
+          "rank": 7,
+          "title": "Uteroplacental blood flow during alkalosis in the sheep."
+        },
+        {
+          "doc_id": "PMID:11483547",
+          "score": 0.00044378714474260414,
+          "rank": 8,
+          "title": "Does the aggressive use of polyvalent antivenin for rattlesnake bites result in serious acute side effects?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0622_14709",
+          "score": 0.0004414502053764888,
+          "rank": 9,
+          "title": "In vitro platelet aggregation defects in patients with myeloproliferative disorders and high platelet counts: are they laboratory artefacts?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0460_601",
+          "score": 0.00042215447934303304,
+          "rank": 10,
+          "title": "IMMUNOCHEMICAL ANALYSIS OF HUMAN ORAL STRAINS OF FUSOBACTERIUM AND LEPTOTRICHIA."
+        }
+      ]
+    },
+    {
+      "query_id": "7664228",
+      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_doc_id": "PMID:7664228",
+      "gold_title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0562_3442",
+          "score": 0.0011714312515956201,
+          "rank": 1,
+          "title": "Update on Helicobacter pylori treatment."
+        },
+        {
+          "doc_id": "PMID:7664228",
+          "score": 0.0004239704557362759,
+          "rank": 2,
+          "title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?"
+        },
+        {
+          "doc_id": "PMID:7860319",
+          "score": 0.000401454267743431,
+          "rank": 3,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "score": 0.0004006469045191042,
+          "rank": 4,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        },
+        {
+          "doc_id": "PMID:10966337",
+          "score": 0.0003911068984619909,
+          "rank": 5,
+          "title": "A short stay or 23-hour ward in a general and academic children's hospital: are they effective?"
+        },
+        {
+          "doc_id": "PMID:26516021",
+          "score": 0.00039005852731565526,
+          "rank": 6,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "score": 0.0003895009222338253,
+          "rank": 7,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "score": 0.0003625388832088995,
+          "rank": 8,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
+        },
+        {
+          "doc_id": "PMID:9920954",
+          "score": 0.00035829797662240186,
+          "rank": 9,
+          "title": "Do \"America's Best Hospitals\" perform better for acute myocardial infarction?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_11694",
+          "score": 0.00035780261695654217,
+          "rank": 10,
+          "title": "Using USRDS generated hospitalization tables to compare local dialysis patient hospitalization rates to national rates."
+        }
+      ]
+    },
+    {
+      "query_id": "7860319",
+      "question": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_doc_id": "PMID:7860319",
+      "gold_title": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7860319",
+          "score": 0.685204267501831,
+          "rank": 1,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0553_15394",
+          "score": 0.5639066696166992,
+          "rank": 2,
+          "title": "A semiparametric additive rates model for recurrent event data."
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "score": 0.5527114868164062,
+          "rank": 3,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "PMID:9920954",
+          "score": 0.5397911667823792,
+          "rank": 4,
+          "title": "Do \"America's Best Hospitals\" perform better for acute myocardial infarction?"
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "score": 0.5241528153419495,
+          "rank": 5,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        },
+        {
+          "doc_id": "PMID:7664228",
+          "score": 0.5092955231666565,
+          "rank": 6,
+          "title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "score": 0.5059740543365479,
+          "rank": 7,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_11694",
+          "score": 0.5047033429145813,
+          "rank": 8,
+          "title": "Using USRDS generated hospitalization tables to compare local dialysis patient hospitalization rates to national rates."
+        },
+        {
+          "doc_id": "PMID:24751724",
+          "score": 0.48946261405944824,
+          "rank": 9,
+          "title": "Does ethnicity affect where people with cancer die?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_8030",
+          "score": 0.48158708214759827,
+          "rank": 10,
+          "title": "Are 5-level triage systems improved by using a symptom based approach?-a Danish cohort study."
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "11570976",
+      "question": "Is it Crohn's disease?",
+      "gold_doc_id": "PMID:11570976",
+      "gold_title": "Is it Crohn's disease?",
+      "gold_rank": 49,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_16583",
+          "score": 0.0013648176231959661,
+          "rank": 1,
+          "title": "Internal carotid artery occlusion in association with Crohn's disease."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_508",
+          "score": 0.0012790511148025002,
+          "rank": 2,
+          "title": "A simple blood sample method for measuring oral zinc absorption in clinical practice."
+        },
+        {
+          "doc_id": "PMID:9347843",
+          "score": 0.0010876382584904156,
+          "rank": 3,
+          "title": "Laparoscopic-assisted ileocolic resections in patients with Crohn's disease: are abscesses, phlegmons, or recurrent disease contraindications?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_13805",
+          "score": 0.0008039327767833715,
+          "rank": 4,
+          "title": "Effect of pregnancy on the clinical course of a cohort of women with inflammatory bowel disease."
+        },
+        {
+          "doc_id": "PMID:10811329",
+          "score": 0.0007294198150375619,
+          "rank": 5,
+          "title": "Are 99mTc leukocyte scintigraphy and SBFT studies useful in children suspected of having inflammatory bowel disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0148_307",
+          "score": 0.0006205714148360365,
+          "rank": 6,
+          "title": "Indices of granulocyte activity in inflammatory bowel disease."
+        },
+        {
+          "doc_id": "PMID:18802997",
+          "score": 0.0005667546974942013,
+          "rank": 7,
+          "title": "Can calprotectin predict relapse risk in inflammatory bowel disease?"
+        },
+        {
+          "doc_id": "PMID:20197761",
+          "score": 0.00038311034883313136,
+          "rank": 8,
+          "title": "Is irritable bowel syndrome a diagnosis of exclusion?"
+        },
+        {
+          "doc_id": "PMID:17593459",
+          "score": 0.0003771014924585637,
+          "rank": 9,
+          "title": "Is double-balloon enteroscopy an accurate method to diagnose small-bowel disorders?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_266",
+          "score": 0.0003770227026730086,
+          "rank": 10,
+          "title": "Unprocessed bran in treatment of diverticular disease of the colon."
+        }
+      ]
+    },
+    {
+      "query_id": "14872327",
+      "question": "Is pain a clinically relevant problem in general adult psychiatry?",
+      "gold_doc_id": "PMID:14872327",
+      "gold_title": "Is pain a clinically relevant problem in general adult psychiatry?",
+      "gold_rank": 12,
+      "top_documents": [
+        {
+          "doc_id": "PMID:20842006",
+          "score": 0.0013253666433628312,
+          "rank": 1,
+          "title": "Neck pain treatment with acupuncture: does the number of needles matter?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0869_2660",
+          "score": 0.0012084827565390318,
+          "rank": 2,
+          "title": "Relationships between perineal pain and postpartum depressive symptoms: A prospective cohort study."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0622_3319",
+          "score": 0.0010139172637316088,
+          "rank": 3,
+          "title": "Comparison of pain thresholds and pain tolerance levels between Middle Easterners and Swedes and between genders."
+        },
+        {
+          "doc_id": "PMID:12920330",
+          "score": 0.0009330261083977031,
+          "rank": 4,
+          "title": "Do somatic complaints predict subsequent symptoms of depression?"
+        },
+        {
+          "doc_id": "PMID:15052394",
+          "score": 0.0008808121633359963,
+          "rank": 5,
+          "title": "Are higher rates of depression in women accounted for by differential symptom reporting?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_7191",
+          "score": 0.0008594024514434264,
+          "rank": 6,
+          "title": "Untreated depression and non-medical use of prescription pain relievers: findings from the National Survey on Drug Use and Health 2008-2014."
+        },
+        {
+          "doc_id": "PMID:15488260",
+          "score": 0.0007470917037259467,
+          "rank": 7,
+          "title": "Is the type of remission after a major depressive episode an important risk factor to relapses in a 4-year follow up?"
+        },
+        {
+          "doc_id": "PMID:11567820",
+          "score": 0.000724539694168218,
+          "rank": 8,
+          "title": "Does increased nerve length within the treatment volume improve trigeminal neuralgia radiosurgery?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_12303",
+          "score": 0.0007173256333038989,
+          "rank": 9,
+          "title": "Clinical characteristics of patients with idiopathic pain syndromes. Depressive symptomatology and patient pain drawings."
+        },
+        {
+          "doc_id": "PMID:21256734",
+          "score": 0.0006972757086224219,
+          "rank": 10,
+          "title": "Does pain intensity predict a poor opioid response in cancer patients?"
+        }
+      ]
+    },
+    {
+      "query_id": "17032327",
+      "question": "Do supervised colorectal trainees differ from consultants in terms of quality of TME surgery?",
+      "gold_doc_id": "PMID:17032327",
+      "gold_title": "Do supervised colorectal trainees differ from consultants in terms of quality of TME surgery?",
+      "gold_rank": 35,
+      "top_documents": [
+        {
+          "doc_id": "PMID:23810330",
+          "score": 0.0015103318302514088,
+          "rank": 1,
+          "title": "Is intraoperative neuromonitoring associated with better functional outcome in patients undergoing open TME?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0552_4391",
+          "score": 0.0006762538307621205,
+          "rank": 2,
+          "title": "Effects of pesticides on soil invertebrates in model ecosystem and field studies: a review and comparison with laboratory toxicity data."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_22604",
+          "score": 0.0004407646770424172,
+          "rank": 3,
+          "title": "Survey of intensive care physicians on the recognition and management of intra-abdominal hypertension and abdominal compartment syndrome."
+        },
+        {
+          "doc_id": "PMID:15687156",
+          "score": 0.00041619823027503564,
+          "rank": 4,
+          "title": "Can normal knee kinematics be restored with unicompartmental knee replacement?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0515_6267",
+          "score": 0.00041608812258131484,
+          "rank": 5,
+          "title": "Laparoscopic or transanal repair of rectocele? A retrospective matched cohort study."
+        },
+        {
+          "doc_id": "PMID:20629769",
+          "score": 0.00039074997957696937,
+          "rank": 6,
+          "title": "Is primary angioplasty an acceptable alternative to thrombolysis?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0622_4687",
+          "score": 0.0003828649141701078,
+          "rank": 7,
+          "title": "Optimization of photodynamic therapy with a novel self-adhesive 5-aminolaevulinic acid patch: results of two randomized controlled phase III studies."
+        },
+        {
+          "doc_id": "PMID:21080127",
+          "score": 0.00037557328070911365,
+          "rank": 8,
+          "title": "Can implant retention be recommended for treatment of infected TKA?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0962_907",
+          "score": 0.00037393407972171054,
+          "rank": 9,
+          "title": "Fast track SSTI management program based on a rapid molecular test (GeneXpert® MRSA/SA SSTI) and antimicrobial stewardship."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_3947",
+          "score": 0.00036466213480922777,
+          "rank": 10,
+          "title": "Characteristics, treatment and outcome of patients with non-ST-elevation acute coronary syndromes and multivessel coronary artery disease: observations from PURSUIT (platelet glycoprotein IIb/IIIa in unstable angina: receptor suppression using integrelin therapy)."
+        }
+      ]
+    },
+    {
+      "query_id": "18243752",
+      "question": "Should chest wall irradiation be included after mastectomy and negative node breast cancer?",
+      "gold_doc_id": "PMID:18243752",
+      "gold_title": "Should chest wall irradiation be included after mastectomy and negative node breast cancer?",
+      "gold_rank": 14,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_7734",
+          "score": 0.001570920580596143,
+          "rank": 1,
+          "title": "Physical functioning, frailty and risks of locally-advanced breast cancer among older women."
+        },
+        {
+          "doc_id": "PMID:24160268",
+          "score": 0.0008249809912495858,
+          "rank": 2,
+          "title": "\"Would a man smell a rose then throw it away?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0869_2147",
+          "score": 0.0007130187699886374,
+          "rank": 3,
+          "title": "Micro RNA 34a and Let-7a Expression in Human Breast Cancers is Associated with Apoptotic Expression Genes."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0595_22091",
+          "score": 0.000705127592637661,
+          "rank": 4,
+          "title": "Cardiac mortality and morbidity after breast cancer treatment."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0875_15614",
+          "score": 0.0006880952825640877,
+          "rank": 5,
+          "title": "The insulin-like growth factor-I receptor (IGF-IR) in breast cancer: biology and treatment strategies."
+        },
+        {
+          "doc_id": "PMID:15050326",
+          "score": 0.0006452346776332766,
+          "rank": 6,
+          "title": "Does radiotherapy around the time of pregnancy for Hodgkin's disease modify the risk of breast cancer?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1097_21709",
+          "score": 0.0006210512012794357,
+          "rank": 7,
+          "title": "Framework for Implementing and Tracking a Molecular Tumor Board at a National Cancer Institute-Designated Comprehensive Cancer Center."
+        },
+        {
+          "doc_id": "PMID:14692023",
+          "score": 0.000585095447327437,
+          "rank": 8,
+          "title": "Is breast cancer survival improving?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0885_539",
+          "score": 0.0005801529925708868,
+          "rank": 9,
+          "title": "Update on Image-Guided Percutaneous Ablation of Breast Cancer."
+        },
+        {
+          "doc_id": "PMID:24946973",
+          "score": 0.00057868904873699,
+          "rank": 10,
+          "title": "Is oncoplastic surgery a contraindication for accelerated partial breast radiation using the interstitial multicatheter brachytherapy method?"
+        }
+      ]
+    },
+    {
+      "query_id": "18359123",
+      "question": "Is it better to be big?",
+      "gold_doc_id": "PMID:18359123",
+      "gold_title": "Is it better to be big?",
+      "gold_rank": 65,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_6893",
+          "score": 0.3161819279193878,
+          "rank": 1,
+          "title": "Brain and Body Size Relations among Spotted Hyenas (Crocuta crocuta)."
+        },
+        {
+          "doc_id": "PMID:18607272",
+          "score": 0.3058655560016632,
+          "rank": 2,
+          "title": "Body perception: do parents, their children, and their children's physicians perceive body image differently?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0552_3124",
+          "score": 0.2994890511035919,
+          "rank": 3,
+          "title": "Differential parental weight and height contributions to offspring birthweight and weight gain in infancy."
+        },
+        {
+          "doc_id": "PMID:21123461",
+          "score": 0.28701749444007874,
+          "rank": 4,
+          "title": "Are adult body circumferences associated with height?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0615_12053",
+          "score": 0.272483766078949,
+          "rank": 5,
+          "title": "Waist circumference in relation to body perception reported by Finnish adolescent girls and their mothers."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0962_20407",
+          "score": 0.26264679431915283,
+          "rank": 6,
+          "title": "Survival of the Fastest: The Multivariate Optimization of Performance Phenotypes."
+        },
+        {
+          "doc_id": "PMID:16510651",
+          "score": 0.26143714785575867,
+          "rank": 7,
+          "title": "Birth characteristics and risk of low intellectual performance in early adulthood: are the associations confounded by socioeconomic factors in adolescence or familial effects?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_3959",
+          "score": 0.2601311504840851,
+          "rank": 8,
+          "title": "Body size, body composition and motor performances of mild-to-moderately undernourished Senegalese children."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_1025",
+          "score": 0.25840073823928833,
+          "rank": 9,
+          "title": "Individual differences in appeal of energy dense foods predicts lower body mass change during adolescence."
+        },
+        {
+          "doc_id": "PMID:18719011",
+          "score": 0.25627216696739197,
+          "rank": 10,
+          "title": "Do overweight children necessarily make overweight adults?"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 486,
+    "failure_at_10_available": 14,
+    "saved_per_group_max": 5
+  }
+}
