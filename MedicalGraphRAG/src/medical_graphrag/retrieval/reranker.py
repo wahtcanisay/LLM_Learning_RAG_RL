@@ -19,10 +19,15 @@ DEFAULT_RERANKER_MODEL = "models/Qwen3-Reranker-0.6B"
 class QwenReranker:
     """Thin wrapper over the sentence-transformers CrossEncoder Qwen3Reranker."""
 
-    def __init__(self, model_path: str = DEFAULT_RERANKER_MODEL):
+    def __init__(
+        self,
+        model_path: str = DEFAULT_RERANKER_MODEL,
+        batch_size: int = 128,
+    ):
         from sentence_transformers.cross_encoder import CrossEncoder
 
         self.model = CrossEncoder(model_path)
+        self.batch_size = batch_size
 
     def rerank(
         self, query: str, candidates: Sequence[dict[str, Any]]
@@ -35,7 +40,7 @@ class QwenReranker:
         if not candidates:
             return []
         pairs = [[query, str(c["content"])] for c in candidates]
-        scores = self.model.predict(pairs)
+        scores = self.model.predict(pairs, batch_size=self.batch_size)
         ranked = sorted(
             (
                 (str(c["doc_id"]), float(score))
