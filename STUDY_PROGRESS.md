@@ -119,6 +119,13 @@
 - 静态验证：`python -m py_compile MedicalGPT/training/supervised_finetuning.py` 返回 0；`C:\Program Files\Git\bin\bash.exe -n MedicalGPT/scripts/run_sft.sh` 返回 0。
 - 与下载 ZIP 中的原始文件执行 `git diff --no-index`，确认两份源码只增加注释和解释性 docstring，没有训练逻辑变化。
 
+## MedicalGPT SFT 调用链复述完成（2026-08-09）
+
+- 完成 `supervised_finetuning.py` 调用链学习：参数 dataclass → tokenizer → loss mask → 量化/LoRA 注入 → Trainer，逐函数讲解 + 小问题自答（ModelArguments/DataArguments/ScriptArguments、preprocess_function、find_all_linear_names、SavePeftModelTrainer、print_trainable_parameters、check_and_optimize_memory）。
+- 4 道概念题复述通过：① LoRA 冻结主干、`W=W0+BA` 的 A∈ℝ^{d_in×r}、B∈ℝ^{r×d_out}、r 决定可训练参数量；② QLoRA = 4bit 基模(NF4+DQ) + BF16 adapter，`load_in_4bit` 只是加载方式、`qlora=True` 才是完整方案；③ `train_on_inputs=False` 时用户问题保留在 input_ids 作条件、labels 标 -100 不算 loss（P(y|x) 读取 vs 学习）；④ 切模型改 `--model_name_or_path`，显存杠杆 = 量化 → batch → max_length → gradient checkpointing（非 lora_rank）。
+- 追加题通过：MedicalGPT GRPO 是静态答案奖励、无 Search/Inspect 工具环境、无多轮 rollout；Search-R1 是 reason+search 交错、retrieved token mask、学会"何时搜/搜什么/何时停"——二者机制不同不能等同。
+- 已补 4 处学习注释（commit `48f6dfb`）：可训练参数转 fp32、GC 与 use_cache 互斥、enable_input_require_grads、lm_head fp32 hook；py_compile 通过。
+
 ## MedicalGraphRAG（2026-08-03）
 
 - 新建独立项目 `MedicalGraphRAG/`；实现 PubMedQA 加载、MedRAG PubMed 确定性干扰采样、文档边界安全切块、questions/documents/chunks/qrels 组装、原子 I/O、manifest、审计和检索硬指标函数。
