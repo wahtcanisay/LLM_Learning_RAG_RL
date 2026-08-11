@@ -1,0 +1,347 @@
+{
+  "success": [
+    {
+      "query_id": "7482275",
+      "question": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_doc_id": "PMID:7482275",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7482275",
+          "score": 7.75
+        },
+        {
+          "doc_id": "PMID:24270957",
+          "score": -3.0625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0875_23349",
+          "score": -3.4375
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0148_374",
+          "score": -6.0625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_863",
+          "score": -7.09375
+        },
+        {
+          "doc_id": "PMID:26418796",
+          "score": -7.53125
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_19654",
+          "score": -8.0
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0962_907",
+          "score": -8.125
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0526_16583",
+          "score": -8.4375
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0562_8095",
+          "score": -8.5
+        }
+      ]
+    },
+    {
+      "query_id": "7497757",
+      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_doc_id": "PMID:7497757",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7497757",
+          "score": 6.8125
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_400",
+          "score": 1.75
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0515_11805",
+          "score": -1.8125
+        },
+        {
+          "doc_id": "PMID:23870157",
+          "score": -2.25
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_12537",
+          "score": -4.0625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_1166",
+          "score": -4.1875
+        },
+        {
+          "doc_id": "PMID:11882828",
+          "score": -4.1875
+        },
+        {
+          "doc_id": "PMID:21881325",
+          "score": -5.0625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_2181",
+          "score": -5.1875
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0373_201",
+          "score": -5.25
+        }
+      ]
+    },
+    {
+      "query_id": "7547656",
+      "question": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_doc_id": "PMID:7547656",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7547656",
+          "score": 9.5
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_12179",
+          "score": 5.25
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0462_224",
+          "score": 1.8125
+        },
+        {
+          "doc_id": "PMID:10577397",
+          "score": -0.25
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_14266",
+          "score": -0.75
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0255_17762",
+          "score": -2.875
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_15097",
+          "score": -5.0
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0202_797",
+          "score": -5.4375
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_15489",
+          "score": -5.5
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_11948",
+          "score": -5.9375
+        }
+      ]
+    },
+    {
+      "query_id": "7664228",
+      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_doc_id": "PMID:7664228",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7664228",
+          "score": 4.4375
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "score": -0.875
+        },
+        {
+          "doc_id": "PMID:10158597",
+          "score": -1.125
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8314",
+          "score": -1.1875
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "score": -1.3125
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "score": -1.4375
+        },
+        {
+          "doc_id": "PMID:11833948",
+          "score": -1.75
+        },
+        {
+          "doc_id": "PMID:16678696",
+          "score": -2.6875
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_1250",
+          "score": -2.875
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_16581",
+          "score": -3.0
+        }
+      ]
+    },
+    {
+      "query_id": "7860319",
+      "question": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_doc_id": "PMID:7860319",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7860319",
+          "score": 8.0
+        },
+        {
+          "doc_id": "PMID:26037986",
+          "score": 6.8125
+        },
+        {
+          "doc_id": "PMID:9920954",
+          "score": 4.9375
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_3947",
+          "score": 4.4375
+        },
+        {
+          "doc_id": "PMID:11146778",
+          "score": 2.0625
+        },
+        {
+          "doc_id": "PMID:22491528",
+          "score": 1.9375
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0503_131",
+          "score": 1.6875
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0869_11543",
+          "score": 1.4375
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0148_241",
+          "score": 1.0
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0460_261",
+          "score": 0.9375
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "11570976",
+      "question": "Is it Crohn's disease?",
+      "gold_doc_id": "PMID:11570976",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_16583",
+          "score": 3.3125
+        },
+        {
+          "doc_id": "PMID:10811329",
+          "score": 1.5
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_13805",
+          "score": 1.4375
+        },
+        {
+          "doc_id": "PMID:17593459",
+          "score": 1.375
+        },
+        {
+          "doc_id": "PMID:18802997",
+          "score": 1.25
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0148_307",
+          "score": 1.125
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_508",
+          "score": 0.5
+        },
+        {
+          "doc_id": "PMID:9347843",
+          "score": 0.5
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0431_76",
+          "score": -2.25
+        },
+        {
+          "doc_id": "PMID:23831910",
+          "score": -2.5625
+        }
+      ]
+    },
+    {
+      "query_id": "18359123",
+      "question": "Is it better to be big?",
+      "gold_doc_id": "PMID:18359123",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_3959",
+          "score": -1.0
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_6893",
+          "score": -2.0625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0552_3124",
+          "score": -2.5625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0615_12053",
+          "score": -2.625
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0675_2133",
+          "score": -2.875
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0794_18903",
+          "score": -2.9375
+        },
+        {
+          "doc_id": "PMID:18607272",
+          "score": -3.0
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0991_14913",
+          "score": -3.0625
+        },
+        {
+          "doc_id": "PMID:21123461",
+          "score": -3.375
+        },
+        {
+          "doc_id": "PMID:21739621",
+          "score": -3.375
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 498,
+    "failure_at_10_available": 2,
+    "saved_per_group_max": 5
+  }
+}

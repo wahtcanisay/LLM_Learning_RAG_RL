@@ -1,0 +1,701 @@
+{
+  "success": [
+    {
+      "query_id": "PLAIN-1018",
+      "question": "DHA",
+      "gold_doc_id": "MED-2750",
+      "gold_title": "Lack of benefit of dietary advice to men with angina: results of a controlled trial.",
+      "gold_rank": 2,
+      "top_documents": [
+        {
+          "doc_id": "MED-5095",
+          "rank": 1,
+          "score": 0.5713023543357849,
+          "title": "Bioequivalence of Docosahexaenoic acid from different algal oils in capsules and in a DHA-fortified food."
+        },
+        {
+          "doc_id": "MED-4936",
+          "rank": 2,
+          "score": 0.5402793884277344,
+          "title": "Algal-oil capsules and cooked salmon: nutritionally equivalent sources of docosahexaenoic acid."
+        },
+        {
+          "doc_id": "MED-5091",
+          "rank": 3,
+          "score": 0.5144026875495911,
+          "title": "Essential n-3 fatty acids in pregnant women and early visual acuity maturation in term infants."
+        },
+        {
+          "doc_id": "MED-5093",
+          "rank": 4,
+          "score": 0.49025046825408936,
+          "title": "Maternal consumption of a docosahexaenoic acid-containing functional food during pregnancy: benefit for infant performance on problem-solving but n..."
+        },
+        {
+          "doc_id": "MED-5361",
+          "rank": 5,
+          "score": 0.46673285961151123,
+          "title": "A double-blind, randomized controlled clinical trial comparing eicosapentaenoic acid versus docosahexaenoic acid for depression."
+        },
+        {
+          "doc_id": "MED-1397",
+          "rank": 6,
+          "score": 0.45555007457733154,
+          "title": "Omega-3 fatty acids and antioxidants in edible wild plants."
+        },
+        {
+          "doc_id": "MED-1801",
+          "rank": 7,
+          "score": 0.45519348978996277,
+          "title": "Modern organic and broiler chickens sold for human consumption provide more energy from fat than protein."
+        },
+        {
+          "doc_id": "MED-5027",
+          "rank": 8,
+          "score": 0.4549466371536255,
+          "title": "Diet and risk of ischemic heart disease in India."
+        },
+        {
+          "doc_id": "MED-1832",
+          "rank": 9,
+          "score": 0.4548347294330597,
+          "title": "Visual acuity and the essentiality of docosahexaenoic acid and arachidonic acid in the diet of term infants."
+        },
+        {
+          "doc_id": "MED-4321",
+          "rank": 10,
+          "score": 0.45435187220573425,
+          "title": "Dehydroepiandrosterone sulfate and postmenopausal women."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-102",
+      "question": "Stopping Heart Disease in Childhood",
+      "gold_doc_id": "MED-3254",
+      "gold_title": "Relation of serum lipoprotein levels and systolic blood pressure to early atherosclerosis. The Bogalusa Heart Study.",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-3255",
+          "rank": 1,
+          "score": 0.5973173975944519,
+          "title": "Endothelial function in healthy 11-year-old children after dietary intervention with onset in infancy: the Special Turku Coronary Risk Factor Inter..."
+        },
+        {
+          "doc_id": "MED-1548",
+          "rank": 2,
+          "score": 0.5692428350448608,
+          "title": "Defining and setting national goals for cardiovascular health promotion and disease reduction: the American Heart Association's strategic Impact Go..."
+        },
+        {
+          "doc_id": "MED-3253",
+          "rank": 3,
+          "score": 0.5542868971824646,
+          "title": "Pathobiological determinants of atherosclerosis in youth risk scores are associated with early and advanced atherosclerosis."
+        },
+        {
+          "doc_id": "MED-4609",
+          "rank": 4,
+          "score": 0.510764479637146,
+          "title": "The beriberi analogy to myocardial infarction."
+        },
+        {
+          "doc_id": "MED-4243",
+          "rank": 5,
+          "score": 0.491665780544281,
+          "title": "Intensive lifestyle changes for reversal of coronary heart disease."
+        },
+        {
+          "doc_id": "MED-2753",
+          "rank": 6,
+          "score": 0.48915672302246094,
+          "title": "Secondary prevention of CHD in UK men: the Diet and Reinfarction Trial and its sequel."
+        },
+        {
+          "doc_id": "MED-1949",
+          "rank": 7,
+          "score": 0.4849817454814911,
+          "title": "Is very preterm birth a risk factor for adult cardiometabolic disease?"
+        },
+        {
+          "doc_id": "MED-4613",
+          "rank": 8,
+          "score": 0.4846639037132263,
+          "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition."
+        },
+        {
+          "doc_id": "MED-4255",
+          "rank": 9,
+          "score": 0.4846639037132263,
+          "title": "Resolving the Coronary Artery Disease Epidemic Through Plant-Based Nutrition."
+        },
+        {
+          "doc_id": "MED-2008",
+          "rank": 10,
+          "score": 0.4832809567451477,
+          "title": "A pulse-based diet is effective for reducing total and LDL-cholesterol in older adults."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1039",
+      "question": "domoic acid",
+      "gold_doc_id": "MED-4380",
+      "gold_title": "Domoic acid and human exposure risks: a review.",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "MED-4380",
+          "rank": 1,
+          "score": 0.451856791973114,
+          "title": "Domoic acid and human exposure risks: a review."
+        },
+        {
+          "doc_id": "MED-4381",
+          "rank": 2,
+          "score": 0.4271525740623474,
+          "title": "Amnesic shellfish poison."
+        },
+        {
+          "doc_id": "MED-3989",
+          "rank": 3,
+          "score": 0.3485485911369324,
+          "title": "Vitamin D and sterol composition of 10 types of mushrooms from retail suppliers in the United States."
+        },
+        {
+          "doc_id": "MED-4995",
+          "rank": 4,
+          "score": 0.3345285952091217,
+          "title": "Salicylic Acid sans Aspirin in Animals and Man: Persistence in Fasting and Biosynthesis from Benzoic Acid"
+        },
+        {
+          "doc_id": "MED-3497",
+          "rank": 5,
+          "score": 0.3269635736942291,
+          "title": "Evaluation of certain food additives and contaminants."
+        },
+        {
+          "doc_id": "MED-5059",
+          "rank": 6,
+          "score": 0.31996577978134155,
+          "title": "Evaluation of certain food additives. Seventy-first report of the Joint FAO/WHO Expert Committee on Food Additives."
+        },
+        {
+          "doc_id": "MED-721",
+          "rank": 7,
+          "score": 0.3180195093154907,
+          "title": "Bismuth therapy in gastrointestinal diseases."
+        },
+        {
+          "doc_id": "MED-1278",
+          "rank": 8,
+          "score": 0.31772565841674805,
+          "title": "Does α-Amino-β-methylaminopropionic Acid (BMAA) Play a Role in Neurodegeneration?"
+        },
+        {
+          "doc_id": "MED-4607",
+          "rank": 9,
+          "score": 0.31646037101745605,
+          "title": "Effects of sorbic acid and its salts on chromosome aberrations, sister chromatid exchanges and gene mutations in cultured Chinese hamster cells."
+        },
+        {
+          "doc_id": "MED-3850",
+          "rank": 10,
+          "score": 0.3132341206073761,
+          "title": "Excretion, isolation and structure of a new phenolic constituent of female urine."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1050",
+      "question": "Dr. Dean Ornish",
+      "gold_doc_id": "MED-2763",
+      "gold_title": "Facing the facelessness of public health: what's the public got to do with it?",
+      "gold_rank": 5,
+      "top_documents": [
+        {
+          "doc_id": "MED-1097",
+          "rank": 1,
+          "score": 0.29396581649780273,
+          "title": "Moses Maimonides: medieval physician and scholar."
+        },
+        {
+          "doc_id": "MED-5346",
+          "rank": 2,
+          "score": 0.26361751556396484,
+          "title": "Resident duty-hour restrictions-who are we protecting?: AOA critical issues."
+        },
+        {
+          "doc_id": "MED-748",
+          "rank": 3,
+          "score": 0.25513535737991333,
+          "title": "Medical practice and social authority."
+        },
+        {
+          "doc_id": "MED-5343",
+          "rank": 4,
+          "score": 0.23349179327487946,
+          "title": "Managing medical mistakes: ideology, insularity and accountability among internists-in-training."
+        },
+        {
+          "doc_id": "MED-2112",
+          "rank": 5,
+          "score": 0.23224115371704102,
+          "title": "How evidence-based medicine biases physicians against nutrition."
+        },
+        {
+          "doc_id": "MED-5311",
+          "rank": 6,
+          "score": 0.2225525975227356,
+          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma."
+        },
+        {
+          "doc_id": "MED-3755",
+          "rank": 7,
+          "score": 0.22103220224380493,
+          "title": "Can deceiving patients be morally acceptable?"
+        },
+        {
+          "doc_id": "MED-3636",
+          "rank": 8,
+          "score": 0.2148999124765396,
+          "title": "Death by polonium-210: lessons learned from the murder of former Soviet spy Alexander Litvinenko."
+        },
+        {
+          "doc_id": "MED-761",
+          "rank": 9,
+          "score": 0.2126322090625763,
+          "title": "The counseling practices of internists."
+        },
+        {
+          "doc_id": "MED-1053",
+          "rank": 10,
+          "score": 0.2124268263578415,
+          "title": "Physician disclosure of healthy personal behaviors improves credibility and ability to motivate."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1088",
+      "question": "ECMO",
+      "gold_doc_id": "MED-2109",
+      "gold_title": "Extracorporeal membrane oxygenation and conventional medical therapy in neonates with persistent pulmonary hypertension of the newborn: a prospecti...",
+      "gold_rank": 3,
+      "top_documents": [
+        {
+          "doc_id": "MED-1634",
+          "rank": 1,
+          "score": 0.19297225773334503,
+          "title": "Cardiovascular disease data to be standardized across Europe."
+        },
+        {
+          "doc_id": "MED-1314",
+          "rank": 2,
+          "score": 0.1916337013244629,
+          "title": "The management of skin reactions in cancer patients receiving epidermal growth factor receptor targeted therapies."
+        },
+        {
+          "doc_id": "MED-2109",
+          "rank": 3,
+          "score": 0.1814178228378296,
+          "title": "Extracorporeal membrane oxygenation and conventional medical therapy in neonates with persistent pulmonary hypertension of the newborn: a prospecti..."
+        },
+        {
+          "doc_id": "MED-762",
+          "rank": 4,
+          "score": 0.17366115748882294,
+          "title": "The Ethiopian Field Epidemiology and Laboratory Training Program: strengthening public health systems and building human resource capacity."
+        },
+        {
+          "doc_id": "MED-3435",
+          "rank": 5,
+          "score": 0.17356964945793152,
+          "title": "Increased risk of stroke among men with erectile dysfunction: a nationwide population-based study."
+        },
+        {
+          "doc_id": "MED-1311",
+          "rank": 6,
+          "score": 0.17125791311264038,
+          "title": "Cetuximab preclinical antitumor activity (monotherapy and combination based) is not predicted by relative total or activated epidermal growth facto..."
+        },
+        {
+          "doc_id": "MED-4811",
+          "rank": 7,
+          "score": 0.1584922969341278,
+          "title": "Fish-induced keriorrhea."
+        },
+        {
+          "doc_id": "MED-2947",
+          "rank": 8,
+          "score": 0.15558989346027374,
+          "title": "Radiation dose from contemporary cardiothoracic multidetector CT protocols with an anthropomorphic female phantom: implications for cancer induction."
+        },
+        {
+          "doc_id": "MED-3407",
+          "rank": 9,
+          "score": 0.1520802229642868,
+          "title": "The Princeton III Consensus Recommendations for the Management of Erectile Dysfunction and Cardiovascular Disease"
+        },
+        {
+          "doc_id": "MED-3440",
+          "rank": 10,
+          "score": 0.14417147636413574,
+          "title": "Cardiovascular mortality in men with erectile dysfunction: increased risk but not inevitable."
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "PLAIN-1008",
+      "question": "deafness",
+      "gold_doc_id": "MED-4532",
+      "gold_title": "Cytotoxic response of breast cancer cell lines, MCF 7 and T 47 D to triphala and its modification by antioxidants.",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-5036",
+          "rank": 1,
+          "score": 0.3273851275444031,
+          "title": "Meta-analysis of long-term mobile phone use and the association with brain tumours."
+        },
+        {
+          "doc_id": "MED-4668",
+          "rank": 2,
+          "score": 0.3170265555381775,
+          "title": "Cretinism revisited."
+        },
+        {
+          "doc_id": "MED-939",
+          "rank": 3,
+          "score": 0.3113458752632141,
+          "title": "Satiereal, a Crocus sativus L extract, reduces snacking and increases satiety in a randomized placebo-controlled study of mildly overweight, health..."
+        },
+        {
+          "doc_id": "MED-2217",
+          "rank": 4,
+          "score": 0.3037097454071045,
+          "title": "Prevalence of Alzheimer's disease and other dementias in rural India: the Indo-US study."
+        },
+        {
+          "doc_id": "MED-1273",
+          "rank": 5,
+          "score": 0.26021987199783325,
+          "title": "Amyotrophic lateral sclerosis. A case-control study following detection of a cluster in a small Wisconsin community."
+        },
+        {
+          "doc_id": "MED-2164",
+          "rank": 6,
+          "score": 0.25469720363616943,
+          "title": "How common is the most common adult movement disorder? Update on the worldwide prevalence of essential tremor."
+        },
+        {
+          "doc_id": "MED-2900",
+          "rank": 7,
+          "score": 0.2535400688648224,
+          "title": "The Association of Consumption of Fruits/Vegetables with Decreased Risk of Glaucoma among Older African American Women in the Study of Osteoporotic Fractures"
+        },
+        {
+          "doc_id": "MED-1881",
+          "rank": 8,
+          "score": 0.2502644658088684,
+          "title": "Lower intake of vegetables and legumes associated with cognitive decline among illiterate elderly Chinese: a 3-year cohort study."
+        },
+        {
+          "doc_id": "MED-4384",
+          "rank": 9,
+          "score": 0.24971093237400055,
+          "title": "Glaucoma risk and the consumption of fruits and vegetables among older women in the study of osteoporotic fractures."
+        },
+        {
+          "doc_id": "MED-2901",
+          "rank": 10,
+          "score": 0.249398335814476,
+          "title": "The Association between Glaucoma Prevalence and Supplementation with the Oxidants Calcium and Iron"
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1028",
+      "question": "dietary scoring",
+      "gold_doc_id": "MED-4686",
+      "gold_title": "Proposal for a dietary \"phytochemical index\".",
+      "gold_rank": 12,
+      "top_documents": [
+        {
+          "doc_id": "MED-3654",
+          "rank": 1,
+          "score": 0.6801555156707764,
+          "title": "Nutrient profiling of foods: creating a nutrient-rich food index."
+        },
+        {
+          "doc_id": "MED-4413",
+          "rank": 2,
+          "score": 0.5918252468109131,
+          "title": "Development and validation of an algorithm to establish a total antioxidant capacity database of the US diet."
+        },
+        {
+          "doc_id": "MED-1380",
+          "rank": 3,
+          "score": 0.5840241312980652,
+          "title": "Anatomy of health effects of Mediterranean diet: Greek EPIC prospective cohort study"
+        },
+        {
+          "doc_id": "MED-4556",
+          "rank": 4,
+          "score": 0.5828605890274048,
+          "title": "Tolerable upper intake levels for trans fat, saturated fat, and cholesterol."
+        },
+        {
+          "doc_id": "MED-2294",
+          "rank": 5,
+          "score": 0.5726849436759949,
+          "title": "Comparison of Nutritional Quality of the Vegan, Vegetarian, Semi-Vegetarian, Pesco-Vegetarian and Omnivorous Diet"
+        },
+        {
+          "doc_id": "MED-2220",
+          "rank": 6,
+          "score": 0.5721460580825806,
+          "title": "Position of the academy of nutrition and dietetics: total diet approach to healthy eating."
+        },
+        {
+          "doc_id": "MED-3900",
+          "rank": 7,
+          "score": 0.5674395561218262,
+          "title": "Dried fruit consumption is associated with improved diet quality and reduced obesity in US adults: National Health and Nutrition Examination Survey..."
+        },
+        {
+          "doc_id": "MED-2984",
+          "rank": 8,
+          "score": 0.5628711581230164,
+          "title": "An algorithm to assess intestinal iron availability for use in dietary surveys"
+        },
+        {
+          "doc_id": "MED-1377",
+          "rank": 9,
+          "score": 0.5614853501319885,
+          "title": "Higher Diet Quality Is Associated with Decreased Risk of All-Cause, Cardiovascular Disease, and Cancer Mortality among Older Adults"
+        },
+        {
+          "doc_id": "MED-4514",
+          "rank": 10,
+          "score": 0.5612812042236328,
+          "title": "Low-carbohydrate diets and all-cause and cause-specific mortality: Two cohort Studies"
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1066",
+      "question": "Dr. Walter Willett",
+      "gold_doc_id": "MED-4000",
+      "gold_title": "Coconut oil predicts a beneficial lipid profile in pre-menopausal women in the Philippines",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-1097",
+          "rank": 1,
+          "score": 0.3017417788505554,
+          "title": "Moses Maimonides: medieval physician and scholar."
+        },
+        {
+          "doc_id": "MED-5311",
+          "rank": 2,
+          "score": 0.281639039516449,
+          "title": "Dinitrophenol and obesity: an early twentieth-century regulatory dilemma."
+        },
+        {
+          "doc_id": "MED-748",
+          "rank": 3,
+          "score": 0.280678391456604,
+          "title": "Medical practice and social authority."
+        },
+        {
+          "doc_id": "MED-3604",
+          "rank": 4,
+          "score": 0.27871960401535034,
+          "title": "US medical researchers, the Nuremberg Doctors Trial, and the Nuremberg Code. A review of findings of the Advisory Committee on Human Radiation Expe..."
+        },
+        {
+          "doc_id": "MED-5346",
+          "rank": 5,
+          "score": 0.269390732049942,
+          "title": "Resident duty-hour restrictions-who are we protecting?: AOA critical issues."
+        },
+        {
+          "doc_id": "MED-2112",
+          "rank": 6,
+          "score": 0.2628776431083679,
+          "title": "How evidence-based medicine biases physicians against nutrition."
+        },
+        {
+          "doc_id": "MED-3636",
+          "rank": 7,
+          "score": 0.2610112428665161,
+          "title": "Death by polonium-210: lessons learned from the murder of former Soviet spy Alexander Litvinenko."
+        },
+        {
+          "doc_id": "MED-5343",
+          "rank": 8,
+          "score": 0.25601211190223694,
+          "title": "Managing medical mistakes: ideology, insularity and accountability among internists-in-training."
+        },
+        {
+          "doc_id": "MED-749",
+          "rank": 9,
+          "score": 0.24966134130954742,
+          "title": "Current perception of nutrition education in U.S. medical schools."
+        },
+        {
+          "doc_id": "MED-1655",
+          "rank": 10,
+          "score": 0.2453204244375229,
+          "title": "An archaeologic dig: a rice-fruit diet reverses ECG changes in hypertension."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1098",
+      "question": "eggnog",
+      "gold_doc_id": "MED-3806",
+      "gold_title": "Toxicology of nutmeg abuse.",
+      "gold_rank": 20,
+      "top_documents": [
+        {
+          "doc_id": "MED-2976",
+          "rank": 1,
+          "score": 0.3380165100097656,
+          "title": "Egg consumption and risk of type 2 diabetes in older adults"
+        },
+        {
+          "doc_id": "MED-4892",
+          "rank": 2,
+          "score": 0.3278171122074127,
+          "title": "Egg Consumption and Risk of Type 2 Diabetes in Men and Women"
+        },
+        {
+          "doc_id": "MED-2977",
+          "rank": 3,
+          "score": 0.3278171122074127,
+          "title": "Egg Consumption and Risk of Type 2 Diabetes in Men and Women"
+        },
+        {
+          "doc_id": "MED-5124",
+          "rank": 4,
+          "score": 0.3260990381240845,
+          "title": "Egg Consumption and Cardiovascular Disease and Mortality The Physicians' Health Study"
+        },
+        {
+          "doc_id": "MED-4150",
+          "rank": 5,
+          "score": 0.30652910470962524,
+          "title": "Pseudo-maple syrup urine disease due to maternal prenatal ingestion of fenugreek."
+        },
+        {
+          "doc_id": "MED-4741",
+          "rank": 6,
+          "score": 0.30400732159614563,
+          "title": "Egg consumption and the risk of cancer: a multisite case-control study in Uruguay."
+        },
+        {
+          "doc_id": "MED-4324",
+          "rank": 7,
+          "score": 0.2995014786720276,
+          "title": "Egg yolk consumption and carotid plaque."
+        },
+        {
+          "doc_id": "MED-2374",
+          "rank": 8,
+          "score": 0.2933899760246277,
+          "title": "Egg consumption and risk of cardiovascular diseases and diabetes: a meta-analysis."
+        },
+        {
+          "doc_id": "MED-2372",
+          "rank": 9,
+          "score": 0.2919304072856903,
+          "title": "Egg consumption and endothelial function: a randomized controlled crossover trial."
+        },
+        {
+          "doc_id": "MED-3920",
+          "rank": 10,
+          "score": 0.2890237271785736,
+          "title": "Acute neurocognitive effects of epigallocatechin gallate (EGCG)."
+        }
+      ]
+    },
+    {
+      "query_id": "PLAIN-1119",
+      "question": "energy drinks",
+      "gold_doc_id": "MED-3788",
+      "gold_title": "Intestinal microbiota metabolism of L-carnitine, a nutrient in red meat, promotes atherosclerosis",
+      "gold_rank": null,
+      "top_documents": [
+        {
+          "doc_id": "MED-4438",
+          "rank": 1,
+          "score": 0.5679998397827148,
+          "title": "Caffeine-Not just a stimulant."
+        },
+        {
+          "doc_id": "MED-1646",
+          "rank": 2,
+          "score": 0.48893219232559204,
+          "title": "A new proposed guidance system for beverage consumption in the United States."
+        },
+        {
+          "doc_id": "MED-3894",
+          "rank": 3,
+          "score": 0.4805469214916229,
+          "title": "Sun-dried raisins are a cost-effective alternative to Sports Jelly Beans in prolonged cycling."
+        },
+        {
+          "doc_id": "MED-5244",
+          "rank": 4,
+          "score": 0.45559000968933105,
+          "title": "Effects of habitual coffee consumption on cardiometabolic disease, cardiovascular health, and all-cause mortality."
+        },
+        {
+          "doc_id": "MED-2155",
+          "rank": 5,
+          "score": 0.45559000968933105,
+          "title": "Effects of habitual coffee consumption on cardiometabolic disease, cardiovascular health, and all-cause mortality."
+        },
+        {
+          "doc_id": "MED-877",
+          "rank": 6,
+          "score": 0.45544666051864624,
+          "title": "Detrimental effects of energy drink consumption on platelet and endothelial function."
+        },
+        {
+          "doc_id": "MED-5054",
+          "rank": 7,
+          "score": 0.45185816287994385,
+          "title": "The potential toxicity of artificial sweeteners."
+        },
+        {
+          "doc_id": "MED-3895",
+          "rank": 8,
+          "score": 0.4508676826953888,
+          "title": "Metabolic and performance effects of raisins versus sports gel as pre-exercise feedings in cyclists."
+        },
+        {
+          "doc_id": "MED-4331",
+          "rank": 9,
+          "score": 0.4458269476890564,
+          "title": "Black tea is not significantly different from water in the maintenance of normal hydration in human subjects: results from a randomised controlled ..."
+        },
+        {
+          "doc_id": "MED-3473",
+          "rank": 10,
+          "score": 0.4405074119567871,
+          "title": "Orange juice improved lipid profile and blood lactate of overweight middle-aged women subjected to aerobic training."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 220,
+    "failure_at_10_available": 103,
+    "saved_per_group_max": 5
+  }
+}

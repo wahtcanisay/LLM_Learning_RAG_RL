@@ -1,0 +1,632 @@
+{
+  "success": [
+    {
+      "query_id": "7482275",
+      "question": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_doc_id": "PMID:7482275",
+      "gold_title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7482275",
+          "rank": 1,
+          "score": 0.9052442312240601,
+          "title": "Necrotizing fasciitis: an indication for hyperbaric oxygenation therapy?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0275_4448",
+          "rank": 2,
+          "score": 0.4799934923648834,
+          "title": "[Initial experiences with extracorporeal shockwave lithotripsy (ESWL) in treatment of tendinosis calcarea of the shoulder]."
+        },
+        {
+          "doc_id": "PMID:26418796",
+          "rank": 3,
+          "score": 0.47307640314102173,
+          "title": "Do Wound Cultures Give Information About the Microbiology of Blood Cultures in Severe Burn Patients?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1141_4993",
+          "rank": 4,
+          "score": 0.45963090658187866,
+          "title": "[Effectiveness analysis of disposable skin stretch closure in treatment of difficult to close skin and soft tissue defects]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0869_24016",
+          "rank": 5,
+          "score": 0.4505994915962219,
+          "title": "Sulodexide for treating venous leg ulcers."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0794_3339",
+          "rank": 6,
+          "score": 0.44933032989501953,
+          "title": "Pediatric burn wound impetigo after grafting."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_3751",
+          "rank": 7,
+          "score": 0.4479743242263794,
+          "title": "A bibliometric analysis of clinical research on fracture-related infection."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0275_1614",
+          "rank": 8,
+          "score": 0.4469815194606781,
+          "title": "Acute asphyxia affects neutrophil number and function in the rat."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0526_16583",
+          "rank": 9,
+          "score": 0.444122314453125,
+          "title": "Bacteriology of surgical wound infections in a tertiary care hospital in Turkey."
+        },
+        {
+          "doc_id": "PMID:25406780",
+          "rank": 10,
+          "score": 0.4316926598548889,
+          "title": "Does skin care frequency affect the severity of incontinence-associated dermatitis in critically ill patients?"
+        }
+      ]
+    },
+    {
+      "query_id": "7497757",
+      "question": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_doc_id": "PMID:7497757",
+      "gold_title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7497757",
+          "rank": 1,
+          "score": 0.7888347506523132,
+          "title": "Cardiopulmonary bypass temperature does not affect postoperative euthyroid sick syndrome?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_400",
+          "rank": 2,
+          "score": 0.6679527163505554,
+          "title": "Forced-air warming is no more effective than conventional methods for raising postoperative core temperature after cardiac surgery."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0515_11805",
+          "rank": 3,
+          "score": 0.6477108001708984,
+          "title": "Profound hypothermia with alpha-stat pH management during open-heart surgery is associated with choreoathetosis."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_19893",
+          "rank": 4,
+          "score": 0.5354940891265869,
+          "title": "[Role of the Swan-Ganz pulmonary artery (PA) catheter in evaluation of hemodynamic changes during myocardial revascularization in patients with low left ventricular function]."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0200_87",
+          "rank": 5,
+          "score": 0.5100367069244385,
+          "title": "The management of accidental hypothermia."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0373_201",
+          "rank": 6,
+          "score": 0.4994773268699646,
+          "title": "[Intraoperative and early postoperative results after laparoscopic implantation of aortofemoral bifurcation prostheses]."
+        },
+        {
+          "doc_id": "PMID:11146778",
+          "rank": 7,
+          "score": 0.48207756876945496,
+          "title": "Risk stratification in emergency surgical patients: is the APACHE II score a reliable marker of physiological impairment?"
+        },
+        {
+          "doc_id": "PMID:17054994",
+          "rank": 8,
+          "score": 0.4805338382720947,
+          "title": "Does frozen section alter surgical management of multinodular thyroid disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0412_12537",
+          "rank": 9,
+          "score": 0.47203633189201355,
+          "title": "Comparison of a prototype esophageal oximetry probe with two conventional digital pulse oximetry monitors in aortocoronary bypass patients."
+        },
+        {
+          "doc_id": "PMID:17462393",
+          "rank": 10,
+          "score": 0.4610100984573364,
+          "title": "Does normothermic normokalemic simultaneous antegrade/retrograde perfusion improve myocardial oxygenation and energy metabolism for hypertrophied hearts?"
+        }
+      ]
+    },
+    {
+      "query_id": "7547656",
+      "question": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_doc_id": "PMID:7547656",
+      "gold_title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7547656",
+          "rank": 1,
+          "score": 0.8883165717124939,
+          "title": "Does continuous intravenous infusion of low-concentration epinephrine impair uterine blood flow in pregnant ewes?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0008_12179",
+          "rank": 2,
+          "score": 0.679801881313324,
+          "title": "Uteroplacental blood flow during alkalosis in the sheep."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_14266",
+          "rank": 3,
+          "score": 0.567906379699707,
+          "title": "Vasopressin-induced bradycardia in fetal and adult sheep is not dependent on an increase in blood pressure."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_24180",
+          "rank": 4,
+          "score": 0.5507876873016357,
+          "title": "Up-regulation of the endothelin receptor A in placental tissue from first trimester delayed miscarriages."
+        },
+        {
+          "doc_id": "PMID:17551944",
+          "rank": 5,
+          "score": 0.5271492004394531,
+          "title": "Doppler examination of uteroplacental circulation in early pregnancy: can it predict adverse outcome?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_10068",
+          "rank": 6,
+          "score": 0.4983746409416199,
+          "title": "Development of the ovine fetal cardiovascular defense to hypoxemia towards full term."
+        },
+        {
+          "doc_id": "PMID:10577397",
+          "rank": 7,
+          "score": 0.4907112121582031,
+          "title": "Is a pressor necessary during aortic perfusion and oxygenation therapy of cardiac arrest?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_8564",
+          "rank": 8,
+          "score": 0.4886697828769684,
+          "title": "Monitoring technology and the clinical perspective."
+        },
+        {
+          "doc_id": "PMID:9483814",
+          "rank": 9,
+          "score": 0.47261881828308105,
+          "title": "Does para-cervical block offer additional advantages in abortion induction with gemeprost in the 2nd trimester?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0548_13461",
+          "rank": 10,
+          "score": 0.4720059335231781,
+          "title": "Maternal recognition of pregnancy signal or endocrine disruptor: the two faces of oestrogen during establishment of pregnancy in the pig."
+        }
+      ]
+    },
+    {
+      "query_id": "7664228",
+      "question": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_doc_id": "PMID:7664228",
+      "gold_title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?",
+      "gold_rank": 3,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "rank": 1,
+          "score": 0.5581100583076477,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
+        },
+        {
+          "doc_id": "PMID:10158597",
+          "rank": 2,
+          "score": 0.5418371558189392,
+          "title": "Does a dedicated discharge coordinator improve the quality of hospital discharge?"
+        },
+        {
+          "doc_id": "PMID:7664228",
+          "rank": 3,
+          "score": 0.5296942591667175,
+          "title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?"
+        },
+        {
+          "doc_id": "PMID:7860319",
+          "rank": 4,
+          "score": 0.4815148115158081,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "PMID:26516021",
+          "rank": 5,
+          "score": 0.4813022017478943,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8314",
+          "rank": 6,
+          "score": 0.47245192527770996,
+          "title": "Hospital reform and nursing labor market trends in Canada."
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "rank": 7,
+          "score": 0.45893916487693787,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "PMID:10966337",
+          "rank": 8,
+          "score": 0.45266860723495483,
+          "title": "A short stay or 23-hour ward in a general and academic children's hospital: are they effective?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0154_1250",
+          "rank": 9,
+          "score": 0.4526115357875824,
+          "title": "Making hospital geriatrics work."
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "rank": 10,
+          "score": 0.43287602066993713,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        }
+      ]
+    },
+    {
+      "query_id": "7860319",
+      "question": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_doc_id": "PMID:7860319",
+      "gold_title": "Measuring hospital mortality rates: are 30-day data enough?",
+      "gold_rank": 1,
+      "top_documents": [
+        {
+          "doc_id": "PMID:7860319",
+          "rank": 1,
+          "score": 0.685204029083252,
+          "title": "Measuring hospital mortality rates: are 30-day data enough?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0553_15394",
+          "rank": 2,
+          "score": 0.5639064908027649,
+          "title": "A semiparametric additive rates model for recurrent event data."
+        },
+        {
+          "doc_id": "PMID:17610439",
+          "rank": 3,
+          "score": 0.5527116060256958,
+          "title": "Do hospitals provide lower quality care on weekends?"
+        },
+        {
+          "doc_id": "PMID:9920954",
+          "rank": 4,
+          "score": 0.5397913455963135,
+          "title": "Do \"America's Best Hospitals\" perform better for acute myocardial infarction?"
+        },
+        {
+          "doc_id": "PMID:24666444",
+          "rank": 5,
+          "score": 0.5241529941558838,
+          "title": "Is there any evidence of a \"July effect\" in patients undergoing major cancer surgery?"
+        },
+        {
+          "doc_id": "PMID:7664228",
+          "rank": 6,
+          "score": 0.5092954039573669,
+          "title": "Discharging patients earlier from Winnipeg hospitals: does it adversely affect quality of care?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0310_8311",
+          "rank": 7,
+          "score": 0.5059740543365479,
+          "title": "Hospital restructuring and the epidemiology of hospital utilization: recent experience in Ontario."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_11694",
+          "rank": 8,
+          "score": 0.5047035217285156,
+          "title": "Using USRDS generated hospitalization tables to compare local dialysis patient hospitalization rates to national rates."
+        },
+        {
+          "doc_id": "PMID:24751724",
+          "rank": 9,
+          "score": 0.48946255445480347,
+          "title": "Does ethnicity affect where people with cancer die?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n1133_8030",
+          "rank": 10,
+          "score": 0.4815869629383087,
+          "title": "Are 5-level triage systems improved by using a symptom based approach?-a Danish cohort study."
+        }
+      ]
+    }
+  ],
+  "failure": [
+    {
+      "query_id": "11570976",
+      "question": "Is it Crohn's disease?",
+      "gold_doc_id": "PMID:11570976",
+      "gold_title": "Is it Crohn's disease?",
+      "gold_rank": 60,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0120_16583",
+          "rank": 1,
+          "score": 0.5238583087921143,
+          "title": "Internal carotid artery occlusion in association with Crohn's disease."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_13805",
+          "rank": 2,
+          "score": 0.5195649862289429,
+          "title": "Effect of pregnancy on the clinical course of a cohort of women with inflammatory bowel disease."
+        },
+        {
+          "doc_id": "PMID:9347843",
+          "rank": 3,
+          "score": 0.5031911730766296,
+          "title": "Laparoscopic-assisted ileocolic resections in patients with Crohn's disease: are abscesses, phlegmons, or recurrent disease contraindications?"
+        },
+        {
+          "doc_id": "PMID:10811329",
+          "rank": 4,
+          "score": 0.4897000789642334,
+          "title": "Are 99mTc leukocyte scintigraphy and SBFT studies useful in children suspected of having inflammatory bowel disease?"
+        },
+        {
+          "doc_id": "PMID:18802997",
+          "rank": 5,
+          "score": 0.45929333567619324,
+          "title": "Can calprotectin predict relapse risk in inflammatory bowel disease?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0991_11212",
+          "rank": 6,
+          "score": 0.4522648751735687,
+          "title": "Effectiveness of sigmoidoscopy for assessing ulcerative colitis disease activity and therapeutic response."
+        },
+        {
+          "doc_id": "PMID:20197761",
+          "rank": 7,
+          "score": 0.4491446018218994,
+          "title": "Is irritable bowel syndrome a diagnosis of exclusion?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0885_16832",
+          "rank": 8,
+          "score": 0.4455854296684265,
+          "title": "Endocrine manifestations in celiac disease."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0148_307",
+          "rank": 9,
+          "score": 0.43440330028533936,
+          "title": "Indices of granulocyte activity in inflammatory bowel disease."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0462_356",
+          "rank": 10,
+          "score": 0.43216919898986816,
+          "title": "IDIOPATHIC STEATORRHEA PRESENTING WITH DIFFERENT MANIFESTATIONS IN SISTERS."
+        }
+      ]
+    },
+    {
+      "query_id": "18359123",
+      "question": "Is it better to be big?",
+      "gold_doc_id": "PMID:18359123",
+      "gold_title": "Is it better to be big?",
+      "gold_rank": 65,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_6893",
+          "rank": 1,
+          "score": 0.31618186831474304,
+          "title": "Brain and Body Size Relations among Spotted Hyenas (Crocuta crocuta)."
+        },
+        {
+          "doc_id": "PMID:18607272",
+          "rank": 2,
+          "score": 0.3058653473854065,
+          "title": "Body perception: do parents, their children, and their children's physicians perceive body image differently?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0552_3124",
+          "rank": 3,
+          "score": 0.29948890209198,
+          "title": "Differential parental weight and height contributions to offspring birthweight and weight gain in infancy."
+        },
+        {
+          "doc_id": "PMID:21123461",
+          "rank": 4,
+          "score": 0.287017285823822,
+          "title": "Are adult body circumferences associated with height?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0615_12053",
+          "rank": 5,
+          "score": 0.27248379588127136,
+          "title": "Waist circumference in relation to body perception reported by Finnish adolescent girls and their mothers."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_1025",
+          "rank": 6,
+          "score": 0.2628094553947449,
+          "title": "Individual differences in appeal of energy dense foods predicts lower body mass change during adolescence."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0962_20407",
+          "rank": 7,
+          "score": 0.26264673471450806,
+          "title": "Survival of the Fastest: The Multivariate Optimization of Performance Phenotypes."
+        },
+        {
+          "doc_id": "PMID:16510651",
+          "rank": 8,
+          "score": 0.2614370584487915,
+          "title": "Birth characteristics and risk of low intellectual performance in early adulthood: are the associations confounded by socioeconomic factors in adolescence or familial effects?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_3959",
+          "rank": 9,
+          "score": 0.26013118028640747,
+          "title": "Body size, body composition and motor performances of mild-to-moderately undernourished Senegalese children."
+        },
+        {
+          "doc_id": "PMID:18719011",
+          "rank": 10,
+          "score": 0.2562721073627472,
+          "title": "Do overweight children necessarily make overweight adults?"
+        }
+      ]
+    },
+    {
+      "query_id": "18399830",
+      "question": "Is robotically assisted laparoscopic radical prostatectomy less invasive than retropubic radical prostatectomy?",
+      "gold_doc_id": "PMID:18399830",
+      "gold_title": "Is robotically assisted laparoscopic radical prostatectomy less invasive than retropubic radical prostatectomy?",
+      "gold_rank": 13,
+      "top_documents": [
+        {
+          "doc_id": "MEDRAG:pubmed23n0255_6837",
+          "rank": 1,
+          "score": 0.6768262386322021,
+          "title": "Early urethral catheter removal following radical prostatectomy: a pilot study."
+        },
+        {
+          "doc_id": "PMID:14713788",
+          "rank": 2,
+          "score": 0.6538195610046387,
+          "title": "Is year of radical prostatectomy a predictor of outcome in prostate cancer?"
+        },
+        {
+          "doc_id": "PMID:15708048",
+          "rank": 3,
+          "score": 0.6007612943649292,
+          "title": "Does prior benign prostate biopsy predict outcome for patients treated with radical perineal prostatectomy?"
+        },
+        {
+          "doc_id": "PMID:23453079",
+          "rank": 4,
+          "score": 0.5870391726493835,
+          "title": "Does prostate morphology affect outcomes after holmium laser enucleation?"
+        },
+        {
+          "doc_id": "PMID:21166749",
+          "rank": 5,
+          "score": 0.5809583067893982,
+          "title": "Is patient outcome compromised during the initial experience with robot-assisted radical cystectomy?"
+        },
+        {
+          "doc_id": "PMID:18568239",
+          "rank": 6,
+          "score": 0.562449038028717,
+          "title": "Is the ability to perform transurethral resection of the prostate influenced by the surgeon's previous experience?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0595_24614",
+          "rank": 7,
+          "score": 0.5555816888809204,
+          "title": "Probability of finding T1a and T1b (incidental) prostate cancer during TURP has decreased in the PSA era."
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0968_7366",
+          "rank": 8,
+          "score": 0.5543559193611145,
+          "title": "Impact of Pelvic Radiation Therapy on Inflatable Penile Prosthesis Reoperation Rates."
+        },
+        {
+          "doc_id": "PMID:25735444",
+          "rank": 9,
+          "score": 0.5498508214950562,
+          "title": "Rectal cancer threatening or affecting the prostatic plane: is partial prostatectomy oncologically adequate?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0294_22701",
+          "rank": 10,
+          "score": 0.5478357672691345,
+          "title": "Evaluation of bladder contractility in men undergoing transurethral resection of the prostate."
+        }
+      ]
+    },
+    {
+      "query_id": "18708308",
+      "question": "Can surgeon familiarization with current evidence lead to a change in practice?",
+      "gold_doc_id": "PMID:18708308",
+      "gold_title": "Can surgeon familiarization with current evidence lead to a change in practice?",
+      "gold_rank": 34,
+      "top_documents": [
+        {
+          "doc_id": "PMID:16678696",
+          "rank": 1,
+          "score": 0.6123703718185425,
+          "title": "Continuity of care experience of residents in an academic vascular department: are trainees learning complete surgical care?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0526_23336",
+          "rank": 2,
+          "score": 0.5890200734138489,
+          "title": "Evolution of methodological standards in surgical trials."
+        },
+        {
+          "doc_id": "PMID:9645785",
+          "rank": 3,
+          "score": 0.5497375726699829,
+          "title": "Is a mandatory general surgery rotation necessary in the surgical clerkship?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0885_21607",
+          "rank": 4,
+          "score": 0.5485743284225464,
+          "title": "Performance and learning curve of a surgical care practitioner in completing hip aspirations."
+        },
+        {
+          "doc_id": "PMID:10354335",
+          "rank": 5,
+          "score": 0.5372875928878784,
+          "title": "Can medical students contribute to quality assurance programmes in day surgery?"
+        },
+        {
+          "doc_id": "PMID:21889895",
+          "rank": 6,
+          "score": 0.5278960466384888,
+          "title": "Will CT ordering practices change if we educate residents about the potential effects of radiation exposure?"
+        },
+        {
+          "doc_id": "PMID:19712912",
+          "rank": 7,
+          "score": 0.5244569778442383,
+          "title": "Has the 80-hour workweek improved surgical resident education in New England?"
+        },
+        {
+          "doc_id": "PMID:26516021",
+          "rank": 8,
+          "score": 0.5152779817581177,
+          "title": "Does evidence-based practice improve patient outcomes?"
+        },
+        {
+          "doc_id": "PMID:27884344",
+          "rank": 9,
+          "score": 0.48728057742118835,
+          "title": "Do resident's leadership skills relate to ratings of technical skill?"
+        },
+        {
+          "doc_id": "MEDRAG:pubmed23n0255_19309",
+          "rank": 10,
+          "score": 0.4781096577644348,
+          "title": "The health work force, generalism, and the social contract."
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "success_at_10_available": 496,
+    "failure_at_10_available": 4,
+    "saved_per_group_max": 5
+  }
+}

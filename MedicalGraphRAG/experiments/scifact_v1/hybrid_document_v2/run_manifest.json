@@ -1,0 +1,150 @@
+{
+  "git_commit": "d3ccc2109763290354d31b4dd60095c462f8e149",
+  "host_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "host_python_version": "3.12.3",
+  "docker_image": "pytorch/pytorch:2.11.0-cuda12.8-cudnn9-devel",
+  "evaluation_command": [
+    "cli",
+    "run",
+    "hybrid-document",
+    "--dataset",
+    "scifact_v1"
+  ],
+  "bm25": {
+    "index": {
+      "retrieval_unit": "document",
+      "elapsed_seconds": 2.338942059999681,
+      "index_bytes": 1073384,
+      "pyserini_version": "0.22.1",
+      "python_version": "3.12.3",
+      "threads": 8,
+      "stemmer": "porter",
+      "command": [
+        "/opt/venv/bin/python",
+        "-m",
+        "pyserini.index.lucene",
+        "--collection",
+        "JsonCollection",
+        "--input",
+        "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/scifact_v1/bm25_document_v2/collection",
+        "--index",
+        "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/indexes/scifact_v1/bm25_document_v2",
+        "--generator",
+        "DefaultLuceneDocumentGenerator",
+        "--threads",
+        "8",
+        "--stemmer",
+        "porter"
+      ],
+      "document_count": 5183,
+      "source_artifact": "documents.jsonl",
+      "source_artifact_sha256": "6d9f4b9675ae44069fec847bf01da145899080be517bf2b820a9d485f5ee3de2",
+      "collection_sha256": "01f7f63e3e0d25cb1f0ad1605605e26484bbe34ec47df2095d24de0ac8395f84",
+      "metadata_sha256": "7509aa6842d0f2400d3db6257c3a7be0aa3b7cea318b2c173984626498bccbf3",
+      "dataset_manifest_sha256": "7e6519defeb44bb72a41e306dc0a43d0a18219475f44306dd5515183dff0d18b",
+      "dataset_artifact_hashes": {
+        "questions.jsonl": "63f5bd5f741b83e4ff66a13f8269bea4287ebdf79a77bc05d956dde50c0f5925",
+        "documents.jsonl": "6d9f4b9675ae44069fec847bf01da145899080be517bf2b820a9d485f5ee3de2",
+        "chunks.jsonl": "1e2d85a2adee0e968d355a75c6795c2887343fad6935d39bcd8d08539b581740",
+        "qrels.tsv": "68dd668c8c6811a3baa7cec6e10c55bb512b768f332f7f741563d811f94d2369"
+      },
+      "export_report_sha256": "74b985df330f266ceb6bf97fb6c06c90b63ca6f3d03e05d22dfb3cebf0532e7a",
+      "index_sha256": "20c8e2c4224cc633a0c09de3378a01681f7c9cef3a91b01bf3322559d000c3f0"
+    },
+    "search": {
+      "command": [
+        "search_document.run_bm25_document_search",
+        "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/scifact_v1/questions.jsonl",
+        "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/scifact_v1/bm25_document_v2/raw_rankings.jsonl"
+      ],
+      "query_count": 300,
+      "requested_top_k": 100,
+      "min_hits": 65,
+      "max_hits": 100,
+      "short_ranking_count": 1,
+      "hit_count_histogram": {
+        "65": 1,
+        "100": 299
+      },
+      "retrieval_unit": "document",
+      "k1": 0.9,
+      "b": 0.4,
+      "index_sha256": "20c8e2c4224cc633a0c09de3378a01681f7c9cef3a91b01bf3322559d000c3f0",
+      "index_report_sha256": "c3a55486db838bbff102dbb04189e8af2d43e1f1247450eb98b2e2743e8a5aa3",
+      "dataset_manifest_sha256": "7e6519defeb44bb72a41e306dc0a43d0a18219475f44306dd5515183dff0d18b",
+      "questions_sha256": "63f5bd5f741b83e4ff66a13f8269bea4287ebdf79a77bc05d956dde50c0f5925",
+      "text_mode": "abstract_only",
+      "rankings_sha256": "86bb26427c074e3a38f96577d39331366f1b256eb3f9a08b6ff723d35b890842"
+    },
+    "index_report_sha256": "c3a55486db838bbff102dbb04189e8af2d43e1f1247450eb98b2e2743e8a5aa3"
+  },
+  "dense": {
+    "index": {
+      "retrieval_unit": "document",
+      "source_artifact": "documents.jsonl",
+      "source_artifact_sha256": "6d9f4b9675ae44069fec847bf01da145899080be517bf2b820a9d485f5ee3de2",
+      "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+      "dim": 768,
+      "index_type": "IndexFlatIP",
+      "document_count": 5183,
+      "embedding_report_sha256": "efe878c07a6726c62b995103d500587bc1c317773364120b3072b36ce40fad3c",
+      "embedding_embeddings_sha256": "268dcee515822b9c207a8eb3a7deb778a85a70dd2d0bba764f571eec9c67bd2b",
+      "index_sha256": "d28bb8b2c548985afc751ceacb60443693efe9d2ab7aa21fdc0d5709e3db9d3e",
+      "metadata_sha256": "7509aa6842d0f2400d3db6257c3a7be0aa3b7cea318b2c173984626498bccbf3",
+      "window_coverage": {
+        "window_count_min": 1,
+        "window_count_mean": 1.2672197568975496,
+        "window_count_p95": 2.0,
+        "window_count_max": 6,
+        "truncated_token_count": 0
+      },
+      "dataset_manifest_sha256": "7e6519defeb44bb72a41e306dc0a43d0a18219475f44306dd5515183dff0d18b",
+      "dataset_artifact_hashes": {
+        "questions.jsonl": "63f5bd5f741b83e4ff66a13f8269bea4287ebdf79a77bc05d956dde50c0f5925",
+        "documents.jsonl": "6d9f4b9675ae44069fec847bf01da145899080be517bf2b820a9d485f5ee3de2",
+        "chunks.jsonl": "1e2d85a2adee0e968d355a75c6795c2887343fad6935d39bcd8d08539b581740",
+        "qrels.tsv": "68dd668c8c6811a3baa7cec6e10c55bb512b768f332f7f741563d811f94d2369"
+      }
+    },
+    "search": {
+      "command": [
+        "search_document.run_dense_document_search",
+        "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/data/processed/scifact_v1/questions.jsonl",
+        "/workspace/code_list/some tricks/LLMLeanring/MedicalGraphRAG/outputs/scifact_v1/dense_document_v2/raw_rankings.jsonl"
+      ],
+      "query_count": 300,
+      "requested_top_k": 100,
+      "min_hits": 100,
+      "max_hits": 100,
+      "short_ranking_count": 0,
+      "hit_count_histogram": {
+        "100": 300
+      },
+      "retrieval_unit": "document",
+      "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+      "dim": 768,
+      "index_type": "IndexFlatIP",
+      "embedding_report_sha256": "efe878c07a6726c62b995103d500587bc1c317773364120b3072b36ce40fad3c",
+      "index_sha256": "d28bb8b2c548985afc751ceacb60443693efe9d2ab7aa21fdc0d5709e3db9d3e",
+      "index_report_sha256": "58e1f2e463d7702a9de52b7293519051317857131930adb6df26305816983773",
+      "dataset_manifest_sha256": "7e6519defeb44bb72a41e306dc0a43d0a18219475f44306dd5515183dff0d18b",
+      "questions_sha256": "63f5bd5f741b83e4ff66a13f8269bea4287ebdf79a77bc05d956dde50c0f5925",
+      "text_mode": "abstract_only",
+      "rankings_sha256": "e4315dc2c0bebdcebf11fa8a02378c99255b203a0cd64e016ff66a2822df2070"
+    },
+    "index_report_sha256": "58e1f2e463d7702a9de52b7293519051317857131930adb6df26305816983773"
+  },
+  "dataset_manifest_sha256": "7e6519defeb44bb72a41e306dc0a43d0a18219475f44306dd5515183dff0d18b",
+  "generated_at_utc": "2026-08-08T09:18:08.729786+00:00",
+  "rrf_k": 60,
+  "question_count": 300,
+  "document_count": 5183,
+  "split_counts": {
+    "test": 300
+  },
+  "retrieval_unit": "document",
+  "aggregation": "rrf_document",
+  "text_mode": "abstract_only",
+  "bm25_rankings_sha256": "86bb26427c074e3a38f96577d39331366f1b256eb3f9a08b6ff723d35b890842",
+  "dense_rankings_sha256": "e4315dc2c0bebdcebf11fa8a02378c99255b203a0cd64e016ff66a2822df2070"
+}
