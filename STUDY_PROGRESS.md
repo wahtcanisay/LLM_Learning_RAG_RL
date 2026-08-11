@@ -15,14 +15,14 @@
 主文档和真实产物优先级：
 
 - 检索框架、运行命令和完整结果：`MedicalGraphRAG/README.md`、`MedicalGraphRAG/experiments/`。
-- 图边策略与代码审阅：`docs/superpowers/specs/2026-08-08-per-dataset-document-edge-policy-design.md`、`docs/superpowers/reviews/2026-08-08-per-dataset-edge-policy-code-review.md`。
+- 当前稳定代码基线：`MedicalGraphRAG/` 固定为 README 结果对应的 commit `fe89a64`。
 - MedicalGPT smoke 的配置、日志和 adapter：`MedicalGPT/logs/sft/`、`MedicalGPT/outputs/sft/`、`MedicalGPT/experiments/sft/`。
 
 # 本周目标
 
 1. 完成 Search-R1 的数据协议与训练入口阅读，不启动未经缩放的官方 8 卡配置。
 2. 回到 MedicalGPT：制定正式数据清洗、训练/验证/独立测试隔离和医学质量评测方案。
-3. 对 `MedicalGraphRAG` 的 document-level v2 结果保持门禁：Dense、Hybrid、Graph 未生成同版本产物前，不把 v2 BM25 与旧实验横向比较。
+3. 保持 `MedicalGraphRAG` 在 README 已验证基线，不恢复未经重新验收的 document-level 扩展。
 
 # 今日唯一任务
 
@@ -49,12 +49,10 @@
 - 已对齐 LinearRAG 默认参数（`damping=0.5`、`passage_node_weight=0.05`、`passage_ratio=2`，并排除 `ORDINAL/CARDINAL`）；对齐后 Graph 的 Recall@10 为 PubMedQA `0.982`、SciFact `0.705`、HotpotQA `0.695`、NFCorpus `0.158`。
 - 已完成接口重构（commit `5efb6e8`）和 README/简历版总结（commit `fe89a64`）；历史统计见各实验目录，不在本文件重复维护。
 
-## Document-level v2 边策略
+## MedicalGraphRAG 版本回退（2026-08-11）
 
-- 旧版完整摘要 embedding 存在“decode 后重新分词”窗口漂移：PubMedQA `6,037` 个窗口中 `205` 个不一致；旧 v1 结果不得作为最终 document-level 结论。
-- v2 直接冻结 token-ID 窗口，Dense、Graph、Similarity 共用同一 embedding artifact；Similarity 由冻结向量重算，Adjacent 只连同文档连续 `order`，权重固定 `1.0`。
-- v2 BM25-document 已完成：PubMedQA test Recall@10 `0.990`、MRR@10 `0.9619`、nDCG@10 `0.9689`。Dense、Hybrid、Graph 尚未在此版本生成产物，禁止横向宣称提升。
-- 测试状态：Windows `46 passed`；WSL Docker `125 passed, 2 failed`，失败均为 spaCy `3.8` 与 BC5CDR `3.7` 模型不兼容，不是检索指标结果。
+- 后续 document-level v1/v2、MedRAG adapter、边策略与 reranker 扩展未达到预期，当前代码已恢复到 README 实验数据对应的 commit `fe89a64`。
+- 被撤回内容仍保留在 Git 历史中；除非重新设计并独立验收，不再作为当前实现或实验结论。
 
 ## MedRAG 与 LinearRAG 阅读边界
 
@@ -81,7 +79,7 @@
 
 | 问题 | 状态与处理 |
 |---|---|
-| PubMedQA document-level embedding 窗口漂移 | 已修复为 token-ID window v2；旧 v1 指标冻结为历史，不作结论。 |
+| 后续 document-level 扩展不满意 | 已回退到 README 结果对应的 `fe89a64`；相关代码与结果只保留在 Git 历史。 |
 | WSL 的 BC5CDR 测试失败 | 未解决；spaCy `3.8` 与模型 `3.7` 不兼容。Windows 针对性测试通过。 |
 | Datasets 默认 cache 被历史 file lock 卡住 | 已定位为 `filelock.acquire()`；smoke 改用独立 `cache/sft_smoke_datasets`，不删除全局 cache。 |
 | LinearRAG medical 无可靠 qrels | 已确认；只做定性验证，标准 IR 使用 HotpotQA 补充。 |
@@ -93,7 +91,6 @@
 1. 等待并校验 `wiki-18` 语料和 E5 索引下载完成；不做解压、预处理或环境配置。
 2. 回到阶段 3，先定义正式 MedicalGPT 数据清洗规则、训练/验证/独立测试隔离，以及可复现的医学质量评测；不得把 100 条 smoke 外推为正式实验。
 3. 为 Search-R1 制定单卡 3B 最小配置：先验证 parquet、工具协议和检索环境，再启动小规模 rollout；不能复制官方 8 卡脚本。
-4. 等 v2 Dense、Hybrid、Graph 产物和审计齐备后，再报告 document-level 检索对比。
 
 # 待补知识
 
@@ -107,7 +104,6 @@
 | 数据集 / 版本 | 当前最优或关键结论 | 结论边界 |
 |---|---|---|
 | PubMedQA abstract/chunk official test | Dense：R@10 `0.994`、MRR `0.977786`、nDCG `0.981885` | 5,000 document 封闭基准；不是全 PubMed。 |
-| PubMedQA document-level v2 | BM25：R@10 `0.990`、MRR `0.9619`、nDCG `0.9689` | Dense/Hybrid/Graph 尚未完成，不能比较。 |
 | NFCorpus | Hybrid2 nDCG `0.384` | 多相关 qrels；R@10 的理论上限受相关文档数影响。 |
 | SciFact | Hybrid2：R@10 `0.895`、MRR `0.740`、nDCG `0.772` | Graph 未胜出。 |
 | HotpotQA | Hybrid2：R@10 `0.898`、MRR `0.955`、nDCG `0.865` | 每题 2 个 gold；Graph 未胜出。 |

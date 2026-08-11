@@ -67,30 +67,22 @@ def validate_index(index_dir: Path, questions: Path, report_path: Path) -> dict[
 def search_one(
     retriever: LinearGraphRetriever,
     question: Mapping[str, object],
-    chunk_to_doc: Mapping[str, str] | None,
+    chunk_to_doc: Mapping[str, str],
     top_k: int,
     clock: Any = time.perf_counter,
 ) -> dict[str, object]:
     started = clock()
     passage_ids, scores = retriever.search(str(question["question"]), top_k=top_k)
     latency_ms = round((clock() - started) * 1000, 6)
-    if retriever.retrieval_unit == "document":
-        # document hits are already doc_ids; no chunk→doc collapse (P0-5).
-        hits = [
-            {"doc_id": doc_id, "rank": rank, "score": float(score)}
-            for rank, (doc_id, score) in enumerate(zip(passage_ids, scores), start=1)
-        ]
-    else:
-        assert chunk_to_doc is not None
-        hits = [
-            {
-                "chunk_id": chunk_id,
-                "doc_id": chunk_to_doc[chunk_id],
-                "chunk_rank": rank,
-                "score": float(score),
-            }
-            for rank, (chunk_id, score) in enumerate(zip(passage_ids, scores), start=1)
-        ]
+    hits = [
+        {
+            "chunk_id": chunk_id,
+            "doc_id": chunk_to_doc[chunk_id],
+            "chunk_rank": rank,
+            "score": float(score),
+        }
+        for rank, (chunk_id, score) in enumerate(zip(passage_ids, scores), start=1)
+    ]
     return {
         "query_id": str(question["query_id"]),
         "split": str(question["split"]),
@@ -131,16 +123,11 @@ def run_search(
     retriever = LinearGraphRetriever(index, config=config)
 
     questions_rows = _read_jsonl(questions)
-    retrieval_unit = str(index_report_data.get("retrieval_unit", "chunk"))
-    if retriever.retrieval_unit != retrieval_unit:
-        raise ValueError("index retrieval_unit does not match build report")
-    chunk_to_doc: dict[str, str] | None = None
-    if retrieval_unit == "chunk":
-        chunks_rows = _read_jsonl(chunks)
-        chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in chunks_rows}
-        missing = [p for p in retriever.passage_ids if p not in chunk_to_doc]
-        if missing:
-            raise ValueError(f"{len(missing)} index passages missing from --chunks")
+    chunks_rows = _read_jsonl(chunks)
+    chunk_to_doc = {str(row["chunk_id"]): str(row["doc_id"]) for row in chunks_rows}
+    missing = [p for p in retriever.passage_ids if p not in chunk_to_doc]
+    if missing:
+        raise ValueError(f"{len(missing)} index passages missing from --chunks")
     rows = [search_one(retriever, row, chunk_to_doc, top_k) for row in questions_rows]
     if len({row["query_id"] for row in rows}) != len(rows):
         raise ValueError("duplicate query_id in search output")
@@ -157,7 +144,6 @@ def run_search(
         "command": ["search_graph.run_search", str(questions), str(output)],
         "query_count": len(rows),
         **hit_summary,
-        "retrieval_unit": retrieval_unit,
         "text_mode": index_report_data["text_mode"],
         "ner_model": index_report_data["ner_model"],
         "embedding_model": index_report_data["embedding_model"],

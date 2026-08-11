@@ -119,18 +119,6 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--top-k", type=int, default=100)
     run.add_argument("--rrf-k", type=int, default=60)
     run.add_argument("--top-n", type=int, default=50)
-    run.add_argument("--profile", choices=["ep", "similarity"], default="similarity",
-                     help="graph-document edge strategy (ep = entity edges only, "
-                          "similarity = similarity soft edges)")
-    run.add_argument("--sources", choices=["bd", "bdg", "bde"], default="bdg",
-                     help="reranker-document candidate sources "
-                          "(bd = bm25+dense, bdg = + graph-similarity, bde = + graph-ep)")
-
-    graph_pairs = subparsers.add_parser(
-        "graph-pairs",
-        help="Write the Graph-EP vs Graph-Sim paired case comparison (P1-5).",
-    )
-    graph_pairs.add_argument("--dataset", required=True)
     return parser
 
 
@@ -160,11 +148,6 @@ def main() -> int:
         return _evaluate_reranker_command(args)
     if args.command == "run":
         return _run_command(args)
-    if args.command == "graph-pairs":
-        from medical_graphrag.run_pipeline import run_graph_pair_cases
-
-        run_graph_pair_cases(args.dataset)
-        return 0
     return 2
 
 
@@ -179,18 +162,12 @@ def _run_command(args: argparse.Namespace) -> int:
         "git_commit": args.git_commit,
         "docker_image": args.docker_image,
     }
-    if args.retriever in ("bm25", "dense", "graph", "hybrid", "reranker",
-                          "bm25-document", "dense-document", "hybrid-document",
-                          "graph-document", "reranker-document"):
+    if args.retriever in ("bm25", "dense", "graph", "hybrid", "reranker"):
         kwargs["top_k"] = args.top_k
-    if args.retriever in ("hybrid", "hybrid-document"):
+    if args.retriever == "hybrid":
         kwargs["rrf_k"] = args.rrf_k
-    if args.retriever in ("reranker", "reranker-document"):
+    if args.retriever == "reranker":
         kwargs["top_n"] = args.top_n
-    if args.retriever == "graph-document":
-        kwargs["profile"] = args.profile
-    if args.retriever == "reranker-document":
-        kwargs["sources"] = args.sources
     runner(args.dataset, **kwargs)
     return 0
 

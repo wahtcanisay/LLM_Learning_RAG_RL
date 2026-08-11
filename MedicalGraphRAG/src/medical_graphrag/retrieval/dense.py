@@ -67,63 +67,6 @@ def _load_embedder(model_name: str):
     return SentenceTransformer(model_name)
 
 
-def build_dense_document_index(
-    dataset_dir: Path,
-    output_dir: Path,
-    *,
-    document_embeddings_dir: Path,
-    batch_size: int = 64,
-) -> dict[str, Any]:
-    """Dense index over full documents, CONSUMING the frozen embedding artifact.
-
-    Loads ``document_embeddings.npy`` / ``document_embedding_metadata.jsonl`` /
-    ``document_embedding_report.json`` produced by ``build_document_embeddings``
-    (P0-8) — it never re-encodes the documents. Builds FAISS IndexFlatIP and
-    records the same embedding-report/embeddings hashes as the similarity-edge
-    and graph-prior consumers.
-    """
-    import faiss
-    import numpy as np
-
-    from medical_graphrag.retrieval.document_embeddings import (
-        load_document_embedding_artifact,
-    )
-
-    manifest = validate_frozen_dataset(dataset_dir)
-    embeddings, doc_ids, artifact_report, embedding_report_sha256 = (
-        load_document_embedding_artifact(dataset_dir, document_embeddings_dir)
-    )
-
-    dim = int(embeddings.shape[1])
-    output_dir.mkdir(parents=True, exist_ok=True)
-    index = faiss.IndexFlatIP(dim)
-    index.add(embeddings)
-    index_path = output_dir / "index.faiss"
-    faiss.write_index(index, str(index_path))
-    metadata_path = output_dir / "document_metadata.jsonl"
-    write_jsonl(metadata_path, [{"doc_id": doc_id} for doc_id in doc_ids])
-
-    window_counts = artifact_report.get("window_coverage", {})
-    report = {
-        "retrieval_unit": "document",
-        "source_artifact": "documents.jsonl",
-        "source_artifact_sha256": artifact_report["source_artifact_sha256"],
-        "embedding_model": artifact_report["embedding_model"],
-        "dim": dim,
-        "index_type": INDEX_TYPE,
-        "document_count": len(doc_ids),
-        "embedding_report_sha256": embedding_report_sha256,
-        "embedding_embeddings_sha256": artifact_report["embeddings_sha256"],
-        "index_sha256": sha256_file(index_path),
-        "metadata_sha256": sha256_file(metadata_path),
-        "window_coverage": window_counts,
-        "dataset_manifest_sha256": sha256_file(dataset_dir / "manifest.json"),
-        "dataset_artifact_hashes": manifest["artifact_hashes"],
-    }
-    write_json(output_dir / "index_build.json", report)
-    return report
-
-
 def build_dense_index(
     dataset_dir: Path,
     output_dir: Path,

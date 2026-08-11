@@ -96,39 +96,12 @@ def read_qrels(path: Path) -> dict[str, list[str]]:
     return result
 
 
-def validate_hit_rows(
-    raw_rows: list[dict[str, Any]],
-    *,
-    retrieval_unit: str = "chunk",
-) -> None:
-    """Shared ranking-shape checks, branching by retrieval unit (P0-5).
-
-    document: hits carry ``{doc_id, rank, score}`` (no chunk_id), ranks
-    contiguous and one-based, scores finite, doc_ids unique within a ranking.
-    chunk:    hits carry ``{chunk_id, doc_id, chunk_rank, score}`` (historical
-    contract), chunk_rank contiguous and one-based, scores finite.
-    """
+def validate_hit_rows(raw_rows: list[dict[str, Any]]) -> None:
+    """Shared ranking-shape checks: contiguous one-based ranks and finite scores."""
     for row in raw_rows:
-        seen_doc_ids: set[str] = set()
         for expected_rank, hit in enumerate(row["hits"], start=1):
             score = float(hit["score"])
+            if int(hit["chunk_rank"]) != expected_rank:
+                raise ValueError("hit ranks must be contiguous and one-based")
             if not math.isfinite(score):
                 raise ValueError("hit score must be finite")
-            if retrieval_unit == "document":
-                if "chunk_id" in hit:
-                    raise ValueError("document hit must not contain chunk_id")
-                rank = hit.get("rank")
-                if rank is None:
-                    raise ValueError("document hit missing rank")
-                if int(rank) != expected_rank:
-                    raise ValueError("hit ranks must be contiguous and one-based")
-                doc_id = str(hit["doc_id"])
-                if doc_id in seen_doc_ids:
-                    raise ValueError(f"duplicate doc_id in ranking: {doc_id}")
-                seen_doc_ids.add(doc_id)
-            else:
-                chunk_rank = hit.get("chunk_rank")
-                if chunk_rank is None:
-                    raise ValueError("chunk hit missing chunk_rank")
-                if int(chunk_rank) != expected_rank:
-                    raise ValueError("chunk_rank must be contiguous and one-based")

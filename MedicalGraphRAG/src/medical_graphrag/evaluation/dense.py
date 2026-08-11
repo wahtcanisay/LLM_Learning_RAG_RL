@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any
 
 from medical_graphrag.data.io import sha256_file, write_json
-from medical_graphrag.evaluation.document import evaluate_document_run
 from medical_graphrag.evaluation.retrieval import (
     evaluate_rankings,
     first_gold_rank,
@@ -242,16 +241,3 @@ def evaluate_dense_run(
     write_json(output_dir / "run_manifest.json", run_manifest)
     write_json(output_dir / "cases.json", cases)
     return metrics
-
-
-def evaluate_dense_document_run(
-    dataset_dir: Path,
-    rankings_path: Path,
-    output_dir: Path,
-    *,
-    run_context: dict[str, Any],
-) -> dict[str, Any]:
-    """Evaluate a Dense-document raw ranking (no chunk collapse)."""
-    return evaluate_document_run(
-        dataset_dir, rankings_path, output_dir, run_context=run_context
-    )
