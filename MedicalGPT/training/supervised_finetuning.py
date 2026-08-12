@@ -334,7 +334,7 @@ def main():
     # 学习注释：Shell 脚本中的所有 `--参数 值` 会按字段名被拆进四个 dataclass：
     # 模型加载、数据、Transformers 训练过程、MedicalGPT/LoRA 扩展参数。
     # 因此阅读 run_sft.sh 时，可以直接回来查这四个对象中的同名字段。
-    parser = HfArgumentParser((ModelArguments, DataArguments, Seq2SeqTrainingArguments, ScriptArguments))
+    parser = HfArgumentParser((ModelArguments, DataArguments, Seq2SeqTrainingArguments, ScriptArguments)) # 三个自定义arg+一个训练设置，hf生态标准的参数导入
 
     # 使用 parse_args_into_dataclasses 时忽略未知参数
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
@@ -352,7 +352,7 @@ def main():
     # The Trainer will handle distributed training setup
     is_main_process = training_args.local_rank in [-1, 0]
 
-    # Only log on main process
+    # Only log on main process 打印参数配置
     if is_main_process:
         logger.info(f"Model args: {model_args}")
         logger.info(f"Data args: {data_args}")
@@ -367,7 +367,7 @@ def main():
     # 但 CUDA 算子、并行策略和依赖版本仍需另外记录，只有 seed 并不保证逐 bit 一致。
     set_seed(training_args.seed)
 
-    # 学习注释：tokenizer 决定文本如何变成 token id；对话模板决定 system/user/assistant
+    # 学习注释：tokenizer 决定文本如何变成 token id；对话模板template决定 system/user/assistant
     # 标记怎样拼接。二者必须与基础模型匹配，否则“能训练”也可能学到错误格式。
     tokenizer_kwargs = {
         "cache_dir": model_args.cache_dir,
@@ -377,7 +377,7 @@ def main():
     tokenizer_name_or_path = model_args.tokenizer_name_or_path
     if not tokenizer_name_or_path:
         tokenizer_name_or_path = model_args.model_name_or_path
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path, **tokenizer_kwargs)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name_or_path, **tokenizer_kwargs) #装配tokenizer
     prompt_template = None
     if script_args.template_name:
         prompt_template = get_conv_template(script_args.template_name)
@@ -589,7 +589,7 @@ def main():
                     labels += [IGNORE_INDEX] * len(source_ids) + target_ids + [tokenizer.eos_token_id]
 
             input_ids_list.append(input_ids)
-            attention_mask_list.append([1] * len(input_ids))
+            attention_mask_list.append([1] * len(input_ids)) # 不做错位是因为hf会自动错位
             targets_list.append(labels)
 
         return dict(
