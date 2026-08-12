@@ -12,6 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""把 Search-R1 的 Parquet 样本转换为 veRL rollout batch（学习重要性 P0）。
+
+一行数据既有送进模型的 ``prompt``，也有不参与 tokenization 的元数据，例如：
+
+- ``data_source``：决定调用哪一种规则 reward；
+- ``reward_model.ground_truth``：最终答案及别名；
+- ``extra_info.index``：同一道题多条 rollout 的分组标识。
+
+``DataLoader`` 通过 ``collate_fn`` 将 tensor 字段 stack，将嵌套 Python 对象保存为
+``dtype=object`` 的 NumPy 数组，之后由 veRL 的 ``DataProto`` 统一携带。
+"""
+
 from omegaconf import ListConfig
 import os
 from typing import List, Union
@@ -29,6 +41,11 @@ import verl.utils.torch_functional as verl_F
 
 
 def collate_fn(data_list: list[dict]) -> dict:
+    """合并样本，同时保留 tensor 与任意 Python 元数据。
+
+    PyTorch 默认 collate 不适合 ``reward_model`` 这类嵌套 dict；这里显式分流：
+    tensor 变成形状 ``[batch, seq_len]``，其余对象保持逐样本对齐。
+    """
     tensors = {}
     non_tensors = {}
 
@@ -57,7 +74,11 @@ def collate_fn(data_list: list[dict]) -> dict:
 
 class RLHFDataset(Dataset):
     """
-    We assume the dataset contains a column that contains prompts and other information
+    从一个或多个 Parquet 文件懒加载单条 RL prompt。
+
+    ``OmegaConf.ListConfig`` 是 Hydra YAML 列表的运行时类型，因此既接受普通 Python
+    list，也接受配置文件中的列表。``truncation='error'`` 会让过长 prompt 直接失败，
+    便于发现长度配置错误，而不是静默丢掉题目开头。
     """
 
     def __init__(self,
@@ -89,11 +110,13 @@ class RLHFDataset(Dataset):
         self._read_files_and_tokenize()
 
     def _download(self):
+        """统一处理本地/HDFS 路径；本地文件通常原样返回或进入缓存。"""
         from verl.utils.fs import copy_local_path_from_hdfs
         for i, parquet_file in enumerate(self.parquet_files):
             self.parquet_files[i] = copy_local_path_from_hdfs(src=parquet_file, cache_dir=self.cache_dir)
 
     def _read_files_and_tokenize(self):
+        """读取并拼接 Parquet；真正 tokenization 留到 ``__getitem__``。"""
         dataframes = []
         for parquet_file in self.parquet_files:
             # read parquet files and cache
@@ -103,7 +126,7 @@ class RLHFDataset(Dataset):
 
         print(f'original dataset len: {len(self.dataframe)}')
 
-        # filter out too long prompts
+        # 官方此版本已注释掉长度过滤，所以打印的 filter len 通常与 original 相同。
         tokenizer = self.tokenizer
         prompt_key = self.prompt_key
 
@@ -119,7 +142,11 @@ class RLHFDataset(Dataset):
 
     def __getitem__(self, item):
         """
-        Note that we also return the raw_input_ids so that it can be combined with other chat template
+        将一行 prompt 转成模型张量，并原样保留 reward/来源等字段。
+
+        典型 ``chat`` 是 ``[{"role": "user", "content": "..."}]``。有 chat template
+        的 tokenizer 会加模型约定的控制 token 和 generation prompt；Base 模型若没有
+        template，则直接取第一条消息正文。
         """
         row_dict = self.dataframe.iloc[item].to_dict()
 
@@ -131,6 +158,7 @@ class RLHFDataset(Dataset):
             prompt_with_chat_template = chat[0]['content']
         # prompt_with_chat_template = chat
 
+        # left_pad=True：不同长度 prompt 的最后一个有效 token 对齐，便于自回归生成。
         input_ids, attention_mask = verl_F.tokenize_and_postprocess_data(prompt=prompt_with_chat_template,
                                                                          tokenizer=self.tokenizer,
                                                                          max_length=self.max_prompt_length,
@@ -138,6 +166,7 @@ class RLHFDataset(Dataset):
                                                                          left_pad=True,
                                                                          truncation=self.truncation)
 
+        # pad 位置为 0；有效 token 的位置从 0 连续递增。
         position_ids = compute_position_id_with_mask(attention_mask)
 
         row_dict['input_ids'] = input_ids[0]
@@ -148,7 +177,7 @@ class RLHFDataset(Dataset):
         if self.return_raw_chat:
             row_dict['raw_prompt'] = chat.tolist()
 
-        # add index for each prompt
+        # GRPO 要把同一道题的多条 rollout 放在同一组；index 是稳定的题目分组键。
         index = row_dict.get("extra_info", {}).get("index", 0)
         row_dict["index"] = index
 

@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-FSDP PPO Trainer with Ray-based single controller.
-This trainer supports model-agonistic model initialization with huggingface
+"""Ray 单控制器上的 PPO/GRPO trainer；Search-R1 训练主循环在 ``fit()``。
+
+学习时先忽略通用 metrics 与 Ray 调度细节，抓住 Search-R1 增加的路径：
+``LLMGenerationManager`` 多轮 rollout -> 规则 reward -> GRPO advantage ->
+information state masking -> actor update。GRPO 分支不创建 critic。
 """
 
 import os
@@ -47,7 +49,8 @@ WorkerType = Type[Worker]
 
 class Role(Enum):
     """
-    To create more roles dynamically, you can subclass Role and add new members
+    标识分布式 worker 职责。Search-R1 的 hybrid engine 合并 Actor 与 Rollout；
+    RefPolicy 用于 KL 约束，GRPO 不需要 Critic。
     """
     Actor = 0
     Rollout = 1
@@ -61,8 +64,9 @@ class Role(Enum):
 @dataclass
 class ResourcePoolManager:
     """
-    Define a resource pool specification. Resource pool will be initialized first.
-    Mapping
+    把逻辑角色映射到 Ray GPU 资源池。
+
+    官方单节点脚本把 ActorRollout/RefPolicy（以及启用时的 Critic）放在同一个 global pool。
     """
     resource_pool_spec: dict[str, list[int]]
     mapping: dict[Role, str]
@@ -89,6 +93,11 @@ from verl.utils.torch_functional import masked_mean
 
 
 def apply_kl_penalty(data: DataProto, kl_ctrl: core_algos.AdaptiveKLController, kl_penalty='kl'):
+    """在 reward 上逐 token 扣除当前策略相对 reference policy 的 KL。
+
+    若 actor 自己的 loss 已包含 KL（官方 GRPO 脚本 ``use_kl_loss=true``），``fit``
+    不调用本函数，避免重复惩罚。information token 通过 ``info_mask`` 排除。
+    """
     responses = data.batch['responses']
     response_length = responses.size(1)
     token_level_scores = data.batch['token_level_scores']
@@ -121,6 +130,11 @@ def apply_kl_penalty(data: DataProto, kl_ctrl: core_algos.AdaptiveKLController, 
 
 
 def compute_advantage(data: DataProto, adv_estimator, gamma=1.0, lam=1.0, num_repeat=1):
+    """选择 GAE 或 GRPO advantage；Search-R1 官方 GRPO 走第二个分支。
+
+    GRPO 不训练 value critic，而是根据 ``uid`` 把同一道题的多条 rollout 分组，
+    用组内 outcome reward 的相对高低构造 advantage。
+    """
     # prepare response group
     # TODO: add other ways to estimate advantages
     if adv_estimator == 'gae':
@@ -139,6 +153,7 @@ def compute_advantage(data: DataProto, adv_estimator, gamma=1.0, lam=1.0, num_re
         data.batch['returns'] = returns
     elif adv_estimator == 'grpo':
         token_level_rewards = data.batch['token_level_rewards']
+        # uid 在 Search 路径中复制自题目 index；同题 n_agent 条轨迹拥有相同 uid。
         index = data.non_tensor_batch['uid']
         responses = data.batch['responses']
         response_length = responses.size(-1)
@@ -312,7 +327,7 @@ def _timer(name: str, timing_raw: Dict[str, float]):
 
 class RayPPOTrainer(object):
     """
-    Note that this trainer runs on the driver process on a single CPU/GPU node.
+    Trainer 对象运行在 driver；重模型计算通过 Ray RPC 分派到 worker groups。
     """
 
     # TODO: support each role have individual ray_worker_group_cls,
@@ -370,6 +385,7 @@ class RayPPOTrainer(object):
                           config=OmegaConf.to_container(self.config, resolve=True))
 
     def _create_dataloader(self):
+        """创建 train/val DataLoader，并把总步数回填到优化器配置。"""
         from torch.utils.data import DataLoader
         # TODO: we have to make sure the batch size is divisible by the dp size
         from verl.utils.dataset.rl_dataset import RLHFDataset, collate_fn
@@ -387,6 +403,7 @@ class RayPPOTrainer(object):
                 self.train_dataset.dataframe = self.train_dataset.dataframe.sample(self.config.data.train_data_num, random_state=42)
         print(f"filtered training dataset size: {len(self.train_dataset.dataframe)}")
 
+        # drop_last=True 保证训练 batch 形状稳定；不足一批的数据会被丢弃。
         self.train_dataloader = DataLoader(dataset=self.train_dataset,
                                            batch_size=self.config.data.train_batch_size,
                                            shuffle=self.config.data.shuffle_train_dataloader,
@@ -435,8 +452,9 @@ class RayPPOTrainer(object):
 
     def _validate(self):
         """
-        The training loop of PPO with global metric computation.
-        Accumulates metrics across all batches before computing final statistics.
+        用确定性 rollout（``do_sample=False``）计算各 data_source 的平均规则 reward。
+
+        ``do_search=True`` 时验证也复用 LLMGenerationManager，但不会按 n_agent 重复题目。
         """
         import torch
         reward_tensor_lst = []
@@ -548,7 +566,7 @@ class RayPPOTrainer(object):
 
 
     def init_workers(self):
-        """Init resource pool and worker group"""
+        """创建 Ray 资源池与模型 workers；GRPO 会跳过 critic 初始化。"""
         self.resource_pool_manager.create_resource_pool()
 
         self.resource_pool_to_cls = {pool: {} for pool in self.resource_pool_manager.resource_pool_dict.values()}
@@ -571,6 +589,7 @@ class RayPPOTrainer(object):
             self.use_critic = True
             
         elif self.config.algorithm.adv_estimator == 'grpo':
+            # GRPO 用组内相对 reward，不拟合 value function。
             self.use_critic = False
         else:
             raise NotImplementedError
@@ -653,9 +672,11 @@ class RayPPOTrainer(object):
 
     def fit(self):
         """
-        The training loop of PPO.
-        The driver process only need to call the compute functions of the worker group through RPC to construct the PPO dataflow.
-        The light-weight advantage computation is done on the driver process.
+        Search-R1 的训练总循环。
+
+        driver 通过 worker-group RPC 执行 rollout/log-prob/反向更新，较轻的规则 reward
+        与 GRPO advantage 在 driver 侧完成。按阅读顺序看：重复题目 -> 多轮生成 ->
+        reward -> reference/KL -> advantage -> loss mask -> update actor。
         """
 
         logger = self.logger
@@ -672,7 +693,7 @@ class RayPPOTrainer(object):
         # we start from step 1
         self.global_steps += 1
 
-        # Agent config preparation
+        # 把分散在 Hydra 配置中的 Agent 参数收束给 generation manager。
         gen_config = GenerationConfig(
             max_turns=self.config.max_turns,
             max_start_length=self.config.data.max_start_length,
@@ -699,6 +720,7 @@ class RayPPOTrainer(object):
                 timing_raw = {}
 
                 batch: DataProto = DataProto.from_single_dict(batch_dict)
+                # n_agent：同一道题采样多少条独立轨迹，构成 GRPO 的比较组。
                 batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n_agent, interleave=True)
 
                 # pop those keys for generation
@@ -709,6 +731,7 @@ class RayPPOTrainer(object):
 
                 with _timer('step', timing_raw):
                     if not self.config.do_search:
+                        # 普通单轮 RLHF 路径，不进入 Search-R1 Agent loop。
                         gen_batch_output = self.actor_rollout_wg.generate_sequences(gen_batch)
 
                         batch.non_tensor_batch['uid'] = np.array([str(uuid.uuid4()) for _ in range(len(batch.batch))],
@@ -722,6 +745,7 @@ class RayPPOTrainer(object):
                 ####################
                 # with _timer('step', timing_raw):
                     else:
+                        # Search-R1 路径：最多 max_turns 次检索机会 + 一次 final rollout。
                         first_input_ids = gen_batch.batch['input_ids'][:, -gen_config.max_start_length:].clone().long()
 
                         with _timer('gen', timing_raw):
@@ -735,12 +759,14 @@ class RayPPOTrainer(object):
                         for key in final_gen_batch_output.batch.keys():
                             final_gen_batch_output.batch[key] = final_gen_batch_output.batch[key].long()
 
+                        # 多轮 manager 返回拼接后的完整 response；重新计算其 old log-prob。
                         with torch.no_grad():
                             output = self.actor_rollout_wg.compute_log_prob(final_gen_batch_output)
                             final_gen_batch_output = final_gen_batch_output.union(output)
 
                         # batch.non_tensor_batch['uid'] = np.array([str(uuid.uuid4()) for _ in range(len(batch.batch))],
                         #                                         dtype=object)
+                        # 保留题目 index 作为 GRPO 分组键；不能给每条 rollout 随机 UUID。
                         batch.non_tensor_batch['uid'] = batch.non_tensor_batch['index'].copy()
                                             
                         # repeat to align with repeated responses in rollout
@@ -753,6 +779,7 @@ class RayPPOTrainer(object):
                     # balance the number of valid tokens on each dp rank.
                     # Note that this breaks the order of data inside the batch.
                     # Please take care when you implement group based adv computation such as GRPO and rloo
+                    # 按有效 token 数重排以平衡各 GPU 负载；uid 随 batch 一起重排。
                     self._balance_batch(batch, metrics=metrics)
 
                     # compute global_valid tokens
@@ -785,6 +812,7 @@ class RayPPOTrainer(object):
                             batch = batch.union(reward_tensor)
 
                         # we combine with rule-based rm
+                        # 规则 EM 只在最后一个有效 response token 写入 0/1 outcome。
                         reward_tensor = self.reward_fn(batch)
                         batch.batch['token_level_scores'] = reward_tensor
 
@@ -795,9 +823,11 @@ class RayPPOTrainer(object):
                                                                  kl_penalty=self.config.algorithm.kl_penalty)
                             metrics.update(kl_metrics)
                         else:
+                            # 官方 GRPO 在 actor loss 内计算 KL，此处不再修改 reward。
                             batch.batch['token_level_rewards'] = batch.batch['token_level_scores']
 
                         # compute advantages, executed on the driver process
+                        # GRPO：同 uid rollout 的相对 reward -> token-level advantages。
                         batch = compute_advantage(batch,
                                                   adv_estimator=self.config.algorithm.adv_estimator,
                                                   gamma=self.config.algorithm.gamma,
@@ -816,6 +846,7 @@ class RayPPOTrainer(object):
                         # update actor
                         with _timer('update_actor', timing_raw):
                             if self.config.do_search and self.config.actor_rollout_ref.actor.state_masking:
+                                # 排除环境注入的 information token，只训练模型自己的 token。
                                 batch, metrics = self._create_loss_mask(batch, metrics)
                             actor_output = self.actor_rollout_wg.update_actor(batch)
                         actor_output_metrics = reduce_metrics(actor_output.meta_info['metrics'])
@@ -852,7 +883,11 @@ class RayPPOTrainer(object):
                     return
     
     def _create_loss_mask(self, batch, metrics):
-        """Create loss mask for state tokens."""
+        """将 generation manager 产生的 information mask 交给 actor loss。
+
+        ``loss_mask=1`` 的位置是模型生成 token；检索文档位置为 0。注意这不会阻止
+        模型在 attention 中读取文档，只是不要求模型复现环境 observation。
+        """
         response_length = batch.batch['responses'].shape[-1]
         response_mask = batch.batch['attention_mask'][:, -response_length:]
         
