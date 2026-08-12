@@ -54,5 +54,5 @@
 - [x] **Step 1:** 运行 `python -m compileall` 验证 Python 注释未破坏语法。
 - [x] **Step 2:** 运行最小 reward 与 action parser 检查，确认原行为未变。
 - [x] **Step 3:** 检查 `git diff --check`、变更文件列表和源码差异。
-- [ ] **Step 4:** 只暂存本轮源码导读、注释、计划和进度文件，不纳入 `.claude/`。
-- [ ] **Step 5:** 提交并推送 `codex/search-r1-source-notes` 到 `origin`。
+- [x] **Step 4:** 只暂存本轮源码导读、注释、计划和进度文件，不纳入 `.claude/`。
+- [x] **Step 5:** 提交并推送 `codex/search-r1-source-notes` 到 `origin`。
