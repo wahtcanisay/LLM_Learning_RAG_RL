@@ -11,8 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-Note that we don't combine the main with ray_trainer as ray_trainer is used by other main.
+"""Search-R1 的训练装配入口（学习重要性 P0）。
+
+Hydra 读取 ``config/ppo_trainer.yaml`` 并应用 shell 中的点号参数覆盖；本文件随后：
+
+1. 初始化 Ray；
+2. 选择 FSDP/Megatron worker 类与 GPU 资源映射；
+3. 创建规则式 ``RewardManager``；
+4. 把依赖注入 ``RayPPOTrainer``，再调用 ``init_workers()`` 和 ``fit()``。
+
+真正的 rollout/GRPO 循环在 ``ray_trainer.py``。入口与 trainer 分开，是因为同一个
+trainer 还可被其他 main 复用。
 """
 
 from verl import DataProto
@@ -23,6 +32,7 @@ import re
 import numpy as np
 
 def _select_rm_score_fn(data_source):
+    """按数据来源选择规则 reward；当前列出的开放域 QA 都使用严格 EM。"""
     if data_source in ['nq', 'triviaqa', 'popqa', 'hotpotqa', '2wikimultihopqa', 'musique', 'bamboogle']:
         return qa_em.compute_score_em
     else:
@@ -30,7 +40,11 @@ def _select_rm_score_fn(data_source):
 
 
 class RewardManager():
-    """The reward manager.
+    """把一批完整轨迹转换为 token-level reward tensor。
+
+    Search-R1 使用序列级 outcome reward，但 veRL 的 PPO/GRPO 接口接收
+    ``[batch, response_len]`` token reward，因此只在最后一个有效 response token
+    写入分数，其他位置保持 0。
     """
 
     def __init__(self, tokenizer, num_examine, format_score=0.) -> None:
@@ -39,9 +53,9 @@ class RewardManager():
         self.format_score = format_score
 
     def __call__(self, data: DataProto):
-        """We will expand this function gradually based on the available datasets"""
+        """解码有效的 prompt+response，读取 gold，计算每条轨迹的规则分数。"""
 
-        # If there is rm score, we directly return rm score. Otherwise, we compute via rm_score_fn
+        # 若启用了 learned RM，上游可直接提供同形状 rm_scores；官方 GRPO 不启用。
         if 'rm_scores' in data.batch.keys():
             return data.batch['rm_scores']
 
@@ -59,6 +73,7 @@ class RewardManager():
             prompt_length = prompt_ids.shape[-1]
 
             valid_prompt_length = data_item.batch['attention_mask'][:prompt_length].sum()
+            # prompt 是左填充，取末尾有效 token；response 是右填充，取开头有效 token。
             valid_prompt_ids = prompt_ids[-valid_prompt_length:]
 
             response_ids = data_item.batch['responses']
@@ -66,6 +81,7 @@ class RewardManager():
             valid_response_ids = response_ids[:valid_response_length]
 
             # decode
+            # reward parser 看到的是完整 prompt + rollout；这解释了“双 answer 标签”前提。
             sequences = torch.cat((valid_prompt_ids, valid_response_ids))
             sequences_str = self.tokenizer.decode(sequences)
 
@@ -77,6 +93,7 @@ class RewardManager():
 
             score = compute_score_fn(solution_str=sequences_str, ground_truth=ground_truth, format_score=self.format_score)
 
+            # outcome reward 放在轨迹终点，之后 advantage 会沿 response mask 广播/计算。
             reward_tensor[i, valid_response_length - 1] = score
             # all_scores.append(score)
 
@@ -103,6 +120,7 @@ import hydra
 
 @hydra.main(config_path='config', config_name='ppo_trainer', version_base=None)
 def main(config):
+    """Hydra CLI 入口；Ray driver 执行真正的 ``main_task``。"""
     if not ray.is_initialized():
         # this is for local ray cluster
         ray.init(runtime_env={'env_vars': {'TOKENIZERS_PARALLELISM': 'true', 'NCCL_DEBUG': 'WARN'}})
@@ -112,6 +130,7 @@ def main(config):
 
 @ray.remote
 def main_task(config):
+    """在 Ray remote task 中组装 tokenizer、workers、reward 和 trainer。"""
     from verl.utils.fs import copy_local_path_from_hdfs
     from transformers import AutoTokenizer
 
@@ -130,7 +149,7 @@ def main_task(config):
     from verl.utils import hf_tokenizer
     tokenizer = hf_tokenizer(local_path)
 
-    # define worker classes
+    # strategy 决定分布式后端；当前 3B 官方脚本通常走 FSDP。
     if config.actor_rollout_ref.actor.strategy == 'fsdp':
         assert config.actor_rollout_ref.actor.strategy == config.critic.strategy
         from verl.workers.fsdp_workers import ActorRolloutRefWorker, CriticWorker
@@ -148,6 +167,7 @@ def main_task(config):
 
     from verl.trainer.ppo.ray_trainer import ResourcePoolManager, Role
 
+    # ActorRollout worker 在 hybrid engine 中复用同一模型权重做训练与 vLLM 采样。
     role_worker_mapping = {
         Role.ActorRollout: ray.remote(ActorRolloutRefWorker),
         Role.Critic: ray.remote(CriticWorker),
@@ -180,6 +200,7 @@ def main_task(config):
         role_worker_mapping[Role.RewardModel] = ray.remote(RewardModelWorker)
         mapping[Role.RewardModel] = global_pool_id
 
+    # 训练不打印轨迹；验证每个 data_source 打印一条，便于人工核验格式。
     reward_fn = RewardManager(tokenizer=tokenizer, num_examine=0)
 
     # Note that we always use function-based RM for validation
