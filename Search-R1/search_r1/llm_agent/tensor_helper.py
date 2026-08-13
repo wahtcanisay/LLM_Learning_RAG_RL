@@ -39,9 +39,9 @@ class TensorHelper:
 
         这里不是按 token 值排序：mask 只有 0/1，稳定排序只把 pad 与非 pad 分组。
         """
-        mask = tensor != self.config.pad_token_id if pad_to_left else tensor == self.config.pad_token_id
-        sorted_indices = mask.to(torch.int64).argsort(dim=1, stable=True)
-        return tensor.gather(1, sorted_indices), sorted_indices
+        mask = tensor != self.config.pad_token_id if pad_to_left else tensor == self.config.pad_token_id # 得到输入tensor形状的mask列表
+        sorted_indices = mask.to(torch.int64).argsort(dim=1, stable=True) # 转化为int排序
+        return tensor.gather(1, sorted_indices), sorted_indices # 按下标重新排列原来tensor
 
     def create_attention_mask(self, input_ids: torch.Tensor) -> torch.Tensor:
         """非 pad token 为 1；检索 information 也是可被模型注意的有效 token。"""
@@ -54,8 +54,8 @@ class TensorHelper:
     def concatenate_with_padding(self, tensors: List[torch.Tensor], 
                                pad_to_left: bool = True) -> torch.Tensor:
         """先沿序列维拼接，再把各段内部的 pad 统一移动到目标侧。"""
-        concatenated = torch.cat(tensors, dim=1)
-        padded_tensor, _ = self.convert_pad_structure(concatenated, pad_to_left)
+        concatenated = torch.cat(tensors, dim=1) #拼接三种向量
+        padded_tensor, _ = self.convert_pad_structure(concatenated, pad_to_left) # PAD整理进入一侧之中
         return padded_tensor
 
     def _example_level_pad(self, responses: torch.Tensor, 

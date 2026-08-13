@@ -65,11 +65,12 @@ class LLMGenerationManager:
 
     def _batch_tokenize(self, responses: List[str]) -> torch.Tensor:
         """把已截断到动作结束标签的字符串重新编码成右侧 response token。"""
+        # 右侧token指的是llm的回复部分，相较于左侧token的initial prompt
         return self.tokenizer(
             responses, 
             add_special_tokens=False, 
             return_tensors='pt', 
-            padding="longest"
+            padding="longest" # 掩码对齐到最长
         )['input_ids']
 
     def _postprocess_responses(self, responses: torch.Tensor) -> torch.Tensor:
@@ -84,6 +85,7 @@ class LLMGenerationManager:
             skip_special_tokens=True
         )
 
+        # 先判断是否有search标记，再判断是否有answer标记/不过这里只删除search或者answer之后的话，不对之前做动作
         responses_str = [resp.split('</search>')[0] + '</search>'
                  if '</search>' in resp 
                  else resp.split('</answer>')[0] + '</answer>'
@@ -130,25 +132,26 @@ class LLMGenerationManager:
         """
         # Concatenate and handle padding        
         new_input_ids = self.tensor_fn.concatenate_with_padding([
-            rollings.batch['input_ids'],
-            cur_responses,
-            next_obs_ids
-        ])
+            rollings.batch['input_ids'], # 历史状态
+            cur_responses, # 当前动作
+            next_obs_ids # 环境反馈，包括information带来的search结果
+        ]) # 得到当前三tensor之后经过左pad后的tensor
         
         # Create attention mask and position ids
-        new_attention_mask = self.tensor_fn.create_attention_mask(new_input_ids)
-        new_position_ids = self.tensor_fn.create_position_ids(new_attention_mask)
+        new_attention_mask = self.tensor_fn.create_attention_mask(new_input_ids) # 创建掩码
+        new_position_ids = self.tensor_fn.create_position_ids(new_attention_mask) # 创建positonid，从有效token依次递增
 
         # 取 batch 内最长有效长度；所有样本共享同一个矩形 tensor 宽度。
         effective_len = new_attention_mask.sum(dim=1).max()
         max_len = min(self.config.max_prompt_length, effective_len)
 
-        new_rollings = DataProto.from_dict({
+        # DataProto为verl定义的batch容器
+        new_rollings = DataProto.from_dict({ # 保留最右侧的tokne，与左pad填充对应
             'input_ids': new_input_ids[:, -max_len:],
             'position_ids': new_position_ids[:, -max_len:],
             'attention_mask': new_attention_mask[:, -max_len:]
         })
-        new_rollings.meta_info.update(rollings.meta_info)
+        new_rollings.meta_info.update(rollings.meta_info) # 继承旧data的元信息
         
         return new_rollings
 
@@ -187,6 +190,7 @@ class LLMGenerationManager:
                           cur_responses: torch.Tensor,
                           next_obs_ids: torch.Tensor = None) -> Dict:
         """累积最终用于训练/打分的 response 右半边及其 information mask。"""
+        # 有返回内容/无返回内容拼接
         if next_obs_ids != None:
             responses, responses_with_info_mask = self._info_masked_concatenate_with_padding(
                     right_side['responses'],
@@ -271,7 +275,7 @@ class LLMGenerationManager:
         """
         
         original_left_side = {'input_ids': initial_input_ids[:, -self.config.max_start_length:]}
-        original_right_side = {'responses': initial_input_ids[:, []], 'responses_with_info_mask': initial_input_ids[:, []]}
+        original_right_side = {'responses': initial_input_ids[:, []], 'responses_with_info_mask': initial_input_ids[:, []]} # 造出batch数量相等的空向量
         
         # 所有轨迹开始时均 active；answer 后对应位置永久变为 False。
         active_mask = torch.ones(gen_batch.batch['input_ids'].shape[0], dtype=torch.bool)
@@ -279,7 +283,7 @@ class LLMGenerationManager:
         valid_action_stats = torch.zeros(gen_batch.batch['input_ids'].shape[0], dtype=torch.int)
         valid_search_stats = torch.zeros(gen_batch.batch['input_ids'].shape[0], dtype=torch.int)
         active_num_list = [active_mask.sum().item()]
-        rollings = gen_batch
+        rollings = gen_batch # gen_batch作为Data容器保留
 
         # 每轮允许执行 search；若模型 answer，该轨迹立即退出后续轮次。
         for step in range(self.config.max_turns):
@@ -290,12 +294,12 @@ class LLMGenerationManager:
                 keys=['input_ids', 'attention_mask', 'position_ids']
             )
             
-            # gen_output = self.actor_rollout_wg.generate_sequences(rollings)
+            # gen_output = self.actor_rollout_wg.generate_sequences(rollings) # 使用verl进行一次rollout
             # 只生成仍 active 的样本，减少已结束轨迹的无效推理。
             rollings_active = DataProto.from_dict({
                 k: v[active_mask] for k, v in rollings.batch.items()
             })            
-            gen_output = self._generate_with_gpu_padding(rollings_active)
+            gen_output = self._generate_with_gpu_padding(rollings_active) 
 
             meta_info = gen_output.meta_info            
             responses_ids, responses_str = self._postprocess_responses(gen_output.batch['responses'])
@@ -314,9 +318,9 @@ class LLMGenerationManager:
             valid_action_stats += torch.tensor(valid_action, dtype=torch.int)
             valid_search_stats += torch.tensor(is_search, dtype=torch.int)
 
-            next_obs_ids = self._process_next_obs(next_obs)
+            next_obs_ids = self._process_next_obs(next_obs) # 走tokenizer化
             
-            # Update states
+            # Update states拼接rolling和rightside
             rollings = self._update_rolling_state(
                 rollings,
                 responses_ids,
@@ -419,14 +423,17 @@ class LLMGenerationManager:
             pad_token: Token to use for padding
             
         Returns:
-            List of observation strings
+            next_obs,  搜索结果
+            dones,  是否完成
+            valid_action, action是否合法
+            is_search  是否搜索
         """
-        cur_actions, contents = self.postprocess_predictions(predictions)
+        cur_actions, contents = self.postprocess_predictions(predictions) # search/answer/none + content
         next_obs, dones, valid_action, is_search = [], [], [], []
         
         search_queries = [content for action, content in zip(cur_actions, contents) if action == 'search']
         if do_search:
-            search_results = self.batch_search(search_queries)
+            search_results = self.batch_search(search_queries) # 返回batch个topk的文档
             assert len(search_results) == sum([1 for action in cur_actions if action == 'search'])
         else:
             search_results = [''] * sum([1 for action in cur_actions if action == 'search'])
@@ -461,7 +468,7 @@ If I want to give the final answer, I should put the answer between <answer> and
             
         assert len(search_results) == 0
             
-        return next_obs, dones, valid_action, is_search
+        return next_obs, dones, valid_action, is_search 
 
     def postprocess_predictions(self, predictions: List[Any]) -> Tuple[List[int], List[bool]]:
         """
