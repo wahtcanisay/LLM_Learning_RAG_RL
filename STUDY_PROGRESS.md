@@ -49,19 +49,27 @@ Qwen2.5-3B Base
 
 # 今日唯一任务
 
-**2026-08-12：完成 Search-R1 第一批主干源码的学习型中文注释与阅读地图。**
+**2026-08-13：阅读并复述 Search-R1 的多轮生成状态机。**
 
-只覆盖数据预处理、Parquet 数据协议、多轮 Search rollout、检索服务、EM reward、训练装配和 GRPO 主循环；给出 P0/P1/P2 阅读优先级与外部包基础介绍。本任务不安装 veRL/vLLM、不启动检索服务或训练。
+只读 `generation.py` 的 `run_llm_loop()`、`execute_predictions()`、`postprocess_predictions()`、`batch_search()` 及其直接调用的状态更新函数，解释 Prompt → Search → Information → Answer、`active_mask`、final rollout 与 information mask。本任务不安装环境、不启动训练。
 
 # 完成标准
 
-- `Search-R1/docs/source_code_learning_zh.md` 能从脚本入口追到 actor update；
-- 8 个核心源码文件具有模块、函数、关键字段、状态机和外部依赖注释；
-- Python 编译、Bash 语法、comment-only AST/命令对比和最小协议行为检查通过；
-- 注释分支已提交并推送，且不把 `.claude/` 纳入提交；
+- 能解释只对 active 样本生成，以及 answer、search、非法动作如何改变轨迹状态；
+- 能区分 `rollings`（下一轮模型输入）与 `original_right_side`（最终训练轨迹）；
+- 能解释 final rollout 禁止真实检索，但输出 search 时轨迹仍可能以 active 状态被强制结束；
+- 能解释 `attention_mask` 与 `info_mask` 的区别；
 - 不声称 Search-R1 环境、检索服务或 GRPO 已运行。
 
 # 已完成
+
+## 2026-08-13：`generation.py` 多轮 rollout 主干阅读
+
+- 已能复述主链：从 prompt 建立 rolling state，只对 `active_mask=True` 的样本调用 rollout worker 生成；解析 `<search>` / `<answer>`，search 经 HTTP retriever 得到 `<information>` 并进入下一轮，answer 标记 done。
+- 已区分两套状态：`rollings` 保存下一轮推理上下文；`original_right_side` 累积最终训练 response。`responses` 保留模型输出与 information，`responses_with_info_mask` 用 pad 替换 information，以生成 actor loss 所需的 `info_mask`。
+- 已理解达到 `max_turns` 后仍有一次 `do_search=False` 的 final rollout；它禁止真实检索，但如果模型仍输出 search，该轨迹不会变成 answer，而会在循环结束时保留 active/强制停止状态。
+- 已理解 `_compose_final_output()` 组装 `prompts`、`responses`、完整 `input_ids`、`attention_mask`、`info_mask`、`position_ids`，并写入 rollout 统计 `meta_info`。
+- 本次为源码阅读验收，没有运行模型、检索服务或训练，没有新增实验指标。
 
 ## 2026-08-12：Search-R1 第一批主干源码注释
 
@@ -137,9 +145,9 @@ Qwen2.5-3B Base
 
 # 下一步
 
-**下一次唯一核心任务：你亲自阅读 Search-R1 多轮状态机并解释主干。**
+**下一次唯一核心任务：阅读 Search-R1 的规则奖励如何从完整轨迹产生 token-level reward。**
 
-只读 `generation.py` 的 `run_llm_loop()`、`execute_predictions()` 和 `postprocess_predictions()`。完成标准：能解释 `active_mask`、final rollout、`<information>` 的来源与 loss mask，并说明文本正则如何定义 Search/Answer 动作空间；本任务不安装环境、不启动训练。
+只读 `verl/trainer/main_ppo.py` 的 `_select_rm_score_fn()`、`RewardManager.__call__()`，以及 `verl/utils/reward_score/qa_em.py` 的 `extract_solution()`、`compute_score_em()`。完成标准：能解释完整 prompt+response 为什么包含两个 answer 标签、EM 分数为什么写在最后一个有效 response token，以及 reward tensor 如何交给后续 GRPO；本任务不安装环境、不启动训练。
 
 后续严格按以下闸门推进，每次只解锁一个：
 
