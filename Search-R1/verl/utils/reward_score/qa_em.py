@@ -74,7 +74,22 @@ def subem_check(prediction, golden_answers):
 
 
 def extract_solution(solution_str):
-    """取完整序列中最后一个 ``<answer>`` 块。
+    """从完整序列中解析模型最终的 ``<answer>`` 内容。
+
+    输入：
+        ``solution_str``（``str``）：tokenizer 解码后的完整
+        ``prompt + response``，而不是仅模型 response。字符串可能包含 prompt 中的
+        ``<answer> Beijing </answer>`` 格式示例、若干 search/information 轮次和模型
+        最终答案。
+
+    输出：
+        ``str | None``。至少找到两个完整 ``<answer>...</answer>`` 块时，返回最后
+        一个块去除首尾空白后的文本；只有 0 或 1 个块时返回 ``None``。
+
+    调用方式：
+        由本文件 ``compute_score_em()`` 和 ``compute_score_subem()`` 调用。
+        主训练链使用前者：``RewardManager.__call__()`` 先选择
+        ``compute_score_em``，该函数再调用这里提取答案。
 
     注意官方实现要求至少出现两个 answer 块。Search-R1 的 prompt 自带一个格式示例，
     模型最终输出构成第二个；如果迁移数据时移除了 prompt 示例，这里会返回 ``None``，
@@ -102,14 +117,26 @@ def extract_solution(solution_str):
 
 
 def compute_score_em(solution_str, ground_truth, method='strict', format_score=0., score=1.):
-    """The scoring function for exact match (EM).
+    """解析最终答案并计算规则式 Exact Match outcome reward。
 
-    Args:
-        solution_str: the solution text
-        ground_truth: the ground truth
-        method: 保留的兼容参数；当前实现没有分支使用它
-        format_score: the score for the format
-        score: the score for the correct answer
+    输入：
+        ``solution_str``（``str``）：完整 ``prompt + response`` 文本，由
+        ``RewardManager.__call__()`` 拼接有效 token 后解码得到。
+        ``ground_truth``（``dict``）：至少包含 ``{'target': str | list[str]}``；
+        ``method``（``str``）是未参与当前分支的兼容参数；``format_score`` 和
+        ``score``（``float``）分别是格式正确但答案错误、答案正确时的返回分数。
+
+    输出：
+        ``int | float`` 标量。无法解析答案返回 ``0``；规范化后命中任一 gold alias
+        返回 ``score``（默认 ``1.0``）；格式可解析但答案错误返回 ``format_score``
+        （默认 ``0.0``）。这里不创建 token 维度，token-level 放置由
+        ``RewardManager`` 完成。
+
+    调用方式：
+        ``main_ppo._select_rm_score_fn(data_source)`` 返回本函数，随后
+        ``RewardManager.__call__()`` 以关键字参数调用。函数内部先调用
+        ``extract_solution()``，再调用 ``em_check()``；结果最终写到每条 response
+        的最后一个有效 token，并由 trainer 传入 GRPO advantage 计算。
     """
     answer = extract_solution(solution_str=solution_str)
     # 约 1/64 采样打印轨迹用于人工检查；random 不参与 reward 数值。

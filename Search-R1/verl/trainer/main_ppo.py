@@ -32,7 +32,21 @@ import re
 import numpy as np
 
 def _select_rm_score_fn(data_source):
-    """按数据来源选择规则 reward；当前列出的开放域 QA 都使用严格 EM。"""
+    """按数据来源返回对应的规则打分函数。
+
+    输入：
+        ``data_source``（``str``）：当前样本的数据集标识，来自
+        ``data_item.non_tensor_batch['data_source']``，例如 ``'nq'``。
+
+    输出：
+        可调用对象；当前支持的数据集统一返回
+        ``qa_em.compute_score_em(solution_str, ground_truth, ...)``。未知数据集抛出
+        ``NotImplementedError``，不会静默套用错误的评分规则。
+
+    调用方式：
+        由本文件 ``RewardManager.__call__()`` 逐样本调用。调用方随后把完整的
+        ``prompt + response`` 文本和 gold answer 交给返回的打分函数。
+    """
     if data_source in ['nq', 'triviaqa', 'popqa', 'hotpotqa', '2wikimultihopqa', 'musique', 'bamboogle']:
         return qa_em.compute_score_em
     else:
@@ -53,7 +67,36 @@ class RewardManager():
         self.format_score = format_score
 
     def __call__(self, data: DataProto):
-        """解码有效的 prompt+response，读取 gold，计算每条轨迹的规则分数。"""
+        """把一批完整 rollout 转成 veRL 使用的 token-level reward。
+
+        输入：
+            ``data``（``DataProto``）：由 rollout 结果与原始数据合并后的 batch。
+            关键张量/字段为：
+
+            - ``data.batch['prompts']``：``torch.Tensor[int]``，shape
+              ``[batch_size, prompt_len]``，左侧 padding；
+            - ``data.batch['responses']``：``torch.Tensor[int]``，shape
+              ``[batch_size, response_len]``，右侧 padding；
+            - ``data.batch['attention_mask']``：``torch.Tensor[int/bool]``，shape
+              ``[batch_size, prompt_len + response_len]``；
+            - ``data.non_tensor_batch['data_source']``：每条样本的 ``str`` 数据源；
+            - ``data.non_tensor_batch['reward_model']``：字典，其中
+              ``ground_truth['target']`` 是 ``str`` 或 ``list[str]`` gold alias。
+
+        输出：
+            ``torch.Tensor[float32]``，shape ``[batch_size, response_len]``。
+            每行只有最后一个有效 response token 写入序列级分数（默认 0 或 1），
+            其余位置为 0；若上游已有同形状 ``rm_scores``，则直接返回该张量。
+
+        调用方式：
+            ``main_task()`` 创建训练/验证两个 ``RewardManager`` 并注入
+            ``RayPPOTrainer``。训练时由 ``RayPPOTrainer.fit()`` 的
+            ``self.reward_fn(batch)`` 调用；验证时由 ``_validate()`` 的
+            ``self.val_reward_fn(test_batch)`` 调用。返回值写入
+            ``batch.batch['token_level_scores']``，再经 KL 处理成为
+            ``token_level_rewards``，最后传给 ``compute_advantage()`` 计算 GRPO
+            advantage。
+        """
 
         # 若启用了 learned RM，上游可直接提供同形状 rm_scores；官方 GRPO 不启用。
         if 'rm_scores' in data.batch.keys():

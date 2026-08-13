@@ -130,7 +130,37 @@ def apply_kl_penalty(data: DataProto, kl_ctrl: core_algos.AdaptiveKLController, 
 
 
 def compute_advantage(data: DataProto, adv_estimator, gamma=1.0, lam=1.0, num_repeat=1):
-    """选择 GAE 或 GRPO advantage；Search-R1 官方 GRPO 走第二个分支。
+    """把 token-level reward 转成 actor/critic 更新需要的 advantage 与 return。
+
+    输入：
+        ``data``（``DataProto``）：已由 ``RewardManager`` 写入奖励的 batch。
+        GRPO 分支读取：
+
+        - ``data.batch['token_level_rewards']``：``torch.Tensor[float]``，shape
+          ``[batch_size, response_len]``；规则 outcome 通常只在每行末个有效 token
+          非零；
+        - ``data.batch['responses']``：``torch.Tensor[int]``，shape
+          ``[batch_size, response_len]``，用于取得 response 长度；
+        - ``data.batch['attention_mask']``：``torch.Tensor[int/bool]``，shape
+          ``[batch_size, prompt_len + response_len]``，末尾切片得到 response mask；
+        - ``data.non_tensor_batch['uid']``：长度为 ``batch_size`` 的题目标识；同题的
+          多条 rollout 共享 uid，供 GRPO 组内标准化。
+
+        ``adv_estimator``（``str``）选择 ``'gae'`` 或 ``'grpo'``；``gamma``、
+        ``lam``（``float``）用于 GAE；``num_repeat`` 是兼容参数，当前函数体未使用。
+
+    输出：
+        原地补充并返回同一个 ``DataProto``。新增
+        ``data.batch['advantages']`` 和 ``data.batch['returns']``，二者均为
+        ``torch.Tensor[float]``，shape ``[batch_size, response_len]``；padding token
+        位置由 response mask 置零。
+
+    调用方式：
+        由 ``RayPPOTrainer.fit()`` 在 ``self.reward_fn(batch)`` 生成
+        ``token_level_scores``、并经 KL 分支得到 ``token_level_rewards`` 后调用。
+        Search-R1 配置 ``adv_estimator='grpo'`` 时，本函数继续调用
+        ``core_algos.compute_grpo_outcome_advantage()``；返回的 ``advantages`` 随
+        batch 传给 ``actor_rollout_wg.update_actor(batch)`` 参与策略梯度更新。
 
     GRPO 不训练 value critic，而是根据 ``uid`` 把同一道题的多条 rollout 分组，
     用组内 outcome reward 的相对高低构造 advantage。

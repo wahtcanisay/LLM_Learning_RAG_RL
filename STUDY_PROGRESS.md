@@ -63,6 +63,14 @@ Qwen2.5-3B Base
 
 # 已完成
 
+## 2026-08-13：下一学习阶段的 Search-R1 reward 主链注释准备
+
+- 已为下一次源码学习补充函数级详细注释，覆盖 `_select_rm_score_fn()`、`RewardManager.__call__()`、`extract_solution()`、`compute_score_em()` 和 `compute_advantage()`。
+- 每个核心函数均按 `输入：`、`输出：`、`调用方式：` 记录参数/返回类型、关键 tensor shape、`DataProto` 字段结构，以及上游调用者和下游数据去向。
+- 注释串起真实调用链：`main_task()` 创建 reward manager → `RayPPOTrainer.fit()` 调用规则 reward → `compute_score_em()` / `extract_solution()` 生成序列分数 → 最后有效 response token 接收 reward → `compute_advantage()` 生成 GRPO advantage。
+- 本次只准备学习注释并做静态/纯协议验证；**尚未把“阅读奖励主链”判定为学习完成**，也没有启动模型、检索服务或 GRPO 训练。
+- 代码位置：`Search-R1/verl/trainer/main_ppo.py`、`Search-R1/verl/utils/reward_score/qa_em.py`、`Search-R1/verl/trainer/ppo/ray_trainer.py`。
+
 ## 2026-08-13：`generation.py` 多轮 rollout 主干阅读
 
 - 已能复述主链：从 prompt 建立 rolling state，只对 `active_mask=True` 的样本调用 rollout worker 生成；解析 `<search>` / `<answer>`，search 经 HTTP retriever 得到 `<information>` 并进入下一轮，answer 标记 done。
