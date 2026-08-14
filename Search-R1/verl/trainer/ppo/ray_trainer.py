@@ -843,7 +843,7 @@ class RayPPOTrainer(object):
 
                         # we combine with rule-based rm
                         # 规则 EM 只在最后一个有效 response token 写入 0/1 outcome。
-                        reward_tensor = self.reward_fn(batch)
+                        reward_tensor = self.reward_fn(batch) # RewardManager
                         batch.batch['token_level_scores'] = reward_tensor
 
                         # compute rewards. apply_kl_penalty if available

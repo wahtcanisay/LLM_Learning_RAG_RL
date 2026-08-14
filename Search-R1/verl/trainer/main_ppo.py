@@ -63,8 +63,8 @@ class RewardManager():
 
     def __init__(self, tokenizer, num_examine, format_score=0.) -> None:
         self.tokenizer = tokenizer
-        self.num_examine = num_examine  # the number of batches of decoded responses to print to the console
-        self.format_score = format_score
+        self.num_examine = num_examine  # 打印rollout条数方便人工观察
+        self.format_score = format_score # 格式分数奖励，默认0，不奖励正确格式
 
     def __call__(self, data: DataProto):
         """把一批完整 rollout 转成 veRL 使用的 token-level reward。
@@ -72,6 +72,8 @@ class RewardManager():
         输入：
             ``data``（``DataProto``）：由 rollout 结果与原始数据合并后的 batch。
             关键张量/字段为：
+            
+            这些为generation.py的rollout结果
 
             - ``data.batch['prompts']``：``torch.Tensor[int]``，shape
               ``[batch_size, prompt_len]``，左侧 padding；
@@ -79,6 +81,9 @@ class RewardManager():
               ``[batch_size, response_len]``，右侧 padding；
             - ``data.batch['attention_mask']``：``torch.Tensor[int/bool]``，shape
               ``[batch_size, prompt_len + response_len]``；
+
+            后续的non_tensor_batch为原始 dataset的 metadata，与rollout结果拼接送入reward环节
+
             - ``data.non_tensor_batch['data_source']``：每条样本的 ``str`` 数据源；
             - ``data.non_tensor_batch['reward_model']``：字典，其中
               ``ground_truth['target']`` 是 ``str`` 或 ``list[str]`` gold alias。
@@ -102,7 +107,7 @@ class RewardManager():
         if 'rm_scores' in data.batch.keys():
             return data.batch['rm_scores']
 
-        reward_tensor = torch.zeros_like(data.batch['responses'], dtype=torch.float32)
+        reward_tensor = torch.zeros_like(data.batch['responses'], dtype=torch.float32) #与responses长度相同
 
         # all_scores = []
 
@@ -111,13 +116,13 @@ class RewardManager():
         for i in range(len(data)):
             data_item = data[i]  # DataProtoItem
 
-            prompt_ids = data_item.batch['prompts']
+            prompt_ids = data_item.batch['prompts'] # 左<PAD>+有效prompt
 
             prompt_length = prompt_ids.shape[-1]
 
             valid_prompt_length = data_item.batch['attention_mask'][:prompt_length].sum()
             # prompt 是左填充，取末尾有效 token；response 是右填充，取开头有效 token。
-            valid_prompt_ids = prompt_ids[-valid_prompt_length:]
+            valid_prompt_ids = prompt_ids[-valid_prompt_length:] # 取有效prompt长度
 
             response_ids = data_item.batch['responses']
             valid_response_length = data_item.batch['attention_mask'][prompt_length:].sum()
@@ -164,6 +169,7 @@ import hydra
 @hydra.main(config_path='config', config_name='ppo_trainer', version_base=None)
 def main(config):
     """Hydra CLI 入口；Ray driver 执行真正的 ``main_task``。"""
+    # 初始化ray分布式框架，启动main_task
     if not ray.is_initialized():
         # this is for local ray cluster
         ray.init(runtime_env={'env_vars': {'TOKENIZERS_PARALLELISM': 'true', 'NCCL_DEBUG': 'WARN'}})
@@ -247,7 +253,7 @@ def main_task(config):
     reward_fn = RewardManager(tokenizer=tokenizer, num_examine=0)
 
     # Note that we always use function-based RM for validation
-    val_reward_fn = RewardManager(tokenizer=tokenizer, num_examine=1)
+    val_reward_fn = RewardManager(tokenizer=tokenizer, num_examine=1) # 验证集reward函数
 
     resource_pool_manager = ResourcePoolManager(resource_pool_spec=resource_pool_spec, mapping=mapping)
     trainer = RayPPOTrainer(config=config,

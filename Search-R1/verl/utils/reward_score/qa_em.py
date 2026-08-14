@@ -47,6 +47,7 @@ def normalize_answer(s):
 
 def em_check(prediction, golden_answers):
     """预测必须与任一 gold alias 规范化后完全相等。"""
+    # 本质还是字符串匹配
     if isinstance(golden_answers, str):
         golden_answers = [golden_answers]
     normalized_prediction = normalize_answer(prediction)
