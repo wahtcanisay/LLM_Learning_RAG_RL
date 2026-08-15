@@ -3,9 +3,9 @@
 在仓库根目录运行：
     python Search-R1/scripts/verify_source_notes.py
 
-Python 比较去除模块/类/函数 docstring 后的 AST；Bash 比较去除注释和空行后的
-有效命令行。基线固定为本项目引入官方快照的 commit ``3d4832d``，所以提交或 pull
-之后仍可复验。脚本只用标准库，不导入 Search-R1 的重型训练依赖。
+Python 比较去除模块/类/函数 docstring 后的 AST；Bash/YAML 比较去除注释和空行后
+的有效配置行。基线固定为本项目引入官方快照的 commit ``3d4832d``，所以提交或
+pull 之后仍可复验。脚本只用标准库，不导入 Search-R1 的重型训练依赖。
 """
 
 from __future__ import annotations
@@ -27,8 +27,11 @@ PYTHON_FILES = (
     "Search-R1/verl/utils/reward_score/qa_em.py",
     "Search-R1/verl/trainer/main_ppo.py",
     "Search-R1/verl/trainer/ppo/ray_trainer.py",
+    "Search-R1/verl/trainer/ppo/core_algos.py",
+    "Search-R1/verl/workers/actor/dp_actor.py",
 )
 BASH_FILES = ("Search-R1/train_grpo.sh",)
+CONFIG_FILES = ("Search-R1/verl/trainer/config/ppo_trainer.yaml",)
 OFFICIAL_BASELINE = "3d4832d"
 
 
@@ -116,11 +119,21 @@ def main() -> None:
         if before != after:
             changed.append(path)
 
+    for path in CONFIG_FILES:
+        before = bash_commands(read_baseline(path))
+        after = bash_commands(Path(path).read_text(encoding="utf-8"))
+        if before != after:
+            changed.append(path)
+
     if changed:
         raise SystemExit("Executable behavior changed: " + ", ".join(changed))
     verify_reward_examples()
     verify_action_parser_examples()
-    print(f"Comment-only verification passed: {len(PYTHON_FILES)} Python + {len(BASH_FILES)} Bash files")
+    print(
+        "Comment-only verification passed: "
+        f"{len(PYTHON_FILES)} Python + {len(BASH_FILES)} Bash + "
+        f"{len(CONFIG_FILES)} config files"
+    )
     print("Behavior checks passed: 3 reward + 3 action parser examples")
 
 

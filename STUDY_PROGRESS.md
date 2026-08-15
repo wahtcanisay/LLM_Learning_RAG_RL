@@ -1,198 +1,166 @@
 # 当前阶段
 
-**当前主线：MedSearch-R1 Mini 后训练项目。**
+**阶段 3～5 合并主线：MedSearch-R1 Mini（Medical SFT → Search-R1 → 医学搜索强化学习）。**
 
-- **阶段 1：MedRAG / MedicalGraphRAG 基础检索**——已完成 BM25、Dense、Hybrid、Graph、Hybrid2（Reranker）统一框架及四套真实基准评测；它作为当前 RL 项目的检索基础和第一项简历项目保留，不再继续扩展未验收的图检索方案。
-- **阶段 2：LinearRAG 图结构检索迁移**——已完成代码阅读、默认参数对齐、医学/多跳实验和负结果分析；图检索未胜出，这一结论保留，但不阻塞后训练主线。
-- **阶段 3～5：Medical SFT → Search-R1 → MedSearch-R1**——合并为当前唯一开发主线。MedicalGPT 的 100 条 LoRA smoke 已证明训练链路可运行，但正式 SFT、MedQA 数据隔离、医疗 Search 环境、GRPO 和独立评测均尚未完成。
-
-2026-08-11 路线调整后，不再把“依次学习三个仓库”当作三个割裂项目，而是交付一个完整闭环：
+阶段 1 的 Medical GraphRAG 基线和阶段 2 的 LinearRAG 迁移已经完成并冻结。当前不再扩展检索器，优先完成 Qwen2.5-3B 的 Medical SFT、医学搜索环境、最小 GRPO 和独立评测闭环。
 
 ```text
 Qwen2.5-3B Base
   → Medical LoRA SFT
   → MedQA + Medical Textbooks BM25
-  → Search / Answer 多轮 rollout（最多 2 次检索）
+  → SEARCH / ANSWER 多轮 rollout（最多 2 次检索）
   → outcome-based GRPO
   → Medical-SFT / Fixed RAG / MedSearch-R1 对照评测
 ```
 
-3B 是第一版闭环模型；7B 或后续 9B 只在 3B 的数据、训练、评测和资源记录全部跑通后作为规模扩展，不提前并行开线。
+第一版固定范围：Qwen2.5-3B、LoRA、CPU BM25、`SEARCH`/`ANSWER` 两种动作、最多 2 次检索、可程序验证的最终答案 reward。暂不加入多工具、复杂过程奖励、LLM Judge、7B/9B 或新的 Retriever。
 
 # 当前项目
 
-**算法主项目：MedSearch-R1 Mini——面向医疗问答的多轮搜索强化学习。**
+**MedSearch-R1 Mini：面向医学问答的多轮搜索强化学习。**
 
-项目只训练一个医疗 Search SubAgent：给定 MedQA 问题，自主选择 `SEARCH` 或 `ANSWER`，生成检索 query，最多检索两轮，并以可程序化验证的最终选项正确性作为第一版 reward。第一版固定使用 Qwen2.5-3B、LoRA、Medical Textbooks 和 CPU BM25；暂不加入多工具、Tool-Calling SFT、复杂奖励、LLM Judge 或新 RL 算法。
+当前代码学习位置：
 
-项目分工与投递顺序：
-
-1. 先完成 MedSearch-R1 Mini 的 SFT → RL → Evaluation 闭环；
-2. 用已完成的 Medical GraphRAG 真实基线和 MedSearch-R1 后训练结果整理第一版简历并开始投递；
-3. 投递期间继续完善 `D:/code_list/some tricks/Agent/项目书.md` 中的 PiAgent 二次开发与 Medical Harness；
-4. RL 模型以后作为 `medical_search_agent(question)` 接入 Pi Main Agent。Pi 是产品展示和编排层，MedSearch-R1 是当前算法主体；
-5. GitHub 高质量 Agent 项目与论文学习作为持续辅助任务，只选择能直接补强当前阶段的问题，不另起会打断主线的新项目。
-
-主文档和真实产物优先级：
-
-- 当前后训练范围原文：`C:/Users/dell/Downloads/MEDSEARCH_R1_MINI_PLAN.md`（仓库外，待归档到 `docs/`）。
-- 检索框架、运行命令和完整结果：`MedicalGraphRAG/README.md`、`MedicalGraphRAG/experiments/`。
-- 当前稳定代码基线：`MedicalGraphRAG/` 固定为 README 结果对应的 commit `fe89a64`。
-- MedicalGPT smoke 的配置、日志和 adapter：`MedicalGPT/logs/sft/`、`MedicalGPT/outputs/sft/`、`MedicalGPT/experiments/sft/`。
-- 后续 Agent 产品层设计：`D:/code_list/some tricks/Agent/项目书.md`。
+- rollout 状态机：`Search-R1/search_r1/llm_agent/generation.py`
+- reward 装配：`Search-R1/verl/trainer/main_ppo.py`
+- EM reward：`Search-R1/verl/utils/reward_score/qa_em.py`
+- reward → advantage 调度：`Search-R1/verl/trainer/ppo/ray_trainer.py`
+- GRPO advantage / clipped loss：`Search-R1/verl/trainer/ppo/core_algos.py`
+- actor 更新入口：`Search-R1/verl/workers/actor/dp_actor.py`
+- 学习索引：`Search-R1/docs/source_code_learning_zh.md`
 
 # 本周目标
 
-1. 冻结 MedSearch-R1 Mini 第一版范围，并把方案逐项映射到 Search-R1/veRL 的真实代码入口。
-2. 定义 MedQA 的训练、验证、独立测试隔离及近重复检查，明确 Medical SFT 数据与 RL/测试题的隔离规则。
-3. 保持 `MedicalGraphRAG` 在 README 已验证基线；第一版 Search 环境只复用 Medical Textbooks + CPU BM25，不同时改 Retriever。
+1. 理解 Search-R1 的 rollout → reward → GRPO 主链，不安装重型依赖、不启动训练。
+2. 明确 MedQA 数据隔离、Medical Textbooks BM25 接口和医学选择题答案解析的迁移点。
+3. 每次只验收一个代码链路；能复述后再进入实现。
 
 # 今日唯一任务
 
-**2026-08-13：阅读并复述 Search-R1 的多轮生成状态机。**
+**2026-08-14：阅读 GRPO advantage 如何变成 actor policy loss。**
 
-只读 `generation.py` 的 `run_llm_loop()`、`execute_predictions()`、`postprocess_predictions()`、`batch_search()` 及其直接调用的状态更新函数，解释 Prompt → Search → Information → Answer、`active_mask`、final rollout 与 information mask。本任务不安装环境、不启动训练。
+只读以下函数：
+
+1. `ray_trainer.py::compute_advantage()` 的 GRPO 分支；
+2. `core_algos.py::compute_grpo_outcome_advantage()`；
+3. `dp_actor.py::DataParallelPPOActor.update_policy()` 中准备 `response_mask`、`old_log_prob`、`advantages` 的部分；
+4. `core_algos.py::compute_policy_loss()`；
+5. 回到 `dp_actor.py::update_policy()` 看 entropy、KL、backward 和 optimizer step。
+
+`core_algos.py` 的两个核心函数已补充 `输入：`、`输出：`、`调用方式：` 注释。本任务不进入 Ray/FSDP/vLLM 底层，不启动训练。
 
 # 完成标准
 
-- 能解释只对 active 样本生成，以及 answer、search、非法动作如何改变轨迹状态；
-- 能区分 `rollings`（下一轮模型输入）与 `original_right_side`（最终训练轨迹）；
-- 能解释 final rollout 禁止真实检索，但输出 search 时轨迹仍可能以 active 状态被强制结束；
-- 能解释 `attention_mask` 与 `info_mask` 的区别；
-- 不声称 Search-R1 环境、检索服务或 GRPO 已运行。
+- 能用 `[1, 1, 0, 0]` 手算组内均值、标准差、正负 advantage，并解释 `[1, 1, 1, 1]` 为什么是零方差组。
+- 能解释序列 advantage 为什么广播到每个有效 response token，但 information/padding token 不参与 policy loss。
+- 能解释 `old_log_prob`、`log_prob` 和 `ratio = exp(log_prob - old_log_prob)` 分别代表什么。
+- 能解释正/负 advantage 如何改变 token 概率，以及 clip 为什么限制一次更新幅度。
+- 能区分 `pg_loss`、entropy bonus、reference-policy KL loss 和仅用于监控的 `ppo_kl`。
+- 不把静态注释验证误报为模型、检索或训练已运行。
 
 # 已完成
 
-## 2026-08-13：下一学习阶段的 Search-R1 reward 主链注释准备
+## 2026-08-14：Search-R1 reward → GRPO advantage 阅读验收
 
-- 已为下一次源码学习补充函数级详细注释，覆盖 `_select_rm_score_fn()`、`RewardManager.__call__()`、`extract_solution()`、`compute_score_em()` 和 `compute_advantage()`。
-- 每个核心函数均按 `输入：`、`输出：`、`调用方式：` 记录参数/返回类型、关键 tensor shape、`DataProto` 字段结构，以及上游调用者和下游数据去向。
-- 注释串起真实调用链：`main_task()` 创建 reward manager → `RayPPOTrainer.fit()` 调用规则 reward → `compute_score_em()` / `extract_solution()` 生成序列分数 → 最后有效 response token 接收 reward → `compute_advantage()` 生成 GRPO advantage。
-- 本次只准备学习注释并做静态/纯协议验证；**尚未把“阅读奖励主链”判定为学习完成**，也没有启动模型、检索服务或 GRPO 训练。
-- 代码位置：`Search-R1/verl/trainer/main_ppo.py`、`Search-R1/verl/utils/reward_score/qa_em.py`、`Search-R1/verl/trainer/ppo/ray_trainer.py`。
+- 已能解释序列级 0/1 outcome reward 写在最后一个有效 response token，是因为结果只能在完整轨迹结束后判断，同时需适配 veRL 的 token-level reward 接口并避开 padding。
+- 已区分 PPO/GAE 与 GRPO：GAE 使用 token value 从后向前传播 advantage；GRPO 不使用 value critic，而是对同题多条 rollout 的序列分数做组内标准化，再广播到有效 response token。
+- 已正确判断全 1 或全 0 rollout group 的 advantage 为 0；进一步明确这表示该组没有策略梯度信号，是有效样本比例问题，不等于整个 GRPO 训练必然坍塌。
+- 本次为源码复述验收，没有运行模型或训练，没有新增实验指标。
 
-## 2026-08-13：`generation.py` 多轮 rollout 主干阅读
+## 2026-08-13：Search-R1 reward 学习注释准备
 
-- 已能复述主链：从 prompt 建立 rolling state，只对 `active_mask=True` 的样本调用 rollout worker 生成；解析 `<search>` / `<answer>`，search 经 HTTP retriever 得到 `<information>` 并进入下一轮，answer 标记 done。
-- 已区分两套状态：`rollings` 保存下一轮推理上下文；`original_right_side` 累积最终训练 response。`responses` 保留模型输出与 information，`responses_with_info_mask` 用 pad 替换 information，以生成 actor loss 所需的 `info_mask`。
-- 已理解达到 `max_turns` 后仍有一次 `do_search=False` 的 final rollout；它禁止真实检索，但如果模型仍输出 search，该轨迹不会变成 answer，而会在循环结束时保留 active/强制停止状态。
-- 已理解 `_compose_final_output()` 组装 `prompts`、`responses`、完整 `input_ids`、`attention_mask`、`info_mask`、`position_ids`，并写入 rollout 统计 `meta_info`。
-- 本次为源码阅读验收，没有运行模型、检索服务或训练，没有新增实验指标。
+- 已为 5 个 reward 主链函数补充输入类型、输出类型、Tensor shape、上游调用位置和下游数据流。
+- 验证命令：
 
-## 2026-08-12：Search-R1 第一批主干源码注释
+```cmd
+python Search-R1\scripts\verify_source_notes.py
+python -m compileall -q Search-R1\verl\trainer\main_ppo.py Search-R1\verl\utils\reward_score\qa_em.py Search-R1\verl\trainer\ppo\ray_trainer.py
+git diff --check
+```
 
-- 建立 `Search-R1/docs/source_code_learning_zh.md`，按 P0/P1/P2 区分算法主干、后续必读和当前可跳过的 veRL/vLLM/Megatron 框架底座。
-- 注释范围：`nq_search.py`、`rl_dataset.py`、`generation.py`、`tensor_helper.py`、`retrieval_server.py`、`qa_em.py`、`main_ppo.py`、`ray_trainer.py` 的 Search-R1 主链，以及官方 `train_grpo.sh` 参数入口。
-- 重点确认：`max_turns=2` 后仍可能有一次禁止真实搜索的 final rollout；information token 可被 attention 读取但通过 state masking 不参与 actor loss；NQ prompt 的 answer 示例与模型答案共同满足 reward parser 的“双 answer 标签”前提。
-- 新增 `Search-R1/scripts/verify_source_notes.py`，以 commit `3d4832d` 的官方快照为固定基线，验证去除 docstring 后 Python AST 与去除注释后 Bash 命令保持不变，并检查 3 个 reward 与 3 个 action parser 案例。
-- 本轮只验证注释与纯协议逻辑；当前 Python 环境缺少 `tensordict`，未安装 Search-R1 重型依赖，也未运行检索服务或 GRPO。
-- 运行命令：`python -m compileall -q ...`、`"C:\\Program Files\\Git\\bin\\bash.exe" -n Search-R1/train_grpo.sh`、`python Search-R1/scripts/verify_source_notes.py`、`git diff --check`。
-- 结果与指标：无训练/评测指标；comment-only 对比为 8 个 Python + 1 个 Bash 文件，协议行为检查 6/6 通过（以最终验证输出为准）。
-- 显存峰值：未运行模型，不适用。
-- 代码或日志位置：`Search-R1/docs/source_code_learning_zh.md`、`Search-R1/scripts/verify_source_notes.py`。
+- 验证结果：8 个 Python 文件和 1 个 Bash 文件保持 comment-only；3 个 reward + 3 个 action parser 样例通过；Python 编译通过。
+- 边界：注释未改变执行逻辑；reward 代码复述已于 2026-08-14 验收，但没有运行训练或产生训练指标。
 
-## 2026-08-11：MedSearch-R1 Mini 路线收束
+## 2026-08-13：Search-R1 多轮 rollout 主干阅读
 
-- 今天完成的是**方案决策与范围冻结**，不是 RL 实验：确定以小模型领域后训练为当前主线，先做 Qwen2.5-3B 完整闭环，7B/9B 作为后续可选规模实验。
-- 第一版动作空间只保留 `SEARCH` 与 `ANSWER`，沿用 `<search>`、`<information>`、`<answer>` 协议，最大检索次数为 2。
-- 第一版数据与环境暂定为 MedQA + Medical Textbooks + CPU BM25；Medical SFT 不承担 Tool-Calling 教学，搜索行为由后续 GRPO 学习。
-- 第一版 reward 只使用可解析的最终选项正确性；非法或不可解析答案记 0。暂不加入 LLM Judge、过程奖励、搜索成本奖励或 query 质量奖励。
-- 第一版核心对照固定为 Medical-SFT、Medical-SFT + Fixed RAG、MedSearch-R1；核心研究问题是 adaptive search policy 是否在独立测试集上优于固定检索。
-- 明确 PiAgent/Medical Harness 不与 RL 同时开工：RL 闭环完成后，将它封装为 `medical_search_agent(question)` 接入 Pi Main Agent；`D:/code_list/some tricks/Agent/项目书.md` 保留为后续 Agent 二次开发设计依据。
-- 求职节奏调整为：先用已有 RAG 结果与完成后的后训练项目形成简历并投递，再在投递过程中完善 Agent 项目、框架二开以及高质量开源 Agent/论文学习。
-- 方案原文：`C:/Users/dell/Downloads/MEDSEARCH_R1_MINI_PLAN.md`。该文件当前在仓库外，后续进入实现前应复制或整理到项目 `docs/`，以便纳入 Git 版本管理。
+- 已理解 `active_mask` 控制仅对未结束样本生成；search 注入 `<information>` 后继续，answer 标记结束，非法动作按当前 parser 路径处理。
+- 已区分 `rollings`（下一轮输入）与 `original_right_side`（最终训练轨迹）。
+- 已理解 `max_turns` 后仍有一次 `do_search=False` 的 final rollout，以及 `attention_mask` 与用于排除环境 information token 的 `info_mask`。
+- 本次只做源码阅读和协议检查，未运行模型、检索服务或训练。
 
-## MedicalGraphRAG：统一检索框架与已核验结果
+## 2026-08-12：Search-R1 主干源码学习注释
 
-- 已建立独立的 `MedicalGraphRAG/`，提供统一的 `cli run <retriever> --dataset <name>` 入口；支持 BM25、Dense、RRF Hybrid、Graph 与 Qwen3-Reranker Hybrid2。
-- 数据、qrels、检索报告、评测、审计和哈希校验均落盘；检索层当前支持 PubMedQA、NFCorpus、SciFact、HotpotQA 的多相关 qrels。
-- `pubmedqa_hard_v1` 是 **5,000 document 的封闭基准**，不代表全量 PubMed 检索能力。其旧版 abstract/chunk official test 中 Dense 最优：Recall@10 `0.994`、MRR@10 `0.977786`、nDCG@10 `0.981885`；RRF Hybrid 略低于 Dense，说明融合并非必然增益。
-- Cross-encoder Hybrid2 在 NFCorpus（nDCG@10 `0.384`）、SciFact（Recall@10 `0.895`、MRR@10 `0.740`、nDCG@10 `0.772`）和 HotpotQA（`0.898`、`0.955`、`0.865`）胜出；HotpotQA 的 RRF Hybrid 也显著高于单路检索。
-- BC5CDR Entity–Passage + PPR 图检索在四个已测基准均未胜出。当前证据指向：PubMedQA 短摘要和事实题中图传播是噪声；HotpotQA 等通用维基语料上医学 NER 实体稀疏。该负结果必须保留，不能以调参掩盖。
-- 已对齐 LinearRAG 默认参数（`damping=0.5`、`passage_node_weight=0.05`、`passage_ratio=2`，并排除 `ORDINAL/CARDINAL`）；对齐后 Graph 的 Recall@10 为 PubMedQA `0.982`、SciFact `0.705`、HotpotQA `0.695`、NFCorpus `0.158`。
-- 已完成接口重构（commit `5efb6e8`）和 README/简历版总结（commit `fe89a64`）；历史统计见各实验目录，不在本文件重复维护。
+- 已注释数据处理、dataset、generation、tensor helper、retrieval server、reward、训练入口和 trainer 主链。
+- 已建立 `Search-R1/docs/source_code_learning_zh.md` 和标准库验证脚本 `Search-R1/scripts/verify_source_notes.py`。
+- 官方 8 GPU 配置不能直接用于单张 RTX 5090；单卡配置必须以后通过真实 smoke 确认。
 
-## MedicalGraphRAG 版本回退（2026-08-11）
+## 2026-08-11：MedSearch-R1 Mini 范围冻结
 
-- 后续 document-level v1/v2、MedRAG adapter、边策略与 reranker 扩展未达到预期，当前代码已恢复到 README 实验数据对应的 commit `fe89a64`。
-- 被撤回内容仍保留在 Git 历史中；除非重新设计并独立验收，不再作为当前实现或实验结论。
-
-## MedRAG 与 LinearRAG 阅读边界
-
-- MedRAG 已阅读生成入口、模板、BM25/Dense/RRF、数据处理和检索接口，并完成 toy 闭环；toy 结果只验证接口，不作为医学实验指标。
-- LinearRAG 已阅读初始化、embedding 缓存、NER、离线 `index()`、图构建、在线 `retrieve()`、实体传播、passage 先验、PPR、`qa()` 与评测调用链；官方源码记录版本为 `bcc94e66c221f798801255efba09311d6fbcd8d6`。
-- LinearRAG 内置 medical 的 evidence 是改写文本，和 chunk 的全量匹配率仅 `0.35%`，无法构造可信 qrels；因此不把其定性演示包装成定量复现。
-- 已删除 `MedRAG/corpus/pubmed/`（约 `65.20 GiB`）与 `MedRAG/corpus/wikipedia/`（约 `42.54 GiB`），释放约 `107.74 GiB`。如需全量语料实验，必须重新下载并核验版本；`statpearls` 和 `textbooks` 仍保留。
+- 第一版动作空间、模型、检索后端、最大搜索轮数和 outcome reward 已冻结。
+- 核心对照固定为 Medical-SFT、Medical-SFT + Fixed RAG、MedSearch-R1。
+- PiAgent 是闭环完成后的产品接入层，不与当前 RL 主线并行开发。
 
 ## MedicalGPT SFT：已验证范围
 
-- 已完成 `scripts/run_sft.sh → training/supervised_finetuning.py` 调用链阅读，能够解释 chat template、assistant-only loss mask、LoRA/QLoRA、gradient checkpointing、collator 和 Trainer 保存恢复；对源码的学习注释提交为 `48f6dfb`。
-- 已下载 `Qwen/Qwen2.5-3B` Base 和 `shibing624/medical` 英文数据。固定种子 `20260809` 的 100 条审计样本结构完整；90/10 ShareGPT 拆分只用于 smoke test。
-- 真实 smoke 配置：单卡 RTX 5090、BF16 LoRA、rank `8`、alpha `16`、batch `2`、gradient accumulation `4`、`model_max_length=1024`、1 epoch、12 steps、seed `20260809`。结果：train loss `2.332629`、eval loss `2.008307`、perplexity `7.450692`、runtime `13.9074s`；整卡显存最低/峰值 `2,132/17,113 MiB`，训练增量约 `14,981 MiB`。
-- adapter 位于 `MedicalGPT/outputs/sft/qwen2.5-3b-medical-smoke-seed20260809-memprobe2/`；行为对比显示 3 条 validation 中 2 条输出变化。它只证明训练管线和 adapter 加载有效，**不证明医学能力提升**。
+- 已跑通 Qwen2.5-3B、BF16 LoRA 的 100 条 smoke：rank `8`、alpha `16`、batch `2`、gradient accumulation `4`、max length `1024`、1 epoch、12 steps、seed `20260809`。
+- 真实结果：train loss `2.332629`、eval loss `2.008307`、perplexity `7.450692`、runtime `13.9074s`、整卡显存峰值 `17,113 MiB`。
+- 结论边界：只证明训练链和 adapter 加载有效；3 条 validation 中 2 条输出变化，不代表医学能力提升。
 
-## Search-R1：已阅读范围
+## Medical GraphRAG / LinearRAG：冻结结论
 
-- 本地 `Search-R1/` 是总仓库引入的源码快照（commit `3d4832d`），不含官方独立 Git 历史；2026-08-11 已与官方 HEAD `598e61bd1d36895726d28a8d06b3a15bed19f5d3` 逐文件比对，内容一致（仅 CRLF/LF 换行差异）。
-- 官方 `PeterJinGo/wiki-18-corpus` 与 `PeterJinGo/wiki-18-e5-index` 正在下载至本地临时目录；完成校验后放入 `Search-R1/data/wiki-18/`。该目录被 Git 忽略，语料和索引不会推送到 GitHub。
-- README 主流程：NQ 处理为 parquet → 本地检索服务 → `<think>/<search>/<information>/<answer>` 交错 rollout → 规则化 QA EM reward → GRPO/PPO。
-- 目前只阅读 `scripts/data_process/nq_search.py`。官方 `train_grpo.sh` 面向 8 GPU、batch `512`、5 rollouts、15 epochs、max_turns `2`，不能直接在单张 RTX 5090 上运行。
+- 已实现 BM25、Dense、RRF Hybrid、Graph、Qwen3-Reranker Hybrid2 的统一检索入口和四套真实基准评测。
+- `MedicalGraphRAG/` 固定在 README 结果对应的 commit `fe89a64`；未验收扩展仅保留在 Git 历史。
+- 图检索在四套基准均未胜出。该负结果保留，不再通过无依据调参追逐指标。
 
 # 遇到的问题
 
-| 问题 | 状态与处理 |
+| 问题 | 当前处理 |
 |---|---|
-| 后续 document-level 扩展不满意 | 已回退到 README 结果对应的 `fe89a64`；相关代码与结果只保留在 Git 历史。 |
-| WSL 的 BC5CDR 测试失败 | 未解决；spaCy `3.8` 与模型 `3.7` 不兼容。Windows 针对性测试通过。 |
-| Datasets 默认 cache 被历史 file lock 卡住 | 已定位为 `filelock.acquire()`；smoke 改用独立 `cache/sft_smoke_datasets`，不删除全局 cache。 |
-| LinearRAG medical 无可靠 qrels | 已确认；只做定性验证，标准 IR 使用 HotpotQA 补充。 |
-| Search-R1 官方配置超过单卡预算 | 未解决但预期正常；后续需设计 3B、小 batch、少 rollout 的单卡缩放配置。 |
-| Hugging Face 直接 HTTPS 连接超时 | 改由官方 Git/LFS 仓库下载；当前后台传输中，完成前不运行任何处理脚本。 |
-| RL mini plan 位于仓库外 | 已读取并用于本次路线更新，但尚未受 Git 管理；实现前需归档到项目 `docs/`。 |
-| Wiki-18 + E5 与当前 Mini 环境不一致 | 新方案第一版改为 Medical Textbooks + CPU BM25；现有下载不再是当前训练前置条件，也不能因为已下载就强行纳入第一版。 |
+| Search-R1 官方配置面向 8 GPU | 当前只读代码；以后单独设计 3B、小 batch、少 rollout 的单卡 smoke。 |
+| MedQA 与 Medical SFT 可能数据泄漏 | 正式训练前做题干、答案和语义近重复检查，并隔离 train/validation/test。 |
+| 开放域 `qa_em.py` 不适合直接评分 MedQA | 迁移时实现显式 A/B/C/D 解析并用单元样例验证，不沿用英文 alias EM 假设。 |
+| 当前环境缺少 veRL 重型依赖 | 现阶段使用 AST、compileall 和纯协议样例验证；进入训练闸门后再建立隔离环境。 |
+| 单卡 32GB 的 GRPO 资源边界未知 | 不做纸面外推；用真实日志记录 batch、rollout、长度、显存和耗时。 |
 
 # 下一步
 
-**下一次唯一核心任务：阅读 Search-R1 的规则奖励如何从完整轨迹产生 token-level reward。**
+GRPO advantage → actor policy loss 阅读验收通过后，唯一下一任务是：**设计 MedQA 数据隔离与医学选择题 reward 的最小协议测试**。
 
-只读 `verl/trainer/main_ppo.py` 的 `_select_rm_score_fn()`、`RewardManager.__call__()`，以及 `verl/utils/reward_score/qa_em.py` 的 `extract_solution()`、`compute_score_em()`。完成标准：能解释完整 prompt+response 为什么包含两个 answer 标签、EM 分数为什么写在最后一个有效 response token，以及 reward tensor 如何交给后续 GRPO；本任务不安装环境、不启动训练。
+后续闸门顺序：
 
-后续严格按以下闸门推进，每次只解锁一个：
-
-1. 数据隔离与代码入口映射；
-2. Medical SFT 正式数据、训练和独立评测；
-3. MedQA + Medical Textbooks BM25 的无 RL Search 环境；
-4. 0/1/2-search rollout 与答案解析、reward 单元验证；
-5. 单卡 3B 最小 GRPO；
+1. MedQA 数据隔离和重复检查；
+2. Medical SFT 正式训练与独立评测；
+3. Medical Textbooks + CPU BM25 的无 RL Search 环境；
+4. 0/1/2-search rollout、答案解析和 reward 单元验证；
+5. 单卡 Qwen2.5-3B 最小 GRPO；
 6. Medical-SFT / Fixed RAG / MedSearch-R1 独立测试集对照；
-7. 完成简历与第一轮投递；
-8. 再评估 7B/9B、PiAgent 接入及额外 Retriever/Reward 实验。
+7. 基于真实结果整理简历，再评估规模扩展和 PiAgent 接入。
 
 # 待补知识
 
-- QA Accuracy 与 Recall@k、MRR、nDCG 的边界，以及生成正确和检索命中的差异；
-- scispaCy/医学 NER 与 BC5CDR 在医学、通用语料上的实体覆盖差异；
-- Search-R1 rollout、retrieved-token mask、EM reward、GRPO 和检索服务之间的数据流；
+- `token_level_scores`、KL 后的 `token_level_rewards` 与 GRPO `advantages` 的数据流。
+- 零方差 rollout group、答案解析失败、无效搜索和 reward hacking 的处理方式。
+- MedQA 许可、版本、选项标签规范及跨数据集近重复检测。
+- 单卡 RTX 5090 上 veRL/vLLM + 3B LoRA GRPO 的真实资源边界。
 - SFT 正式评测的格式遵循、医学问答质量和幻觉分析设计。
-- MedQA 许可、版本、选项标签规范，以及与 Medical SFT 数据的题干/答案/语义近重复检测；
-- 单卡 RTX 5090 上 veRL/vLLM 的 3B LoRA GRPO 资源边界，必须由真实 smoke 日志确认，不能从 7B/9B 或官方 8 卡配置外推；
-- 仅使用 outcome reward 时，零方差 group、答案解析失败、无效搜索和 reward hacking 的处理方式。
 
 # 实验结果总表
 
-| 数据集 / 版本 | 当前最优或关键结论 | 结论边界 |
+| 数据集 / 实验 | 当前最优或关键结果 | 结论边界 |
 |---|---|---|
-| PubMedQA abstract/chunk official test | Dense：R@10 `0.994`、MRR `0.977786`、nDCG `0.981885` | 5,000 document 封闭基准；不是全 PubMed。 |
-| NFCorpus | Hybrid2 nDCG `0.384` | 多相关 qrels；R@10 的理论上限受相关文档数影响。 |
+| PubMedQA 封闭基准 | Dense：R@10 `0.994`、MRR `0.977786`、nDCG `0.981885` | 5,000 documents，不代表全量 PubMed。 |
+| NFCorpus | Hybrid2 nDCG@10 `0.384` | 多相关 qrels；Graph 未胜出。 |
 | SciFact | Hybrid2：R@10 `0.895`、MRR `0.740`、nDCG `0.772` | Graph 未胜出。 |
 | HotpotQA | Hybrid2：R@10 `0.898`、MRR `0.955`、nDCG `0.865` | 每题 2 个 gold；Graph 未胜出。 |
-| MedicalGPT 100 条 smoke | eval loss `2.008307`、PPL `7.450692` | 只验证管线，不能说明医学能力。 |
+| MedicalGPT 100 条 smoke | eval loss `2.008307`、PPL `7.450692` | 只验证训练管线。 |
 
 # 失败案例
 
-| 场景 | 原因 | 当前结论 |
+| 场景 | 原因 | 保留结论 |
 |---|---|---|
-| PubMedQA 上 RRF Hybrid 低于 Dense | BM25 的高位错误结果稀释 Dense 信号 | 融合不是默认更好；保留负结果。 |
-| 图检索在四套基准未胜出 | 任务/语料与实体传播信号不匹配，通用语料医学 NER 稀疏 | 不以无依据调参追逐指标；后续从实体识别和任务类型分析。 |
-| TREC-COVID 未接入检索 | 24.6% 文档正文为空，部分 qrels 指向空文本 | 不用标题回退伪造连续文本检索实验。 |
-| MedicalGPT `skip_memory_metrics=False` 训练停滞 | Trainer 路径异常，未形成完整产物 | 已终止且不计入；改用外部只读显存采样完成 smoke。 |
+| PubMedQA 上 RRF Hybrid 低于 Dense | BM25 高位错误稀释 Dense 信号 | 融合不是默认更好。 |
+| Graph 在四套基准均未胜出 | 实体传播信号与任务/语料不匹配 | 保留负结果，不包装为提升。 |
+| TREC-COVID 未接入 | 24.6% 文档正文为空，部分 qrels 指向空文本 | 不用标题回退伪造正文检索。 |
+| MedicalGPT 内部显存统计路径停滞 | Trainer 路径未形成完整产物 | 该次运行不计入；已用外部只读采样完成 smoke。 |
+
+> 更早的逐日过程、已撤回方案和详细实验配置由 Git 历史、各子项目 README 与 `experiments/` 保留；本文件只维护当前有效状态。

@@ -42,6 +42,8 @@ from verl.trainer.ppo import core_algos
 from verl.utils.seqlen_balancing import get_seqlen_balanced_partitions, log_seqlen_unbalance
 
 import re
+# [Search-R1 定制点] veRL 原版直接生成一次 response；这里接入 Search-R1 的
+# Agent 环境管理器，在一次训练 rollout 内循环执行“生成动作 -> 检索 -> 注入 observation”。
 from search_r1.llm_agent.generation import LLMGenerationManager, GenerationConfig
 
 WorkerType = Type[Worker]
@@ -102,6 +104,8 @@ def apply_kl_penalty(data: DataProto, kl_ctrl: core_algos.AdaptiveKLController, 
     response_length = responses.size(1)
     token_level_scores = data.batch['token_level_scores']
     batch_size = data.batch.batch_size[0]
+    # [Search-R1 定制点] KL 只约束模型生成的动作 token；检索服务返回的 information
+    # 不是策略采样结果，若参与 KL 会把环境文本错误地当作模型行为惩罚。
     attention_mask = data.batch['info_mask'] if 'info_mask' in data.batch else data.batch['attention_mask']
     response_mask = attention_mask[:, -response_length:]
 
@@ -543,6 +547,8 @@ class RayPPOTrainer(object):
                 reward_tensor_lst.append(reward_tensor)
                 data_source_lst.append(test_batch.non_tensor_batch.get('data_source', ['unknown'] * reward_tensor.shape[0]))
         else:
+            # [Search-R1 定制点] 验证必须复用训练时的多轮 Agent loop；若仍走原版
+            # 单轮 generate_sequences()，测到的就不是模型实际的搜索与停止能力。
             for batch_dict in self.val_dataloader:
                 timing_raw = {}
                 test_batch: DataProto = DataProto.from_single_dict(batch_dict)
@@ -723,7 +729,8 @@ class RayPPOTrainer(object):
         # we start from step 1
         self.global_steps += 1
 
-        # 把分散在 Hydra 配置中的 Agent 参数收束给 generation manager。
+        # [Search-R1 定制点] 把检索地址、轮数和三类长度交给 Agent manager；
+        # 这些参数在原版 veRL 的单轮 generate_sequences() 中不存在。
         gen_config = GenerationConfig(
             max_turns=self.config.max_turns,
             max_start_length=self.config.data.max_start_length,
@@ -750,7 +757,8 @@ class RayPPOTrainer(object):
                 timing_raw = {}
 
                 batch: DataProto = DataProto.from_single_dict(batch_dict)
-                # n_agent：同一道题采样多少条独立轨迹，构成 GRPO 的比较组。
+                # [Search-R1 定制点] 在进入 Agent loop 前按 n_agent 扩展每道题，
+                # 让同一问题得到多条独立完整轨迹，构成 GRPO 的组内比较样本。
                 batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n_agent, interleave=True)
 
                 # pop those keys for generation
@@ -775,7 +783,8 @@ class RayPPOTrainer(object):
                 ####################
                 # with _timer('step', timing_raw):
                     else:
-                        # Search-R1 路径：最多 max_turns 次检索机会 + 一次 final rollout。
+                        # [Search-R1 定制点] 用多轮 Agent loop 替换原版的一次
+                        # generate_sequences()：最多 max_turns 次检索机会 + 一次 final rollout。
                         first_input_ids = gen_batch.batch['input_ids'][:, -gen_config.max_start_length:].clone().long()
 
                         with _timer('gen', timing_raw):
@@ -789,14 +798,16 @@ class RayPPOTrainer(object):
                         for key in final_gen_batch_output.batch.keys():
                             final_gen_batch_output.batch[key] = final_gen_batch_output.batch[key].long()
 
-                        # 多轮 manager 返回拼接后的完整 response；重新计算其 old log-prob。
+                        # [Search-R1 定制点] 多轮 manager 手工拼接了动作与 observation，
+                        # vLLM 单轮输出不再携带整条轨迹的 old log-prob；必须重算，PPO ratio 才与训练 token 对齐。
                         with torch.no_grad():
                             output = self.actor_rollout_wg.compute_log_prob(final_gen_batch_output)
                             final_gen_batch_output = final_gen_batch_output.union(output)
 
                         # batch.non_tensor_batch['uid'] = np.array([str(uuid.uuid4()) for _ in range(len(batch.batch))],
                         #                                         dtype=object)
-                        # 保留题目 index 作为 GRPO 分组键；不能给每条 rollout 随机 UUID。
+                        # [Search-R1 定制点] n_agent 在生成前已经把每道题扩成多条轨迹，
+                        # 因此必须复用题目 index；若此时按行生成随机 UUID，同题轨迹将无法组成 GRPO 相对奖励组。
                         batch.non_tensor_batch['uid'] = batch.non_tensor_batch['index'].copy()
                                             
                         # repeat to align with repeated responses in rollout
@@ -876,7 +887,8 @@ class RayPPOTrainer(object):
                         # update actor
                         with _timer('update_actor', timing_raw):
                             if self.config.do_search and self.config.actor_rollout_ref.actor.state_masking:
-                                # 排除环境注入的 information token，只训练模型自己的 token。
+                                # [Search-R1 定制点] 排除环境注入的 information token，只训练
+                                # 模型自己的推理、search 调用和最终 answer token。
                                 batch, metrics = self._create_loss_mask(batch, metrics)
                             actor_output = self.actor_rollout_wg.update_actor(batch)
                         actor_output_metrics = reduce_metrics(actor_output.meta_info['metrics'])

@@ -14,6 +14,9 @@
 
 """开放域 QA 的规则式 Exact Match reward（学习重要性 P0）。
 
+[Search-R1 新增模块] veRL 原版只带数学等示例 reward，不能直接判断带搜索过程的
+开放域 QA 轨迹是否答对；因此这里解析最终 answer，并与数据集 gold alias 做 EM。
+
 本文件不加载 reward model。它从完整 ``prompt + rollout`` 中取最终 ``<answer>``，
 做 SQuAD 风格规范化，然后给每条轨迹 0/1 分。训练器会把这个序列级分数放到
 response 的最后一个有效 token，再由 GRPO 在同题多条 rollout 间计算相对优势。

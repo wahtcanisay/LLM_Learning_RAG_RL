@@ -209,6 +209,8 @@ class DataParallelPPOActor(BasePPOActor):
         temperature = data.meta_info['temperature']  # temperature must be in the data.meta_info to avoid slient error
 
         select_keys = ['responses', 'input_ids', 'attention_mask', 'position_ids', 'old_log_probs', 'advantages']
+        # [Search-R1 定制点] 原版 actor 用 attention_mask 覆盖整个 response；多轮搜索
+        # response 混有环境 observation，因此需额外传入 loss_mask。
         if self.config.state_masking:
             select_keys.append('loss_mask')
         if self.config.use_kl_loss:
@@ -238,6 +240,8 @@ class DataParallelPPOActor(BasePPOActor):
                 response_length = responses.size(1)
                 attention_mask = data['attention_mask']
                 response_mask = attention_mask[:, -response_length:]
+                # [Search-R1 定制点] attention 仍允许模型读取检索文档，但 policy loss
+                # 只优化模型自己生成的 token，避免学习“复述”检索服务输出。
                 if self.config.state_masking:
                     response_mask = data['loss_mask']
                 old_log_prob = data['old_log_probs']

@@ -7,6 +7,8 @@ data:
   prompt_key: prompt
   max_prompt_length: 512
   max_response_length: 512
+  # [Search-R1 定制点] 多轮轨迹要分别限制初始问题和每次检索 observation；
+  # veRL 原版只有单轮 prompt/response 长度，无法控制搜索结果反复拼接后的上下文增长。
   max_start_length: 256
   max_obs_length: 512
   train_batch_size: 1024
@@ -30,6 +32,7 @@ actor_rollout_ref:
     use_dynamic_bsz: False
     ppo_max_token_len_per_gpu: 16384 # n * ${data.max_prompt_length} + ${data.max_response_length}
     grad_clip: 1.0
+    # [Search-R1 定制点] 检索文档是环境写入的状态，不是模型动作；开启后 actor loss 会跳过这些 token。
     state_masking: False
     clip_ratio: 0.2
     entropy_coeff: 0.001
@@ -88,6 +91,7 @@ actor_rollout_ref:
     do_sample: True
     # number of responses (i.e. num sample times)
     n: 1 # > 1 for grpo
+    # [Search-R1 定制点] 同一道题独立采样 n_agent 条完整“推理-搜索”轨迹，供 GRPO 做组内相对比较。
     n_agent: 1 # different here used for agent tasks only
 
 critic:
@@ -145,6 +149,7 @@ reward_model:
   final_format_score: 0
   retrieval_score: 0
 
+# [Search-R1 定制点] veRL 原版没有搜索环境；这里把 trainer 接到独立检索服务。
 retriever:
   url: "http://127.0.0.1:8000/retrieve"
   topk: 3
@@ -176,5 +181,6 @@ trainer:
   default_hdfs_dir: ~/experiments/gsm8k/ppo/${trainer.experiment_name}
   default_local_dir: checkpoints/${trainer.project_name}/${trainer.experiment_name}
 
+# [Search-R1 定制点] 控制是否进入 Agent loop 及最多搜索轮数，同时保留原版单轮 rollout 路径。
 max_turns: 10
 do_search: true

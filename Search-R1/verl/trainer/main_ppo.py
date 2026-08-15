@@ -26,6 +26,8 @@ trainer 还可被其他 main 复用。
 
 from verl import DataProto
 import torch
+# [Search-R1 定制点] 原版 veRL 示例按 GSM8K/MATH 打分；搜索问答需要解析最终
+# <answer> 并对 NQ/HotpotQA 等开放域答案做规范化 Exact Match。
 from verl.utils.reward_score import qa_em
 from verl.trainer.ppo.ray_trainer import RayPPOTrainer
 import re

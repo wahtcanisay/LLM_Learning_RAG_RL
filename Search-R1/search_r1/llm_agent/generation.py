@@ -1,5 +1,8 @@
 """Search-R1 的多轮生成与检索环境（学习主干，重要性 P0）。
 
+[Search-R1 新增模块] veRL 原版只负责单轮模型 rollout，没有搜索动作解析、外部检索、
+observation 注入和多轮停止状态；本模块正是 Search-R1 必须新增的 Agent 环境层。
+
 这个文件把普通 LLM rollout 改造成一个文本协议驱动的 Agent：
 
 1. 模型生成 ``<search>query</search>`` 或 ``<answer>answer</answer>``；
