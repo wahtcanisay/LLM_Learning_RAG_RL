@@ -29,6 +29,22 @@ import argparse
 def make_prefix(dp, template_type):
     """构造 Base 模型的文本协议 prompt。
 
+    输入：
+        ``dp``（``dict``/``Mapping``）：一条原始 NQ 样本，当前函数读取
+        ``dp['question']``（``str``）。调用前 ``process_fn()`` 已去除题干首尾空白，
+        并在缺少问号时补上 ``?``。
+
+        ``template_type``（``str``）：prompt 模板名称；当前只支持 ``'base'``，
+        其他值抛出 ``NotImplementedError``。
+
+    输出：
+        ``str``：包含题目以及 ``<think>/<search>/<information>/<answer>`` 使用说明
+        的完整用户 prompt，末尾包含换行符。
+
+    调用方式：
+        仅由本文件 ``make_map_fn()`` 返回的 ``process_fn(example, idx)`` 调用；
+        ``process_fn`` 再把该字符串包装成一条 user chat message 写入 Parquet。
+
     prompt 内的 ``<answer> Beijing </answer>`` 是格式示例，也会被最终 reward parser
     看见；模型输出最终 answer 后，完整序列恰好至少包含两个 answer 块。
     """
@@ -66,9 +82,45 @@ if __name__ == '__main__':
 
     # split 被闭包捕获，使同一个处理函数可分别标记 train/test。
     def make_map_fn(split):
+        """为指定 split 创建 Hugging Face Dataset 的逐行映射函数。
+
+        输入：
+            ``split``（``str``）：写入每条样本 ``extra_info['split']`` 的分区名，
+            当前调用值为 ``'train'`` 或 ``'test'``。
+
+        输出：
+            可调用对象 ``process_fn(example, idx)``。它接收一条原始样本和稳定行号，
+            返回一条符合 Search-R1 Parquet 字段协议的 ``dict``。
+
+        调用方式：
+            主程序分别把 ``make_map_fn('train')`` 和 ``make_map_fn('test')`` 传给
+            ``Dataset.map(..., with_indices=True)``；``with_indices=True`` 负责向内部
+            ``process_fn`` 额外传入 ``idx``。
+        """
 
         def process_fn(example, idx):
-            """将一条原始 NQ 样本映射为 veRL 能读取的一行。"""
+            """将一条原始 NQ 样本映射为 Search-R1 能读取的一行。
+
+            输入：
+                ``example``（``dict``/``Mapping``）：至少包含
+                ``question: str`` 与 ``golden_answers: list[str]``。
+                ``idx``（``int``）：Hugging Face Dataset 当前行的索引，由
+                ``Dataset.map(with_indices=True)`` 自动传入。
+
+            输出：
+                ``dict``，字段为：
+
+                - ``data_source: str``：固定为 ``'nq'``，供 RewardManager 选择打分函数；
+                - ``prompt: list[dict[str, str]]``：只有一条 user message 的 chat；
+                - ``ability: str``：固定为 ``'fact-reasoning'``；
+                - ``reward_model: dict``：``style='rule'``，并在
+                  ``ground_truth['target']`` 保存 gold alias 列表；
+                - ``extra_info: dict``：保存 ``split`` 和稳定行号 ``index``。
+
+            调用方式：
+                由 Hugging Face ``Dataset.map`` 对 split 中每一行调用；返回字典成为
+                输出 Dataset 的列，最终由 ``Dataset.to_parquet()`` 写入磁盘。
+            """
             example['question'] = example['question'].strip()
             if example['question'][-1] != '?':
                 example['question'] += '?'

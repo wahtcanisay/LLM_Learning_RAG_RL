@@ -27,10 +27,19 @@ import string
 import random
 
 def normalize_answer(s):
-    """小写、去英文冠词/标点并压缩空白，降低表面格式对 EM 的影响。
+    """把一段英文答案规范化为 Exact Match 使用的字符串。
 
-    这是英文开放域 QA 规则；迁移医学选择题时应改为显式解析 A/B/C/D，不能假设
-    这套规范化自动适合 MedQA。
+    输入：
+        ``s``（``str``）：模型解析出的答案或一条 gold alias。
+
+    输出：
+        ``str``：依次转小写、删除 ASCII 标点、删除独立英文冠词
+        ``a/an/the``，最后合并连续空白。例如 ``"The, Beijing"`` 变为
+        ``"beijing"``。
+
+    调用方式：
+        由 ``em_check()`` 和 ``subem_check()`` 同时规范化 prediction 与 gold；
+        ``compute_score_em()`` 不直接调用本函数，而是通过 ``em_check()`` 间接调用。
     """
     def remove_articles(text):
         return re.sub(r"\b(a|an|the)\b", " ", text)
@@ -49,7 +58,20 @@ def normalize_answer(s):
 
 
 def em_check(prediction, golden_answers):
-    """预测必须与任一 gold alias 规范化后完全相等。"""
+    """判断预测是否与任意一条 gold alias 规范化后完全相等。
+
+    输入：
+        ``prediction``（``str``）：``extract_solution()`` 返回的最终答案文本。
+        ``golden_answers``（``str | list[str]``）：数据预处理写入
+        ``reward_model.ground_truth['target']`` 的一个或多个标准答案。
+
+    输出：
+        ``int``：命中任意 gold alias 返回 ``1``，全部不匹配返回 ``0``。
+
+    调用方式：
+        主路径由 ``compute_score_em()`` 在成功解析 ``<answer>`` 后调用；内部对预测
+        和每条 gold 分别调用 ``normalize_answer()``，比较的是规范化后的完整字符串。
+    """
     # 本质还是字符串匹配
     if isinstance(golden_answers, str):
         golden_answers = [golden_answers]
@@ -95,9 +117,8 @@ def extract_solution(solution_str):
         主训练链使用前者：``RewardManager.__call__()`` 先选择
         ``compute_score_em``，该函数再调用这里提取答案。
 
-    注意官方实现要求至少出现两个 answer 块。Search-R1 的 prompt 自带一个格式示例，
-    模型最终输出构成第二个；如果迁移数据时移除了 prompt 示例，这里会返回 ``None``，
-    即使模型只输出了一个正确 answer 也得到 0 分。
+    注意官方实现要求至少出现两个 answer 块。当前 Search-R1 prompt 自带第一个格式
+    示例，模型最终输出构成第二个；只有一个 answer 块时本函数固定返回 ``None``。
     """
     # Remove everything before the first "Assistant:"
     # if "Assistant:" in solution_str:

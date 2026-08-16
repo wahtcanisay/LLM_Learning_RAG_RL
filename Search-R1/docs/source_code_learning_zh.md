@@ -74,7 +74,7 @@ train_grpo.sh（Hydra 参数覆盖）
 ### 3.3 reward 解析依赖 prompt 中已有一个 answer 示例
 
 `extract_solution()` 要求完整 `prompt + response` 中至少有两个 `<answer>...</answer>`，并取最后一个。
-官方 prompt 内含格式示例，模型答案是第二个。迁移到 MedQA 时若删除该示例却不改解析器，所有奖励都会变成 0。
+当前官方 prompt 内含第一个格式示例，模型最终答案是第二个；两处代码共同构成当前解析约定。
 
 ## 4. 外部包基础介绍（只讲本项目实际用法）
 
@@ -94,21 +94,34 @@ train_grpo.sh（Hydra 参数覆盖）
 
 ## 5. 今天唯一任务（30～90 分钟）
 
-只读 `generation.py` 的 `run_llm_loop()`、`execute_predictions()`、
-`postprocess_predictions()`，画出一条题目从 prompt 到 search、information、answer 的状态变化。
+沿着一条 NQ 样本阅读“原始数据 → Parquet → DataLoader → reward”，顺序固定为：
+
+1. `scripts/data_process/nq_search.py::make_prefix()`、`make_map_fn()`、`process_fn()`；
+2. `verl/utils/dataset/rl_dataset.py::RLHFDataset.__init__()`、`_download()`、
+   `_read_files_and_tokenize()`、`__getitem__()`、`collate_fn()`；
+3. `verl/trainer/ppo/ray_trainer.py::RayPPOTrainer._create_dataloader()`，只看 Dataset
+   与 DataLoader 在哪里被创建；
+4. `verl/trainer/main_ppo.py::RewardManager.__call__()`，只追踪
+   `data_source` 和 `reward_model.ground_truth`；
+5. `verl/utils/reward_score/qa_em.py::compute_score_em()`、`extract_solution()`、
+   `em_check()`、`normalize_answer()`。
 
 完成标准：
 
-1. 能解释 `active_mask` 为什么会逐轮变小；
-2. 能解释允许搜索循环结束后为何还有一次 final rollout；
-3. 能指出 `<information>` 是谁生成的、是否参与 actor loss；
-4. 用自己的话回答：Search-R1 的动作空间为什么本质上是由文本正则表达式定义的？
+1. 能列出一行 NQ Parquet 的五个顶层字段，并说出各自的数据类型；
+2. 能解释 chat prompt 怎样经过 chat template、tokenization 和左 padding 变成
+   `input_ids/attention_mask/position_ids`；
+3. 能解释 `collate_fn()` 为什么分别处理 tensor 与 Python 对象，以及 batch 后的 shape；
+4. 能追踪 `extra_info.index → 顶层 index → uid`，说明同题 rollout 的分组依据；
+5. 能追踪 `reward_model.ground_truth['target']` 怎样进入 `compute_score_em()` 并得到 0/1 reward。
 
 在 `cmd.exe` 中查看关键位置：
 
 ```cmd
 cd /d "D:\code_list\some tricks\LLMLeanring"
-rg -n "def run_llm_loop|def execute_predictions|def postprocess_predictions|def batch_search" Search-R1\search_r1\llm_agent\generation.py
+rg -n "def make_prefix|def make_map_fn|def process_fn" Search-R1\scripts\data_process\nq_search.py
+rg -n "def collate_fn|class RLHFDataset|def __getitem__|def _create_dataloader" Search-R1\verl
+rg -n "class RewardManager|def compute_score_em|def extract_solution|def em_check|def normalize_answer" Search-R1\verl
 ```
 
-本轮只做源码解释，不启动官方 `train_grpo.sh`。该脚本是 8 GPU 配置，不能作为单张 RTX 5090 的可运行承诺。
+本轮只做当前源码的数据链阅读，不下载数据、不启动 `train_grpo.sh`。

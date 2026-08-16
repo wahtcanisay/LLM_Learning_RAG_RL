@@ -21,6 +21,8 @@ Qwen2.5-3B Base
 
 当前代码学习位置：
 
+- NQ 数据预处理：`Search-R1/scripts/data_process/nq_search.py`
+- Parquet → batch：`Search-R1/verl/utils/dataset/rl_dataset.py`
 - rollout 状态机：`Search-R1/search_r1/llm_agent/generation.py`
 - reward 装配：`Search-R1/verl/trainer/main_ppo.py`
 - EM reward：`Search-R1/verl/utils/reward_score/qa_em.py`
@@ -32,33 +34,42 @@ Qwen2.5-3B Base
 # 本周目标
 
 1. 理解 Search-R1 的 rollout → reward → GRPO 主链，不安装重型依赖、不启动训练。
-2. 明确 MedQA 数据隔离、Medical Textbooks BM25 接口和医学选择题答案解析的迁移点。
+2. 理解原始 NQ 样本从 Parquet 字段、token batch 到规则 EM reward 的完整数据流。
 3. 每次只验收一个代码链路；能复述后再进入实现。
 
 # 今日唯一任务
 
-**2026-08-14：阅读 GRPO advantage 如何变成 actor policy loss。**
+**2026-08-16：阅读 Search-R1 原始 NQ 数据如何进入规则 reward。**
 
-只读以下函数：
+沿真实调用链只读以下位置：
 
-1. `ray_trainer.py::compute_advantage()` 的 GRPO 分支；
-2. `core_algos.py::compute_grpo_outcome_advantage()`；
-3. `dp_actor.py::DataParallelPPOActor.update_policy()` 中准备 `response_mask`、`old_log_prob`、`advantages` 的部分；
-4. `core_algos.py::compute_policy_loss()`；
-5. 回到 `dp_actor.py::update_policy()` 看 entropy、KL、backward 和 optimizer step。
+1. `nq_search.py::make_prefix()`、`make_map_fn()`、`process_fn()`；
+2. `rl_dataset.py::RLHFDataset` 与 `collate_fn()`；
+3. `ray_trainer.py::RayPPOTrainer._create_dataloader()`；
+4. `main_ppo.py::RewardManager.__call__()`；
+5. `qa_em.py::compute_score_em()`、`extract_solution()`、`em_check()`、`normalize_answer()`。
 
-`core_algos.py` 的两个核心函数已补充 `输入：`、`输出：`、`调用方式：` 注释。本任务不进入 Ray/FSDP/vLLM 底层，不启动训练。
+本轮只理解 Search-R1 当前代码，不下载数据、不启动模型或训练。
 
 # 完成标准
 
-- 能用 `[1, 1, 0, 0]` 手算组内均值、标准差、正负 advantage，并解释 `[1, 1, 1, 1]` 为什么是零方差组。
-- 能解释序列 advantage 为什么广播到每个有效 response token，但 information/padding token 不参与 policy loss。
-- 能解释 `old_log_prob`、`log_prob` 和 `ratio = exp(log_prob - old_log_prob)` 分别代表什么。
-- 能解释正/负 advantage 如何改变 token 概率，以及 clip 为什么限制一次更新幅度。
-- 能区分 `pg_loss`、entropy bonus、reference-policy KL loss 和仅用于监控的 `ppo_kl`。
-- 不把静态注释验证误报为模型、检索或训练已运行。
+- 能列出 NQ Parquet 一行的 `data_source`、`prompt`、`ability`、`reward_model`、`extra_info` 及其类型。
+- 能解释 chat template、tokenization 和左 padding 怎样产生三类模型输入 tensor。
+- 能解释 `collate_fn()` 为何分别合并 tensor 与 Python 对象，并说出 batch 维度。
+- 能追踪 `extra_info.index → index → uid`，说明同题多条 rollout 的分组依据。
+- 能追踪 `reward_model.ground_truth['target'] → RewardManager → compute_score_em()`，并解释 0/1 EM。
+- 不把静态注释检查误报为数据、模型或训练已运行。
 
 # 已完成
+
+## 2026-08-16：GRPO advantage → actor policy loss 阅读验收
+
+- 已能解释 `old_log_prob` 来自 rollout 行为策略，`log_prob` 来自更新中的当前 actor；`ratio` 是逐 token 的新旧策略概率比，不是整条 trajectory 的单一偏好分数。
+- 已理解正/负 advantage 分别提高/降低已采样 token 的概率；PPO clip 裁剪 surrogate objective 的有利更新方向，不是把模型真实概率硬锁在区间内。
+- 已理解 information 是外部检索 observation：参与 attention 以指导后续生成，但通过 `loss_mask` 排除在 policy loss 之外。
+- 已区分 entropy bonus、reference-policy KL 与 `ppo_kl` 监控量：entropy 鼓励分布保持探索性；reference KL 限制当前 actor 偏离冻结的 SFT/reference 模型；`ppo_kl` 监控 current actor 与 rollout old actor 的变化。
+- 已通过最小 entropy 判断：分布越均匀 entropy 越高，越集中 entropy 越低。该项是 veRL PPO actor 原有的可选正则，官方快照默认 `entropy_coeff=0.001`，不是本项目新增算法。
+- 本次只完成代码阅读和概念验收，没有运行模型或训练，没有新增实验指标。
 
 ## 2026-08-14：Search-R1 reward → GRPO advantage 阅读验收
 
@@ -124,7 +135,7 @@ git diff --check
 
 # 下一步
 
-GRPO advantage → actor policy loss 阅读验收通过后，唯一下一任务是：**设计 MedQA 数据隔离与医学选择题 reward 的最小协议测试**。
+当前唯一下一任务是：**阅读 Search-R1 原始 NQ 数据从 Parquet 到规则 reward 的调用链，并按完成标准复述。**
 
 后续闸门顺序：
 
@@ -138,8 +149,7 @@ GRPO advantage → actor policy loss 阅读验收通过后，唯一下一任务�
 
 # 待补知识
 
-- `token_level_scores`、KL 后的 `token_level_rewards` 与 GRPO `advantages` 的数据流。
-- 零方差 rollout group、答案解析失败、无效搜索和 reward hacking 的处理方式。
+- 答案解析失败、无效搜索和 reward hacking 的处理方式。
 - MedQA 许可、版本、选项标签规范及跨数据集近重复检测。
 - 单卡 RTX 5090 上 veRL/vLLM + 3B LoRA GRPO 的真实资源边界。
 - SFT 正式评测的格式遵循、医学问答质量和幻觉分析设计。

@@ -43,6 +43,25 @@ import verl.utils.torch_functional as verl_F
 def collate_fn(data_list: list[dict]) -> dict:
     """合并样本，同时保留 tensor 与任意 Python 元数据。
 
+    输入：
+        ``data_list``（``list[dict]``）：同一 mini-batch 的单样本字典列表；每个字典
+        来自 ``RLHFDataset.__getitem__()``。其中 token 字段是 ``torch.Tensor``，
+        ``data_source/reward_model/index`` 等字段仍是 Python 对象。
+
+    输出：
+        ``dict``：
+
+        - tensor 字段通过 ``torch.stack(..., dim=0)`` 变为
+          ``[batch_size, seq_len]``；
+        - 非 tensor 字段变为 ``np.ndarray(dtype=object)``，长度为 ``batch_size``，
+          保持与 tensor 第 0 维逐样本对齐。
+
+    调用方式：
+        ``RayPPOTrainer._create_dataloader()`` 创建训练和验证 ``DataLoader`` 时将本函数
+        作为 ``collate_fn`` 传入；PyTorch DataLoader 每收集一批 ``__getitem__``
+        返回值后自动调用它。合并结果随后由 ``DataProto.from_single_dict()`` 拆分为
+        tensor batch 与 non-tensor batch。
+
     PyTorch 默认 collate 不适合 ``reward_model`` 这类嵌套 dict；这里显式分流：
     tensor 变成形状 ``[batch, seq_len]``，其余对象保持逐样本对齐。
     """
@@ -91,6 +110,23 @@ class RLHFDataset(Dataset):
                  chat_template_func=None,
                  return_raw_chat=False,
                  truncation='error'):
+        """记录数据配置，准备本地 Parquet，并建立行级 DataFrame。
+
+        输入：
+            ``parquet_files``（``str | list[str] | ListConfig``）：一个或多个本地/HDFS
+            Parquet 路径；``tokenizer``（``PreTrainedTokenizer``）：负责 chat template、
+            tokenization 和 pad token；其余参数控制 prompt 列名、最大长度、缓存、是否
+            返回 raw chat 以及过长 prompt 的处理方式。
+
+        输出：
+            构造完成的 ``RLHFDataset`` 实例；无显式返回值。实例持有下载后的文件列表
+            和拼接后的 ``self.dataframe``，但此时尚未逐行 tokenization。
+
+        调用方式：
+            ``RayPPOTrainer._create_dataloader()`` 分别为 train/validation 创建实例；
+            ``__init__`` 内部依次调用 ``_download()`` 和
+            ``_read_files_and_tokenize()``，之后实例被传给 PyTorch ``DataLoader``。
+        """
         if not isinstance(parquet_files, (List, ListConfig)):
             parquet_files = [parquet_files]
 
@@ -110,13 +146,36 @@ class RLHFDataset(Dataset):
         self._read_files_and_tokenize()
 
     def _download(self):
-        """统一处理本地/HDFS 路径；本地文件通常原样返回或进入缓存。"""
+        """把每个配置路径解析成本进程可读取的本地路径。
+
+        输入：
+            无显式参数；读取 ``self.parquet_files`` 和 ``self.cache_dir``。
+
+        输出：
+            无返回值；原地把 ``self.parquet_files[i]`` 替换为
+            ``copy_local_path_from_hdfs()`` 返回的本地路径。
+
+        调用方式：
+            仅由 ``RLHFDataset.__init__()`` 调用，并且发生在读取 Parquet 之前。
+        """
         from verl.utils.fs import copy_local_path_from_hdfs
         for i, parquet_file in enumerate(self.parquet_files):
             self.parquet_files[i] = copy_local_path_from_hdfs(src=parquet_file, cache_dir=self.cache_dir)
 
     def _read_files_and_tokenize(self):
-        """读取并拼接 Parquet；真正 tokenization 留到 ``__getitem__``。"""
+        """读取全部 Parquet 并拼接为行级 DataFrame。
+
+        输入：
+            无显式参数；遍历 ``self.parquet_files`` 中已经本地化的路径。
+
+        输出：
+            无返回值；为实例设置 ``self.dataframe``（``pandas.DataFrame``）。当前版本
+            没有在这里执行 tokenization，已注释的长度过滤也不会改变行数。
+
+        调用方式：
+            仅由 ``RLHFDataset.__init__()`` 在 ``_download()`` 之后调用；后续
+            ``__len__()`` 和 ``__getitem__()`` 都读取 ``self.dataframe``。
+        """
         dataframes = []
         for parquet_file in self.parquet_files:
             # read parquet files and cache
@@ -138,11 +197,32 @@ class RLHFDataset(Dataset):
         print(f'filter dataset len: {len(self.dataframe)}')
 
     def __len__(self):
+        """返回 DataFrame 行数；由 DataLoader 计算样本数和 batch 数时调用。"""
         return len(self.dataframe)
 
     def __getitem__(self, item):
         """
         将一行 prompt 转成模型张量，并原样保留 reward/来源等字段。
+
+        输入：
+            ``item``（``int``）：DataFrame 的位置索引，由 PyTorch DataLoader/Sampler
+            传入。对应行必须包含 ``self.prompt_key`` 指向的 chat prompt；其余列作为
+            non-tensor 元数据保留。
+
+        输出：
+            ``dict``：保留原行的 ``data_source/ability/reward_model/extra_info`` 等字段，
+            并新增：
+
+            - ``input_ids``（``torch.Tensor[int64]``）：shape ``[max_prompt_length]``；
+            - ``attention_mask``（``torch.Tensor``）：同 shape，左 padding 为 0；
+            - ``position_ids``（``torch.Tensor[int64]``）：同 shape；
+            - ``index``：从 ``extra_info['index']`` 提升到顶层，缺失时默认为 0；
+            - 可选 ``raw_prompt``：当 ``return_raw_chat=True`` 时保留未套模板的 chat。
+
+        调用方式：
+            PyTorch DataLoader 按 sampler 产生的索引逐条调用；一批返回值随后交给
+            本文件 ``collate_fn()``。训练器再通过 ``DataProto.from_single_dict()``
+            把该 batch 送入 rollout、reward 和 actor update 主链。
 
         典型 ``chat`` 是 ``[{"role": "user", "content": "..."}]``。有 chat template
         的 tokenizer 会加模型约定的控制 token 和 generation prompt；Base 模型若没有
