@@ -39,25 +39,25 @@ Qwen2.5-3B Base
 
 # 今日唯一任务
 
-**2026-08-16：阅读 Search-R1 原始 NQ 数据如何进入规则 reward。**
+**2026-08-17：只读检查点 A——一行 NQ Parquet 怎样变成一个 batch。**
 
-沿真实调用链只读以下位置：
+按顺序只读以下函数：
 
 1. `nq_search.py::make_prefix()`、`make_map_fn()`、`process_fn()`；
-2. `rl_dataset.py::RLHFDataset` 与 `collate_fn()`；
-3. `ray_trainer.py::RayPPOTrainer._create_dataloader()`；
-4. `main_ppo.py::RewardManager.__call__()`；
-5. `qa_em.py::compute_score_em()`、`extract_solution()`、`em_check()`、`normalize_answer()`。
+2. `rl_dataset.py::RLHFDataset.__init__()`、`_read_files_and_tokenize()`、
+   `__getitem__()`、`collate_fn()`。
 
-本轮只理解 Search-R1 当前代码，不下载数据、不启动模型或训练。
+详细的逐函数“作用/注意点”见 `Search-R1/docs/source_code_learning_zh.md` 第 5 节。
+本轮读到 batch 即停止；`_create_dataloader → RewardManager → qa_em` 是检查点 B，
+等检查点 A 复述验收后再读。
 
 # 完成标准
 
 - 能列出 NQ Parquet 一行的 `data_source`、`prompt`、`ability`、`reward_model`、`extra_info` 及其类型。
 - 能解释 chat template、tokenization 和左 padding 怎样产生三类模型输入 tensor。
 - 能解释 `collate_fn()` 为何分别合并 tensor 与 Python 对象，并说出 batch 维度。
-- 能追踪 `extra_info.index → index → uid`，说明同题多条 rollout 的分组依据。
-- 能追踪 `reward_model.ground_truth['target'] → RewardManager → compute_score_em()`，并解释 0/1 EM。
+- 能追踪 `extra_info.index → __getitem__()` 返回字典的顶层 `index`；本轮不继续追 `uid`。
+- 能说明 `_read_files_and_tokenize()` 当前为什么名为 tokenize 却没有执行 tokenization。
 - 不把静态注释检查误报为数据、模型或训练已运行。
 
 # 已完成
@@ -135,7 +135,10 @@ git diff --check
 
 # 下一步
 
-当前唯一下一任务是：**阅读 Search-R1 原始 NQ 数据从 Parquet 到规则 reward 的调用链，并按完成标准复述。**
+当前唯一下一任务是：**完成检查点 A：复述一行 NQ Parquet 怎样经过 `RLHFDataset` 和 `collate_fn()` 变成一个 batch。**
+
+检查点 A 验收后，再进入检查点 B：`_create_dataloader → fit` 的 metadata 片段
+`→ RewardManager → qa_em`，追踪 ground truth 怎样成为 0/1 reward。
 
 后续闸门顺序：
 

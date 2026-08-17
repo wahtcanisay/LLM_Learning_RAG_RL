@@ -419,7 +419,29 @@ class RayPPOTrainer(object):
                           config=OmegaConf.to_container(self.config, resolve=True))
 
     def _create_dataloader(self):
-        """创建 train/val DataLoader，并把总步数回填到优化器配置。"""
+        """创建训练/验证 DataLoader，并计算训练总步数。
+
+        输入：
+            无显式参数；从 ``self.config.data`` 读取 train/val Parquet 路径、batch size、
+            prompt 最大长度和抽样数量，从 ``self.tokenizer`` 取得 tokenizer。
+
+        输出：
+            无返回值；在实例上写入 ``train_dataset``、``val_dataset``、
+            ``train_dataloader``、``val_dataloader`` 和 ``total_training_steps``，并把总
+            步数回填到 actor/critic 的优化器配置。
+
+        调用方式：
+            仅由 ``RayPPOTrainer.__init__()`` 调用。之后 ``fit()`` 遍历
+            ``self.train_dataloader``，``_validate()`` 遍历 ``self.val_dataloader``；
+            每个普通字典 batch 再交给 ``DataProto.from_single_dict()``。
+
+        注意：
+            两个 DataLoader 都使用本项目的 ``collate_fn``，并设置 ``drop_last=True``，
+            因而不足一批的尾部样本不会进入训练或验证。传给 ``RLHFDataset`` 的
+            ``filter_prompts=True`` 在当前快照中不会实际过滤长度，因为对应过滤代码
+            已被注释；过长 prompt 最终由 ``__getitem__()`` 的 ``truncation='error'``
+            路径报错。
+        """
         from torch.utils.data import DataLoader
         # TODO: we have to make sure the batch size is divisible by the dp size
         from verl.utils.dataset.rl_dataset import RLHFDataset, collate_fn

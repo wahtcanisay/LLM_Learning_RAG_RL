@@ -92,36 +92,59 @@ train_grpo.sh（Hydra 参数覆盖）
 | FAISS | 高效向量近邻检索库。 | Dense 路径加载 embedding index 并做 top-k 搜索。BM25 路径不依赖向量。 |
 | W&B (`wandb`) | 实验日志与曲线平台。 | 记录 reward、loss、KL、吞吐和验证指标；不参与训练算法。 |
 
-## 5. 今天唯一任务（30～90 分钟）
+## 5. 数据到 reward 的逐函数阅读路线
 
-沿着一条 NQ 样本阅读“原始数据 → Parquet → DataLoader → reward”，顺序固定为：
+整条链拆成两个检查点。不要一次通读五个大文件，也不要从头阅读 `fit()`；只看表中列出的函数或代码片段。
 
-1. `scripts/data_process/nq_search.py::make_prefix()`、`make_map_fn()`、`process_fn()`；
-2. `verl/utils/dataset/rl_dataset.py::RLHFDataset.__init__()`、`_download()`、
-   `_read_files_and_tokenize()`、`__getitem__()`、`collate_fn()`；
-3. `verl/trainer/ppo/ray_trainer.py::RayPPOTrainer._create_dataloader()`，只看 Dataset
-   与 DataLoader 在哪里被创建；
-4. `verl/trainer/main_ppo.py::RewardManager.__call__()`，只追踪
-   `data_source` 和 `reward_model.ground_truth`；
-5. `verl/utils/reward_score/qa_em.py::compute_score_em()`、`extract_solution()`、
-   `em_check()`、`normalize_answer()`。
+### 检查点 A：一行 Parquet 怎样变成一个 batch（今天唯一任务，45～75 分钟）
 
-完成标准：
+| 顺序 | 文件与函数 | 简单介绍 | 阅读时注意 |
+|---:|---|---|---|
+| 1 | `scripts/data_process/nq_search.py::make_prefix()` | 把题目拼进 Search-R1 的标签协议，返回一段 user prompt 字符串。 | 此处只拼文本，不做 tokenization；prompt 自己已经含有一个 `<answer> Beijing </answer>` 格式示例。 |
+| 2 | 同文件 `make_map_fn(split)` | 创建并返回一个逐样本处理函数，同时用闭包记住当前是 train 还是 test。 | 真正处理样本的是内部 `process_fn()`；`split` 不是每次处理时重新传入。 |
+| 3 | 同文件 `process_fn(example, idx)` | 把原始 NQ 行变成五个顶层字段，gold aliases 写进 `reward_model.ground_truth['target']`。 | `idx` 由 `Dataset.map(with_indices=True)` 传入；`extra_info.index` 后面会成为同题 rollout 的分组键。 |
+| 4 | `verl/utils/dataset/rl_dataset.py::RLHFDataset.__init__()` | 保存 tokenizer/长度配置，定位 Parquet，并把文件读成 DataFrame。 | 构造阶段还没有逐条生成 token tensor；真正的逐条 tokenization 在 `__getitem__()`。 |
+| 5 | 同文件 `_read_files_and_tokenize()` | 用 Pandas 读取并拼接所有 Parquet。 | 函数名容易误导：当前实现没有 tokenization，而且长度过滤代码已被注释。 |
+| 6 | 同文件 `__getitem__(item)` | 取 DataFrame 一行，应用 chat template，并生成定长 `input_ids/attention_mask/position_ids`。 | prompt 使用左 padding；原始 `prompt` 列被弹出，其他 reward 元数据不参与 tokenization、仍保留在返回字典。 |
+| 7 | 同文件 `collate_fn(data_list)` | 把多条 `__getitem__()` 结果合成一个 batch。 | tensor 用 `torch.stack` 增加 batch 维；`reward_model` 等 Python 对象变成 `np.ndarray(dtype=object)`，不是 tensor。 |
 
-1. 能列出一行 NQ Parquet 的五个顶层字段，并说出各自的数据类型；
-2. 能解释 chat prompt 怎样经过 chat template、tokenization 和左 padding 变成
-   `input_ids/attention_mask/position_ids`；
-3. 能解释 `collate_fn()` 为什么分别处理 tensor 与 Python 对象，以及 batch 后的 shape；
-4. 能追踪 `extra_info.index → 顶层 index → uid`，说明同题 rollout 的分组依据；
-5. 能追踪 `reward_model.ground_truth['target']` 怎样进入 `compute_score_em()` 并得到 0/1 reward。
+`_download()` 和 `__len__()` 本轮只需知道用途：前者把 HDFS/本地路径统一为本地路径，后者返回 DataFrame 行数；它们不改变样本字段，不需要精读。
 
-在 `cmd.exe` 中查看关键位置：
+检查点 A 完成标准：
+
+1. 手写出 `process_fn()` 返回的五个顶层字段及类型；
+2. 解释为什么 `reward_model` 不会经过 tokenizer；
+3. 解释单样本 `[max_prompt_length]` 如何在 `collate_fn()` 后变成
+   `[batch_size, max_prompt_length]`；
+4. 能画出 `extra_info.index → __getitem__() 返回的顶层 index`，先停在这里。
+
+### 检查点 B：batch 元数据怎样变成 0/1 reward（A 验收后再读）
+
+| 顺序 | 文件与函数/片段 | 简单介绍 | 阅读时注意 |
+|---:|---|---|---|
+| 1 | `verl/trainer/ppo/ray_trainer.py::RayPPOTrainer._create_dataloader()` | 用 `RLHFDataset + collate_fn` 创建 train/val DataLoader。 | train 和 val 都设置 `drop_last=True`，不足一个 batch 的尾部样本会被丢弃。 |
+| 2 | 同文件 `fit()` 中 `DataProto.from_single_dict()`、`batch.repeat()`、`uid = index.copy()` 三处 | 把普通 batch 转成 veRL `DataProto`，为每题复制多条 rollout，并把题目 index 作为 GRPO uid。 | 不要通读整个 `fit()`；只追踪 metadata，`uid` 必须让同题的多条 rollout 保持相同。 |
+| 3 | 同文件 `fit()` 中 `self.reward_fn(batch)` 到 `token_level_scores` | 调用规则 reward，并把返回 tensor 放入训练 batch。 | `token_level_scores` 还不是 advantage；后面才经过 KL 分支和组内标准化。 |
+| 4 | `verl/trainer/main_ppo.py::RewardManager.__call__()` | 逐样本解码有效 `prompt + response`，取 `data_source` 和 ground truth，构造 token-level reward tensor。 | 序列分数只写到最后一个有效 response token；parser 看到的是完整 prompt 加 response。 |
+| 5 | 同文件 `_select_rm_score_fn(data_source)` | 按数据来源选择规则评分函数。 | 当前列出的开放域 QA 数据集都进入同一个 `qa_em.compute_score_em()`。 |
+| 6 | `verl/utils/reward_score/qa_em.py::compute_score_em()` | 串起“解析答案 → EM 比较”，返回默认 0/1 的序列分数。 | `format_score` 默认也是 0，所以“标签格式正确但答案错误”仍然是 0。 |
+| 7 | 同文件 `extract_solution(solution_str)` | 用正则找出所有完整 answer 块，返回最后一个。 | 当前实现要求至少两个 answer 块；第一个来自 prompt 示例，第二个才是模型答案。 |
+| 8 | 同文件 `em_check(prediction, golden_answers)` | 预测命中任意一个 gold alias 就返回 1。 | 比较的是规范化后的完整字符串，不是子串匹配。 |
+| 9 | 同文件 `normalize_answer(s)` | 小写、删英文标点和冠词，再压缩空白。 | 这是英文开放域 QA 的表面规范化；它不理解答案语义。 |
+
+检查点 B 完成标准：能从
+`reward_model.ground_truth['target'] → RewardManager → compute_score_em → reward_tensor`
+逐步说清每个中间值的类型，并说明为什么非零分数位于 response 的最后一个有效 token。
+
+在 `cmd.exe` 中按检查点定位代码：
 
 ```cmd
 cd /d "D:\code_list\some tricks\LLMLeanring"
 rg -n "def make_prefix|def make_map_fn|def process_fn" Search-R1\scripts\data_process\nq_search.py
-rg -n "def collate_fn|class RLHFDataset|def __getitem__|def _create_dataloader" Search-R1\verl
-rg -n "class RewardManager|def compute_score_em|def extract_solution|def em_check|def normalize_answer" Search-R1\verl
+rg -n "def collate_fn|class RLHFDataset|def __init__|def _read_files_and_tokenize|def __getitem__" Search-R1\verl\utils\dataset\rl_dataset.py
+rg -n "def _create_dataloader|DataProto.from_single_dict|uid.*index|self.reward_fn" Search-R1\verl\trainer\ppo\ray_trainer.py
+rg -n "def _select_rm_score_fn|class RewardManager|def __call__" Search-R1\verl\trainer\main_ppo.py
+rg -n "def compute_score_em|def extract_solution|def em_check|def normalize_answer" Search-R1\verl\utils\reward_score\qa_em.py
 ```
 
-本轮只做当前源码的数据链阅读，不下载数据、不启动 `train_grpo.sh`。
+本轮不下载数据、不启动 `train_grpo.sh`，也不阅读 Ray/FSDP/vLLM 底层。
