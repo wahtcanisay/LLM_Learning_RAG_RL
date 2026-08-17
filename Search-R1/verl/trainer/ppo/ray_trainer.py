@@ -196,6 +196,7 @@ def compute_advantage(data: DataProto, adv_estimator, gamma=1.0, lam=1.0, num_re
         advantages, returns = core_algos.compute_grpo_outcome_advantage(token_level_rewards=token_level_rewards,
                                                                         eos_mask=response_mask,
                                                                         index=index)
+        # GRPO之中返回的advantage和return为相同值
         data.batch['advantages'] = advantages
         data.batch['returns'] = returns
     else:

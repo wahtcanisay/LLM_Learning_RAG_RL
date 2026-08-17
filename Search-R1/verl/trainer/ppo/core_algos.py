@@ -173,7 +173,7 @@ def compute_grpo_outcome_advantage(token_level_rewards: torch.Tensor,
             scores[i] = (scores[i] - id2mean[index[i]]) / (id2std[index[i]] + epsilon)
         # 一个 rollout 的相对 advantage 广播到所有有效 response token。
         scores = scores.unsqueeze(-1).tile([1, response_length]) * eos_mask
-
+        # GRPO中返回的score和reward均为相同值
     return scores, scores
 
 
