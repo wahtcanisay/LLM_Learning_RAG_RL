@@ -4,7 +4,7 @@
 
 **Goal:** 将 Search-R1 的 NQ 数据到规则 reward 阅读路线细化为可逐函数执行的两个检查点，并补齐影响理解的源码注释。
 
-**Architecture:** 不改运行逻辑。先核对真实调用链，再在现有中文导读中为每个必读函数增加“作用”和“注意点”；源码只补当前明显过短的 `_create_dataloader()` 注释，最后更新学习进度并执行 comment-only 验证。
+**Architecture:** 不改运行逻辑。先核对真实调用链，再用“完整数据流 → 文件名 → 函数名 → 输入/输出 → 设计作用 → 调用位置 → 注意点”的层级重写中文导读；源码只补当前明显过短的 `_create_dataloader()` 注释，最后更新学习进度并执行 comment-only 验证。
 
 **Tech Stack:** Python、Hugging Face Datasets、Pandas/Parquet、PyTorch DataLoader、veRL DataProto。
 
@@ -33,9 +33,9 @@
 - Modify: `Search-R1/docs/source_code_learning_zh.md`
 - Modify: `Search-R1/verl/trainer/ppo/ray_trainer.py`
 
-- [x] **Step 1: 将路线拆成两个阅读检查点**
+- [x] **Step 1: 将路线改为数据流和文件级逐函数讲解**
 
-为每个必读函数写一句作用介绍和一个容易误读的注意点；今天只验收“Parquet 一行怎样变成一个 batch”。
+先展示跨文件数据流，再以五个明确文件名作为标题，为必读函数分别解释输入、输出、设计作用、调用位置和注意点；今天只验收“Parquet 一行怎样变成一个 batch”。
 
 - [x] **Step 2: 补充 `_create_dataloader()` 的输入、输出、调用方式和注意点**
 

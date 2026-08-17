@@ -47,7 +47,9 @@ Qwen2.5-3B Base
 2. `rl_dataset.py::RLHFDataset.__init__()`、`_read_files_and_tokenize()`、
    `__getitem__()`、`collate_fn()`。
 
-详细的逐函数“作用/注意点”见 `Search-R1/docs/source_code_learning_zh.md` 第 5 节。
+先读 `Search-R1/docs/source_code_learning_zh.md` 第 5.1 节完整数据流，再按第
+5.2～5.3 节的文件名和函数名逐个阅读；每个函数都列有输入、输出、设计作用、
+调用位置和注意点。
 本轮读到 batch 即停止；`_create_dataloader → RewardManager → qa_em` 是检查点 B，
 等检查点 A 复述验收后再读。
 
