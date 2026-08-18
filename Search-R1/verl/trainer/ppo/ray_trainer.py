@@ -448,11 +448,11 @@ class RayPPOTrainer(object):
         from verl.utils.dataset.rl_dataset import RLHFDataset, collate_fn
         self.train_dataset = RLHFDataset(parquet_files=self.config.data.train_files,
                                          tokenizer=self.tokenizer,
-                                         prompt_key=self.config.data.prompt_key,
+                                         prompt_key=self.config.data.prompt_key, # prompt索引关键字
                                          max_prompt_length=self.config.data.max_prompt_length,
                                          filter_prompts=True,
-                                         return_raw_chat=self.config.data.get('return_raw_chat', False),
-                                         truncation='error')
+                                         return_raw_chat=self.config.data.get('return_raw_chat', False), # 是否保留原本的chat格式
+                                         truncation='error') # 超max_length直接报错
         if self.config.data.train_data_num is not None:
             if self.config.data.train_data_num > len(self.train_dataset.dataframe):
                 print(f"[WARNING] training dataset size is smaller than desired size. Using the dataset as the original size {len(self.train_dataset.dataframe)}")
@@ -782,7 +782,7 @@ class RayPPOTrainer(object):
                 batch: DataProto = DataProto.from_single_dict(batch_dict)
                 # [Search-R1 定制点] 在进入 Agent loop 前按 n_agent 扩展每道题，
                 # 让同一问题得到多条独立完整轨迹，构成 GRPO 的组内比较样本。
-                batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n_agent, interleave=True)
+                batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n_agent, interleave=True) # 复制扩展本次batch
 
                 # pop those keys for generation
                 gen_batch = batch.pop(batch_keys=['input_ids', 'attention_mask', 'position_ids'])
@@ -799,7 +799,7 @@ class RayPPOTrainer(object):
                                                                 dtype=object)
                         # repeat to align with repeated responses in rollout
                         batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n, interleave=True)
-                        batch = batch.union(gen_batch_output)
+                        batch = batch.union(gen_batch_output) # rollout的tensor也加入这里
 
                 ####################
                 # Below is aLL about agents - the "LLM + forloop"
@@ -831,8 +831,7 @@ class RayPPOTrainer(object):
                         #                                         dtype=object)
                         # [Search-R1 定制点] n_agent 在生成前已经把每道题扩成多条轨迹，
                         # 因此必须复用题目 index；若此时按行生成随机 UUID，同题轨迹将无法组成 GRPO 相对奖励组。
-                        batch.non_tensor_batch['uid'] = batch.non_tensor_batch['index'].copy()
-                                            
+                        batch.non_tensor_batch['uid'] = batch.non_tensor_batch['index'].copy() 
                         # repeat to align with repeated responses in rollout
                         batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n, interleave=True)
                         batch = batch.union(final_gen_batch_output)
