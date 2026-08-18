@@ -78,3 +78,6 @@ STUDY_PROGRESS_deepseek.md
 
 # MIRAGE benchmark repo (reference clone, reproducible via git clone)
 MIRAGE/
+
+# Local research papers
+/papers/
