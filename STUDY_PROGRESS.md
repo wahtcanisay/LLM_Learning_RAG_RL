@@ -1,23 +1,25 @@
 # 当前阶段
 
-**阶段 3～5 合并主线：MedSearch-R1 Mini（Medical SFT → Search-R1 → 医学搜索强化学习）。**
+**阶段 4：Search-R1 3B 搜索强化学习复现。**
 
-阶段 1 的 Medical GraphRAG 基线和阶段 2 的 LinearRAG 迁移已经完成并冻结。当前不再扩展检索器，优先完成 Qwen2.5-3B 的 Medical SFT、医学搜索环境、最小 GRPO 和独立评测闭环。
+阶段 1、阶段 2 已完成并冻结，阶段 3 已完成最小 SFT smoke。当前只学习和验证
+Search-R1 原项目，不引入医学数据、领域 reward 或后续项目设计。
 
 ```text
-Qwen2.5-3B Base
-  → Medical LoRA SFT
-  → MedQA + Medical Textbooks BM25
-  → SEARCH / ANSWER 多轮 rollout（最多 2 次检索）
+NQ / HotpotQA Parquet
+  → Search-R1 多轮 SEARCH / ANSWER rollout
+  → 原项目 HTTP 检索服务
+  → 开放域 QA Exact Match reward
   → outcome-based GRPO
-  → Medical-SFT / Fixed RAG / MedSearch-R1 对照评测
+  → actor policy update
 ```
 
-第一版固定范围：Qwen2.5-3B、LoRA、CPU BM25、`SEARCH`/`ANSWER` 两种动作、最多 2 次检索、可程序验证的最终答案 reward。暂不加入多工具、复杂过程奖励、LLM Judge、7B/9B 或新的 Retriever。
+当前学习范围固定为 Search-R1 官方数据协议、Agent loop、检索接口、规则 reward、
+GRPO advantage 和 actor update；暂不讨论任何领域迁移。
 
 # 当前项目
 
-**MedSearch-R1 Mini：面向医学问答的多轮搜索强化学习。**
+**Search-R1：通过强化学习学习多轮搜索与回答。**
 
 当前代码学习位置：
 
@@ -39,30 +41,90 @@ Qwen2.5-3B Base
 
 # 今日唯一任务
 
-**2026-08-17：只读检查点 A——一行 NQ Parquet 怎样变成一个 batch。**
+**2026-08-18：验收 NQ Parquet → batch → GRPO uid 的数据流。**
 
-按顺序只读以下函数：
+本次只验收以下数据变化，不重复考察已经通过的 reward、advantage 和 policy loss：
 
-1. `nq_search.py::make_prefix()`、`make_map_fn()`、`process_fn()`；
-2. `rl_dataset.py::RLHFDataset.__init__()`、`_read_files_and_tokenize()`、
-   `__getitem__()`、`collate_fn()`。
+1. `process_fn()` 的五个顶层字段及 prompt/gold 隔离；
+2. `__getitem__()` 单样本 tensor 与 `collate_fn()` batch tensor 的 shape；
+3. `extra_info.index → 顶层 index → DataProto non_tensor_batch → uid`；
+4. `_read_files_and_tokenize()`、`filter_prompts=True`、`drop_last=True` 的真实行为。
 
-先读 `Search-R1/docs/source_code_learning_zh.md` 第 5.1 节完整数据流，再按第
-5.2～5.3 节的文件名和函数名逐个阅读；每个函数都列有输入、输出、设计作用、
-调用位置和注意点。
-本轮读到 batch 即停止；`_create_dataloader → RewardManager → qa_em` 是检查点 B，
-等检查点 A 复述验收后再读。
+验收已通过：已能区分 rollout 生成、uid 标签建立与 GRPO 分组统计的执行时序。
+本次没有运行数据预处理、模型、检索服务或训练。
 
 # 完成标准
 
-- 能列出 NQ Parquet 一行的 `data_source`、`prompt`、`ability`、`reward_model`、`extra_info` 及其类型。
-- 能解释 chat template、tokenization 和左 padding 怎样产生三类模型输入 tensor。
-- 能解释 `collate_fn()` 为何分别合并 tensor 与 Python 对象，并说出 batch 维度。
-- 能追踪 `extra_info.index → __getitem__()` 返回字典的顶层 `index`；本轮不继续追 `uid`。
-- 能说明 `_read_files_and_tokenize()` 当前为什么名为 tokenize 却没有执行 tokenization。
-- 不把静态注释检查误报为数据、模型或训练已运行。
+- 能说明 gold 固定保存在 `reward_model.ground_truth.target`，且不能暴露在模型 prompt 中。
+- 能区分 `__getitem__()` 的 `[max_prompt_length]` 与 collate 后的
+  `[batch_size, max_prompt_length]`。
+- 能用 `[7, 9]`、`n_agent=3` 推导出 interleave 后的
+  `[7, 7, 7, 9, 9, 9]`，并按 uid 分成两个 GRPO group。
+- 能区分 `index` 的数据集样本身份与 `uid` 的当前优化分组身份。
+- 能解释 uid 不参与 rollout，只需在 `_balance_batch()` 和 `compute_advantage()` 前存在。
+- 能准确说明 `drop_last=True` 只丢弃不足一个完整 batch 的尾部样本。
+
+# 明日唯一任务（2026-08-19）
+
+**只深入阅读 `Search-R1/verl/trainer/ppo/ray_trainer.py::RayPPOTrainer.fit()`。**
+
+进度纠正：此前只阅读了 `fit()` 中四个组件调用点，并分别学习了 rollout、reward、
+advantage 和 actor loss；没有完整追踪一次 training step。因此启动脚本、Hydra 配置、
+worker 初始化全部后移，明天只研究 `fit()` 如何串联这些组件。
+
+阅读顺序：
+
+```text
+训练前验证 + GenerationManager
+→ batch_dict 转 DataProto
+→ n_agent 扩展同题轨迹
+→ run_llm_loop
+→ 重算 old_log_probs
+→ uid + union + batch balance
+→ ref_log_prob
+→ rule reward
+→ GRPO advantage
+→ information loss mask
+→ update_actor
+→ validation / save / log / return
+```
+
+阅读时只走 `do_search=True + GRPO + use_critic=False + use_kl_loss=True` 的实际分支；
+跳过普通单轮 rollout、GAE/critic、driver 侧 KL penalty 和所有被调函数内部。
+
+详细的输入、输出、Tensor shape、字段消费者和注意点已更新到
+`Search-R1/docs/source_code_learning_zh.md` 第 6 节。源码 `fit()` 的 docstring 与
+关键 DataProto 变换点也已补充学习注释，未修改行为。
+
+# 明日完成标准
+
+- 能用 `B/G/N/Lp/Lr` 说明 batch size 和 tensor shape 怎样变化。
+- 能逐阶段列出 `DataProto` 新增的字段。
+- 能解释为什么多轮轨迹结束后必须重算 `old_log_probs`。
+- 能区分 `old_log_probs` 与 `ref_log_prob` 的来源和用途。
+- 能解释 `union()` 为什么是 metadata、完整轨迹与 old log-prob 汇合点。
+- 能说明 reward 何时变成 advantage，advantage 何时被 actor 消费。
+- 能说明 information token 如何参与 attention，却通过 `loss_mask` 排除出 policy loss。
+- 能说明一个 training step 何时验证、保存、记录日志并退出。
+
+检查问题：
+
+> 如果删除 `batch = batch.union(final_gen_batch_output)`，后面的
+> `RewardManager`、GRPO advantage 和 actor update 分别会缺少哪些数据？
+
 
 # 已完成
+
+## 2026-08-18：Search-R1 NQ 数据 → batch → uid 阅读验收
+
+- 已读完 `nq_search.py`、`rl_dataset.py`、`ray_trainer.py`、`main_ppo.py`、`qa_em.py` 的指定代码段；已掌握的 reward/GRPO 重复段未重复阅读。
+- 已能列出 Parquet 五个顶层字段，并解释 prompt 与 gold answer 隔离是字段协议与防止答案泄漏的共同要求。
+- 已纠正 tensor shape：`__getitem__()` 返回单样本 `[max_prompt_length]`，`collate_fn()` 后为 `[batch_size, max_prompt_length]`，再按 `n_agent` 扩展 batch 维。
+- 已理解 `n_agent` 在 rollout 前扩展轨迹，而 uid 不参与生成，只在后续 `compute_advantage()` 中提供分组标签。
+- 已定位真正的分组代码：`compute_grpo_outcome_advantage()` 通过
+  `id2score[index[i]].append(scores[i])` 按 uid 收集同题 rollout，并计算组内均值、标准差和 advantage。
+- 已理解 `_read_files_and_tokenize()` 当前不 tokenize、`filter_prompts=True` 当前不生效，以及 `drop_last=True` 只丢弃不完整尾批次。
+- 本次是源码复述验收，没有运行模型或训练，没有新增实验指标。
 
 ## 2026-08-16：GRPO advantage → actor policy loss 阅读验收
 
@@ -107,12 +169,6 @@ git diff --check
 - 已建立 `Search-R1/docs/source_code_learning_zh.md` 和标准库验证脚本 `Search-R1/scripts/verify_source_notes.py`。
 - 官方 8 GPU 配置不能直接用于单张 RTX 5090；单卡配置必须以后通过真实 smoke 确认。
 
-## 2026-08-11：MedSearch-R1 Mini 范围冻结
-
-- 第一版动作空间、模型、检索后端、最大搜索轮数和 outcome reward 已冻结。
-- 核心对照固定为 Medical-SFT、Medical-SFT + Fixed RAG、MedSearch-R1。
-- PiAgent 是闭环完成后的产品接入层，不与当前 RL 主线并行开发。
-
 ## MedicalGPT SFT：已验证范围
 
 - 已跑通 Qwen2.5-3B、BF16 LoRA 的 100 条 smoke：rank `8`、alpha `16`、batch `2`、gradient accumulation `4`、max length `1024`、1 epoch、12 steps、seed `20260809`。
@@ -130,34 +186,41 @@ git diff --check
 | 问题 | 当前处理 |
 |---|---|
 | Search-R1 官方配置面向 8 GPU | 当前只读代码；以后单独设计 3B、小 batch、少 rollout 的单卡 smoke。 |
-| MedQA 与 Medical SFT 可能数据泄漏 | 正式训练前做题干、答案和语义近重复检查，并隔离 train/validation/test。 |
-| 开放域 `qa_em.py` 不适合直接评分 MedQA | 迁移时实现显式 A/B/C/D 解析并用单元样例验证，不沿用英文 alias EM 假设。 |
 | 当前环境缺少 veRL 重型依赖 | 现阶段使用 AST、compileall 和纯协议样例验证；进入训练闸门后再建立隔离环境。 |
 | 单卡 32GB 的 GRPO 资源边界未知 | 不做纸面外推；用真实日志记录 batch、rollout、长度、显存和耗时。 |
+| 自有 search engine 尚未接入 Search-R1 | 当前只冻结最小请求/响应协议；进入推理 smoke 前再实现适配层。 |
 
 # 下一步
 
-当前唯一下一任务是：**完成检查点 A：复述一行 NQ Parquet 怎样经过 `RLHFDataset` 和 `collate_fn()` 变成一个 batch。**
+当前已读完 `fit()` 调用的各个核心组件，但尚未读完 `fit()` 本身的调度逻辑。
+下一次唯一任务是：**沿一次 Search-R1 GRPO training step 完整阅读
+`RayPPOTrainer.fit()`。**
 
-检查点 A 验收后，再进入检查点 B：`_create_dataloader → fit` 的 metadata 片段
-`→ RewardManager → qa_em`，追踪 ground truth 怎样成为 0/1 reward。
+只读一个函数，不展开其调用对象：
+
+1. 训练前验证和 generation manager；
+2. DataProto 构造、`n_agent` repeat 与 prompt/metadata 分离；
+3. 多轮 rollout、`old_log_probs` 重算与 `union`；
+4. reference、reward 和 GRPO advantage 的执行顺序；
+5. information loss mask 与 actor update；
+6. 验证、保存、日志和退出条件。
 
 后续闸门顺序：
 
-1. MedQA 数据隔离和重复检查；
-2. Medical SFT 正式训练与独立评测；
-3. Medical Textbooks + CPU BM25 的无 RL Search 环境；
-4. 0/1/2-search rollout、答案解析和 reward 单元验证；
-5. 单卡 Qwen2.5-3B 最小 GRPO；
-6. Medical-SFT / Fixed RAG / MedSearch-R1 独立测试集对照；
-7. 基于真实结果整理简历，再评估规模扩展和 PiAgent 接入。
+1. 验收 `fit()` 的完整单步数据流与字段增长；
+2. 阅读 `RayPPOTrainer._validate()`，比较训练和验证 rollout；
+3. 阅读训练启动、Hydra 配置合并和 worker 初始化；
+4. 阅读 `infer.py`，区分训练、验证和交互推理；
+5. 为自己的 search engine 做最小协议适配；
+6. 运行一条无训练 Search-R1 推理；
+7. 根据 RTX 5090 真实日志设计最小 GRPO smoke。
+
 
 # 待补知识
 
 - 答案解析失败、无效搜索和 reward hacking 的处理方式。
-- MedQA 许可、版本、选项标签规范及跨数据集近重复检测。
+- 自有 search engine 的 Search-R1 协议适配、空结果和服务不可用处理。
 - 单卡 RTX 5090 上 veRL/vLLM + 3B LoRA GRPO 的真实资源边界。
-- SFT 正式评测的格式遵循、医学问答质量和幻觉分析设计。
 
 # 实验结果总表
 

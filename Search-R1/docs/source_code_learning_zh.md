@@ -375,3 +375,262 @@ rg -n "def compute_score_em|def extract_solution|def em_check|def normalize_answ
 ```
 
 本轮不下载数据、不启动 `train_grpo.sh`，也不阅读 Ray/FSDP/vLLM 底层。
+
+## 6. 纠正阅读进度：2026-08-19 深入 `RayPPOTrainer.fit()`
+
+### 6.1 此前真正读到了哪里
+
+此前没有完整阅读 `fit()`。已经完成的是它调用的组件：
+
+- `run_llm_loop()` 的多轮 rollout；
+- `RewardManager` 与 EM reward；
+- GRPO 的 uid 分组和 advantage；
+- actor 内部的 ratio、clip、entropy、KL 和 policy loss；
+- `fit()` 中四个孤立片段：`DataProto.from_single_dict()`、`repeat(n_agent)`、
+  `uid=index`、`self.reward_fn(batch)`。
+
+缺少的是一次 training step 的完整执行顺序，以及同一个 `DataProto` 在每一阶段
+新增什么字段。因此不能把“组件读过”记录成“训练主循环读完”。
+
+官方检索器继续作为外部黑盒；自己的 search engine 以后只适配请求/响应协议。
+
+### 6.2 明天唯一阅读对象
+
+`文件：Search-R1/verl/trainer/ppo/ray_trainer.py`
+
+`函数：RayPPOTrainer.fit()`（当前约 732～989 行，以函数定义为准）
+
+明天不读启动脚本、YAML、`main_task()`、`init_workers()`、`_validate()` 内部、
+Ray/FSDP/vLLM 或检索实现。只研究 `fit()` 如何调度已经读过的组件。
+
+### 6.3 固定实际分支
+
+阅读时只走 Search-R1 官方 GRPO 主线：
+
+```text
+do_search=True
+adv_estimator="grpo"
+use_critic=False
+actor.use_kl_loss=True
+actor.state_masking=True
+rollout.n_agent=5
+rollout.n=1
+```
+
+所以跳过：
+
+- `do_search=False` 的普通单轮生成；
+- GAE 的 `compute_values()/update_critic()`；
+- driver 侧 `apply_kl_penalty()`，因为当前 KL 在 actor loss 内计算。
+
+保留 reference log-prob、规则 reward、GRPO advantage、state masking 和 actor update。
+
+### 6.4 数据符号与容器
+
+```text
+B  = DataLoader 题目数
+G  = n_agent
+N  = B × G，rollout 轨迹数
+Lp = prompt 长度
+Lr = 最终 response 长度
+```
+
+`batch: DataProto` 中有三类存储：
+
+```text
+batch.batch
+  Tensor 字段：input_ids、responses、old_log_probs、advantages...
+
+batch.non_tensor_batch
+  Python/NumPy 字段：index、uid、data_source、reward_model...
+
+batch.meta_info
+  调度字段：global_token_num...
+```
+
+每读一段都要记录：新增字段、shape、字段的下一位消费者。
+
+### 6.5 第一段：训练前准备
+
+```text
+global_steps=0
+→ 可选 _validate()
+→ global_steps=1
+→ GenerationConfig(...)
+→ LLMGenerationManager(...)
+```
+
+- 初始验证输出 `dict[str,float]`，只写日志，不进入训练 batch。
+- `val_only=True` 会直接返回，训练循环完全不执行。
+- `GenerationConfig` 和 manager 只创建一次，所有 epoch/batch 复用。
+- manager 持有 `actor_rollout_wg`，rollout 通过 worker-group RPC 执行。
+
+### 6.6 第二段：一批题目变成多条轨迹
+
+```text
+batch_dict
+→ DataProto.from_single_dict()
+→ repeat(n_agent, interleave=True)
+→ pop(input_ids, attention_mask, position_ids)
+```
+
+1. `from_single_dict()`
+
+   - 输入：`dict[str, Tensor | np.ndarray]`。
+   - 输出：`batch: DataProto`。
+   - tensor 初始 shape 为 `[B,Lp]`；`index/data_source/reward_model` 长度为 `B`。
+
+2. `repeat(n_agent)`
+
+   - tensor 和 metadata 同步扩为 `N=B×G` 行。
+   - 例如 `index=[7,9]`、`G=3` 得到 `[7,7,7,9,9,9]`。
+   - 此时只有复制的 prompt，还没有 response、old log-prob 或 uid。
+
+3. `pop(...)`
+
+   - 返回 `gen_batch`，持有 `[N,Lp]` 的模型输入。
+   - 原 `batch` 暂留逐行对齐的 ground truth、index 等 metadata。
+   - 轨迹返回后再用 `union()` 把 tensor 与 metadata 合并。
+
+### 6.7 第三段：rollout 与 old log-prob
+
+只沿 `do_search=True` 阅读：
+
+```text
+first_input_ids
+→ run_llm_loop()
+→ final_gen_batch_output 转 long
+→ compute_log_prob()
+→ final_gen_batch_output.union(output)
+```
+
+- `first_input_ids: Tensor[int64,N,max_start_length]`，从 prompt 右侧截取。
+- `run_llm_loop()` 输出 `N` 行完整轨迹，重点包含：
+  - `responses: Tensor[int64,N,Lr]`；
+  - `attention_mask/info_mask: Tensor[N,prompt_len+Lr]`；
+  - 完整 `input_ids/position_ids`。
+- information observation 已经混入轨迹，但 `info_mask` 标出了哪些 token 不是模型动作。
+- `compute_log_prob()` 在 `torch.no_grad()` 下重算
+  `old_log_probs: Tensor[float,N,Lr]`。
+- 必须重算的原因：多轮 manager 手工拼接了动作和 observation，某次单轮 vLLM
+  的概率无法与最终完整 response 对齐。
+- `old_log_probs` 是 PPO ratio 的旧策略基准，不在这里反向传播。
+
+### 6.8 第四段：形成完整训练 batch
+
+```text
+uid=index.copy()
+→ repeat(rollout.n)
+→ batch.union(final_gen_batch_output)
+→ _balance_batch()
+→ global_token_num / dtype 整理
+```
+
+- `uid: np.ndarray[object,N]`；同题 G 条轨迹共享值。
+- uid 不参与生成，但必须在 advantage 前存在。
+- 当前 `rollout.n=1`，第二次 repeat 不改变行数。
+- `union()` 后，同一 DataProto 同时包含：
+  - metadata：`index/uid/data_source/reward_model`；
+  - rollout：`responses/attention_mask/info_mask/old_log_probs`。
+- `_balance_batch()` 按有效 token 重排行，不改变行数，所有字段一起移动。
+- 重排会破坏相邻分组，所以 GRPO 必须按 uid，而不能按“每 G 行”分组。
+
+### 6.9 第五段：reference、reward、advantage
+
+```text
+compute_ref_log_prob()
+→ self.reward_fn()
+→ token_level_scores
+→ token_level_rewards
+→ compute_advantage(grpo)
+```
+
+1. `ref_log_prob: Tensor[float,N,Lr]`
+
+   - 来自冻结 reference policy，用于 actor loss 内的 KL。
+   - `old_log_probs` 用于 PPO ratio；`ref_log_prob` 用于限制偏离参考模型。
+
+2. `token_level_scores: Tensor[float32,N,Lr]`
+
+   - 来自规则 `RewardManager`。
+   - 当前 EM 只在最后一个有效 response token 写入 0/1。
+
+3. `token_level_rewards`
+
+   - 当前 `use_kl_loss=True`，直接等于 scores。
+   - KL 留给 actor loss，因此 driver 不调用 `apply_kl_penalty()`。
+
+4. `compute_advantage(..., grpo)`
+
+   - 输入：token reward、uid、response mask。
+   - 写回 `advantages/returns: Tensor[float,N,Lr]`。
+   - 到这里 batch 才具备 policy loss 所需的 advantage。
+
+### 6.10 第六段：mask 与 actor update
+
+```text
+_create_loss_mask()
+→ actor_rollout_wg.update_actor(batch)
+→ reduce_metrics()
+```
+
+- `_create_loss_mask()` 写入 `loss_mask: Tensor[N,Lr]`。
+- information token 仍在 attention 上下文中，但其 `loss_mask=0`。
+- `update_actor()` 至少消费
+  `input_ids/position_ids/responses/old_log_probs/ref_log_prob/advantages/loss_mask/attention_mask`。
+- 参数更新发生在 worker；`fit()` 只负责字段完整和调用顺序。
+- 返回的 `actor_output.meta_info['metrics']` 被归并进本 step 日志。
+
+### 6.11 第七段：step 收尾
+
+```text
+test_freq → _validate()
+save_freq → _save_checkpoint()
+→ data/timing metrics
+→ logger.log()
+→ global_steps += 1
+→ 达到 total_training_steps 后最终验证并 return
+```
+
+只理解调度，不进入辅助函数：
+
+- `epoch` 控制 DataLoader 外层遍历；
+- `global_steps` 控制日志、验证、保存；
+- `total_training_steps` 可以让训练在所有 epoch 完成前提前退出；
+- 初始、周期和最终验证调用同一 `_validate()`，触发时机不同。
+
+### 6.12 明天阅读顺序与验收
+
+按一次 step 的真实顺序阅读：
+
+1. 初始验证和 manager；
+2. `batch_dict → DataProto → n_agent repeat → gen_batch`；
+3. `run_llm_loop → old_log_probs`；
+4. `uid → union → _balance_batch`；
+5. `ref_log_prob → reward → advantage`；
+6. `loss_mask → update_actor`；
+7. validation/save/log/return。
+
+读完必须能画出字段增长：
+
+```text
+题目 metadata + prompt
+→ N 条完整 rollout + old_log_probs
+→ ref_log_prob
+→ token_level_scores/rewards
+→ advantages/returns
+→ loss_mask
+→ actor update
+```
+
+明天只回答一个检查问题：
+
+> 如果删除 `batch = batch.union(final_gen_batch_output)`，后面的
+> `RewardManager`、GRPO advantage 和 actor update 分别会缺少哪些数据？
+
+在 `cmd.exe` 中定位：
+
+```cmd
+cd /d "D:\code_list\some tricks\LLMLeanring"
+rg -n "def fit|val_before_train|GenerationConfig|for epoch|from_single_dict|n_agent|run_llm_loop|compute_log_prob|uid|_balance_batch|compute_ref_log_prob|reward_fn|compute_advantage|_create_loss_mask|update_actor|test_freq|save_freq|total_training_steps" Search-R1\verl\trainer\ppo\ray_trainer.py
+```

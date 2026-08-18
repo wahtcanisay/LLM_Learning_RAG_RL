@@ -731,11 +731,37 @@ class RayPPOTrainer(object):
 
     def fit(self):
         """
-        Search-R1 的训练总循环。
+        Search-R1 的训练总循环：把已经分别学习过的 rollout、reward、GRPO 和 actor
+        update 组件串成一次完整 training step。
 
-        driver 通过 worker-group RPC 执行 rollout/log-prob/反向更新，较轻的规则 reward
-        与 GRPO advantage 在 driver 侧完成。按阅读顺序看：重复题目 -> 多轮生成 ->
-        reward -> reference/KL -> advantage -> loss mask -> update actor。
+        输入：
+            无显式参数。训练数据来自 ``self.train_dataloader``；模型 worker、tokenizer、
+            reward function 和全部超参数来自 ``RayPPOTrainer`` 构造阶段保存的实例字段。
+
+        输出：
+            无显式返回值。循环通过 Ray worker-group RPC 生成轨迹并更新 actor 参数，同时
+            写日志、按频率验证/保存；达到 ``total_training_steps`` 后 ``return``。
+
+        调用方式：
+            ``main_ppo.py::main_task()`` 先执行 ``trainer.init_workers()``，确认 actor/
+            rollout/ref 等 worker 可用后，再调用本函数。它是一次完整训练运行的总调度器。
+
+        GRPO + Search-R1 分支的单步数据流：
+            ``batch_dict``
+            -> ``DataProto``
+            -> 按 ``n_agent`` 复制同题 prompt
+            -> ``run_llm_loop()`` 得到含 information 的完整轨迹
+            -> 重算 ``old_log_probs`` 并与题目 metadata 合并
+            -> reference log-prob / 规则 reward
+            -> 按 uid 计算 GRPO advantage
+            -> 创建 information loss mask
+            -> ``update_actor()``。
+
+        注意：
+            driver 负责轻量的数据拼装、规则 reward 和 advantage；重模型的 rollout、
+            log-prob 与反向更新由 worker group 执行。``do_search=False`` 和 GAE/critic 是
+            veRL 通用兼容分支；阅读 Search-R1 GRPO 时先沿 ``do_search=True``、
+            ``adv_estimator=grpo``、``use_critic=False`` 的实际配置追踪。
         """
 
         logger = self.logger
@@ -779,12 +805,19 @@ class RayPPOTrainer(object):
                 metrics = {}
                 timing_raw = {}
 
+                # DataLoader 的普通 dict -> DataProto：模型 tensor 进入 ``batch.batch``，
+                # data_source/reward_model/index 等 Python 对象进入 ``non_tensor_batch``。
+                # 此时 batch size 仍是本轮题目数 B。
                 batch: DataProto = DataProto.from_single_dict(batch_dict)
                 # [Search-R1 定制点] 在进入 Agent loop 前按 n_agent 扩展每道题，
                 # 让同一问题得到多条独立完整轨迹，构成 GRPO 的组内比较样本。
-                batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n_agent, interleave=True) # 复制扩展本次batch
+                # repeat 后 tensor 与 metadata 同步变为 B * n_agent 行；同一道题的行连续，
+                # 但 uid 尚未建立，因为 rollout 生成本身不需要分组标签。
+                batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n_agent, interleave=True)
 
-                # pop those keys for generation
+                # ``pop`` 从 batch 取出生成所需的三类 prompt tensor，返回 ``gen_batch``；
+                # batch 暂时保留与这些行对齐的 index/reward_model 等 metadata，等待生成
+                # 结束后用 ``union`` 与完整轨迹重新合并。
                 gen_batch = batch.pop(batch_keys=['input_ids', 'attention_mask', 'position_ids'])
 
                 ####################
@@ -829,11 +862,21 @@ class RayPPOTrainer(object):
 
                         # batch.non_tensor_batch['uid'] = np.array([str(uuid.uuid4()) for _ in range(len(batch.batch))],
                         #                                         dtype=object)
-                        # [Search-R1 定制点] n_agent 在生成前已经把每道题扩成多条轨迹，
-                        # 因此必须复用题目 index；若此时按行生成随机 UUID，同题轨迹将无法组成 GRPO 相对奖励组。
-                        batch.non_tensor_batch['uid'] = batch.non_tensor_batch['index'].copy() 
-                        # repeat to align with repeated responses in rollout
+                        # [Search-R1 定制点] uid 不参与上面的 rollout 生成。进入本分支前，
+                        # batch.repeat(n_agent) 已把同题扩成多行；run_llm_loop() 按原行序
+                        # 返回同样多条轨迹，而保留在 batch 中的 index/reward_model 元数据
+                        # 始终与这些行对齐。uid 只在后续 compute_advantage() 中负责分组，
+                        # 因此生成完成后、进入 _balance_batch() 前再从 index 复制也来得及；
+                        # _balance_batch() 重排时会让 uid 与对应轨迹一起移动。
+                        # 若改为逐行随机 UUID，同题轨迹会被拆成不同 GRPO group。
+                        batch.non_tensor_batch['uid'] = batch.non_tensor_batch['index'].copy()
+
+                        # rollout.n 是 veRL 原有的“每个输入返回 n 个 response”维度；当前
+                        # Search-R1 配置用 n_agent=5 产生组内轨迹，而 rollout.n=1，故这里
+                        # 通常不再增加行数，只保留原框架的 batch 对齐接口。
                         batch = batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n, interleave=True)
+                        # 合并后，同一个 DataProto 同时持有题目 metadata、完整 rollout tensor
+                        # 以及刚刚重算的 old_log_probs，后续 reward/advantage/update 共用它。
                         batch = batch.union(final_gen_batch_output)
 
                     ####################
