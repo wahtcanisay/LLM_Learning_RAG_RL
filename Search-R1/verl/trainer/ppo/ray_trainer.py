@@ -855,7 +855,7 @@ class RayPPOTrainer(object):
                             final_gen_batch_output.batch[key] = final_gen_batch_output.batch[key].long()
 
                         # [Search-R1 定制点] 多轮 manager 手工拼接了动作与 observation，
-                        # vLLM 单轮输出不再携带整条轨迹的 old log-prob；必须重算，PPO ratio 才与训练 token 对齐。
+                        # vLLM 单轮输出不含ob的logprob，这里加入进logprob重算作为output
                         with torch.no_grad():
                             output = self.actor_rollout_wg.compute_log_prob(final_gen_batch_output)
                             final_gen_batch_output = final_gen_batch_output.union(output)
@@ -919,7 +919,7 @@ class RayPPOTrainer(object):
 
                         # we combine with rule-based rm
                         # 规则 EM 只在最后一个有效 response token 写入 0/1 outcome。
-                        reward_tensor = self.reward_fn(batch) # RewardManager
+                        reward_tensor = self.reward_fn(batch) # RewardManager 打分函数逻辑是有golden就为1
                         batch.batch['token_level_scores'] = reward_tensor
 
                         # compute rewards. apply_kl_penalty if available
@@ -955,7 +955,7 @@ class RayPPOTrainer(object):
                                 # [Search-R1 定制点] 排除环境注入的 information token，只训练
                                 # 模型自己的推理、search 调用和最终 answer token。
                                 batch, metrics = self._create_loss_mask(batch, metrics)
-                            actor_output = self.actor_rollout_wg.update_actor(batch)
+                            actor_output = self.actor_rollout_wg.update_actor(batch) # 更新actor
                         actor_output_metrics = reduce_metrics(actor_output.meta_info['metrics'])
                         metrics.update(actor_output_metrics)
 
