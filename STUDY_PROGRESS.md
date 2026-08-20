@@ -35,85 +35,199 @@ GRPO advantage 和 actor update；暂不讨论任何领域迁移。
 
 # 本周目标
 
-1. 理解 Search-R1 的 rollout → reward → GRPO 主链，不安装重型依赖、不启动训练。
-2. 理解原始 NQ 样本从 Parquet 字段、token batch 到规则 EM reward 的完整数据流。
-3. 每次只验收一个代码链路；能复述后再进入实现。
+1. 直接升级既有 Docker Linux 容器的全局 PyTorch/vLLM，并验证 RTX 5090 CUDA。
+2. 直接使用 Search-R1 官方 BM25 检索服务，只验证 HTTP 接口，不研究检索实现。
+3. 使用 `Qwen/Qwen2.5-3B-Instruct` 跑一个真实的单步 GRPO smoke，并在 W&B 检查日志。
 
 # 今日唯一任务
 
-**2026-08-18：验收 NQ Parquet → batch → GRPO uid 的数据流。**
+**2026-08-20：用 Qwen2.5-3B 完成一次真实 Search-R1 GRPO optimizer step。**
 
-本次只验收以下数据变化，不重复考察已经通过的 reward、advantage 和 policy loss：
+源码阅读停止边界：
 
-1. `process_fn()` 的五个顶层字段及 prompt/gold 隔离；
-2. `__getitem__()` 单样本 tensor 与 `collate_fn()` batch tensor 的 shape；
-3. `extra_info.index → 顶层 index → DataProto non_tensor_batch → uid`；
-4. `_read_files_and_tokenize()`、`filter_prompts=True`、`drop_last=True` 的真实行为。
+```text
+已掌握：
+Search-R1 data → rollout → reward → GRPO advantage → actor loss → fit 调度
 
-验收已通过：已能区分 rollout 生成、uid 标签建立与 GRPO 分组统计的执行时序。
-本次没有运行数据预处理、模型、检索服务或训练。
+只需会用：
+Ray / FSDP / vLLM / worker RPC / validation / 官方 retriever
+```
+
+运行策略固定为：复用 Search-R1 已有 HTTP 检索协议和官方 BM25 索引；用最新版
+veRL 的 FSDP2、AgentLoop、reward plugin 与异步 vLLM 接口实现独立适配层，不研究
+retriever 内部，也不引入医学任务。
 
 # 完成标准
 
-- 能说明 gold 固定保存在 `reward_model.ground_truth.target`，且不能暴露在模型 prompt 中。
-- 能区分 `__getitem__()` 的 `[max_prompt_length]` 与 collate 后的
-  `[batch_size, max_prompt_length]`。
-- 能用 `[7, 9]`、`n_agent=3` 推导出 interleave 后的
-  `[7, 7, 7, 9, 9, 9]`，并按 uid 分成两个 GRPO group。
-- 能区分 `index` 的数据集样本身份与 `uid` 的当前优化分组身份。
-- 能解释 uid 不参与 rollout，只需在 `_balance_batch()` 和 `compute_advantage()` 前存在。
-- 能准确说明 `drop_last=True` 只丢弃不足一个完整 batch 的尾部样本。
-
-# 明日唯一任务（2026-08-19）
-
-**只深入阅读 `Search-R1/verl/trainer/ppo/ray_trainer.py::RayPPOTrainer.fit()`。**
-
-进度纠正：此前只阅读了 `fit()` 中四个组件调用点，并分别学习了 rollout、reward、
-advantage 和 actor loss；没有完整追踪一次 training step。因此启动脚本、Hydra 配置、
-worker 初始化全部后移，明天只研究 `fit()` 如何串联这些组件。
-
-阅读顺序：
-
-```text
-训练前验证 + GenerationManager
-→ batch_dict 转 DataProto
-→ n_agent 扩展同题轨迹
-→ run_llm_loop
-→ 重算 old_log_probs
-→ uid + union + batch balance
-→ ref_log_prob
-→ rule reward
-→ GRPO advantage
-→ information loss mask
-→ update_actor
-→ validation / save / log / return
-```
-
-阅读时只走 `do_search=True + GRPO + use_critic=False + use_kl_loss=True` 的实际分支；
-跳过普通单轮 rollout、GAE/critic、driver 侧 KL penalty 和所有被调函数内部。
-
-详细的输入、输出、Tensor shape、字段消费者和注意点已更新到
-`Search-R1/docs/source_code_learning_zh.md` 第 6 节。源码 `fit()` 的 docstring 与
-关键 DataProto 变换点也已补充学习注释，未修改行为。
-
-# 明日完成标准
-
-- 能用 `B/G/N/Lp/Lr` 说明 batch size 和 tensor shape 怎样变化。
-- 能逐阶段列出 `DataProto` 新增的字段。
-- 能解释为什么多轮轨迹结束后必须重算 `old_log_probs`。
-- 能区分 `old_log_probs` 与 `ref_log_prob` 的来源和用途。
-- 能解释 `union()` 为什么是 metadata、完整轨迹与 old log-prob 汇合点。
-- 能说明 reward 何时变成 advantage，advantage 何时被 actor 消费。
-- 能说明 information token 如何参与 attention，却通过 `loss_mask` 排除出 policy loss。
-- 能说明一个 training step 何时验证、保存、记录日志并退出。
-
-检查问题：
-
-> 如果删除 `batch = batch.union(final_gen_batch_output)`，后面的
-> `RewardManager`、GRPO advantage 和 actor update 分别会缺少哪些数据？
-
+- 固定单样本、同题 rollout `2`、LoRA rank `16` 与一次 optimizer step；
+- 真实轨迹经过 AgentLoop、HTTP 检索、规则 reward、GRPO advantage 和 actor update；
+- 训练进程退出码为 `0`，日志包含 `training/global_step:1`；
+- 保存 W&B run、完整日志和外部 GPU 显存采样，不把 smoke 当作质量提升实验。
 
 # 已完成
+
+## 2026-08-20：最新版 veRL/FSDP2 的 3B GRPO 保底架构
+
+- 固定官方 veRL commit `e78efedbe56591cd53ac107150abb7565bb9b8b1`，新增独立
+  `Search-R1/modern_verl/` 适配包；Search-R1 XML action、HTTP retrieve、环境 token
+  loss mask 和开放域 EM reward 均接入当前 `AgentLoopBase` / custom reward 接口。
+- 单卡使用 Qwen2.5-3B-Instruct、LoRA rank `16`、FSDP2、异步 vLLM `0.27.1`、同题
+  rollout `2`；没有下载或回退到 1.5B。
+- WSL2/Docker 的 vLLM spawn worker 无法重建 CUDA IPC handle；保留 veRL 原有语义，
+  通过可复现补丁启用其 CPU shared-memory weight transport。实际日志确认进入 fallback。
+- 最终复跑退出码 `0`，完成 `training/global_step:1`：两条轨迹均为 4 turns，step
+  `21.549 s`，生成 `13.102 s`，actor update `4.059 s`，权重同步 `3.271 s`。
+- 外部 `nvidia-smi` 共采样 `5,420` 点，峰值 `23,117 MiB / 32,607 MiB`；actor 日志
+  内部峰值 allocated `14.031 GiB`、reserved `14.789 GiB`。
+- 最终 W&B run 为 `lx30qqpq`。两条 rollout 的 EM reward 都是 `0`，因此组内 advantage、
+  policy loss、grad norm 都为 `0`；这证明完整训练路径可执行，不证明模型发生有效学习。
+- 当前最新版 veRL 的 V1 trainer 还要求额外 TransferQueue 依赖；保底脚本明确使用
+  `trainer.use_v1=False` 的稳定调度，但 actor/rollout/AgentLoop/reward 均采用当前接口。
+- `data.dataloader_num_workers=0` 已消除 smoke 退出时 DataLoader worker 被杀的噪声；
+  上游 W&B `Tracking.__del__` 仍可能在 Ray teardown 后打印 closed-transport traceback，
+  发生于 step 和 final validation 之后且进程退出码为 `0`，记录为非训练路径清理告警。
+
+## 2026-08-20：vLLM 单卡 hybrid-engine 权重交换修复
+
+- 根因：旧 sharding manager 在 GPU 上物化 FSDP `state_dict` 后一次性唤醒 vLLM 的
+  weights 与 KV cache，导致 Actor、交接张量、vLLM 权重在同一卡上重叠并 OOM。
+- 修复后的时序：CPU state-dict → Actor 参数移出 GPU → vLLM 只唤醒 weights → 写入
+  最新 Actor 权重 → 唤醒 KV → 生成 → vLLM level-2 sleep → Actor 参数恢复到 GPU。
+- 真实 Ray/vLLM 运行连续完成两次交换和两次生成，退出码 `0`；不再出现
+  `cumem_allocator.cpp:211`。
+- `nvidia-smi` 每 `0.5s` 采样 `777` 点，峰值为 `32058 MiB`；原始记录位于
+  `Search-R1/experiments/single_gpu_smoke/vllm_gpu_memory.csv`。
+- 权重交换与已有兼容回归共 `10/10` 通过。该方案以 CPU 传输延迟换取单卡显存可行性，
+  不声称具备多卡 NCCL 方案的吞吐。
+
+## 2026-08-20：固定双跳样本无训练 Agent 闭环
+
+- 固定子集：train 为 HotpotQA 原始行 `86094`，test 为 2WikiMultihopQA 原始行
+  `41745`；随机种子 `20260819`。
+- 使用本地 `Qwen2.5-3B-Instruct`、仓库原生 HF rollout、`max_turns=2`、BM25
+  top-k `3` 完成无参数更新验证，进程退出码 `0`。
+- 真实轨迹依次检索电影导演与 `Jeff Burr birthplace`，最终输出
+  `<answer>Aurora, Ohio</answer>`，规则 EM reward 为 `1.0`。
+- `ACTIVE_TRAJ_NUM: [1, 1, 1, 0]` 表明轨迹在最终回答后结束；完整证据保存在
+  `Search-R1/experiments/single_gpu_smoke/inference.log`。
+- 两次 observation 分别从 `471`、`514` tokens 截到 `256`；本题仍答对，但后续实验
+  必须记录该截断，不能把一次成功外推为检索信息总是充分。
+- 本次未启动外部显存采样器，因此 HF 运行的显存峰值记为“未知”，不以失败运行或
+  纸面估算补填。
+
+## 2026-08-20：官方 wiki-18 BM25 检索服务闸门
+
+- 下载并校验官方 `PeterJinGo/wiki-18-bm25-index`：28 个索引文件，合计
+  `2,297,611,339` bytes。
+- 下载并校验官方 `PeterJinGo/wiki-18-corpus`：压缩文件 `5,123,307,260` bytes，
+  SHA-256 `7abd929223399cd63c52b499f289bf4f9039be1e9f8c43e1cb3938305b2317db`
+  与 Hugging Face LFS oid 一致，`gzip -t` 通过。
+- 发现上游文件虽命名为 `wiki-18.jsonl.gz`，实际是 tar.gz；正确提取出的
+  `wiki_dump.jsonl` 为 `14,393,573,105` bytes、`21,015,324` 篇文档，字段为
+  `{id, contents}`。
+- 修复全局升级后的实际兼容问题：Pyserini 会连带导入 FAISS，旧 `faiss-cpu 1.8.0`
+  与 NumPy `2.3.5` ABI 不兼容；已升级到 `faiss-cpu 1.15.0`。
+- 作者原有 CPU BM25 server 已启动；真实 `POST /retrieve` 返回 HTTP 200、3 条带正文
+  和分数的结果。请求与响应保存在 `Search-R1/experiments/single_gpu_smoke/`。
+- 一次混用 Xet 分块缓存与普通 Range 续传产生了哈希不匹配文件，已隔离为
+  `.corrupt-90124a`，未解压、未用于服务；待正确资产和服务验收后清理。
+
+## 2026-08-20：vLLM 0.27.1 兼容迁移与训练资产下载
+
+- 保持 Search-R1/veRL 上层同步调用方式不变，新增版本专用兼容层，将旧的
+  `generate()`、`sync_model_weights()`、sleep/wake 和 cache 方法映射到 vLLM `0.27.1`。
+- 该兼容层明确限定单卡 `TP=1`；由于 WSL2 不支持当前 vLLM V2 runner 所需的 CUDA
+  UVA，并且跨进程同卡 CUDA IPC/NCCL 路径不可用，改用 vLLM 官方 public `LLM` 的
+  单进程 V1 runner。未修改 Search-R1 的 trainer、rollout 或 GRPO 算法调用方式。
+- 兼容层单元测试 `2/2` 通过，Python `compileall` 与 `git diff --check` 通过。
+- RTX 5090 真实 smoke 通过并以退出码 `0` 输出 `SMOKE_OK`：初始生成是
+  `Paris. The capital of Germany is Berlin`；将内存 actor 的末层 norm 权重置零并同步后，
+  输出变为 `!!!!`，证明 actor 权重确实进入 vLLM，而非只验证导入。
+- `RotaryEmbedding: Failed to load weights` 已定位为 vLLM 自建的
+  `persistent=False` cos/sin 位置缓存不属于 HF `state_dict`；reload 代码保留原缓存，
+  不是 actor 参数漏同步。
+- Qwen2.5-3B-Instruct 两个 safetensors 分片已完整下载：`3,968,658,944` 与
+  `2,203,268,048` bytes；模型位于工作区忽略目录 `models/Qwen2.5-3B-Instruct/`。
+- 官方 `PeterJinGo/nq_hotpotqa_train` 数据已完整下载：train `169,615` 行、
+  `355,663,891` bytes；test `51,713` 行、`70,370,337` bytes。文件位于
+  `Search-R1/data/nq_hotpotqa_train/`，后续 smoke 会从全量文件抽取小子集。
+- 没有执行仓库 `scripts/download.sh`：脚本硬编码作者目录、参数名与当前 Python CLI
+  不一致，而且默认下载约 64.6 GB Dense Flat 索引；这与当前固定的 CPU BM25 路线不符。
+
+## 2026-08-19：按用户决定直接升级 Docker 全局训练环境
+
+- 容器 `llm-pytorch` 已直接升级为 PyTorch `2.13.0+cu130`、vLLM `0.27.1`、
+  Transformers `5.15.0`、Ray `2.57.0`、W&B `0.28.2`、TensorDict `0.14.0`。
+- NVIDIA driver `591.74` 声明支持 CUDA 13.1；真实 CUDA tensor 测试通过：RTX 5090、
+  compute capability `(12, 0)`、`torch.ones(..., device='cuda') == 1.0`。
+- Search-R1 已通过 editable/no-deps 安装；`verl.__file__` 指向工作区
+  `/workspace/code_list/some tricks/LLMLeanring/Search-R1/verl/__init__.py`，确认使用本地源码。
+- `RayPPOTrainer` 与 `RewardManager` 能导入；`ActorRolloutRefWorker` 在本地
+  `verl/third_party/vllm/__init__.py` 主动拒绝 vLLM `0.27.1`：该兼容层只允许
+  `0.3.1/0.4.2/0.5.4/0.6.3`。不得只删除版本检查后假定 API 兼容。
+- vLLM `0.27.1` 要求 PyTorch `2.13.0`，但其元数据仍安装 TorchAudio `2.11.0`
+  CUDA 12.8 build；因 Search-R1 是纯文本任务且二进制不兼容，已卸载 TorchAudio。
+- 直接全局升级已如预期破坏旧项目依赖闭包：MedicalGraphRAG、sentence-transformers、
+  LangChain 等要求旧 Transformers/NumPy/AnyIO/Packaging。当前阶段接受该代价，不回滚。
+- 训练数据没有下载：`Search-R1/data` 中不存在 Parquet。wiki-18 只有约 2.08 GB 的
+  `part_aa.incomplete`，而该分片完整大小约 42.9 GB，明显不是“只差一点”；不再续传
+  64.6 GB Dense Flat 索引，训练 smoke 只准备少量 NQ 样本。
+
+## 2026-08-19：Docker 与 Search-R1 运行环境审计
+
+- 复用容器：`llm-pytorch`（容器 ID 前缀 `c8f4518d842b`），Linux/WSL2，项目在容器内
+  映射为 `/workspace/code_list/some tricks/LLMLeanring/Search-R1`。
+- GPU 透传正常：RTX 5090，32 GB；PyTorch `2.11.0+cu128`、CUDA 12.8、BF16 可用；
+  根文件系统约 1007 GB，检查时约 912 GB 可用。
+- 已有 `transformers 4.44.2`、`datasets 2.16.1`、`pyserini 0.22.1`、
+  `faiss-cpu 1.8.0`；缺少 `vllm`、`ray`、`hydra-core`、`omegaconf`、`wandb`。
+- 当前 Python 为 `/usr/bin/python` 3.12，并受 PEP 668 保护；直接全局 `pip install`
+  被拒绝。后续必须在容器内创建隔离环境，不能使用 `--break-system-packages` 污染 MedRAG。
+- 官方旧环境固定 Python 3.9、PyTorch 2.4/CUDA 12.1、vLLM 0.6.3；vLLM 0.6.3
+  早于 RTX 5090/SM120 支持，不能在当前硬件上原样运行。不得直接执行旧 requirements。
+- `vllm==0.9.0` 是首批可支持 RTX 5090 的版本，但依赖 dry-run 显示它会固定
+  `torch==2.7.0`、`transformers>=4.51.1`、`ray>=2.43.0` 等，与容器当前全局环境及
+  vendored veRL 的旧接口均不相同；只能放入隔离环境并先做兼容性闸门测试。
+- Search-R1 官方的新版 veRL/SGLang 集成仍可作为参考，但当前 veRL 文档注明内置
+  `SearchTool` 已移除；不能直接追随 latest，必须固定到仍包含该工具的官方快照。
+- 官方 Dense Flat 索引为 64.6 GB，语料压缩包约 5.12 GB；当前 `data/wiki-18`
+  只有约 2 GB 的未完成下载，没有可用索引或解压语料。官方 BM25 索引约 2.3 GB，
+  更适合作为单卡训练时的独立 CPU 检索服务。
+- `Qwen/Qwen2.5-3B-Instruct`、NQ/HotpotQA Parquet、W&B 登录信息均尚未就绪；
+  当前没有产生训练 step、W&B run 或实验指标。
+
+## 2026-08-19：Search-R1 源码阅读边界收束
+
+- `fsdp_workers.py` 确认为 veRL 执行基础设施，不继续阅读 device mesh、FSDP、offload、
+  vLLM 构建或 Ray RPC 细节。
+- 当前掌握标准固定为：知道 actor+rollout worker 负责生成/更新，独立 reference 提供
+  KL 对照，GRPO 不创建 critic；能够使用这些接口即可。
+- Search-R1 特有的 data、Agent loop、reward、GRPO advantage、actor loss 与 `fit()`
+  调度已经形成完整理解链，源码阅读阶段在此收束。
+- 后续仅在真实运行出现明确错误时，沿堆栈按需查看 veRL 内部。
+
+## 2026-08-19：路线剪枝——跳过 `_validate()` 深入阅读
+
+- `_validate()` 使用独立 `val_files`；只有配置 `val_data_num` 时才从验证文件内部抽样，
+  不是从当前训练 batch 临时切出测试样本。
+- 它只生成验证轨迹、计算平均规则 reward 并写日志，不计算 advantage 或更新 actor；
+  当前阶段不把它作为 Search-R1 核心机制继续阅读。
+- 已保留一个运行阶段待核实问题：多轮路径创建 active 子批次时丢失 meta_info，静态代码
+  显示 `do_sample/recompute_log_prob` 会回退到默认 `True`。
+- 下一学习点直接进入 actor/rollout/reference worker 的角色与初始化边界。
+
+## 2026-08-19：`RayPPOTrainer.fit()` 完整调度链阅读验收
+
+- 已完整追踪一批题目从 `DataProto`、`n_agent` rollout、old/reference log-prob、
+  rule reward、GRPO advantage、information loss mask 到 actor update 的执行顺序。
+- 已能解释 `batch.union(final_gen_batch_output)` 是题目 metadata 与完整轨迹 tensor 的
+  汇合点；删除后最先在 `_balance_batch()` 读取 `attention_mask` 时失败。
+- 已能说明后续 `RewardManager` 缺少 prompts/responses/mask，reward 无法产生，继而
+  advantage、ratio、loss 和反向更新均无法执行。
+- 已进一步区分直接由 rollout/union 带回的字段与后续派生字段：完整轨迹、mask、
+  `old_log_probs` 是直接输入；`ref_log_prob`、scores/rewards、advantages/returns 和
+  `loss_mask` 是合并后逐阶段计算得到。
+- 本次为源码阅读验收，没有运行模型或训练，没有新增实验指标。
 
 ## 2026-08-18：Search-R1 NQ 数据 → batch → uid 阅读验收
 
@@ -185,42 +299,33 @@ git diff --check
 
 | 问题 | 当前处理 |
 |---|---|
-| Search-R1 官方配置面向 8 GPU | 当前只读代码；以后单独设计 3B、小 batch、少 rollout 的单卡 smoke。 |
-| 当前环境缺少 veRL 重型依赖 | 现阶段使用 AST、compileall 和纯协议样例验证；进入训练闸门后再建立隔离环境。 |
+| Search-R1 官方配置面向 8 GPU | 单卡 smoke 使用 3B、小 batch、2 条 rollout、短序列；参数只能通过真实运行确认。 |
+| vendored Search-R1 兼容层只接受 vLLM ≤0.6.3 | 已新增 vLLM 0.27.1、单卡 TP=1 兼容层，并通过 CPU 交接与分阶段 wake 修复完整 Ray 路径的瞬时 OOM；真实两轮生成退出码为 `0`。 |
+| 全局升级造成旧 MedRAG/GraphRAG 依赖冲突 | 用户明确选择不隔离；保留 `pip check` 结果，当前不回滚。 |
 | 单卡 32GB 的 GRPO 资源边界未知 | 不做纸面外推；用真实日志记录 batch、rollout、长度、显存和耗时。 |
-| 自有 search engine 尚未接入 Search-R1 | 当前只冻结最小请求/响应协议；进入推理 smoke 前再实现适配层。 |
+| 官方检索 observation 超过 `max_obs_length=256` | 当前按原逻辑截断；固定双跳样本仍得到 reward `1.0`，后续只把长度作为实验配置记录，不研究 retriever 内部。 |
+| 多轮验证没有传递 `do_sample=False/recompute_log_prob=False` | 静态路径显示 active 子批次丢失 meta_info；当前先记录，不修改行为，运行阶段再实测。 |
+| WSL2/Docker 跨 vLLM spawn 进程的 CUDA IPC 报 `invalid resource handle` | 为当前 veRL 增加环境变量控制的 shared-memory fallback 补丁；默认 native Linux 行为不变。 |
+| smoke 的轨迹数小于默认 8 个 AgentLoop workers | 固定 `agent.num_workers=2`，与两条 rollout 等分。 |
+| 两条 smoke trajectory 的 reward 都为 0 | advantage/loss/grad_norm 均为 0；保留为 GRPO 同组无差异信号的真实案例，不包装成训练提升。 |
 
 # 下一步
 
-当前已读完 `fit()` 调用的各个核心组件，但尚未读完 `fit()` 本身的调度逻辑。
-下一次唯一任务是：**沿一次 Search-R1 GRPO training step 完整阅读
-`RayPPOTrainer.fit()`。**
+Search-R1 的 3B 单步 GRPO 保底架构已经完成。下一次唯一任务是：
+**学习最新版 veRL V1 的公开训练接口，并把当前保底架构逐项映射到 V1。**
 
-只读一个函数，不展开其调用对象：
-
-1. 训练前验证和 generation manager；
-2. DataProto 构造、`n_agent` repeat 与 prompt/metadata 分离；
-3. 多轮 rollout、`old_log_probs` 重算与 `union`；
-4. reference、reward 和 GRPO advantage 的执行顺序；
-5. information loss mask 与 actor update；
-6. 验证、保存、日志和退出条件。
-
-后续闸门顺序：
-
-1. 验收 `fit()` 的完整单步数据流与字段增长；
-2. 阅读 `RayPPOTrainer._validate()`，比较训练和验证 rollout；
-3. 阅读训练启动、Hydra 配置合并和 worker 初始化；
-4. 阅读 `infer.py`，区分训练、验证和交互推理；
-5. 为自己的 search engine 做最小协议适配；
-6. 运行一条无训练 Search-R1 推理；
-7. 根据 RTX 5090 真实日志设计最小 GRPO smoke。
+只阅读训练入口/config、AgentLoop 注册、reward 注册和 trainer mode 四个公开边界；先画出
+`旧 Search-R1 → 当前保底适配 → veRL V1` 的字段映射，不立即替换已跑通脚本。完成标准是
+能解释 V1 为什么引入 TransferQueue、哪些 Search-R1 适配代码可以原样复用、哪些只属于
+旧 trainer 调度。完成该接口学习后，再单独比较 TRL 的 GRPOTrainer/tool-environment 路线。
 
 
 # 待补知识
 
 - 答案解析失败、无效搜索和 reward hacking 的处理方式。
-- 自有 search engine 的 Search-R1 协议适配、空结果和服务不可用处理。
-- 单卡 RTX 5090 上 veRL/vLLM + 3B LoRA GRPO 的真实资源边界。
+- 官方 BM25 服务的空结果和服务不可用处理。
+- veRL V1 的 TransferQueue、trainer mode 与当前 stable trainer 的接口差异。
+- TRL `GRPOTrainer` 对多轮工具环境、observation loss mask 和异步 rollout 的支持边界。
 
 # 实验结果总表
 
@@ -231,6 +336,7 @@ git diff --check
 | SciFact | Hybrid2：R@10 `0.895`、MRR `0.740`、nDCG `0.772` | Graph 未胜出。 |
 | HotpotQA | Hybrid2：R@10 `0.898`、MRR `0.955`、nDCG `0.865` | 每题 2 个 gold；Graph 未胜出。 |
 | MedicalGPT 100 条 smoke | eval loss `2.008307`、PPL `7.450692` | 只验证训练管线。 |
+| Search-R1 3B GRPO 单步 | step `21.549 s`；GPU peak `23,117 MiB`；W&B `lx30qqpq` | 两条 reward 均为 0，验证训练链路，不代表学习提升。 |
 
 # 失败案例
 
@@ -240,5 +346,6 @@ git diff --check
 | Graph 在四套基准均未胜出 | 实体传播信号与任务/语料不匹配 | 保留负结果，不包装为提升。 |
 | TREC-COVID 未接入 | 24.6% 文档正文为空，部分 qrels 指向空文本 | 不用标题回退伪造正文检索。 |
 | MedicalGPT 内部显存统计路径停滞 | Trainer 路径未形成完整产物 | 该次运行不计入；已用外部只读采样完成 smoke。 |
+| Search-R1 单步两条 rollout 均答错 | 同题组 reward 全 0，GRPO advantage 与 gradient 为 0 | 保留为“同组无差异则无学习信号”的真实失败样本；扩大实验时监控有效组比例。 |
 
 > 更早的逐日过程、已撤回方案和详细实验配置由 Git 历史、各子项目 README 与 `experiments/` 保留；本文件只维护当前有效状态。

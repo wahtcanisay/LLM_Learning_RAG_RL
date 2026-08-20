@@ -18,6 +18,7 @@ ENV/
 .idea/
 .vscode/
 .worktrees/
+Search-R1/.deps/
 
 # Secrets and local configuration
 .env
