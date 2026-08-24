@@ -1,9 +1,10 @@
 # 当前阶段
 
-**阶段 4：Search-R1 3B 搜索强化学习复现。**
+**阶段 5：MedSearch-R1 医学证据搜索 Agent——SFT 数据设计。**
 
-阶段 1、阶段 2 已完成并冻结，阶段 3 已完成最小 SFT smoke。当前只学习和验证
-Search-R1 原项目，不引入医学数据、领域 reward 或后续项目设计。
+阶段 1、阶段 2 已完成并冻结，阶段 3 已完成最小 MedicalGPT SFT smoke，阶段 4 已完成
+Search-R1 3B 单步 GRPO 保底架构。当前进入 MedSearch-R1，先确定 SFT 数据与隔离边界，
+不立即编写完整训练工程。
 
 ```text
 NQ / HotpotQA Parquet
@@ -19,52 +20,176 @@ GRPO advantage 和 actor update；暂不讨论任何领域迁移。
 
 # 当前项目
 
-**Search-R1：通过强化学习学习多轮搜索与回答。**
+**MedSearch-R1：基于领域微调与强化学习的医学证据搜索 Agent。**
 
-当前代码学习位置：
+当前设计入口：
 
-- NQ 数据预处理：`Search-R1/scripts/data_process/nq_search.py`
-- Parquet → batch：`Search-R1/verl/utils/dataset/rl_dataset.py`
-- rollout 状态机：`Search-R1/search_r1/llm_agent/generation.py`
-- reward 装配：`Search-R1/verl/trainer/main_ppo.py`
-- EM reward：`Search-R1/verl/utils/reward_score/qa_em.py`
-- reward → advantage 调度：`Search-R1/verl/trainer/ppo/ray_trainer.py`
-- GRPO advantage / clipped loss：`Search-R1/verl/trainer/ppo/core_algos.py`
-- actor 更新入口：`Search-R1/verl/workers/actor/dp_actor.py`
-- 学习索引：`Search-R1/docs/source_code_learning_zh.md`
+- 项目书：`MedSearch/PROJECT_BOOK.md`
+- SFT 训练管线参考：`MedicalGPT/`
+- 后续多轮协议参考：`Search-R1/search_r1/llm_agent/generation.py`
 
 # 本周目标
 
-1. 直接升级既有 Docker Linux 容器的全局 PyTorch/vLLM，并验证 RTX 5090 CUDA。
-2. 直接使用 Search-R1 官方 BM25 检索服务，只验证 HTTP 接口，不研究检索实现。
-3. 使用 `Qwen/Qwen2.5-3B-Instruct` 跑一个真实的单步 GRPO smoke，并在 W&B 检查日志。
+1. 冻结“对话型 Medical-SFT → Search100 + 对话 replay”两阶段 SFT 设计。
+2. 审计候选单轮、多轮和 supervised rationale 数据的真实样本。
+3. 建立 SFT、Search100、RL 与最终测试集的严格隔离表。
 
 # 今日唯一任务
 
-**2026-08-20：用 Qwen2.5-3B 完成一次真实 Search-R1 GRPO optimizer step。**
+**2026-08-24：清理 MedSearch 的一次性数据准备产物，恢复可学习的最小工作区。**
 
-源码阅读停止边界：
-
-```text
-已掌握：
-Search-R1 data → rollout → reward → GRPO advantage → actor loss → fit 调度
-
-只需会用：
-Ray / FSDP / vLLM / worker RPC / validation / 官方 retriever
-```
-
-运行策略固定为：复用 Search-R1 已有 HTTP 检索协议和官方 BM25 索引；用最新版
-veRL 的 FSDP2、AgentLoop、reward plugin 与异步 vLLM 接口实现独立适配层，不研究
-retriever 内部，也不引入医学任务。
+当前只保留项目书、正式 Stage-A/B 数据和未来 RL 要复用的检索资产；一次性清洗、审计、
+抽样、测试与说明材料统一移出活动目录。本任务不编写 SFT 训练代码。
 
 # 完成标准
 
-- 固定单样本、同题 rollout `2`、LoRA rank `16` 与一次 optimizer step；
-- 真实轨迹经过 AgentLoop、HTTP 检索、规则 reward、GRPO advantage 和 actor update；
-- 训练进程退出码为 `0`，日志包含 `training/global_step:1`；
-- 保存 W&B run、完整日志和外部 GPU 显存采样，不把 smoke 当作质量提升实验。
+- `MedSearch` 根目录只保留一个项目说明文件；
+- Stage-A 的 train/dev/manifest 和 Stage-B 的 Search100 均未受损；
+- 一次性脚本、测试、样本与审计文件不再出现在活动目录；
+- 活动文档不引用已归档的审计文件。
 
 # 已完成
+
+## 2026-08-24：MedSearch SFT 工作区瘦身
+
+- 当前活动根目录只保留 `.gitignore`、`PROJECT_BOOK.md`、正式 `data/` 和一个可恢复的
+  `archive/`；不再并列堆放审计说明、抽样目录和一次性脚本；
+- Stage-A 活动数据只保留 `stage_a_train.jsonl`、`stage_a_dev.jsonl`、
+  `stage_a_manifest.json`；Stage-B 活动数据只保留正式 Search100、医学检索语料与 BM25 索引；
+- 清洗、复核、构造、验证脚本及其测试，一次性样本、审计 Markdown、候选判定与失败档案统一
+  收进 `MedSearch/archive/data_preparation/`，不参与当前 SFT 编码与训练；
+- `PROJECT_BOOK.md` 是当前唯一项目说明来源；旧审计文档不再被活动文档引用。
+
+## 2026-08-23：Stage-B Search100 精品检索轨迹完成
+
+- 从 MedQA/MedMCQA official train 构造 gold-blind 候选；query、检索和最终决策阶段均不读取 gold；
+- 真实调用 Search-R1 BM25 医学服务，语料为 MedRAG Textbooks + StatPearls；检索 observation 和稳定
+  `document_id` 全部保存在本地审计侧文件；
+- 生成 190 条候选（含最初 10 条 pilot），由 `gpt-5.6-sol/xhigh` 按答案、证据、引用和题目质量终审；
+- 独立二次复审替换 9 条医学答案正确但存在明显 OCR/拼写噪声的样本，最终 100/100 通过；
+- 正式训练集精确保留 100 条：80 条一轮搜索、20 条两轮搜索；顶层字段仅为
+  `id/question/options/trajectory`，trajectory 仅含 `search/information/answer`；
+- 正式训练文件为 `MedSearch/data/stage_b/search100_training.json`；一次性审计与失败候选
+  已在冻结结论和哈希后清理，不进入学生的 SFT 工作区；
+- 正式文件 652,019 bytes，SHA-256
+  `e9796395e17f6a9c29520cb48758ed9cdbb083c1d231f9562e4d2ef2b25725fb`；
+- 清理前自动验证：100 个唯一 ID、字段无审计信息泄漏、answer 均属于 options、轨迹顺序合法；
+  当时 53 项测试通过。一次性构建、审计与测试脚本随后按学习边界清理。
+
+## 2026-08-23：Stage-A 医学三池全量清洗
+
+- 数据清洗职责改由教师代理负责，学生从训练搭建开始学习；
+- 77,846 条 raw 经确定性规则得到 drop 3,638、review 9,572、keep 候选 64,636；
+- 三个 `gpt-5.6-sol` 对 review 做一次性二元终审：accept 7,500、reject 2,072，不留人工队列；
+- 目标 Qwen2.5 tokenizer 长度闸门排除 2,494 条，最终 eligible pool 为 69,642 条；
+- 三个低成本子智能体完成跨域盲审，修复了多轮 answer-confirmation 过度删除和单轮 false keep；
+- 医学三池清洗结果作为下方 65/20/10/5 当前配方的输入；已剪除被替代的 70/20/10
+  构建结果，避免学生误用旧 manifest；
+- 当前有效统计、字段与冻结配方统一见 `MedSearch/PROJECT_BOOK.md` 和 Stage-A manifest。
+
+## 2026-08-23：Stage-A 加入 5% 通用对话 replay
+
+- 固定 UltraChat 200k 官方 revision `8049631c405ae6576f93f445c6b8166f76f5505a`，只下载并
+  校验 `train_sft` 三个 Parquet 分片，共 207,865 条；行数、字节数和官方 SHA-256 一致；
+- 确定性规则排除医学、代码、数学、工具动作、时效问法、模板拒答、截断和伪亲历，得到
+  121,509 条候选；强模型分层抽检 240 条，accept 151、reject 89，并将 reject ID 固定排除；
+- Qwen2.5 真实 chat template 长度闸门保留 59,133 条，排除 62,376 条超 1,024-token 样本；
+- 固定 seed `20260823` 重建 65/20/10/5 Stage-A：single 10,663、multi 3,281、reasoning
+  1,640、general 821；train 16,077、dev 328，user 重叠 0，强审 reject 命中 0；
+- Qwen2.5 Instruct 已有通用指令能力，因此通用数据只作为 5% replay；0%/5%/10% 留作后续
+  单变量消融，不把 5% 写成已验证最优值；
+- 原 70/20/10 版本已被本配方替代，不再作为当前训练输入。
+
+## 2026-08-23：全量下载验证与首轮风险抽检
+
+- 五个入选文件已全量下载并完成 JSON 解析、记录数与 SHA-256 检查，共 77,846 条记录；
+- 固定 seed `20260823` 生成单轮 90 条、多轮 40 条、medical-o1 40 条风险审计清单；
+- 三个低成本子智能体只读初筛，共标记 `DROP 21`、`REVIEW 46`、
+  `provisional KEEP 103`；该审计集刻意富集风险样本，比例不能外推全库；
+- 多轮样本发现缺图和答案机械确认，MedQA-dialog 的 30%～40% 改为待验证上限；
+- 当前有效的数据边界和最终选择统一见 `MedSearch/PROJECT_BOOK.md`。
+
+## 2026-08-23：四类 SFT 候选数据各 10 条实物审计
+
+- 固定 Meerkat revision `f0621a0b2eb9f6c48d6ec5299aecc03d6d350afc` 与 medical-o1
+  revision `fc2c9e8a37b38f38da6d449564a8c350b244aef4`，通过镜像范围读取原仓库文件；
+  没有下载全量数据。
+- 四类候选各 10 条已完成抽查；冻结数据来源后，一次性样本和独立审计说明已清理。
+- ChatDoctor-cleaned 抽样出现 C. difficile 被误判为 ulcerative colitis、持续胸痛被直接
+  归为 gastritis 等安全问题，不能全量直接训练。
+- MTS-dialog 的现有 target 是 clinical note generation，不是医生多轮回复；第一版排除。
+- MedQA-dialog 是 5～17 messages 的 GPT-3.5 合成多轮考试对话，条件保留为小比例数据；
+  缺图、答案确认模板和 MedQA 测试污染必须过滤。
+- medical-o1 English 条件保留为少量 supervised rationale；需过滤缺图、异常题面，并
+  避免把重复的 `Complex_CoT` 与 `Response` 无设计地串接。
+- 当前尚未找到足够可靠的普通医学对话主数据源，因此不启动全量清洗或训练。
+
+## 2026-08-23：Meerkat 第二批四个子集各 10 条审计
+
+- 从同一固定 revision 取得 LiveQA、MedicationQA、MedInstruct-52K 和 MedBooks-18-CoT
+  各 10 条；宿主机镜像连接超时后，使用现有 `llm-pytorch` 容器访问完全相同的固定 URL，
+  文件写回同一工作区，没有改变数据版本。
+- LiveQA 适合作为小型单轮质量锚点，但重复问题对应多个答案，需按规范化问题分组；
+  MedicationQA 有过短和表格残片 target，只能过滤后保留。
+- MedInstruct-52K 是多任务单轮 instruction，不是真实对话；可作为普通医学 assistant
+  主体候选，但需过滤 `As an AI`、时效问题、模板答案和输入输出近复制。
+- MedBooks-18-CoT 结构完整且论文有 CoT/textbook augmentation 消融支持，推荐作为第一版
+  少量 rationale；它不承担普通对话，也不证明临床安全。
+- 当前推荐配方为普通 instruction 75%～85%、多轮 5%～10%、rationale 10%～20%；
+  该初步配方已被同日最终决策替换。
+
+## 2026-08-23：阶段 A 数据配方冻结
+
+- 第一版停用 ChatDoctor-cleaned、MTS-dialog 和 MedBooks-18-CoT；ChatDoctor 的医学标签
+  与分诊噪声不依赖后续 RAG 修复。
+- 普通单轮使用过滤后的 MedInstruct-52K 与去重后的 LiveQA/MedicationQA，目标占比
+  45%～55%；多轮 MedQA-dialog 提高到 30%～40%。
+- reasoning 只使用 medical-o1 English，目标占比 10%～15%。它的 `Complex_CoT` 作为
+  SFT target 时仍属于 supervised rationale，不能写成无监督推理。
+- medical-o1 第一版候选长度为 CoT 不超过 512 tokens、整条不超过 1024 tokens；使用
+  Qwen2.5 tokenizer 统计后再冻结。超长样本整条过滤，不从中间截断推理。
+- 总规模目标约 10K；清洗后不足时按真实数量训练，不用已过滤数据补齐。
+
+## 2026-08-23：SFT 数据职责重新冻结
+
+- 阶段 A 改为多数医学单轮/多轮对话加少量 supervised rationale，不再以
+  MedQA/MedMCQA 选择题作为普通医学 SFT 主体。
+- 阶段 B 固定为约 100 条真实检索支持的 Search100 加普通医学对话 replay；保留 replay
+  是为了维持正常回答能力并降低协议过拟合与逢题必搜风险，但具体比例仍是实验超参数。
+- 普通对话不强行添加 `<think>`；reasoning 子集只训练可见、可审计的医学推理说明，
+  不把它描述为模型真实的内部思维。普通对话与 Agent 样本通过 system/task prompt 区分。
+- MedQA/MedMCQA 官方 train 改作 Search100/RL 候选题池；冻结评测资产边界不变。
+- 本次只更新项目书与数据审计，没有下载、转换、tokenization 或训练数据。
+
+## 2026-08-21：MedSearch-R1 两阶段 SFT 与数据实物审计（阶段 A 配方已于 2026-08-23 替换）
+
+- 当时先冻结两个 checkpoint 与 Search100 冷启动框架；其中“医学选择题 SFT + 医学 QA
+  replay”的旧配方已被 2026-08-23 的“对话型 SFT + 普通医学对话 replay”替换。
+- Search100 改为默认冷启动资产，不再以基础模型协议测试失败为前提；一轮/两轮/直答
+  比例仍是待实验超参数。
+- 本地 MIRAGE MedQA 文件真实为 1,273 条官方 test；MedMCQA 文件真实为 4,183 条
+  official dev。二者均冻结为评测，不进入 SFT、Search100 或 RL train。
+- MedMCQA dev 的 `cop` 为 1-4；`exp` 有 1,977 条为空，`topic_name` 有 3,760 条为空。
+  因此解释和 topic 都不能设为必需字段，也不能为缺失解释伪造真值。
+- 第一版统一字段、target 规则、loss mask 和隔离表已合并进
+  `MedSearch/PROJECT_BOOK.md`。本次未下载、转换或训练数据，没有实验指标。
+
+## 2026-08-21：MedQA/MedMCQA 官方 train 固定镜像下载与字段打印
+
+- 固定 `openlifescienceai/medqa@153e61cdd129eb79d3c27f82cdf3bc5e018c11b0` 与
+  `openlifescienceai/medmcqa@91c6572c454088bf71b679ad90aa8dffcd0d5868`；直连
+  Hugging Face 超时后，通过镜像站下载相同仓库、revision 和路径。
+- MedQA 文件 5,679,350 bytes、SHA-256
+  `d7bac59f5cee804a006172d44f675559dc5160bdc84dbae05aeed9d5aa1b56f3`，PyArrow 读取
+  10,178 行；字段为 `id/data/subject_name`，答案字段嵌套在 `data`。
+- MedMCQA 文件 85,899,025 bytes、SHA-256
+  `b119434ba551517a6ec0ba1f7e0b4c029165ed284a4704f262ce37c791c493c5`，PyArrow 读取
+  182,822 行；Parquet 已把 `cop` 转成 0-3，因此映射是 `"ABCD"[cop]`。
+- 两个数据集各 10 条完整字段已检查；一次性打印样本现已清理。MedQA 有 2 个
+  精确重复题干且抽样存在缺失图像引用；MedMCQA 有 21,953 条空解释，抽样可见 OCR、
+  页码和文本粘连噪声。
+- `MedSearch/data/raw/` 已加入局部 `.gitignore`，原始外部数据不会被 `git add -A`
+  提交。本次没有转换训练数据或启动训练，没有实验指标。
 
 ## 2026-08-20：最新版 veRL/FSDP2 的 3B GRPO 保底架构
 
@@ -311,21 +436,18 @@ git diff --check
 
 # 下一步
 
-Search-R1 的 3B 单步 GRPO 保底架构已经完成。下一次唯一任务是：
-**学习最新版 veRL V1 的公开训练接口，并把当前保底架构逐项映射到 V1。**
-
-只阅读训练入口/config、AgentLoop 注册、reward 注册和 trainer mode 四个公开边界；先画出
-`旧 Search-R1 → 当前保底适配 → veRL V1` 的字段映射，不立即替换已跑通脚本。完成标准是
-能解释 V1 为什么引入 TransferQueue、哪些 Search-R1 适配代码可以原样复用、哪些只属于
-旧 trainer 调度。完成该接口学习后，再单独比较 TRL 的 GRPOTrainer/tool-environment 路线。
+- 当前唯一任务：学生阅读 `MedSearch/data/stage_b/search100_training.json` 中一条一轮轨迹和
+  一条两轮轨迹，用自己的话解释四个顶层字段以及 `search/information/answer` 的数据流。
+- 完成解释后，下一步才由学生编写极简渲染函数：把结构化 trajectory 转换成 Search-R1 标签文本，
+  并验证 question/information 只参与 attention、search/answer 才计算 SFT CE loss。
 
 
 # 待补知识
 
-- 答案解析失败、无效搜索和 reward hacking 的处理方式。
-- 官方 BM25 服务的空结果和服务不可用处理。
-- veRL V1 的 TransferQueue、trainer mode 与当前 stable trainer 的接口差异。
-- TRL `GRPOTrainer` 对多轮工具环境、observation loss mask 和异步 rollout 的支持边界。
+- MedQA-dialog 清洗后的实际保留量能否支持 30%～40% 多轮比例。
+- medical-o1 在 512-token CoT 阈值下的保留率。
+- Search100 一轮/两轮/直答比例和普通医学对话 replay 比例。
+- Search100 是否需要过采样，才能在保留 replay 时学会稳定协议。
 
 # 实验结果总表
 
