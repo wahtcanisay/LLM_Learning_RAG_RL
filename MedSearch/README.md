@@ -56,6 +56,33 @@ Qwen2.5-3B-Instruct
 Base、Checkpoint A、Checkpoint B 和 Checkpoint C 都必须保留并在同一冻结测试边界上评测，
 分别衡量医学 SFT、搜索协议冷启动和 GRPO 带来的变化，不能只比较最终 checkpoint。
 
+### Stage-A dev 评测与人工抽样
+
+`sft/evaluate_stage_a.py` 只读取冻结的 328 条 Stage-A dev，不读取 MedQA/MedMCQA 最终测试集。
+它在完整 dev 上计算只覆盖 assistant labels 的 token-weighted NLL/PPL，并按 single、multi、
+reasoning、general 分组；随后每组固定抽样并生成：
+
+- `metrics.json`：dev loss/PPL 与 `<think>`/`<answer>` 标签率；
+- `generations.jsonl`：问题、参考回答、模型回答和自动标签检查；
+- `review.md`：留有医学正确性、相关性、幻觉、安全风险与标签行为栏的人工审阅表。
+
+训练结束且 GPU 空闲后，在仓库根目录 CMD 中分别运行 Base 和 Stage-A adapter；除 variant、
+adapter 与输出目录外，两条命令的 seed、抽样数和生成参数必须相同：
+
+```cmd
+wsl.exe docker exec -w "/workspace/code_list/some tricks/LLMLeanring" -e CUDA_VISIBLE_DEVICES=0 -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 llm-pytorch python -m MedSearch.sft.evaluate_stage_a --config MedSearch/configs/stage_a.yaml --data MedSearch/data/processed/sft_stage_a/stage_a_dev.jsonl --variant base --output-dir MedSearch/outputs/eval/base --per-group 8 --seed 20260823
+wsl.exe docker exec -w "/workspace/code_list/some tricks/LLMLeanring" -e CUDA_VISIBLE_DEVICES=0 -e HF_HUB_OFFLINE=1 -e TRANSFORMERS_OFFLINE=1 llm-pytorch python -m MedSearch.sft.evaluate_stage_a --config MedSearch/configs/stage_a.yaml --data MedSearch/data/processed/sft_stage_a/stage_a_dev.jsonl --variant stage-a-final --adapter-path MedSearch/outputs/stage_a/adapter --output-dir MedSearch/outputs/eval/stage-a-final --per-group 8 --seed 20260823
+```
+
+默认 greedy 生成衡量跨题标签成功率。若要检查同一道题在随机生成下是否稳定，给 Base 与 SFT
+都使用 `--repeats 3 --temperature 0.7 --top-p 0.9` 并写入新的输出目录。报告同时区分：
+
+- `tag_signature_consistency_rate`：多次输出的标签形态是否一致，一致地犯错也会计入；
+- `stable_expected_behavior_rate`：reasoning 组每次都严格输出完整 think+answer，普通组每次都不
+  非预期输出 think，只有这一项才表示稳定符合当前 Stage-A 数据协议。
+- `max_token_truncation_rate`：生成撞到 token 上限且未以 EOS 结束的比例；这类样本不能直接归因
+  为标签闭合能力失败，必须在人工抽样时单独查看。
+
 2026-08-31 调整：暂缓 Stage-B replay 数据组合，不再将其作为接入 Trainer 的前置条件。
 当前 Stage-B 入口保持只读取 Search100；这不意味着已证明“不混合更好”。Stage-A 已冻结的
 65/20/10/5 数据配方不变，本次不重新清洗、合并或导出任何数据。
