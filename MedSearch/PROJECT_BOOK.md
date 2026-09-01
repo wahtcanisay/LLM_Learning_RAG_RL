@@ -156,9 +156,10 @@ OCR/拼写噪声的样本，最终 100/100 通过答案、gold、证据、引用
 - `MedSearch/data/stage_b/search100_audit.json`
 - `MedSearch/data/stage_b/search100_failure_archive.json`
 
-阶段 B 实际训练时仍需混入少量 Stage-A 正常对话 replay；允许的 replay 池只包括
-Stage-A 的 single、multi、general，不包括 reasoning。具体回放条数尚未通过实验确定，必须先保证
-Search100 不被淹没，再做单变量比较。
+2026-08-31：阶段 B 是否混入 Stage-A 正常对话 replay 改为待讨论的实验选择，暂不实现数据组合，
+也不将其作为 Trainer 接入的前置条件。当前输入仍只有 Search100；若后续启用 replay，候选池
+限于 Stage-A 的 single、multi、general，不包含 reasoning。是否混合及具体条数均需单变量比较，
+不预先宣称混合或不混合更优。Stage-A 自身的 65/20/10/5 配方不受影响。
 
 ## 五、教师提供资料的标准
 
@@ -280,8 +281,13 @@ Search100 不被淹没，再做单变量比较。
 | 2026-08-23 | 通用 replay 固定 UltraChat 200k `train_sft` revision `8049631...`，经主题/质量规则、强模型抽检和 1024-token 闸门后占 Stage-A 5% | 防止医学 SFT 覆盖通用对话能力，同时避免重复灌入过多通用数据 | Stage-A manifest | Stage-A 混合比例与数据版本 |
 | 2026-08-23 | Stage-B Search100 冻结为 MedQA/MedMCQA official train 的 72/28，搜索轮数为一轮/两轮 80/20 | 保留真实医学检索闭环，同时剔除错答、弱证据、缺图、过时/歧义题和明显文本噪声 | `MedSearch/data/stage_b/search100_training.json` | Stage-B SFT 数据、协议学习与后续消融 |
 | 2026-08-23 | Stage-B 二次复审 100/100 通过；9 条明显 OCR/拼写噪声样本由强审通过的备用轨迹替换 | 精品 SFT 不仅要求答案正确，也要求题干可读、证据直接 | 本项目书保留验收结论 | Stage-B 数据验收 |
+| 2026-08-29 | Stage-A 最终化：1,640 条 reasoning 使用 `medical_o1_{provenance.index}` 稳定 ID；删除2条上游已含 `U+FFFD` 的 UltraChat 样本并用同 revision 的2条合格样本替换 | 保证样本可追踪、无不可恢复乱码，同时维持16,405总量和65/20/10/5配方 | Stage-A manifest、`MedSearch/tools/finalize_stage_a.py` | Stage-A 训练输入与实验追踪 |
 
 ## 九、资料与参考实现登记表
+
+2026-08-31 决策更新：按学生要求暂缓 Stage-B replay，直接进入 Trainer 骨架；教师只负责
+参数转换、入口和测试，`build_trainer()` 由学生填写。此决策替代上表 2026-08-23 关于
+Stage-B 必须加入 replay 的约定，不改动已冻结数据资产。
 
 | 状态 | 知识问题 | 来源与版本 | 阅读位置 | 借鉴内容 | 风险/差异 | 学习检查 |
 |---|---|---|---|---|---|---|
@@ -299,18 +305,89 @@ Search100 不被淹没，再做单变量比较。
 
 | 日期 | 问题或失败现象 | 已核验证据 | 原因 | 处理办法 | 是否解决 |
 |---|---|---|---|---|---|
-|  |  |  |  |  |  |
+| 2026-08-29 | Stage-A reasoning 顶层 ID 全部缺失；2条 general 含 `U+FFFD` | 全量扫描：missing ID 1,640、损坏文本2条；原始 UltraChat 同样损坏 | 从 provenance 生成稳定 ID；整条替换损坏样本；固定脚本可幂等复现 | 是 |
 
 ## 十二、当前状态与下一步
+
+2026-08-31 教学边界补充：后续正式 main 的训练编排由学生编写，教师只提供接口、必要骨架
+和 docs 内测试，不代填完整调用流程。后续按步骤实现 QLoRA，包括 4-bit 加载、低比特训练
+准备、LoRA 挂载及训练/保存重载；本轮仍验证 BF16 LoRA，不混淆两者的实验结论。
 
 当前状态：Stage-A 与 Stage-B 数据均已冻结。Stage-A 为 16,405 条 65/20/10/5 配方，
 train 16,077、dev 328；Stage-B Search100 为 100 条，MedQA/MedMCQA 72/28，
 一轮/两轮搜索 80/20。Stage-B 已完成独立二次复审，100 条正式记录均为 official train、
-答案与 gold 一致、引用存在且证据可支持答案。尚未启动本轮 SFT。
+答案与 gold 一致、引用存在且证据可支持答案。Stage-A 全部样本已有唯一稳定 ID，最终数据
+不含 `U+FFFD`；两条损坏的上游 UltraChat 记录已整条替换。尚未启动本轮 SFT。
 
-下一次唯一任务：**由学生实现一个最小数据渲染与 loss-mask 检查**。各读取一条 Stage-A
-普通对话和一条 Stage-B 搜索轨迹，渲染 chat template，并验证 question/information 仅参与
-attention，模型生成的 assistant/search/answer token 才进入 CE loss；先不启动完整训练。
+编码、Dataset/DataLoader、LoRA 与 Trainer 装配均已验收：学生已实现 `build_trainer()`，
+2026-08-31 CPU 回归 `22 passed in 12.31s`，不再保留 xfail。教师按本地 Transformers 5.10.4
+源码修正 use_cache 测试假设，没有改动学生核心实现。此结论不包含真实 3B Trainer 或 backward。
+
+学生 run_training 已完成：返回完整真实 metrics 及 global_step，tiny CPU 真实单步、
+有限 loss/梯度、LoRA 更新和基座不变均通过；最终完整回归 `27 passed in 12.94s`。
+教师修正日志与返回指标混淆的测试假设，不要求学生补造 total_flos，未修改学生实现。
+
+2026-08-31真实3B单步已通过：8条Stage-A、seed20260831、global_step1、loss1.173087、
+grad_norm0.814825、Trainer训练耗时6.3281秒，整卡采样峰值18,139 MiB。
+252个LoRA张量变化，434个冻结基座张量全量哈希不变。最长样本842，不能外推Stage-B4096。
+详细证据见 `docs/run_logs/3b-smoke-eqK4l3I8/SUMMARY.md`。未保存adapter，不能称为Checkpoint A。
+
+2026-08-31 保存接口已由学生实现：`save_adapter(model, tokenizer, output_dir) -> None`；
+教师接好 `--train-smoke --save-adapter`，仅保存至本次全新 smoke 目录的 adapter 子目录。
+契约只保存 PEFT adapter 与原生 tokenizer，不保存整套基座或 optimizer/scheduler/step。
+测试位于 `docs/tests/test_sft_save.py`，使用非零 tiny adapter 与相同底模副本验证重载；
+学生显式设置 `save_embedding_layers=False` 后，权重/tokenizer/固定输入 logits 的 tiny CPU
+round-trip 已通过。教师未修改学生实现；撤去 xfail 后完整回归 `31 passed in 11.76s`，
+无警告、无 xfail。本轮未重新启动真实 3B，未生成正式 Checkpoint A。
+
+后续真实3B验证已通过：固定8条、global_step1、loss1.173087，504个adapter张量、434个
+基座哈希和tokenizer一致；统一BF16 autocast下最后位置全词表logits最大差0。
+最新CPU回归33 passed，实测产物 `outputs/smoke/stage_a-kv1h2i46/adapter/`。
+教师输入格式/推理精度的两次失败均保留，详见 `docs/run_logs/3b-smoke-SrvIu01k/SUMMARY.md`。
+没有修改学生主训练代码；这不是QLoRA、正式Checkpoint A或效果提升。
+
+QLoRA 配置已由学生实现：`build_quantization_config(use_qlora, compute_dtype)`，
+关闭返回 None，开启返回 4-bit NF4/double quant 的原生 BitsAndBytesConfig，计算 dtype 原样传递。
+测试位于 `docs/tests/test_sft_quantization.py`；最新回归 `37 passed in 15.64s`，无警告、无 xfail。
+关闭分支与 BF16/FP16/FP32 计算 dtype 均通过；教师未改学生实现、main/load_base_model/YAML，也未安装依赖。
+Docker 已新增 bitsandbytes0.50.2，原训练依赖不变；微型NF4双重量化GPU前向通过。
+环境位置、安装命令及范围见 `docs/QLORA_ENVIRONMENT.md`，微型层验证与下述真实加载分别记录。
+
+学生量化加载已验收：load_base_model 的 CUDA 检查、原生量化加载和非量化兼容均通过，
+教师未改学生实现或 main/YAML。最新 CPU 回归 40 passed、16 条第三方弃用警告，无 xfail。
+真实 Qwen2.5-3B 252 个 NF4 双重量化层均通过检查，所有参数在 cuda:0，单次前向 logits 有限。
+加载耗时27.8416秒；PyTorch加载+前向峰值allocated2,149,335,040 bytes，非训练/整卡显存。
+报告见 `docs/run_logs/qlora-load-jxVC6GU3/SUMMARY.md`；教师报告属性误用的首次失败已保留。
+
+准备接口已留出：sft/train.py::prepare_qlora_model(model, use_gradient_checkpointing)，
+仅含契约和NotImplementedError。参考MedicalGPT:920-923，复用PEFT准备，并与Trainer统一
+gradient_checkpointing_kwargs={"use_reentrant": False}；非量化调用方跳过。未改main/YAML。
+docs/tests/test_sft_kbit_preparation.py先验证缺少接口的2项失败；骨架回归
+40 passed、2 xfailed、16 warnings（11.35s），占位仅允许NotImplementedError。
+CPU测试不代表真实4-bit准备或QLoRA反向传播已通过。
+
+学生现已完成prepare_qlora_model，CPU准备开关True/False、冻结与精度/数值边界均通过；
+教师未修改学生实现。撤去两项xfail后默认回归42 passed、16 warnings in 11.11s，无xfail。
+本轮未运行GPU、反向传播或训练；真实4-bit权重保留与LoRA梯度仍待联检。
+
+真实4-bit梯度联检已通过：Stage-A单条515tokens、loss1.9581148624420166，504个LoRA梯度有限，
+252个B非零；434个基座参数无梯度且数值保持，108个bias仅发生bitsandbytes内部精度转换。
+PyTorch峰值allocated4,657,840,640 bytes；无optimizer状态，不可外推完整训练/4096tokens显存。
+命令check_qlora_loading.sh --backward；报告docs/run_logs/qlora-backward-VKJlYdcw/SUMMARY.md。
+CPU回归42 passed、16 warnings（12.09s）；未改学生实现/main，未训练更新或保存。
+
+学生main的真实QLoRA Trainer单步已通过：8条、global_step1、loss1.1438109874725342、
+grad_norm0.8728765249252319；252个LoRA张量更新、434个冻结基座参数数值保留。
+Trainer runtime7.8915秒、整卡采样峰值15,285MiB（含背景）；不外推4096tokens或完整训练。
+报告docs/run_logs/3b-smoke-SQf36DFi/SUMMARY.md；未保存adapter，未删除或迁移代码。
+最新CPU回归48 passed、16 warnings（16.11s）。
+
+收工决策（2026-08-31，待实现）：训练参数统一由YAML提供，CLI仅保留--config选择文件；
+QLoRA开关迁入YAML，main内教学smoke模式移入docs。测试/复现记录保留，清理只针对确认无用的代码。
+学生负责main编排，教师负责工程迁移与验收；今晚没有实施删除、迁移或启动训练。
+
+当前唯一下一步：**明日2026-09-01整理统一配置的正式入口，通过启动前检查后启动Stage-A SFT**。
+真实QLoRA单步不等于正式训练完成；保存重载、dev评估与完整checkpoint恢复仍须验收。
 
 ## 十三、项目书维护规则
 

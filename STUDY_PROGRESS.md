@@ -1,10 +1,25 @@
 # 当前阶段
 
-**阶段 5：MedSearch-R1 医学证据搜索 Agent——SFT 数据设计。**
+**阶段 5：MedSearch-R1 医学证据搜索 Agent——两阶段 SFT 数据实现。**
 
 阶段 1、阶段 2 已完成并冻结，阶段 3 已完成最小 MedicalGPT SFT smoke，阶段 4 已完成
-Search-R1 3B 单步 GRPO 保底架构。当前进入 MedSearch-R1，先确定 SFT 数据与隔离边界，
-不立即编写完整训练工程。
+Search-R1 3B 单步 GRPO 保底架构。MedSearch-R1 的 SFT 数据与隔离边界已经冻结，Stage-A/
+Stage-B tokenization、统一数据入口与 Qwen2.5-3B + LoRA 模型装配均已通过验证。2026-08-31
+按学生要求暂缓 Stage-B replay；学生 `build_trainer()` 已通过 CPU 验收，完整回归 22 passed。
+学生 `run_training()` 已验收：返回完整真实 metrics 与顶层 global_step；tiny CPU 单步、
+有限 loss/梯度、LoRA 更新和基座不变均通过。最新完整回归 27 passed；真实3B也已完成
+Stage-A 8条单步验证，loss=1.173087、整卡峰值18,139 MiB。保存接口与测试骨架已搭建，
+学生 `save_adapter()` 已通过 tiny CPU 保存/重载验收；最新完整回归 31 passed，无 xfail。
+真实 3B 单步保存/重载也已通过：504 个 adapter 张量与 434 个基座张量一致，固定输入最后
+位置的全词表 logits 最大差 0。学生 `build_quantization_config()` 已验收，最新 CPU 回归
+37 passed，无 xfail。随后已在 Docker 安装 bitsandbytes 0.50.2 并通过微型 NF4 GPU 前向；
+学生量化加载分支现已通过：CPU 回归 40 passed、16 条第三方弃用警告，无 xfail；
+真实 Qwen2.5-3B 的 252 个 NF4 双重量化层及单次前向通过。尚未验证 QLoRA 训练。
+学生 prepare_qlora_model 已通过CPU验收；最新回归42 passed、16条警告，无xfail。
+真实4-bit准备与LoRA单样本反向传播已通过：515tokens、loss1.9581148624420166，
+504个LoRA张量梯度有限；无optimizer更新，不能称完整QLoRA训练通过。
+2026-09-01 正式入口与恢复分支已验收，Stage-A QLoRA 已在 Docker 后台启动并接入W&B；
+当前run `gufa7zwo`，首次观测至少17/2010步，训练尚未完成，不能声称效果提升。
 
 ```text
 NQ / HotpotQA Parquet
@@ -30,25 +45,386 @@ GRPO advantage 和 actor update；暂不讨论任何领域迁移。
 
 # 本周目标
 
-1. 冻结“对话型 Medical-SFT → Search100 + 对话 replay”两阶段 SFT 设计。
+1. 推进“对话型 Medical-SFT → Search100”两阶段 SFT，Stage-B 是否加入 replay 暂缓讨论。
 2. 审计候选单轮、多轮和 supervised rationale 数据的真实样本。
 3. 建立 SFT、Search100、RL 与最终测试集的严格隔离表。
 
 # 今日唯一任务
 
-**2026-08-24：清理 MedSearch 的一次性数据准备产物，恢复可学习的最小工作区。**
+**2026-09-01：持续观察正式 Stage-A QLoRA 训练，确认首个 checkpoint 与最终产物。**
 
-当前只保留项目书、正式 Stage-A/B 数据和未来 RL 要复用的检索资产；一次性清洗、审计、
-抽样、测试与说明材料统一移出活动目录。本任务不编写 SFT 训练代码。
+学生正式main与恢复分支已通过；教师已迁移冒烟到临时YAML、完成QLoRA保存重载和tiny断点恢复。
+正式训练PID7819，W&B run `gufa7zwo`；当前只观察真实曲线、checkpoint与最终adapter，
+不改训练参数、不启动Stage-B、不把进程运行包装成模型效果提升。
 
 # 完成标准
 
-- `MedSearch` 根目录只保留一个项目说明文件；
-- Stage-A 的 train/dev/manifest 和 Stage-B 的 Search100 均未受损；
-- 一次性脚本、测试、样本与审计文件不再出现在活动目录；
-- 活动文档不引用已归档的审计文件。
+- YAML作为训练参数唯一来源；--config仅选择文件，不重复覆盖训练参数；实际QLoRA设置写入运行记录；
+- 正式main不携带smoke教学模式，复用已有接口；测试移出入口但不删除，回归行为保持；
+- 启动前核对训练规模、输出目录、种子、配置记录及保存方式，不把smoke的8条/max_steps1误作正式训练设置；
+- QLoRA保存重载、dev评估和完整断点恢复仍是待办，不因整合而删除验证关口；
+- 明日先完成相应启动前检查，再启动Stage-A SFT；不将“进程启动”视为训练效果通过。
 
 # 已完成
+
+## 2026-09-01：Stage-A正式QLoRA启动并接入W&B（运行中）
+
+- 学生将量化开关职责放在main：量化配置函数只接收dtype，模型加载显式接收已解析dtype；
+  教师旧测试已按新接口迁移，未要求学生退回旧设计。
+- 完整CPU回归：53 passed、18 warnings；真实QLoRA单步保存/释放/4-bit重载通过，
+  adapter张量一致，固定输入logits最大差0.0；tiny checkpoint恢复optimizer/scheduler/global_step并继续到第2步。
+- 正式配置：16,077条、max_length1024、batch2、累积4、有效batch8、1 epoch、预计2010步，
+  QLoRA NF4双重量化/BF16、LoRA r8/alpha16/dropout0.05、lr2e-4、seed20260831。
+- Docker后台PID7819；W&B project `MedSearch-R1`，run ID `gufa7zwo`。
+  首次记录step10：loss1.174、grad_norm0.4244、lr0.0001991；观察时至少运行到step17。
+- 运行清单：`MedSearch/outputs/stage_a/run_manifest.json`；训练日志：
+  `MedSearch/outputs/stage_a/train.log`。训练尚未结束，尚无最终adapter/dev指标或能力结论。
+
+## 2026-09-01：正式SFT入口教师骨架与RED契约
+
+- 实施计划：`docs/superpowers/plans/2026-09-01-medsearch-sft-entry-consolidation.md`。
+- Stage-A YAML改为正式QLoRA配方：16,077条、1 epoch、max_steps=-1、batch2、累积4、
+  每250步保存、最多2个checkpoint；`resume_from_checkpoint` 初始为null。
+- Stage-B仅补统一schema，adapter路径指向`MedSearch/outputs/stage_a/adapter`；未启动、未决定replay。
+- 教师测试锁定：CLI只允许--config、YAML控制QLoRA、正式训练后保存adapter、恢复路径原样转发。
+- 聚焦回归：19 passed、9 failed、14条第三方警告；9个失败全部属于学生尚未实现的旧main或恢复分支，
+  无fixture、导入、配置保存策略故障。尚未运行GPU或启动完整训练。
+
+## 2026-08-31：学生main真实QLoRA Trainer单步通过
+
+- 命令 `wsl.exe bash MedSearch/docs/tests/run_sft_3b_smoke.sh --qlora`，退出码0；
+  教师仅扩展docs探针并调用学生main，未改学生函数/main/YAML或数据，未保存adapter。
+- Qwen2.5-3B NF4/double quant/BF16，r8/alpha16/dropout0.05，seed20260831；
+  固定8条Stage-A、batch2、梯度累积4、max_steps1、max_length1024，最长实际842tokens。
+- global_step1、loss1.1438109874725342、grad_norm0.8728765249252319、Trainer runtime7.8915秒。
+  252/504个LoRA张量更新；434个基座参数无梯度且数值保留，108个bias仅库内部dtype转换。
+- PyTorch训练峰值allocated7,081,850,880 bytes，reserved12,297,699,328 bytes；
+  整卡200ms采样250点峰值15,285MiB（含背景），非4096tokens可行性或性能对比结论。
+- CPU回归48 passed、16 warnings（16.11s）；报告MedSearch/docs/run_logs/3b-smoke-SQf36DFi/SUMMARY.md；
+  产物MedSearch/outputs/smoke/stage_a-_y_9hw2d/，含配置、实际QLoRA参数、指标、全量参数检查。
+- GPU进程已退出；未保存更新后权重，不构成Checkpoint A。QLoRA保存重载/dev评估/断点恢复待验收。
+- 可开始代码整合：学生负责正式main编排，教师处理docs中的检查逻辑；本轮未删除或迁移代码。
+
+## 2026-08-31：学生修复LoRA返回缩进，主入口CPU验收通过
+
+- attach_lora的return已由学生退到if/else之后，教师未修改学生代码。
+- `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`：48 passed、16 warnings in 19.09s，无xfail。
+  新增入口检查覆盖QLoRA开/关与梯度检查点开/关；先前None返回导致的连锁失败已消失。
+- CPU使用tiny加载替身，不等于真实QLoRA Trainer单步；下一项运行学生入口的GPU单步更新验收。
+
+## 2026-08-31：QLoRA主入口检查发现LoRA返回缩进回归（待学生修复）
+
+- 学生main已正确映射dtype并调用prepare_qlora_model；未代改学生实现。
+- 新增docs/tests/test_sft_cli.py主入口开/关QLoRA、开/关检查点的4项CPU测试，昂贵加载以tiny替代，
+  其余准备/挂载/data路径真实执行，不代表GPU训练验收。
+- 完整回归35 passed、13 failed、16 warnings（17.31s）：attach_lora的return peft_model
+  缩进到else内，新建adapter分支隐式返回None，引发入口/Trainer/保存等连锁失败。
+- 当前先由学生将返回语句退一级至if/else之后，再重跑；暂停GPU Trainer单步验收。
+
+## 2026-08-31：QLoRA命令行参数骨架
+
+- 学生表示不会引入参数，教师仅添加argparse的--qlora/store_true，默认False。
+  args.qlora已可读取，量化模型分支仍未接入，留学生填写；不代写训练编排。
+- 参数测试先出现2项缺少参数的失败；添加后完整CPU回归
+  `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`：44 passed、16 warnings in 11.01s。
+- 未启动GPU训练或更改其他函数；当前唯一任务仍是学生编排QLoRA调用路径。
+
+## 2026-08-31：真实4-bit准备与LoRA梯度联检通过
+
+- 命令：`wsl.exe bash MedSearch/docs/tests/check_qlora_loading.sh --backward`，退出码0。
+  复用教师加载检查新增可选backward模式，不改学生函数/main/YAML或数据。
+- Qwen2.5-3B、NF4/double quant/BF16、LoRA r8/alpha16/dropout0.05、seed20260831；
+  Stage-A第0条medqa-dialog_4790，batch1×515，281个监督token，loss1.9581148624420166。
+- 252个量化层保留；504个LoRA张量梯度有限，252个B非零、A首次为零。
+  434个冻结基座参数无梯度且数值保留；108个bias仅发生库内部FP32→BF16转换。
+- 首次教师全量字节哈希断言失败；核对bitsandbytes源码并记录变化参数后，只允许指定bias
+  精确数值不变的dtype转换，其他326个基座参数仍字节一致。失败日志保留，未改学生实现。
+- forward+backward0.9319077680120245秒；PyTorch峰值allocated4,657,840,640 bytes，
+  reserved4,752,146,432 bytes；无optimizer状态，不是整卡或完整训练显存，不外推4096tokens。
+- CPU命令 `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`：42 passed、16 warnings in 12.09s。
+- 报告：MedSearch/docs/run_logs/qlora-backward-VKJlYdcw/SUMMARY.md。
+  未运行optimizer更新/Trainer训练/保存；下一项调用编排归学生，教师继续负责验收。
+
+## 2026-08-31：学生低比特准备接口 CPU 验收通过
+
+- prepare_qlora_model 复用PEFT一次，梯度检查点True/False均原样传递，kwargs固定use_reentrant=False，
+  返回原模型；tiny CPU检查基座冻结、非量化参数转FP32、数值/配置/设备保留均通过。
+- `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh MedSearch/docs/tests --runxfail`：
+  42 passed、16 warnings in 14.78s。移除两项占位标记后默认命令
+  `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`：42 passed、16 warnings in 11.11s，无xfail。
+- 未修改学生函数或main，未启动GPU、训练或保存。测试仍在MedSearch/docs/tests/；
+  CPU tiny量化标记只触发PEFT准备分支，不能证明实际Params4bit保留或QLoRA梯度正确。
+- 下一项复用现有加载/准备/attach_lora做真实4-bit准备与LoRA梯度联检，不代写正式main。
+
+## 2026-08-31：低比特训练准备教学接口（待学生填写）
+
+- 已核对MedicalGPT/training/supervised_finetuning.py:920-923与当前PEFT0.20.0源码。
+  MedicalGPT在创建新LoRA前准备量化基座；本项目额外保持既有non-reentrant检查点设置一致。
+- 新增prepare_qlora_model(model, use_gradient_checkpointing)，只留契约和NotImplementedError；
+  导入PEFT原生函数，不改加载/挂载/Trainer实现或main/YAML，不安装依赖、不运行GPU。
+- 教师测试先出现2项缺少接口的真实失败；骨架后命令
+  `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`：
+  `40 passed, 2 xfailed, 16 warnings in 11.35s`。预期失败仅限占位NotImplementedError。
+- 测试位置MedSearch/docs/tests/test_sft_kbit_preparation.py，覆盖开/关、原生调用、返回对象、
+  基座冻结与精度/数值边界。tiny CPU量化标记是测试替身，不冒充4-bit GPU准备或反向传播。
+
+## 2026-08-31：学生量化加载分支验收通过
+
+- CUDA 提前检查、单卡 device_map、量化对象原样传递和非量化兼容均通过；未修改学生代码。
+- 默认命令 `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`：
+  `40 passed, 16 warnings in 15.08s`，已撤去两项占位 xfail，警告为已知第三方弃用提示。
+- 真实加载命令：`wsl.exe bash MedSearch/docs/tests/check_qlora_loading.sh`，退出码 0。
+  Qwen2.5-3B-Instruct、seed20260831、NF4/double quant/BF16，252 个 Linear4bit 层；
+  全部参数在 cuda:0，35-token 单次前向 logits 有限。加载耗时 27.8416 秒。
+- PyTorch 加载及单次前向峰值 allocated 2,149,335,040 bytes，reserved 2,176,843,776 bytes；
+  不是整卡占用或训练显存，不能据此外推 4096-token QLoRA 训练。GPU 验证进程已退出。
+- 报告：`MedSearch/docs/run_logs/qlora-load-jxVC6GU3/SUMMARY.md`，含版本、源码哈希和原始日志。
+  首次教师报告引用缺失的 hf_device_map 属性而失败，保留在 qlora-load-Gd9jRIwx；
+  改为报告实际参数设备后重跑通过，学生无需为教师报告增加属性。
+- 不挂 LoRA、不 backward、不训练、不保存模型。下一项为低比特训练准备，正式 main 仍归学生。
+
+## 2026-08-31：量化加载骨架与 Docker 环境微型检查
+
+- Docker `llm-pytorch` 内新增 bitsandbytes0.50.2，使用 --no-deps 保留原 torch/transformers。
+  PEP668保护在明确工具批准后仅对容器安装覆盖，主机Python未修改；版本固定在requirements-qlora.txt。
+- 真实RTX5090/CC12.0/CUDA13.0微型NF4+double-quant层前向通过，非Qwen加载或训练。
+  命令：`wsl.exe bash MedSearch/docs/tests/check_qlora_environment.sh`。
+  日志：`MedSearch/docs/run_logs/qlora-env-2p8oGYHS/check.log`。
+- load_base_model新增仅限关键字quantization_config=None；保留非量化实现，量化分支仅留
+  NotImplementedError，CUDA检查/加载调用由学生填写。未改main/YAML或已验收配置函数。
+- 新测试初始1 passed、2 failed（缺少接口参数）；骨架后完整回归
+  `38 passed, 2 xfailed, 16 warnings in 13.06s`。两项占位待验收，第三方弃用警告未屏蔽。
+- 参数传递CPU测试不等于GPU实际量化；学生实现后再验收真实加载。
+- 安装命令、wheel哈希、依赖版本及容器持久性边界详见`MedSearch/docs/QLORA_ENVIRONMENT.md`。
+
+## 2026-08-31：QLoRA 量化配置验收通过
+
+- 学生实现 `build_quantization_config()`：关闭返回 None，开启返回原生 BitsAndBytesConfig，
+  4-bit/NF4/double quant 正确，计算 dtype 按调用方传入，不同时启用 8-bit。
+- `--runxfail` 完整回归 37 passed in 14.38s；教师撤去待实现标记后，默认命令
+  `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh` 得到 `37 passed in 15.64s`，无警告、无 xfail。
+- 配置检查覆盖关闭分支及 BF16/FP16/FP32 三种 compute_dtype；未修改学生核心实现或 main。
+- 本轮没有安装 bitsandbytes、加载量化模型或运行 GPU 训练。结论仅为配置对象正确，
+  不能称为 QLoRA 训练跑通。下一项为量化加载，依赖先由教师核验，关键适配仍交学生。
+
+## 2026-08-31：QLoRA 量化配置教学骨架（待学生填写）
+
+- 新增 `build_quantization_config(use_qlora: bool, compute_dtype: torch.dtype)` 的签名和契约，
+  函数体保留 NotImplementedError，返回类型为 BitsAndBytesConfig 或 None。
+- 复用 MedicalGPT 的 NF4/double quant 配置思路；未修改 main、load_base_model、YAML 或既有
+  学生实现。QLoRA 属于既有学习路线，不是医学任务额外的自定义量化算法。
+- 教师测试 `MedSearch/docs/tests/test_sft_quantization.py` 先出现 4 个接口缺失红灯；
+  骨架后完整回归 `33 passed, 4 xfailed in 10.87s`。预期失败限 NotImplementedError，
+  学生完成后由教师撤去标记、真实检查配置对象。
+- 命令：`wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`。
+- Docker 中 bitsandbytes 尚未安装；本地 Transformers 5.10.4 配置构造没有要求该包，
+  不阻碍纯配置任务。真实量化加载前须核验依赖与硬件兼容。本轮未安装依赖或启动 GPU。
+
+## 2026-08-31：真实 3B BF16 LoRA 保存/重载通过
+
+- 最终命令：`wsl.exe bash MedSearch/docs/tests/run_sft_3b_smoke.sh --save-roundtrip`，退出码 0；
+  最新 CPU 回归 `33 passed in 10.22s`。
+- 固定 8 条 Stage-A、seed20260831、global_step1、loss1.173087239265442、grad_norm0.8145956993，
+  Trainer runtime7.3378 秒。252 个 LoRA 张量更新，434 个冻结基座张量哈希不变。
+- 保存后释放训练模型，再重载相同底模与 adapter；504 个 adapter 张量、434 个基座哈希、
+  tokenizer 均一致。同一 BF16 autocast/SDPA/eval 下最后位置全词表 logits 最大差0。
+- adapter 权重59,933,632 bytes；整卡400个采样点峰值18,062 MiB（含背景）。GPU 进程已退出。
+- 成功报告：`MedSearch/docs/run_logs/3b-smoke-SrvIu01k/SUMMARY.md`；产物：
+  `MedSearch/outputs/smoke/stage_a-kv1h2i46/`，含 adapter、配置、指标及前后 logits 文件。
+- 此前两次教师探针失败均保留：Q9PJhbEt 为 chat template 默认返回格式误用；8byqSe5Q 为
+  保存前后 autocast 不一致。仅修正 docs 内脚本并补测试，未改学生训练实现或 main。
+- 本轮不是 QLoRA、正式 Checkpoint A 或医学效果提升。后续正式 main 由学生编写；
+  下一项唯一任务改为 QLoRA 4-bit 配置，不提前代写完整流程。
+
+## 2026-08-31：save_adapter CPU 验收通过
+
+- 学生增加 `save_embedding_layers=False`；原生模型/tokenizer 保存与隐式 None 返回符合契约。
+  教师未修改学生实现，也未要求删除无害的重复 mkdir 或显式重写默认 safe_serialization=True。
+- 修正前专项测试 3 passed、1 failed：tiny 与引用配置词表大小不同，auto 分支额外保存 embedding；
+  修正后全量 `--runxfail` 回归 31 passed in 13.87s。撤去待实现标记后，默认命令
+  `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh` 得到 `31 passed in 11.76s`，无警告、无 xfail。
+- 验证 safetensors 仅含 LoRA、adapter 权重逐项一致、tokenizer 词表/特殊 token/chat template 保留、
+  同底模副本重载后的固定输入 logits 一致，以及 attach_lora 可训练加载分支。
+- tiny adapter 人工设为非零，仅用于序列化验收；不宣称真实 3B 保存已验证或医学效果提升。
+  未启动 GPU 训练、未生成正式 Checkpoint A；下一唯一任务为真实 3B 单步保存/重载验证。
+
+## 2026-08-31：adapter 保存教学骨架（学生实现待验收）
+
+- `sft/train.py` 新增 `save_adapter(model, tokenizer, output_dir) -> None`，函数体保留
+  NotImplementedError；教师接好仅限 `--train-smoke` 的 `--save-adapter` 参数与独立 adapter 子目录。
+- 参考 MedicalGPT 原生保存方法；契约要求只保存 LoRA/config/tokenizer，不合并底模，
+  不保存 embedding，不改已验收的 run_training 返回值，不做 optimizer/step 恢复。
+- 新增教师测试 `MedSearch/docs/tests/test_sft_save.py`：非法模式提前拒绝，以及 adapter
+  权重/tokenizer/同底模固定输入 logits 的 round-trip 验收。tiny adapter 人工设为非零仅用于
+  序列化检查，不冒充训练结果；重载底模使用原底模副本，避免随机初始化差异。
+- 初始红灯为 4 failed（接口与参数未创建）；保存重载测试保留严格 NotImplementedError xfail，
+  等学生实现后再撤去，不能将预期失败算作保存功能通过。本轮未运行真实 3B 或产生正式 adapter。
+- 命令：`wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`。
+- 最新 CPU 回归：`30 passed, 1 xfailed in 13.41s`，无警告；仅学生保存实现待验收。
+
+## 2026-08-31：真实 Qwen2.5-3B Stage-A 单步 smoke 通过
+
+- CPU回归27 passed in 14.26s；GPU运行退出码0，复用学生run_training和唯一main入口。
+- BF16 LoRA rank8/alpha16/dropout0.05、学习率0.0002、batch2×累积4、max_steps1、seed20260831。
+  固定8条样本，实际长度143～842，配置上限1024。
+- 真实global_step=1、loss=1.173087239265442、grad_norm=0.8148247599601746、
+  Trainer训练耗时6.3281s；252/504个LoRA张量变化，434个冻结基座张量全量哈希变化为0。
+- 整卡显存306点采样峰值18,139 MiB/32,607 MiB；PyTorch peak allocated 9.134 GiB、
+  reserved 14.113 GiB。整卡包含背景占用；真实训练进程已结束，显存释放。
+- 命令：`wsl.exe bash MedSearch/docs/tests/run_sft_3b_smoke.sh`。
+  报告：`MedSearch/docs/run_logs/3b-smoke-eqK4l3I8/SUMMARY.md`，同目录保存原始日志和显存CSV。
+  有效配置、代码/数据哈希、metrics与参数验证保存在`MedSearch/outputs/smoke/stage_a-_rs5vew5/`。
+- 没有改动学生核心实现或冻结数据；只增加docs内教师观察脚本。无OOM；初始化较慢后自然完成，
+  未禁用监控或修改训练逻辑。tokenizer特殊token提示为Trainer配置对齐，不是训练失败。
+- 不宣称医学效果提升，不外推Stage-B4096或全量训练；没有保存adapter，本次不是Checkpoint A。
+
+## 2026-08-31：run_training 最终验收通过
+
+- 学生通过字典展开保留完整 TrainOutput.metrics，并加入真实 global_step；新字典没有修改
+  原 metrics。教师未修改学生实现，不再增加该接口的要求。
+- 教师修正新增测试的错误假设：当前 Trainer 回调可能从返回 metrics 移除 total_flos，不能
+  将 log_history 作为返回字段的真值。此前关于“必须补回 total_flos”的判断撤回；现在直接
+  观察真实 TrainOutput，逐字段验证返回值一致，真实训练没有被 mock 替代。
+- 撤去 xfail 后完整回归 `27 passed in 12.94s`，命令：
+  `wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`。
+- 验证真实 tiny 训练调用恰好一次、global_step=1、有限 loss/非零有限梯度、LoRA 参数更新、
+  基座逐项不变及完整返回指标。未运行真实 3B，未生成训练 checkpoint。
+- 沟通改进：今后预留接口应明确返回结构示例，区分“消费端读取哪些字段”和“返回时保留哪些
+  字段”，不再让学生因教师说明或测试假设不清反复返工。
+
+## 2026-08-31：run_training 扁平结构复验（指标完整性待修正）
+
+- 学生已修复返回层级；tiny CPU 实际通过 global_step=1、有限 loss/非零有限梯度、LoRA
+  参数变化、基座参数逐项不变检查，未生成 checkpoint。
+- 教师补上此前遗漏的“保留全部原有 metrics”断言；实际缺失 total_flos、
+  train_samples_per_second、train_steps_per_second。未修改学生实现。
+- 相同限定目录命令复验结果 `26 passed, 1 failed in 13.48s`。当前只要求完整保留指标，
+  不扩展训练功能；未启动真实 3B。
+
+## 2026-08-31：run_training 首次验收未通过
+
+- 保存后的实现正确调用一次 trainer.train() 并读取真实 global_step，但返回
+  `{metrics: {...}, global_step: ...}`，不符合下游直接读取顶层 train_loss 的接口契约。
+- 命令：`wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh MedSearch/docs/tests --runxfail`。
+  结果 `26 passed, 1 failed in 13.54s`，失败为 KeyError('train_loss')。
+- tiny CPU 真实执行至 global_step=1，日志显示 loss 约4.136、grad_norm 约0.5355；这是合成
+  token 小模型的管线检查，不是医学模型指标。参数更新/基座不变断言位于失败之后，尚未执行。
+- 未修改学生代码；当前等待学生将返回结构改为扁平字典，未启动真实 3B 或正式训练。
+
+## 2026-08-31：单步训练教学骨架（run_training 待学生实现）
+
+- 教师新增 `prepare_train_smoke()` 和互斥 `--train-smoke`，只允许 Stage-A、max_steps=1、
+  单进程/单设备；每次新建 smoke 输出目录，原配置和正式 Checkpoint A 目录不受影响。
+- 模型/LoRA 初始化前 set_seed，固定抽取一次完整梯度累积的样本数；入口记录有效配置、
+  样本 ID、Git HEAD、SFT 源码/数据哈希；训练成功后记录真实 metrics 和 Trainer log history。
+- 学生 `run_training()` 仅预留 Trainer 训练调用与真实结果转换契约，未替学生完成实现。
+- 新增红灯检查因接口缺失产生 `5 failed`；教师保护实现后，完整 CPU 回归
+  `26 passed, 1 xfailed in 12.92s`。唯一预期失败为学生训练接口，未执行 backward。
+- 命令：`wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`。新增测试在
+  `MedSearch/docs/tests/test_sft_step.py`，待学生完成后检查有限 loss/梯度、LoRA 更新与基座不变。
+- 本轮未跑真实 3B、完整 CLI 训练路径或 GPU 显存测量，未产生训练 checkpoint；不能将骨架
+  回归通过写成单步训练通过。
+
+## 2026-08-31：学生 Trainer 接口验收
+
+- 学生正确实现 `build_trainer()`，原样复用模型、tokenizer、Dataset/collator，返回 HF Trainer；
+  不手写 DataLoader/optimizer，不调用 train，不改 labels 或解冻基座。
+- 首次限定目录回归为 `19 passed, 1 failed`：教师断言错误地要求关闭 checkpointing 时保留
+  原 cache。核对本地 Transformers 5.10.4 `trainer.py:608`，Trainer 会写入 args.use_cache，
+  其默认值 False；修正测试与契约说明，未改学生执行逻辑。
+- 撤去 xfail，补验 Stage-B 和完整 batch 三张量对比；CPU fixture 禁用无意义的 pin_memory。
+  最终干净结果：`22 passed in 12.31s`，无跳过项或预期失败项。
+- 命令：`wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`；位置：`MedSearch/docs/tests/`。
+- 只测试 tiny LoRA 模型构造与真实 Stage-A/B 样本组 batch；global_step=0、optimizer/scheduler
+  未创建、可训练参数仅 LoRA。未运行真实 3B Trainer、backward、训练指标或显存测量。
+
+## 2026-08-31：Trainer 教学骨架（学生接口待实现）
+
+- 按学生决定暂缓 Stage-B replay，当前保持只读取 Search100；Stage-A 冻结配方和全部数据未改动。
+- 教师提供 `build_training_arguments()`、两个 YAML 的 `training` 配置及 `--trainer-smoke` 接线；
+  `build_trainer()` 只留契约和 `NotImplementedError`，未替学生填写。
+- 参考本地 MedicalGPT `training/supervised_finetuning.py` 的 Trainer 接线，复用 HF 原生类；
+  配置非重入式 gradient checkpointing、保留 labels、禁用评估/保存/外部日志；本轮没有训练循环。
+- 红灯验证：新测试因两个接口不存在产生 `3 failed`。最终 CPU 回归真实结果
+  `18 passed, 2 xfailed in 12.25s`；两项 xfailed 仅代表学生接口未实现，不是验收通过。
+- 运行命令（仓库根目录 CMD）：`wsl.exe bash MedSearch/docs/tests/run_sft_checks.sh`。
+- 环境：现有 `llm-pytorch` 容器，Transformers 5.10.4、PEFT 0.20.0、Accelerate 1.14.0；
+  测试禁用 CUDA 和联网，只验证 CPU 接线。没有真实 3B Trainer、backward、显存或训练指标。
+- 学生填写后需移除严格 xfail 标记，再验收真实 tiny LoRA Trainer 与 batch；后续正式训练前
+  仍需接好 dev 评估、保存/恢复和真实单步检查。
+
+## 2026-08-30：Qwen2.5-3B + LoRA 模型装配验收
+
+- 教师参照 MedicalGPT 已成功 SFT adapter，固定 BF16、Qwen 7 类投影模块、rank 8、alpha 16、
+  dropout 0.05，并接好本地底模加载、参数边界检查与统一入口 `--model-smoke`；
+- 学生完成 `attach_lora()`：Stage-A 用 `LoraConfig/get_peft_model` 新建 adapter，Stage-B 用
+  `PeftModel.from_pretrained(..., is_trainable=True)` 续载，并对缺失 adapter 路径明确报错；
+- tiny Qwen 真实完成新建、保存、续载和缺失路径测试；encoder、Dataset、入口与模型完整回归
+  为干净的 `15 passed in 6.32s`；
+- 真实 Qwen2.5-3B-Instruct BF16 CPU smoke 正常加载434组权重；LoRA 可训练参数
+  `14,966,784`、总参数 `3,100,905,472`、占比 `0.4826585%`，没有非 LoRA 可训练参数；
+- Stage-B 真实 adapter 尚不存在，因此未伪造 Checkpoint A，也未声称 Stage-B 3B 续训加载通过；
+  当前只有 tiny adapter 续载边界通过。
+
+## 2026-08-30：单一 SFT 数据入口 smoke 验收
+
+- 教师参照 MedicalGPT 的参数入口、AutoTokenizer 与 collator 调用链，创建单一
+  `MedSearch/sft/train.py`、`stage_a.yaml`、`stage_b.yaml` 和隔离测试；没有复制完整 Trainer 参数层；
+- 学生完成 `build_dataloader()`：解析相对/绝对数据路径，复用 `load_samples()`、`SFTDataset`
+  与 `build_data_collator()`，并把 batch size、shuffle、worker 数从配置传入 PyTorch DataLoader；
+- encoder、Dataset 与统一入口完整回归真实结果为 `12 passed in 10.48s`；
+- 正式 CLI smoke 共用同一入口：Stage-A 读取 16,077 条并输出 batch `[2, 683]`、上限 1,024；
+  Stage-B 读取 100 条并输出 batch `[2, 1254]`、上限 4,096；两者均正常退出；
+- 本轮只加载 tokenizer 和一个 CPU batch，没有加载模型、创建 LoRA/Trainer 或占用 GPU。
+
+## 2026-08-30：统一 SFT Dataset 与动态 padding 验收
+
+- 教师先在 `MedSearch/docs/tests/test_sft_data.py` 建立红灯测试和 `MedSearch/sft/data.py`
+  接口骨架；学生完成 `.jsonl/.json` 读取与 Stage-A/Stage-B encoder 分派；
+- 动态 padding 未手写重复循环，直接复用 MedicalGPT 已验证的 Transformers
+  `DataCollatorForSeq2Seq`：input_ids 使用 tokenizer pad id、attention mask 补0、labels 补 `-100`；
+- Dataset/encoder 隔离回归真实结果为 `9 passed in 8.01s`；
+- 正式数据 smoke 读取 Stage-A train 16,077 条和 Search100 100 条；抽取首尾样本组成真实 batch，
+  Stage-A 长度为 515/409、batch shape `(2, 515)`，Stage-B 长度为 1005/1258、batch shape
+  `(2, 1258)`，三张量 shape 一致；
+- 当前采用按 `__getitem__` 即时编码的最小实现；只有真实 profiling 证明 tokenizer 成为训练
+  瓶颈时才增加预编码缓存，不提前复杂化。
+
+## 2026-08-29：Stage-B Search-R1 编码与长度边界验收
+
+- 学生完成 `MedSearch/sft/preprocess.py::encode_stage_b()`：开头只渲染一次 Qwen user prompt，
+  `think/search/answer/EOS` 参与 loss，环境 `information` 保留在 attention 中但 labels 为 `-100`；
+- 修复 `step[type]` 将 Python 内置 `type` 误作字典键的问题，并为未知 trajectory type 增加
+  明确 `ValueError`；保留 answer 后 `break`，不为已冻结合法轨迹增加重复结构校验；
+- 本地 Qwen2.5-3B-Instruct 原生 `max_position_embeddings=32768`；Search100 编码最长约
+  3,070 tokens，因此 Stage-B 固定 `max_length=4096`，超长直接报错而不静默截断；
+- 教师修正隐藏测试中 prompt 示例 `<answer>B</answer>` 导致的首次匹配误判；Docker 最终结果
+  为 `5 passed in 4.88s`，其中包含正式 100 条 Search100 全量 4,096-token 闸门；
+- 后续 RL 训练策略确定为 LoRA-GRPO；训练速度、显存和有效 reward 组比例仍必须由真实 smoke
+  记录，不能根据模型规模纸面宣称可行。
+
+## 2026-08-29：Stage-A 对话编码与 loss mask 验收
+
+- 学生完成 `MedSearch/sft/preprocess.py::encode_stage_a()`：直接读取冻结数据的 `messages`，
+  复用 Qwen2.5 `apply_chat_template`，system/user labels 为 `-100`，assistant 内容和每轮 EOS
+  参与 loss；没有引入额外中间 schema、Dataset 或 Trainer；
+- 教师维护的隔离测试位于 `MedSearch/docs/tests/`，真实容器运行结果为 `1 passed in 8.28s`；
+- 使用本地 Qwen2.5-3B-Instruct tokenizer 全量编码 Stage-A train/dev 共 16,405 条：最短
+  48 tokens、最长 1,022 tokens、超 1,024 为0、空 target 为0，三数组长度全部一致；
+- 学生能解释多轮中 assistant 必须进入 `accumulated`，否则 `previous_rendered` 会缺失历史并
+  破坏下一轮增量切片；能解释 causal LM 在 `forward(labels=...)` 内部对 logits/labels 做移位，
+  因此数据预处理不手动右移 labels。严格说该移位由模型 loss 实现，不是 Trainer 本身完成。
+
+## 2026-08-29：Stage-A 最终质量修复
+
+- 全量复核发现 reasoning 1,640 条缺顶层 `id`，以及2条 UltraChat general 样本含原始数据
+  自带的 `U+FFFD`；其中一条还包含明显事实性幻觉，不能用标点替换修复；
+- reasoning ID 已确定性补为 `medical_o1_{provenance.index}`；两条损坏 general 已整条删除，
+  并从同一固定 UltraChat revision 补入2条经结构、主题和 Qwen 1,024-token 检查的样本；
+- 总量和配方保持不变：train 16,077、dev 328，single/multi/reasoning/general 为
+  10,663/3,281/1,640/821；最终 missing ID、重复 ID、`U+FFFD` 均为0；
+- 新增可幂等运行的 `MedSearch/tools/finalize_stage_a.py` 和最小回归测试；
+- `MedSearch/README.md` 明确教师/学生职责，下一步正式进入学生编写 SFT 数据入口。
 
 ## 2026-08-24：MedSearch SFT 工作区瘦身
 
@@ -436,10 +812,10 @@ git diff --check
 
 # 下一步
 
-- 当前唯一任务：学生阅读 `MedSearch/data/stage_b/search100_training.json` 中一条一轮轨迹和
-  一条两轮轨迹，用自己的话解释四个顶层字段以及 `search/information/answer` 的数据流。
-- 完成解释后，下一步才由学生编写极简渲染函数：把结构化 trajectory 转换成 Search-R1 标签文本，
-  并验证 question/information 只参与 attention、search/answer 才计算 SFT CE loss。
+- 观察W&B曲线与本地日志；首先确认`checkpoint-250`包含adapter、optimizer、scheduler和trainer state。
+- 训练完成后验收最终`adapter/`与`train_metrics.json`，再使用冻结的328条dev执行独立评测。
+- 正式训练期间不改YAML和训练源码；生产测试helper剪枝放到训练完成后的独立步骤。
+- Stage-B replay仍为待讨论项，不阻塞Stage-A；本日不启动Stage-B。
 
 
 # 待补知识

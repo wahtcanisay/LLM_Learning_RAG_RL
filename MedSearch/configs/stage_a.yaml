@@ -1,0 +1,40 @@
+stage: stage_a
+data_path: MedSearch/data/processed/sft_stage_a/stage_a_train.jsonl
+model_path: models/Qwen2.5-3B-Instruct
+dtype: bfloat16
+use_qlora: true
+resume_from_checkpoint: null
+adapter_path: null
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+max_length: 1024
+batch_size: 2
+shuffle: false
+num_workers: 0
+
+# Formal Stage-A QLoRA recipe. Smoke overrides live under docs/tests only.
+# shuffle above affects the standalone DataLoader; HF Trainer shuffles its dataset.
+training:
+  output_dir: MedSearch/outputs/stage_a
+  learning_rate: 0.0002
+  num_train_epochs: 1
+  max_steps: -1
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+  logging_steps: 10
+  report_to: wandb
+  run_name: medsearch-stage-a-qlora-seed20260831
+  seed: 20260831
+  optim: adamw_torch
+  save_strategy: steps
+  save_steps: 250
+  save_total_limit: 2

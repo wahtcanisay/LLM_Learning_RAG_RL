@@ -1,0 +1,35 @@
+stage: stage_b
+data_path: MedSearch/data/stage_b/search100_training.json
+model_path: models/Qwen2.5-3B-Instruct
+dtype: bfloat16
+use_qlora: true
+resume_from_checkpoint: null
+adapter_path: MedSearch/outputs/stage_a/adapter
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+max_length: 4096
+batch_size: 2
+shuffle: false
+num_workers: 0
+
+# Search100 only for now; replay is an open experimental decision (2026-08-31).
+# These are smoke defaults, not a validated Stage-B training recipe.
+training:
+  output_dir: MedSearch/outputs/stage_b
+  learning_rate: 0.0002
+  num_train_epochs: 1
+  max_steps: 1
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+  logging_steps: 1
+  seed: 20260831
+  optim: adamw_torch
