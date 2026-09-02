@@ -153,8 +153,16 @@ OCR/拼写噪声的样本，最终 100/100 通过答案、gold、证据、引用
 正式资产：
 
 - `MedSearch/data/stage_b/search100_training.json`
-- `MedSearch/data/stage_b/search100_audit.json`
-- `MedSearch/data/stage_b/search100_failure_archive.json`
+- `MedSearch/archive/data_preparation/data/search100_audit.json`
+- `MedSearch/archive/data_preparation/data/search100_failure_archive.json`
+- `MedSearch/data/stage_b/stage_b_protocol_dev.json`
+- `MedSearch/data/stage_b/stage_b_protocol_dev_manifest.json`
+
+首版 protocol dev 共 12 条，全部来自未进入 Search100 的 MedQA/MedMCQA official train：
+一轮搜索 8 条、两轮搜索 4 条，两数据源各 6 条。它只用于开发期搜索格式、证据命中、闭环完成
+与最终答案评测，不提供唯一参考 query，不计算 CE loss，也不称为最终 test。构建时对 Search100、
+Stage-A user turn 和 MIRAGE MedQA/MedMCQA 最终测试题执行精确、词汇与本地 MPNet 语义近重检查；
+未来医学 RL 数据必须继续排除这 12 个 ID。
 
 2026-08-31：阶段 B 是否混入 Stage-A 正常对话 replay 改为待讨论的实验选择，暂不实现数据组合，
 也不将其作为 Trainer 接入的前置条件。当前输入仍只有 Search100；若后续启用 replay，候选池

@@ -34,10 +34,15 @@ def test_main_runs_configured_training_pipeline(
     monkeypatch.setattr(train, "load_config", lambda path: config)
     order = []
     tokenizer = SimpleNamespace(padding_side="left")
-    dataloader = [
+    train_dataloader = [
         {"input_ids": torch.ones(1, 1, dtype=torch.long),
          "attention_mask": torch.ones(1, 1, dtype=torch.long),
          "labels": torch.ones(1, 1, dtype=torch.long)}
+    ]
+    expected_eval_dataloader = [
+        {"input_ids": torch.full((1, 1), 2, dtype=torch.long),
+         "attention_mask": torch.ones(1, 1, dtype=torch.long),
+         "labels": torch.full((1, 1), 2, dtype=torch.long)}
     ]
     base = tiny_qwen().to(dtype=torch.bfloat16)
     peft_model = object()
@@ -48,7 +53,13 @@ def test_main_runs_configured_training_pipeline(
         "from_pretrained",
         lambda *args, **kwargs: tokenizer,
     )
-    monkeypatch.setattr(train, "build_dataloader", lambda *args, **kwargs: dataloader)
+    monkeypatch.setattr(
+        train,
+        "build_dataloader",
+        lambda *args, split="train", **kwargs: (
+            train_dataloader if split == "train" else expected_eval_dataloader
+        ),
+    )
     monkeypatch.setattr(train, "describe_batch", lambda *args, **kwargs: {})
     monkeypatch.setattr(train, "describe_model", lambda *args, **kwargs: {})
     monkeypatch.setattr(train, "set_seed", lambda seed: order.append("seed"))
@@ -81,10 +92,18 @@ def test_main_runs_configured_training_pipeline(
         order.append("attach")
         return peft_model
 
-    def build(passed_config, model, passed_tokenizer, passed_dataloader):
-        assert (passed_config, model, passed_tokenizer, passed_dataloader) == (
-            config, peft_model, tokenizer, dataloader
+    def build(
+        passed_config,
+        model,
+        passed_tokenizer,
+        dataloader,
+        *,
+        eval_dataloader=None,
+    ):
+        assert (passed_config, model, passed_tokenizer, dataloader) == (
+            config, peft_model, tokenizer, train_dataloader
         )
+        assert eval_dataloader is expected_eval_dataloader
         order.append("trainer")
         return trainer
 

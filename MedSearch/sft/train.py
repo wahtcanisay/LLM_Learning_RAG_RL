@@ -1,4 +1,6 @@
-"""Single MedSearch SFT entry point: assembly checks and bounded training smoke."""
+"""
+教学用途的hfsft训练代码，大部分都采用了抽象的接口堆叠
+"""
 
 import argparse
 from copy import deepcopy
@@ -53,31 +55,52 @@ def build_dataloader(
     config: dict,
     tokenizer,
     project_root: Path = PROJECT_ROOT,
+    *,
+    split: str = "train",
 ) -> DataLoader:
-    """Connect one YAML config to the existing MedSearch data pipeline.
+    """Build the train or frozen-dev loader through the same SFT pipeline.
 
     Contract:
-    - Resolve ``data_path`` relative to ``project_root``; absolute paths also work.
+    - Accept only ``split="train"`` or ``split="eval"``.
+    - Train reads ``config["data_path"]`` and preserves ``config["shuffle"]``.
+    - Eval reads ``config["eval_data_path"]`` and always disables shuffle.
+    - Train uses ``config["stage"]`` for encoding. Eval uses
+      ``config.get("eval_stage", config["stage"])`` so Stage-B can measure
+      retention on the frozen Stage-A dev without applying ``encode_stage_b``.
+    - Resolve the selected path relative to ``project_root``; absolute paths work.
     - Reuse ``load_samples`` and ``SFTDataset`` without changing sample schemas.
     - Reuse ``build_data_collator`` for dynamic padding.
-    - Pass batch size, shuffle and worker count directly from ``config``.
+    - Keep the existing batch size and worker count; HF Trainer owns its actual
+      per-device eval batching through TrainingArguments.
     - Return the PyTorch ``DataLoader``; do not fetch a batch in this function.
 
-    Student task: implement only this wiring. Do not load a model or create a
-    Trainer here.
+    Student task: select the dataset stage at the same place as path/shuffle and
+    pass it to SFTDataset below. Do not load a model, split files again or create
+    a Trainer here.
     """
-    path = Path(config["data_path"])
-
+    if split == "train":
+        path = Path(config["data_path"])
+        shuffle = config["shuffle"]
+    elif split == "eval":
+        path = Path(config["eval_data_path"])
+        shuffle = False
+    else:
+        raise ValueError(f"unknown split: {split}")
     if not path.is_absolute():
         path = project_root / path
 
     samples = load_samples(path)
-    dataset = SFTDataset(samples, tokenizer, config["stage"], config["max_length"])
+    dataset_stage = (
+        config["stage"]
+        if split == "train"
+        else config.get("eval_stage", config["stage"])
+    )
+    dataset = SFTDataset(samples, tokenizer, dataset_stage, config["max_length"])
     collator_fn = build_data_collator(tokenizer)
 
     return DataLoader(dataset,
                       batch_size=config["batch_size"],
-                      shuffle=config["shuffle"],
+                      shuffle=shuffle,
                       num_workers=config["num_workers"],
                       collate_fn=collator_fn)
 
@@ -240,8 +263,10 @@ def build_training_arguments(
     """Teacher wiring: reuse HF arguments, preserving our precomputed labels.
 
     ``training`` contains native TrainingArguments fields. Batch size and worker
-    count remain shared with the data smoke. No evaluation or saving until those
-    paths have their own acceptance checks; max_steps=1 is only a smoke default.
+    count remain shared with the data smoke. Student task: let native
+    ``eval_strategy``, ``eval_steps``, ``per_device_eval_batch_size`` and
+    ``prediction_loss_only`` pass through from YAML instead of forcing
+    ``eval_strategy="no"`` below. Do not calculate perplexity here.
     """
     training = dict(config["training"])
     training.setdefault("save_strategy", "no")
@@ -262,7 +287,6 @@ def build_training_arguments(
         gradient_checkpointing_kwargs={"use_reentrant": False},
         remove_unused_columns=False,
         label_names=["labels"],
-        eval_strategy="no",
     )
 
 
@@ -272,6 +296,8 @@ def build_trainer(
     tokenizer,
     dataloader: DataLoader,
     project_root: Path = PROJECT_ROOT,
+    *,
+    eval_dataloader: DataLoader | None = None,
 ) -> Trainer:
     """Assemble a Trainer around the already verified LoRA and data components.
 
@@ -284,6 +310,8 @@ def build_trainer(
       non-reentrant implementation.
     - Reuse the supplied model, tokenizer, dataloader.dataset and
       dataloader.collate_fn. HF calls the tokenizer argument ``processing_class``.
+    - When ``eval_dataloader`` is supplied, pass its dataset as ``eval_dataset``;
+      otherwise preserve the existing ``None`` behavior.
     - Return a plain HF Trainer; it builds its own shuffled training DataLoader.
       Config ``shuffle`` controls only our separate data smoke DataLoader.
     - Keep our encoded labels intact. Do not re-tokenize, shift labels or replace
@@ -291,7 +319,8 @@ def build_trainer(
     - Do not call train/evaluate/save, create an optimizer, load another model,
       unfreeze the base weights or implement a Trainer subclass.
 
-    Student task: implement only this assembly, not the training loop.
+    Student task: add only the optional eval dataset to this assembly, not an
+    evaluation loop, callback or custom metric.
     """
 
     train_arg = build_training_arguments(config, project_root)
@@ -301,7 +330,8 @@ def build_trainer(
                       args=train_arg,
                       processing_class=tokenizer, # 模型配套使用的数据处理器，文本模型通常传tokenizer
                       data_collator=dataloader.collate_fn,
-                      train_dataset=dataloader.dataset) # 其实这个dataload可以不用吧，
+                      eval_dataset=eval_dataloader.dataset if eval_dataloader is not None else None,
+                      train_dataset=dataloader.dataset, ) # 其实这个dataloader可以不用吧，直接传dataset
 
     return trainer
 
@@ -448,7 +478,10 @@ def main(argv: list[str] | None = None) -> None:
 
     tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
     tokenizer.padding_side = "right"
-    dataloader = build_dataloader(config, tokenizer)
+    train_dataloader = build_dataloader(config, tokenizer, split="train")
+    eval_dataloader = build_dataloader(config, tokenizer, split="eval")
+    # Student task: build the frozen-dev loader from split="eval" and pass it to
+    # build_trainer after the three eval-wiring acceptance checks turn green.
 
     # Student task: resolve dtype, build optional QLoRA configuration, then call
     # load_base_model → prepare_qlora_model (QLoRA only) → attach_lora →
@@ -468,8 +501,10 @@ def main(argv: list[str] | None = None) -> None:
         model = load_base_model(config, quantization_config=None, dtype=dtype)
 
     model = attach_lora(model, config)
-
-    trainer = build_trainer(config, model, tokenizer, dataloader)
+    if eval_dataloader is not None:
+        trainer = build_trainer(config, model, tokenizer, dataloader=train_dataloader, eval_dataloader=eval_dataloader)
+    else:
+        trainer = build_trainer(config, model, tokenizer, dataloader=train_dataloader,)
     results = run_training(trainer, resume_from_checkpoint=config["resume_from_checkpoint"])
 
     output_dir = Path(config["training"]["output_dir"])

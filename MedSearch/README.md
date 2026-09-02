@@ -83,9 +83,40 @@ wsl.exe docker exec -w "/workspace/code_list/some tricks/LLMLeanring" -e CUDA_VI
 - `max_token_truncation_rate`：生成撞到 token 上限且未以 EOS 结束的比例；这类样本不能直接归因
   为标签闭合能力失败，必须在人工抽样时单独查看。
 
+### 训练中 dev loss 接口（已接通）
+
+Stage-A 训练中的 validation 固定使用 `data/processed/sft_stage_a/stage_a_dev.jsonl`，不得读取
+MedQA/MedMCQA 最终测试资产。教师已给 `build_dataloader(..., split="train|eval")` 与
+`build_trainer(..., eval_dataloader=...)` 增加接口契约；学生只需完成路径分派、eval 禁止 shuffle、
+TrainingArguments 原生 eval 字段透传、Trainer eval_dataset 接线及 main 编排。不新增 Dataset、
+callback 或手写 evaluation loop。
+
+`docs/tests/test_sft_eval_wiring.py` 的五项契约均已转绿，当前完整 SFT 回归为
+`67 passed, 18 warnings`。Stage-A 使用 step evaluation；首轮正式 Stage-B 只在 epoch 末评估
+一次，避免 100 条训练数据每一步都重复遍历 328 条 dev。这只记录 validation loss；最终医学
+能力仍由冻结测试集 Accuracy 验收。
+
+Stage-B 不用 Search100 轨迹做 token-level validation loss。它通过 `eval_stage: stage_a` 复用
+同一份 328 条 Stage-A dev，只监控医学对话能力是否遗忘；该 loss 不用于判断 search query
+是否优质，也不用于选择 Stage-B checkpoint。搜索协议能力由独立 protocol dev 的合法 action、
+Evidence Hit@k、闭环完成率与最终答案准确率评测。
+
 2026-08-31 调整：暂缓 Stage-B replay 数据组合，不再将其作为接入 Trainer 的前置条件。
 当前 Stage-B 入口保持只读取 Search100；这不意味着已证明“不混合更好”。Stage-A 已冻结的
 65/20/10/5 数据配方不变，本次不重新清洗、合并或导出任何数据。
+
+### 首轮正式 Stage-B 与 protocol dev（2026-09-01）
+
+首轮正式配置为 `configs/stage_b_formal.yaml`：Search100 共 100 条、batch size `2`、梯度累积
+`4`、max length `4096`、1 epoch。100 条对应 50 个 micro-batch 和 13 个 optimizer step，
+不是只训练了 13 条。真实结果为 train loss `1.5409584`、runtime `912.2916s`；epoch 末在
+328 条 Stage-A dev 上得到 Trainer eval loss `0.9218875`。W&B run ID 为 `krv3cmlr`。
+
+`data/stage_b/stage_b_protocol_dev.json` 冻结 12 条未进入 Search100 的 official-train 题：8 条
+一轮搜索、4 条两轮搜索，MedQA/MedMCQA 各 6 条。构建时排除了 Search100、30,073 个
+Stage-A user turn 和 MIRAGE 的 5,456 条 MedQA/MedMCQA 最终测试题；本地 MPNet 语义相似度
+拒绝阈值为 `0.92`，实际最高值为 `0.781795`。这些 ID 同时预留为未来医学 RL 排除项。
+该集合只用于开发期行为验收，不计算 token-level loss，也不作为最终 test。
 
 ### 职责边界
 
