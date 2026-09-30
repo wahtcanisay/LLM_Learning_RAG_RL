@@ -1,0 +1,58 @@
+{
+  "counts": {
+    "existing_rl_train": 3283,
+    "existing_rl_dev": 396,
+    "stage_a_train": 29433,
+    "stage_a_dev": 640,
+    "search100": 100,
+    "protocol_dev": 12,
+    "final_test": 5456
+  },
+  "inputs": {
+    "existing_rl_train": {
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/rl/train.parquet",
+      "sha256": "605818364f802d4209b1c2888d986a294636e62c0149b11102ecba0f9570a99f"
+    },
+    "existing_rl_dev": {
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/rl/dev.parquet",
+      "sha256": "cadb1b3842ce603ab87b4e8be78c0bf7cefe935b1a8b3ae8e29d6543d653ce4a"
+    },
+    "stage_a_train": {
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/processed/sft_stage_a/stage_a_train.jsonl",
+      "sha256": "c63ab881635ece1a35f2f3a1413c19f23b863d4532b634332ae6a8153fe06014"
+    },
+    "stage_a_dev": {
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/processed/sft_stage_a/stage_a_dev.jsonl",
+      "sha256": "ae05a597dfe900587b3f7ca48e184f24ab3130f32fa3506aef133427449b5afd"
+    },
+    "search100": {
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/stage_b/search100_training.json",
+      "sha256": "e9796395e17f6a9c29520cb48758ed9cdbb083c1d231f9562e4d2ef2b25725fb"
+    },
+    "protocol_dev": {
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/stage_b/stage_b_protocol_dev.json",
+      "sha256": "76a670ec05a84e3a6363d0da9c11685e333e50542fd41ae06df58763a6970a80"
+    },
+    "final_test": {
+      "path": "/tmp/medsearch_p0_workspace/MIRAGE/benchmark.json",
+      "sha256": "c291a75f57c37704cc2e959b75b1ae7834aebf6327c0afe4208d62e1dd2cfa7a"
+    }
+  },
+  "missing": [
+    {
+      "pool": "luna_v2",
+      "path": "/tmp/medsearch_p0_workspace/MedSearch/data/medical_verifiable_v2_20260919"
+    }
+  ],
+  "unreviewed": [],
+  "invalid_questions": [],
+  "conflicts": [],
+  "semantic_near_duplicates": "not_checked",
+  "exact_check_passed": false,
+  "v1_source_provenance": {
+    "raw_rows": 40644,
+    "audited_rows": 1988,
+    "issues": [],
+    "clinical_correctness": "not_checked"
+  }
+}

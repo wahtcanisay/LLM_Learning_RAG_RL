@@ -1,4 +1,4 @@
-"""Minimal Stage-A/Stage-B dataset wiring for MedSearch SFT."""
+"""Read and batch frozen teacher trajectories for search distillation."""
 
 from pathlib import Path
 import json
@@ -6,24 +6,14 @@ import json
 from torch.utils.data import Dataset
 from transformers import DataCollatorForSeq2Seq
 
-from .preprocess import IGNORE_INDEX, encode_stage_a, encode_stage_b
+from ..distillation.data import encode_distillation_trace
 
-
-STAGES = ("stage_a", "stage_b")
+IGNORE_INDEX = -100
+STAGES = ("search_distill",)
 
 
 def load_samples(path: str | Path) -> list[dict]:
-    """Load frozen SFT samples without changing their schema or order.
-
-    Contract:
-    - Read Stage-A ``.jsonl`` as one JSON object per non-empty line.
-    - Read Stage-B ``.json`` as one top-level JSON list.
-    - Return the original sample dictionaries in file order.
-    - Reject unsupported suffixes instead of guessing their format.
-
-    Student task: implement this function with Python's standard ``json`` module.
-    """
-    # 数据清洗代码，针对jsonl和json有不同的加载
+    """Load frozen teacher trajectories without changing their order."""
     path = Path(path)
 
     if path.suffix == ".jsonl":
@@ -34,20 +24,11 @@ def load_samples(path: str | Path) -> list[dict]:
                 if line.strip()
             ]
 
-    if path.suffix == ".json":
-        with path.open("r", encoding="utf-8") as file:
-            samples = json.load(file)
-
-        if not isinstance(samples, list):
-            raise ValueError("JSON SFT data must contain a top-level list")
-
-        return samples
-
-    raise ValueError(f"unsupported SFT data format: {path.suffix}")
+    raise ValueError(f"distillation data must be JSONL: {path}")
 
 
 class SFTDataset(Dataset):
-    """Encode one frozen raw sample when PyTorch requests an item."""
+    """Expose one frozen teacher trajectory as a causal training sample."""
 
     def __init__(self, samples: list[dict], tokenizer, stage: str, max_length: int):
         if stage not in STAGES:
@@ -61,23 +42,15 @@ class SFTDataset(Dataset):
         return len(self.samples)
 
     def __getitem__(self, index: int) -> dict[str, list[int]]:
-        """Return one encoded sample using the encoder selected by ``stage``.
-
-        Contract:
-        - ``stage_a`` calls ``encode_stage_a``.
-        - ``stage_b`` calls ``encode_stage_b``.
-        - Pass ``sample``, ``tokenizer`` and ``max_length`` through unchanged.
-        - Do not pad here; padding belongs to the batch collator.
-
-        Student task: implement only this stage dispatch.
-        """
+        """Preserve original IDs and exclude environment tokens from labels."""
         sample = self.samples[index]
-
-        if self.stage == "stage_a":
-            return encode_stage_a(sample, self.tokenizer, self.max_length)
-
-        else:
-            return encode_stage_b(sample, self.tokenizer, self.max_length)
+        encoded = encode_distillation_trace(sample)
+        if len(encoded["input_ids"]) > self.max_length:
+            raise ValueError(
+                f"encoded trace has {len(encoded['input_ids'])} tokens, "
+                f"exceeding max_length={self.max_length}"
+            )
+        return encoded
 
 
 

@@ -19,6 +19,7 @@ ENV/
 .vscode/
 .worktrees/
 Search-R1/.deps/
+MedSearch/.deps/
 
 # Secrets and local configuration
 .env

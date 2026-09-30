@@ -1,5 +1,7 @@
 # MedSearch-R1 项目书
 
+> **路线更新（2026-09-29）：**旧 Stage A/B SFT 已退役，专属训练数据、编码、配置和评测入口已清理；本书中相关路径和结果仅保留为历史记录。当前蒸馏方法及工程入口以 `DISTILLATION_PLAN.md`、`DISTILLATION_ENGINEERING_PLAN.md` 和实际代码为准。
+
 ## 一、教师角色声明（每次开始工作前先读）
 
 我在本项目中的角色是**教师、学习督导与技术研究助手**，不是替学生完成项目的外包开发者。
@@ -314,6 +316,38 @@ Stage-B 必须加入 replay 的约定，不改动已冻结数据资产。
 | 日期 | 问题或失败现象 | 已核验证据 | 原因 | 处理办法 | 是否解决 |
 |---|---|---|---|---|---|
 | 2026-08-29 | Stage-A reasoning 顶层 ID 全部缺失；2条 general 含 `U+FFFD` | 全量扫描：missing ID 1,640、损坏文本2条；原始 UltraChat 同样损坏 | 从 provenance 生成稳定 ID；整条替换损坏样本；固定脚本可幂等复现 | 是 |
+
+## 十一、DAPO V1 outcome reward 冻结（2026-09-08）
+
+第一版 RL 优化配方固定为 DAPO-style：保留 GRPO group-relative advantage，启用
+Dynamic Sampling、Clip-Higher（`clip_ratio_low=0.2`、`clip_ratio_high=0.28`）和
+token-level loss（`loss_agg_mode=token-mean`）。Overlong Reward Shaping 暂时关闭；当前
+veRL 原生实现按 attention mask 计算长度，会把 BM25 observation 一并计入，且项目尚无真实
+RL 截断率证明需要该惩罚。先记录模型生成长度、observation 长度与截断率，出现真实问题后再
+单变量启用或适配。
+
+outcome reward 直接复用 Search-R1 的 normalized exact match，不训练或加载语义 verifier：
+
+```text
+response 中没有完整闭合的 <answer>...</answer>  -> acc = 0
+存在一个或多个完整 answer 块                     -> 取最后一个
+小写、去 ASCII 标点、去 a/an/the、合并空白
+与任一 golden answer 完整相等                    -> acc = 1
+否则                                               -> acc = 0
+outcome_reward = 2 * acc - 1                       -> 正确为 +1，错误为 -1
+训练 score = outcome_reward；DAPO group filtering metric = acc
+```
+
+模型未闭合 `</answer>` 时不猜测、不补标签、不给格式分。训练 prompt 沿用 Search-R1 的闭合
+标签说明和 `<answer> Beijing </answer>` 示例；动作 parser 继续只接受恰好一个完整、非空、
+闭合且末尾无额外文本的 `<search>` 或 `<answer>` 动作。新版 response-only reward 借用
+`Search-R1/modern_verl/search_r1_modern/reward.py` 的答案解析和 normalization，但显式返回
+`{"score": outcome_reward, "acc": acc}`，不再设计独立 `is_correct()`。
+
+DAPO group filtering 固定读取 `acc`，不读取长度或其他行为指标。V1 不加入格式分、非法调用分、
+搜索成本、重复查询、证据奖励或置信度奖励；这些只记录为诊断指标。BM25/HTTP 环境失败继续与
+模型错误分开，不得直接写成 `acc=0`。V1 不增加 observation 扫描或转义层；只有真实 rollout
+出现协议标签污染时，才根据失败轨迹处理。
 
 ## 十二、当前状态与下一步
 

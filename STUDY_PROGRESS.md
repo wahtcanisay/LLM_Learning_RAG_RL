@@ -1,6 +1,176 @@
 # 当前阶段
 
-**阶段 5：MedSearch-R1 医学证据搜索 Agent——两阶段 SFT 数据实现。**
+## 2026-09-30：SFT 高置信检索轨迹清洗继续进行
+
+- 当前按用户要求优先构建 1,000 条高置信 Search-R1 SFT 轨迹；尚未启动训练。清洗目标是题目可答、gold 等价、当时可见检索证据充分、推理受证据支持、动作轨迹干净，并保留原始 token/mask 和数据来源。
+- batch3 的 775 条 7B teacher attempts 中，674 条有合法答案；638 条通过结构门槛进入人工轨迹复核，另 137 条未进入人工复核（101 条无合法答案、36 条结构排除）。638 条人工结论为 accept 127、hold 201、reject 310。
+- 根级 teacher-input 汇总与独立回读已通过：batch4 1,000 题分为 teacher_input 517、hold 258、exclude 225；7 个内部重复成员随 teacher input 保留，最终 SFT 导出须每个重复组最多保留 1 条。teacher input 的 SHA256 为 `f10add3438c43ea1afa7ca7ec835cbd02c579035ab940dbf1eb8f1449c9b178a`，输出清单位于 `MedSearch/data/medical_verifiable_v2_batch4_20261001/`。batch4 rollout配置与结果见下文。
+- batch3 的 127 条初审 accept 已完成独立二次复核：confirm 112、hold 9、reject 6；未复核 0。112 条单独派生至 `trajectory_review/independent_confirmed.jsonl`，对应引用和哈希清单为 `independent_confirmed_citations.jsonl`；独立审计与派生 manifest 同目录。初审 `strict_accepted.jsonl` 原件保持不变。跨批语义去重和最终 split 隔离仍待完成，不能把 112 条直接称为最终训练集。
+- 启动 batch4 前已核验：Search-R1 7B 容器运行中，RTX 5090 显存使用 3,122 MiB、GPU 利用率 0%；检索与 verifier 的 OpenAPI 路由均返回 200；容器工作区可用磁盘约 881 GB。batch4 使用与 batch3 相同的 7B revision、检索配置、响应长度与轮数，仅换入审核后的 517 道题和独立输出目录。
+- batch4 的 Search-R1 7B rollout 使用冻结配置：517题、revision `74d46a43224daa612b5f27174e1c58b35587ee92`、top-k 5、最多2次搜索、observation 700、response 4096、batch 8；rollout 已完成，数量与审核情况见下条。
+- batch4 rollout 已完成：517/517，164 verifier-accepted、353 rejected；answered 派生集为456条有合法答案、61条无答案。结构门槛通过430条进入人工证据/推理复核，26条唯一轨迹结构排除；invalid_action 22、no_search 2、无可见检索文档2、精确重复search2是可重叠问题标签；430条拆为144/143/143三批。verifier accepted 不等于人工确认或 SFT 通过。
+- 旧 SFT 128 条 priority 轨迹严格复核闭环：第一半 64 条为 confirm 48、hold 12、reject 4；第二半 final 64 条为 confirm 43、hold 7、reject 14。两半合计91条 confirm、19条 hold、18条 reject。第二半 final SHA256 `43a8c5e8992357b200257142a69e3c20e02b63e8ded3024ac68d72097c4818bb`，经 agent01 独立核对；旧错版保留并标记作废。旧语义筛查 manifest 已对 5,852 条 dev/final-test 题检查且高相似匹配为0；训练集隔离仍需独立核验，因此91条未计为最终 SFT。
+- batch5 1,000 候选的 gold-blind 题目复核三批全部完成：keep 579、uncertain 383、exclude 38。分批计数为 324条（178/130/16）、334条（220/100/14）、342条（181/153/8）；三份输出哈希均已复核。排除项主要是题干依赖缺失列表/检查结果或明确同题重复；keep 仅代表可答性预筛，不代表轨迹可进入 SFT。
+- batch5 1,000 条候选的题面与候选级语义隔离已完成：题目 keep 579、uncertain 383、exclude 38；464 对语义审查为 same_task 450、related_only 14、uncertain 0。聚合为 491 条可进入教师轨迹审核、152 条历史同题排除、320 条题目暂缓、37 条题目排除；297 条 raw MedQA/MedMCQA 来源重叠仅标记，14 条 related-only 未排重。`candidate_semantic_eligibility_batch5.jsonl` SHA256 `400be676fade51af3ebede8010652df9ca6874a586103dc33d0cd8f5ec73d3aa`，manifest 显示 `sft_ready=false`、`rollout_started=false`；这些仍只是教师轨迹审核候选。历史 SFT 同题动作冲突已统一归一化并记录。
+- batch4 的 430 条检索轨迹人工复核已全部完成：batch1 144/144（accept 44、hold 55、reject 45）；batch2 143/143（41/44/58）；batch3 143/143（35/60/48）。总计 accept 120、hold 159、reject 151；batch3 的 143 行 canonical ledger 为 `trajectory_review/trajectory_review_manual_03.jsonl`，SHA256 `d7d3c1c0f5affc16bd647a185149bbe230413aa4365cfe0d1ba5e11a5ce2fb14`，105 条可见证据引文逐字匹配正确查询和 Doc，48 个 source-reference overlap 标记原样保留，所有 accept 通过严格准入门槛。每个 accept 仍需跨批去重和冻结 split 隔离，不能直接计入最终 SFT；batch2 中 14738 因答案虽算对但无检索支持已由 accept 降为 hold。
+- batch4 的 120 条初审 accept 已完成独立二次复核：40 条分组结果分别为 30/10/0、34/6/0、37/3/0（confirm/hold/reject），合计 confirm 101、hold 19、reject 0。独立审计文件分别为 `trajectory_review/independent_accept_audit_001_040.jsonl`、`_041_080.jsonl`、`_081_120.jsonl`，没有修改 canonical 初审账本；暂缓理由包括题目缺少范围或选项、证据未支持首选/关键关系、证据仅适用于特定情境、引文归属不准。101 仍须跨池去重及冻结 split 隔离，不能直接计入最终 SFT。
+- batch4 全部 159 条 hold 的重跑适配性分流已完成：53 replay_candidate、70 question_or_gold_issue、30 answer_issue、6 other_or_uncertain。三个独立输出 `replay_suitability_batch_01/02/03.jsonl` 的 SHA256 依次为 `ce3dde5d5552ccf5935031869678403eb2c3e6e32d958d4abcb049cf346f7f77`、`f88bb3512f54b072fb6d2c38faa8a2cf45986104d244d05493e6968487e7f945`、`dda8f1a430cf58af872f7cc38beb6b53563abec11a339028d834ac8614e7aefc`；canonical ledger 均未修改。53 条已整理为 `MedSearch/data/medical_verifiable_v2_batch4_20261001/replay_retry_input.jsonl`，仅含明确 replay_candidate，未含其他分流类别。另行逐字复核 39841、40192 后，旧 hold 均成立：39841 的 Doc 5 引文实际在 `</information>` 标签后，不能按严格可见证据门槛收录；原“检索片段没有该菌”理由不准确，已记录正确边界原因。40192 题目无选项，rocker-bottom feet 与 small, upturned nose 都可接受，答案不唯一。独立核对文件 `hold_adjudication_39841_40192.jsonl` SHA256 `010eb67b21afee1e991c017a8b9f21cfa5feef7758f5ccad6dec6d8d4432d7f4`。
+- batch5 候选池按同一 Huatuo revision 从剩余 reserve 独立构建：16,146 条精确隔离 reserve 中抽取 1,000 条，源文件 `candidate_batch5.jsonl` SHA256 `019704053a2e273ea192cfebd10891550b0f81f8a93655f0351cfb64ffe35126`。491 条审核队列已派生为独立 rollout 输入，SHA256 `3e2b707a3ae406417630a536a0326930f8d795bc67fc95ea987380cf308e3e08`。先前尝试均在生成前失败：脚本入口修正为 `python -m`；WSL2 使用 `VLLM_WSL2_ENABLE_PIN_MEMORY=1`；sm120 与容器 nvcc 12.8 不兼容后，改用已验证可用的 vLLM 非 FlashInfer sampler（`VLLM_USE_FLASHINFER_SAMPLER=0`）；随后从日志发现教师导出还需显式 `--limit`。已使用同一模型 revision、输入、检索配置和采样参数带 `--limit 491` 完成运行；任务状态与日志记在 `teacher_rollout_runtime.json` 和 `MedSearch/outputs/distillation/teacher_batch5_20260930.log`。rollout 完成 491/491：verifier accepted 138、rejected 353（只记录，不作 SFT 过滤）；有合法 final 431、无答案 60。结构预筛后 402 条进入人工证据/答案/推理审核，29 条结构排除（no_search 5、无可见文档 hash 5、invalid_action 20、重复查询 4，原因可重叠）；token/mask 不匹配和响应超 4096 均为 0。结构 manifest 在 `MedSearch/data/medical_verifiable_v2_batch5_20260930/trajectory_review/manifest.json`；人工审核仍待完成，尚无 batch5 条目计入 SFT。未启动训练。历史 Stage A/B 缺失限制仍保留。
+
+- batch4 的 53 条明确 replay_candidate 已整理到 `MedSearch/data/medical_verifiable_v2_batch4_20261001/replay_retry_input.jsonl`；manifest 记录 `training_ready=false`、`model_started=false`，且题目/gold/来源/前序轨迹逐项对齐。等 batch5 7B rollout 完成后再决定重跑；其结果需重新过证据和轨迹人工门槛。
+
+- batch6 的 Huatuo 候选池已冻结到 `MedSearch/data/medical_verifiable_v2_batch6_20260930/`：1,000 题、seed 20261003，精确隔离 reserve 15,146 条，semantic history 266,592 条；`candidate_batch6.jsonl` SHA256 `8f382f583b3017a22b5a64f3686ef8f8b41d47cf37de8fdef41436a62e8992c7`，与 batch5 及历史题面无精确重叠，`training_ready=false`。gold-blind 问题审核已完成，分片 322/351/327，keep 506、uncertain 420、exclude 74；1,000 条 assignment/输出 ID、题面哈希与必需字段独立完整性审计通过（不代表医学答案审核）；语义近重复筛查进行中。
+
+## 2026-09-29：MedSearch 冷启动 A 接线完成，SFT 训练前做医学质量试审
+
+- 按 `MedSearch/DISTILLATION_PLAN.md` 和工程书，MedAgent harness 暂缓。冻结 `cold_start.jsonl` 1,000 题与 RL train 5,756 题、dev 396 题分开；本次仅对冷启动池按文件顺序每题做一次本地 Search-R1 7B rollout，没有把 gold 放入生成 prompt。
+- Agent 在现有 `MedSearch/tools/evaluate_agent_rollout.py` 增加教师导出模式，保存原始 `prompt_ids/response_ids/response_mask`、动作段、检索来源哈希、模型/tokenizer/语料/代码身份、失败原因；4 项容器回归测试通过。Luna 在既有 WSL Docker 中先做 2 题 smoke，再运行全量 1,000 题。脚本及测试分别在 `MedSearch/tools/evaluate_agent_rollout.py`、`MedSearch/tests/test_teacher_trace_export.py`。
+- 原始产物在 `MedSearch/data/distillation/teacher_cold1000_20260929/`：attempts 1,000 条，按当时严格规则 accepted 200 条、rejected 800 条，manifest 为 complete。Agent 独立复跑 `MedSearch/tools/validate_teacher_cold1000.py`，确认 1,000 个唯一题号、顺序、token/mask/segments、gold 隔离及三文件哈希均通过。完整命令、运行日志、弱标签与首题缺图限制见 `MedSearch/outputs/distillation/teacher_cold1000_20260929_REPORT.md`。7B 七个权重分片重算哈希与固定 revision 旧审计 7/7 一致。
+- 本次没有训练，也没有付费 API。未连续采样 GPU 峰值，不报告峰值；约 71 分 42 秒是模型加载、rollout 和 verifier 的总时间。accepted 仅表示当前协议、检索与 verifier 通过，不能解释成医学专家审核。
+- 当时安排的唯一编码任务是由用户给冷启动 A 档接入 Dataset/批处理输入，复用现有 `encode_distillation_trace` 与 SFT collator，让模型只学习 `response_mask=1` 的原始教师 token；现已完成并通过数据层验收。Top-32 缓存及 B 档损失在 A 的小步输入/梯度验收后接入。任何较长训练前，必须验证 checkpoint 保存、重载和一次动作推理；训练配置不得沿用 `save_strategy=no` 或 V9 的 `save_freq=-1`。
+- 已给该任务写好 `MedSearch/tests/test_sft_search_distill.py`；容器内运行 `python -m pytest MedSearch/tests/test_sft_search_distill.py -q` 如预期 2 failed，原因均是现有 `SFTDataset` 尚不支持 `search_distill` stage。用户完成最小接线后复跑验收。
+- 2026-09-29 用户明确改定冷启动轨迹筛选：只删除无合法最终答案的轨迹，不以 verifier 是否判对、是否曾有无效动作或是否检索作为过滤条件。Agent 只从已冻结的 1,000 条 attempts 派生新清单，未重跑 7B、未改原始导出。`MedSearch/data/distillation/teacher_cold1000_20260929_answered/accepted.jsonl` 有 886 条，`excluded_no_answer.jsonl` 114 条；原严格通过的 200 条全部保留，旧规则拒绝但有合法答案的 686 条加入。新 manifest 记录父产物哈希和新文件哈希。容器内新筛选脚本测试 2 passed；下一步 Dataset 应读取这个新 `accepted.jsonl`，而非旧的 200 条文件。
+- 用户已完成 `sft/data.py` 的 `search_distill` 接线；Stage A/B 及相关文件由用户明确授意废弃并移除，不再按旧阶段做回归要求。Agent 在 WSL Docker 运行 `test_sft_search_distill.py` 与 `test_distillation_data.py`：3 passed；逐条编码新清单 886 条，最长 2,274 token、每条目标 token 41–673，均未触发 4,096 上限；本地 3B tokenizer 拼两条真实样本得 `[2,1820]`，padding 的 label 均为 -100，目标 token 总数与原始 mask 相等。`sft/data.py`、`sft/train.py`、`distillation/data.py` py_compile 通过。尚未加载学生权重训练或验收 checkpoint；后续唯一门槛是一次可保存 checkpoint、重载并完成动作推理的短训练 smoke，禁止沿用默认 `save_strategy=no`。
+- 2026-09-29 按 `MedSearch/docs/superpowers/plans/2026-09-29-sft-environment-data-review.md` 完成 40 条 SFT 医学质量与证据试审：从 886 条有答案轨迹抽 random 20，从 1,000 条原始尝试补 boundary 20。结论为 priority 4、reserve 34、exclude 2；`:1652` 缺图及 Structure C 映射，`:15070` 缺痰液 Gram stain 结果。主代理复核全部排除项、冲突项及 4 条 priority 的模型可见证据；40 条原始数据引用、query 与 document hash 均通过定位校验。
+- 有限补查仅作诊断：Search-R1 7B forced-search 34 条，每题检索 1–2 次；题目导向 BM25 28 条、全部成功，2/28 找到直接支持 gold 的文本。补查未拼回旧轨迹，未生成训练 JSONL；原 `accepted.jsonl`、attempts 和冻结题集哈希复算一致。报告、审阅账本、候选名单与诊断原文在 `MedSearch/data/distillation/sft_environment_review_20260929_pilot/`。没有启动训练或付费 API。vLLM 日志记录 SM 12.x/CUDA 12.9 能力探测警告，随后使用 FlashAttention 2 并完成输出。
+- 2026-09-29 用户决定：SFT 数据继续在独立窗口清洗，本对话暂时跳过 SFT 训练与 checkpoint smoke；它们仍是任何较长训练前的必经门槛。清洗结果未验收前，不固定正式训练清单。
+- 本对话已核对真实入口：`main_ppo.py` 在默认 `trainer.use_v1=true` 下进入 `ppo/v1/trainer_base.py` 的同步训练器。V1 AgentLoop 先算 reward 再尝试教师评分；`ReplayBuffer.sample()` 在 `algorithm.filter_groups.enable=true` 时会清除组内 `acc` 全相同的组，包括全错组。采样后由 V1 trainer 计算 old logprob、GRPO advantage，再更新 actor，`save_freq>0` 时保存 checkpoint。下一步唯一编码任务是为新蒸馏实验配置关闭组过滤并用最小全错组测试验证它会进入训练 batch；不改旧 V9 脚本，也不启动长训练。
+- 2026-09-30：Agent 已新增 `MedSearch/scripts/run_medsearch_grpo_distill.sh` 作为独立单步接线入口：关闭动态组过滤、冻结 reference KL 与 veRL 原生蒸馏，V1 sync、双轨迹、`save_freq=1`，要求显式提供冷启动 checkpoint；Git Bash `bash -n` 通过。现有 WSL Docker 调用返回 `Wsl/Service/CreateInstance` 错误，尚未运行 ReplayBuffer 全错组 CPU 验收或训练，不把配置检查当作完整链路通过。下一项学生核心编码任务为从一条失败轨迹构造逐动作教师评分任务，后续再把评分结果接入整批 OPD。
+- 2026-09-30：学生完成 `rl/distillation_hook.py` 的 `build_teacher_score_jobs`。Agent 以双动作夹两段 observation 和全 observation 两例验收：前缀只含当前动作之前的真实上下文，目标只含模型 token，`response_start` 可用于原轨迹回填；本机禁用无关 pytest 自动插件后 `2 passed in 0.02s`，`py_compile` 通过。尚未接真实教师评分、批次失败筛选或 V1 trainer。
+
+## 2026-09-30：全量 SFT 数据质量与证据复审完成
+
+- 按 `MedSearch/docs/superpowers/plans/2026-09-29-sft-environment-data-review.md` 完成固定 `accepted.jsonl` 的全量 886 条审查。最终分为 priority 128、reserve 746、exclude 12；仅 priority 是本轮高精度候选，尚未生成训练导出，也没有启动训练。
+- 主审复核原标记为 conflicting 的 55 条：39 条改为 partial、6 条改为 uncertain、3 条改为 sufficient，7 条保留 conflicting；9 条回看完整原题和原始 observation。另逐条复核 12 条 exclude 和 5 条 priority 抽检。所有 priority 引文均定位到模型实际可见的 query/Doc/hash/observation。
+- 固定 dev 396 条、MIRAGE final test 5,456 条与 accepted SFT 做 ID/规范化题干精确隔离核对，冲突 0。128 条 priority 候选以本地 all-mpnet-base-v2、384-token 截断、cosine 阈值 0.92 对冻结 dev/test 和候选集内部筛查，0 个近重复匹配，人工队列为空；该筛查不证明阈值以下绝无重复。
+- 引用与 schema 问题均为 0；原 accepted、attempts、cold_start、dev、final test 哈希保持不变。复审报告、manifest、ID 清单和逐条裁定位于 `MedSearch/data/distillation/sft_environment_review_20260929_full/`。运行复核命令：`python -X utf8 -m MedSearch.tools.finalize_sft_environment_review`。
+- 边界：priority 是当前可以考虑进入小规模 SFT 的候选集，不等于医学专家核验或模型效果验证；reserve 保留供后续证据补查/人工裁定，exclude 只排除出本次训练候选，不删除源记录。
+- 下一步唯一任务：与用户检查 128 条 priority 清单及其答案轨迹，再按 MedicalGPT SFT 阶段要求设计小规模训练与 Base/SFT 评测；在清单和 checkpoint smoke 验收前不启动正式训练。
+
+## 2026-09-28：7B 现有参数与本地 StatPearls 扩库对照完成
+
+- 当前仍在 Search-R1/MedSearch-R1 搜索 Agent 评测阶段。今日唯一核心任务：固定同一 dev64 与 7B，检验检索观察加长、搜索轮数增加、响应/模型总预算增加，以及本地 StatPearls 扩库。五组新增 rollout 均正常退出且各保存 64 条，配置、逐题结果、日志与限制见 `MedSearch/outputs/searchr1_7b_param_corpus_ablation_20260928/REPORT.md`。
+- 原 Textbooks/700-token/2 轮基线词面 13/64、verifier 20/64、合法答案 56/64。只加观察到 1200 为 12/64、20/64、59/64；只加到 3 轮为 13/64、18/64、59/64，且一题耗尽 4096 响应预算；3 轮改用 6144 响应/6656 总长后为 13/64、13/64、61/64且无耗尽；1200 观察+3 轮大预算为 10/64、19/64、62/64。各配置均无稳定 QA 提升，长观察使平均响应 token 从 1129.7 增至 1535.5。
+- 本地 Textbooks 125,847 段与 StatPearls 371,651 段流式合成 497,498 段，BM25 索引全部入库且无错误；在相同 700-token/2 轮下扩库结果词面 12/64、verifier 15/64、合法答案 59/64，低于原库。固定 63 条首轮查询的完整 Top-5 答案字串命中 Textbooks 16/63、扩库 14/63，均只是无 qrels 的词面代理。保留原 Textbooks 配置为当前答题基线，不把扩库默认接入。
+- 磁盘：模型直接读现有 Docker 宿主机挂载，未复制进容器。合并语料约 665 MB、索引约 49 MB；本次 8004 服务已停止、其约 645 MB 可再生缓存已清除。D 盘空闲从 109,503,950,848 到 108,782,333,952 字节，净减少约 688 MiB，与保留产物量级一致。
+- 下一步唯一学习检查（预计 30–60 分钟）：阅读报告中的 `5574` 基线与 1200-token/扩库轨迹，用自己的话指出最先出现的错误证据或推理转向。完成标准：引用各轨迹的检索片段、最终 `<answer>` 和标准答案，解释“检索信息增加但答题变差”的具体位置；之后再决定是否值得处理查询或证据呈现问题。
+
+## 2026-09-28：7B 现有参数与语料覆盖诊断
+
+- 当前仍在 Search-R1/MedSearch-R1 的搜索 Agent 评测阶段。今日唯一核心任务：判断先调整观察长度、搜索轮数或语料，是否比加入新机制更有依据。已完成 393 条已保存首轮 BM25 结果的离线观察窗口重放；不改检索器、不下载、不建索引。结果见 `MedSearch/outputs/searchr1_7b_retrieval_sampling_pilot_20260928/REPORT.md`。
+- 700/1,000/1,200/1,600-token 可见标准答案字串命中分别为 71/87/90/90（总 393）；完整 Top-5 可放入分别为 8/135/342/393。此为词面代理，非 Recall 或 QA。7B dev64 修复协议后无预算耗尽，所以先单独试观察长度 1,200；只调大模型总上下文而仍截 700 不会增加证据。
+- 诊断时的 7B BM25 只用 Textbooks 125,847 段；本地 StatPearls 原始切块约 371,651 段当时尚未索引。MedRAG 本地 corpus 不含 PubMed/Wikipedia；Search-R1 另有 wiki 索引。用户决定暂不增加 reranker 等机制；后续已完成 StatPearls 单变量扩库对照，结果见上节。
+- 当时安排的下一步任务为同一 dev64 上把 `observation_length=700` 改为 `1200`；现已完成 64 条 rollout、逐题比较和 D 盘验收，结果见上节。
+
+## 2026-09-28：7B/3B 检索观察修复、MedCPT Hybrid 与采样复核
+
+- 当前仍在 Search-R1/MedSearch-R1 的搜索 Agent 评测阶段。今日唯一核心任务：检查 7B 的 BM25 返回段落，并在同一小样本上验证 Dense 融合和采样温度。完成标准：索引与服务可用、逐题检索审计及 rollout 文件保存、同题配对指标、失败轨迹与磁盘占用记录。已完成；详见 `MedSearch/outputs/searchr1_7b_retrieval_sampling_pilot_20260928/REPORT.md`。
+- 发现旧评测在截断 700-token 检索观察时会丢失 `</information>`。修复并通过 Docker 中的回归测试；旧 64 题子集的 7B/3B 预算耗尽分别从 11/19 降到 0/0。旧 dev396 结果保留，不能与新协议结果混算。
+- 用宿主机原有 125,847 段教材语料建立 MedCPT Article Encoder 的 768 维 FAISS 索引（386,602,029 字节）；Query Encoder 与 Article Encoder 直接从 D 盘项目路径加载，未复制进 Docker 可写层。BM25+MedCPT 使用 RRF-60、各 Top-20、最终 Top-5。
+- 对旧 7B 的 393 个首轮查询重放检索：BM25/Hybrid 原始 Top-5 答案字串命中 90/102，700-token 可见文本命中 71/85；没有证据 qrels，此为字面代理指标，非 Recall@5。
+- 固定 dev 64 题、seed 42、Top-5、2 工具轮、4096 回答预算、700 观察预算：7B BM25 greedy 词面/verifier 13/20；7B Hybrid greedy 9/18；7B BM25 temperature 0.3 为 11/15，0.7 为 10/17；3B BM25 greedy 5/10。Hybrid 虽增加字面命中，但本样本未改善最终答题。7B 相对 3B 在 verifier 上逐题独赢 12 对 2，协议合法作答则 7B 56/64、3B 64/64。两个检查点训练方法不同，不能把全部差异归因于参数量。
+- 同一 63 条首轮查询的服务检索延迟：BM25 平均 2.3 ms、Hybrid 38.9 ms；不含生成与 verifier。抽查记录了 Hybrid 成功、失败、查询错误及判分器误判案例。新增权重 safetensors 合计约 835 MiB、FAISS 索引约 369 MiB；D 盘空闲约 102 GiB，未出现大量复制。
+- 用户追问 BM25 命中与是否需要 reranker：以 `39029` 为命中良好例，BM25 Top-3 可见 Colchicine 证据且 7B 答对；以 `887` 为失败例，完整原始查询下相关尿路瘘段落在 BM25 Top-4/5 且被 700-token 观察截掉，Hybrid RRF 提到 Top-1 后字面证据可见；但修复协议下 7B 又把查询偏成 urethral fistula，两种检索候选均跑偏，说明 reranker 只能处理召回后排序，不能修错误查询。结论：先修查询漂移、700-token 内容预算和 passage 标题/正文格式，再做 BM25 Top-20 + reranker 的小规模单变量消融；当前证据不足以宣称 reranker 会提升最终 QA。报告已补上案例和方案。
+- 下一步唯一学习检查：从报告的 `33340`、`5574`、`26934` 三条轨迹中选一条，用自己的话说明“检索段落、模型答案、标准答案、判分器”四者分别发生了什么，再决定是否针对查询改写或证据压缩做单变量实验。
+
+## 2026-09-28：Search-R1 7B/3B + MedRAG BM25 dev396 对照完成
+
+- 当前项目仍为 MedSearch-R1 阶段的搜索 Agent 评测；本次唯一任务是完整保存同一 `dev.parquet` 396 题的 7B 与 3B rollout，并抽查轨迹。两组各 396 条、题号和题干逐一相同，运行进程正常退出。原始结果、日志、配置、磁盘验收与逐题点评见 `MedSearch/outputs/searchr1_7b_3b_bm25_dev396_20260928/REPORT.md`。
+- 7B：词面 59/396（14.90%），CPU verifier 107/396（27.02%），合法 `answer` 动作 302/396（76.26%），至少一次无效动作 79/396（19.95%），平均搜索 1.119 次、平均响应预算 1,732 tokens（含工具观察）。3B：词面 21/396（5.30%），verifier 55/396（13.89%），合法 `answer` 动作 262/396（66.16%），至少一次无效动作 124/396（31.31%），平均搜索 0.972 次、平均响应预算 2,013 tokens（含工具观察）。词面配对 7B 独赢 47、3B 独赢 9；verifier 配对 75 对 23。
+- 需区别“合法答案动作”和“闭合答案标签”：7B 有 329 条含 `</answer>`，3B 有 273 条；缺失闭合标签分别为 67、123 条，均用满 4096 token 轨迹预算且从未出现 `<answer>` 开标签。绝大多数停在未闭合的 `<information>` 工具观察中，详见报告。不能把 302/262 误称为闭合答案数。
+- 判断：7B 相对现有 3B 检查点有明显进步，但绝对 QA 表现和动作合法性仍不足以称为可靠医学搜索 Agent。7B 是 PPO、3B 是 GRPO 检查点，搜索次数也不同，不能将增益单独归因于参数规模。人工抽查发现 7B 正确利用 BM25 的案例，也发现 7B 搜错方向（`18099`）、被相关但错误的材料带偏（`31491`）和 verifier 将症状 `trismus` 误判为正确诊断（`25300`）；词面规则还漏判了 `TSH and T4`（`9951`）。
+- 磁盘：模型、索引和 verifier 均从 `D:\code_list` 主机绑定挂载读取，未复制入容器；输出目录全部 12 文件共 7,245,777 字节。开跑前 D 盘空闲约 110,800,379,904 字节，完成后 110,802,640,896 字节，未发生 Docker 数据盘异常扩张。GPU 峰值未连续监控，不能编造峰值数值。
+- 下一步唯一学习任务（约 30–60 分钟）：阅读同题轨迹 `25300` 和 `9951`，用自己的话解释为何一个是 verifier 假阳性、另一个是词面假阴性。完成标准：在 `REPORT.md` 对照原始 `<answer>`、标准答案与两种判分规则，指出各自错在哪里，并提出一条可执行的人工复核准则；之后再决定是否改评测器，不直接扩大训练。
+
+## 2026-09-28：7B dev 评测中断后的磁盘恢复与容器重建
+
+- 原计划：固定 Search-R1 7B + 现有 MedRAG BM25 在 `dev.parquet` 396 题生成并保存完整 rollout，再与 3B 比较。7B 的 8 题 smoke 已运行；全量 396 题生成后，CPU verifier 写结果时因 Docker 数据盘占满而中断，只得到约 102 行不完整输出，不能报告全量指标，也不能据此判断 7B 相比 3B 是否进步。
+- 事故原因：旧容器挂载 `/mnt/d/code_list` 在 Docker Desktop 中为空，我错误地把已有的 7B、verifier、3B 权重和 BM25 索引复制进容器可写层，而非修正主机绑定挂载。D 盘上的 Docker VHDX 随之扩张。后续还发现容器内另有与主机逐分片 SHA256 相同的 7B（约 33 GB）和 3B（约 6.3 GB）临时副本。
+- 恢复：删除本次评测临时目录、上述已校验重复模型及缓存；以旧容器软件环境保存本地镜像，创建挂载主机 `D:\code_list` 的新 `llm-pytorch`，验证 RTX 5090、项目文件可读、两个原缓存卷及 329 个 Python 包版本一致后，删除旧容器。容器配置和包清单见 `MedSearch/docs/run_logs/container_rebuild_20260928/`。
+- Windows 空间验收：删除容器内文件和旧容器本身未让 D 盘空间立即回升。管理员 CMD 对指定 `docker_data.vhdx` 执行 `attach vdisk readonly`、`compact vdisk`、`detach vdisk` 后，D 盘空闲从 17,676,083,200 字节到 110,834,720,768 字节，实测回收 93,158,637,568 字节。此前约 6.27 GB 到 17.68 GB 的增加来自用户清理其他目录，不能归因于 Docker。
+- 后续约束：模型和索引直接从主机只读/绑定挂载读取；挂载不可用即停止排查，不复制大文件进容器。评测前记录 D 盘余量与预计输出体积；结果写入主机挂载目录。下一步仍是同一 `dev` 上完整 7B rollout 与可比 3B 基线，当前尚未完成。
+
+## 2026-09-27：P2 真实 3B/7B/3B 短生命周期 smoke
+
+- 通过升级权限调用以当前 Windows 用户 `dell` 访问既有 WSL Docker；`llm-pytorch` 一直运行。此前普通沙箱调用返回 `E_ACCESSDENIED` 是本会话权限路径问题，不代表用户 WSL 已停。无需用户手动启动服务。
+- 复用本地 3B 权重和固定 Search-R1 7B 权重，在 RTX 5090 上运行 `MedSearch/tools/smoke_phase_switch.py`；学生前后两次下一 token ID 同为 `3862`，教师 16 token sampled 评分全有限。第二次运行的 3B 首次前向/CPU 卸载/7B 加载评分/教师释放/3B 恢复前向分别为 2.35/3.48/5.87/0.30/1.19 秒；阶段结束 GPU 已用 7.797/1.780/16.157/1.780/7.797 GiB。首次 7B 阶段 13.30 秒，说明缓存影响明显。结果及限制见 `MedSearch/docs/audits/phase_switch_smoke_20260927.md` 和 JSON。
+- 此为辅助脚本模拟 veRL `param_offload=true` 自动卸载后的真实模型资源探针；hook 接收轻量 runtime，未运行 Ray/FSDP/vLLM、verifier 或优化器。P2 完整真实小批链路仍待验收，长训练和 P3 尚未开始。
+
+## 2026-09-27：P2 资源切换 hook 静态审查与访问问题排查
+
+- 学生已编写 `MedSearch/rl/distillation_hook.py` 的 `prepare_teacher_phase(runtime)` 与 `restore_student_phase(runtime)`。对照当前 veRL `ActorRolloutRefWorker.to()`、FSDP `to()` 及 `train_mode/eval_mode` 自动卸载逻辑审查：固定配置 `param_offload=true` 时，actor 前向上下文退出会把模型参数放回 CPU，hook 的 `model=False` 不重复搬移；未启用自动卸载时，hook 的 `model=True` 才显式搬移。`python -m py_compile rl\distillation_hook.py` 通过。审查未发现需要学生立刻修改的确定性缺陷。
+- 曾写出一个要求 `param_offload=true` 时仍强制 `model=True` 的单元测试；继续核对 FSDP 自动卸载实现后确认该断言错误，已撤销测试，不把其失败算作学生代码缺陷。
+- 本次 Codex 受限账号无法运行真实 3B→7B→3B smoke：`wsl --status` 返回 `Wsl/EnumerateDistros/Service/E_ACCESSDENIED`；`sc query LxssManager` 显示该按需启动服务当前 `STOPPED`，尝试 `sc start LxssManager` 返回访问被拒绝（exit 5）。补查发现 `WslService` 与 `vmcompute` 均为 `RUNNING`，所以不能据此认定用户平常的 WSL 实例已停止；当前只确认本会话无权访问 WSL，Windows Docker 端也无法连接引擎。P2 资源切换、显存、主机内存、耗时与恢复后前向均未验收；暂不进入 P3 或较长训练。取得既有 WSL/Docker 访问后继续同一项 smoke。
+
+## 2026-09-27：固定 Search-R1 7B 教师下载与真实短评分
+
+- 已从公开 Hugging Face 仓库下载候选教师 revision `74d46a43224daa612b5f27174e1c58b35587ee92`，七个权重分片及配置/tokenizer 共 16 文件保存到 `MedSearch/models/external_baselines/SearchR1-Qwen2.5-7B-Instruct/`。项目副本七个分片 SHA256 与固定 revision 下载元数据逐个一致；无付费 API。
+- 既有 WSL Docker `llm-pytorch` 中用当前 `load_teacher` 和 `score_tokens` 运行真实 7B BF16 短评分：`[1,16]` logprob 全有限，峰值 CUDA allocated 14.286 GiB，加载加评分 5.31 秒。报告 `MedSearch/docs/audits/searchr1_7b_teacher_smoke_20260927.md` 与同名 JSON。首次辅助 smoke 脚本错误将字符串当 token IDs，修正编码后通过；核心教师函数未改。
+- P2 单卡资源阶段切换仍未验收：尚无学生 rollout→verifier→卸载/教师评分→恢复学生前向的完整小批流程。未启动训练；较长训练前仍须 checkpoint 保存、重载和一次动作推理，不使用 V9 的 `save_freq=-1`。
+
+## 2026-09-27：本地教师加载函数验收
+
+- 学生已实现 `MedSearch/distillation/teacher.py::load_teacher(local_path, device)`：仅从本地加载 BF16 模型，转指定设备，冻结参数并设为 eval。Agent 在既有 WSL Docker 中以临时小 Qwen2 checkpoint 运行 `python -m pytest MedSearch/tests/test_distillation_teacher_load.py MedSearch/tests/test_distillation_teacher.py -q`，`2 passed`；小模型一次前向、sampled 评分回归均通过。按用户要求，仅补该函数的 Args/Returns 简短注释，补后复跑同一命令仍为 `2 passed`。2 条依赖 `tqdm` 的弃用 warning 不影响结果。
+- 验收范围只到小模型本地加载与前向。候选 Search-R1 7B 权重仍未下载，真实模型身份、单卡显存/资源切换和 checkpoint 保存、重载及动作推理门槛尚待验证；未启动训练或付费 API。
+
+## 2026-09-27：教师 sampled 评分验收与下一项任务
+
+- 学生实现 `MedSearch/distillation/teacher.py::score_tokens` 的 `[B,P]`/`[B,T]` sampled 路径；真实共同词表 ID 0–151664 上归一化，逐 token 因果对齐。既有 WSL Docker 运行 `python -m pytest MedSearch/tests/test_distillation_teacher.py -q`，`1 passed`。用户决定暂不验收非 sampled 模式报错，Top-k 留到 B 档接线；已撤下该模式测试。此通过仅为假模型数值验收，没有加载 7B 权重或实测显存。
+- 下一项唯一核心编码任务由学生实现 `MedSearch/distillation/teacher.py::load_teacher(local_path, device)`：本地 checkpoint、BF16、冻结、eval、指定设备、一次前向。Agent 已新增 `MedSearch/tests/test_distillation_teacher_load.py`，用临时小 Qwen2 checkpoint 验收；当前因函数尚不存在，在导入阶段按预期失败。真实 7B 下载与单卡阶段切换仍在 P2 待办；没有启动训练或付费 API。
+
+## 2026-09-27：教师 sampled-token 评分改为批量 Tensor 契约
+
+- 按用户确认，`MedSearch/distillation/teacher.py::score_tokens` 输入直接为同设备的 `torch.long` 张量：`prefix_ids[B,P]`、`target_ids[B,T]`；本步批内无 padding，`attention_mask` 全 1；输出为逐位置 `logprob[B,T]` 张量。已同步函数类型/说明、工程书及 `MedSearch/tests/test_distillation_teacher.py` 的 B=2 样例；未替学生实现前向或 logprob 计算。
+- `python -m py_compile MedSearch\distillation\teacher.py MedSearch\tests\test_distillation_teacher.py` 通过。Windows 本机 pytest 在导入 PyTorch→asyncio 时遇 WinError 10106，未运行到测试主体；后续仍在既有 WSL Docker 环境验收。本步函数尚未完成。
+
+## 2026-09-26：A 档数据入口与 P1 smoke 通过，进入 P2 首个函数
+
+- 按用户要求撤销 `response_ids`/`response_mask` 不等长的异常测试，仅验正常轨迹。学生已实现 `MedSearch/distillation/data.py::encode_distillation_trace(record)`；Windows 本地测试 `1 passed`，`py_compile` 退出码 0。该结果只验原始 token 拼接、生成位置标签、observation 掩码及 gold 不进入训练样本。
+- P1 复用现有 `MedSearch/rl/medsearch_agent_loop.py`，只补两次搜索后最终回答的 smoke；既有 WSL Docker `llm-pytorch` 临时副本运行 `python -m pytest MedSearch/tests/test_agent_loop_smoke.py -q`，`5 passed`。首次测试期望把预算耗尽提示放早了一轮，修正测试后通过；核心 loop 未改。Windows 的 `asyncio` 导入受本机 WinError 10106 阻断，因此按既定 WSL Docker 环境验收。
+- 下一项唯一核心编码任务由学生实现 `MedSearch/distillation/teacher.py::score_tokens(model, prefix_ids, target_ids, mode="sampled")` 的 sampled 路径。Agent 已写 `MedSearch/tests/test_distillation_teacher.py`，当前因模块未存在而在导入处失败；要求因果对齐、共同真实词表 ID 0–151,664 上归一化、输出逐 token 教师 logprob。此处只用假模型做数值验收，7B 权重尚未下载。较长训练仍需先验 checkpoint 保存、重载与一次动作推理。
+
+## 2026-09-26：候选教师 tokenizer 已核对
+
+- 暂用 Search-R1 官方集合中的 `PeterJinGo/SearchR1-nq_hotpotqa_train-qwen2.5-7b-it-em-ppo` revision `74d46a43224daa612b5f27174e1c58b35587ee92`。本地仅有 tokenizer 与 config，没有 7B 权重。审计报告 `MedSearch/docs/audits/searchr1_7b_vs_qwen25_3b_tokenizer.md` 和同名 JSON 显示师生 151,665 个真实 token 的 ID 映射完全一致；输出层额外行不同，B 档 Top-k / 在线 OPD 需在共同真实 token 集合上屏蔽、归一化，实际 Top-k 待权重加载后实测。batch attention mask 依据真实长度。最终教师如变更需重查。
+- 当前唯一核心编码任务仍是学生实现 `MedSearch/distillation/data.py::encode_distillation_trace(record)`，由现有 `MedSearch/tests/test_distillation_data.py` 验收；尚无教师轨迹、冷启动训练或 checkpoint 重载结果。较长训练前必须验证保存、重载和一次动作推理，不能用 V9 的 `save_freq=-1`。
+
+## 2026-09-26：MedSearch 蒸馏 P0 输入隔离核查
+
+- 数据池决策落实：用户要求排除两批候选中的 reject 374、quarantine 140，直接用 pending 3,486 条的来源 gold 作未经医学专家核验的弱标签；旧 RL 数据可与新增 RL 题合并，固定 dev 不得重合。新增 `MedSearch/tools/build_distillation_pools.py`，另存最终池 `MedSearch/data/distillation/pools_v2_20260926_devclean/`：冷启动 1,000、新增 RL 2,486、旧 RL 保留 3,270、RL train 合计 5,756、dev 原样 396。直接 dev 近重复扫描发现旧 RL train 中 13 条同题改写，只从本次合并版排除；另 3 对条件不同留存，逐对理由在 `MedSearch/docs/audits/distillation_dev_pair_review_20260926.jsonl`。最终 ID/规范化题干精确冲突 0，词面 Top-1 队列余 1 对、MPNet Top-1 队列余 3 对，均已判为不同题；阈值扫描非穷尽。审计报告 `MedSearch/docs/audits/distillation_pools_v2_20260926.md`。初版 `pools_v2_20260926/` 因含旧 RL 与 dev 近重复已标作 superseded，不可用于训练。未修改旧 RL train/dev、未启动训练。
+
+- Luna 阶段结果已回收并核验：`MedSearch/docs/audits/luna_v2_review_20260926.md`、`data/medical_verifiable_v2_20260919/review_ledger.jsonl` 记录 3,000 条候选中 reject 294、quarantine 120、pending 2,586、accepted 0。304 组 MPNet 高相似配对已逐对审题干，另做词面队列审阅；发现 19 条与冻结 MIRAGE 同题改写。`python -m MedSearch.tools.validate_v2_review` 本地通过，原题/gold 3,000/3,000 未改、精确历史冲突 0。医学 gold 复核未完成，未分 split、`training_ready=false`；Luna 任务已结束，不能将阶段报告称为最终清洗结果。
+
+- 2026-09-26 当前唯一核心编码任务：由学生实现 `MedSearch/distillation/data.py::encode_distillation_trace(record)`，直接从已接受教师轨迹的原始 `prompt_ids`、`response_ids`、`response_mask` 产生 `input_ids`、`attention_mask`、`labels`；模型动作原位保留标签，初始 prompt 和环境 observation 为 -100，不重新 tokenize、不手动 shift、不引入 gold。该函数是冷启动 A 档 CE 的最小数据入口，B 档后续复用同一目标位置，RL 将加载其训练出的学生 adapter。Agent 已新增 `MedSearch/tests/test_distillation_data.py` 两项验收测试并先运行，当前按预期在导入阶段失败（模块尚不存在）；学生提交实现后复测。Luna/P0 模型身份与数据验收仍独立进行，未启动训练。
+
+- 2026-09-26 更正：撤回此前要求实现 `rl/episode.py` / `generation_budget()` 的编码任务。用户决定直接使用 Search-R1/veRL 的长度配置及现有动作截断；本地现有 loop 已有 500 token 动作上限，YAML 现显式写入 `max_action_length: 500`。工程书 P1 改为复用原 loop 的最小 0/1/2 次搜索与第二次搜索后作答 smoke；只有发现具体缺陷才修原 loop，不新建共享状态层。离线 `evaluate_agent_rollout.py` 的 500 上限若在 P3 复用为教师生成时需要，再直接配置 vLLM `SamplingParams`。本轮无新增训练或付费 API。
+
+- 2026-09-26 续：用户要求把新 v2 候选复核交给 Luna，主对话可并行阅读 P1；Luna 已接手 3,000 候选及语义队列。当时工程书的 P1 曾写 `EpisodeState`/`generation_budget()` 等共享规则加两处 loop 接线；上一轮把仅实现预算函数并接离线入口称为完整“P1 任务”不准确。用户随后决定撤回该抽象，工程书已按上方更正修改。P0 未完成项保留，不因此宣称 P0 全部验收。
+
+
+- **同日补充（v2 重建）**：用户确认旧 Luna 产物位置不明、7B 教师尚未下载。重查后仅找到旧 v1 规则筛查产物；其 `summary.json` 明记 Luna 子任务未执行。新建 `MedSearch/tools/build_distillation_v2_candidates.py`，从固定原始题库和全部历史隔离集合重新生成 `MedSearch/data/medical_verifiable_v2_20260919/` 候选池：3,000 条待复核、5,177 条排除、6,563 条质量隔离、25,904 条备用。候选保留原题与原答案、来源索引；manifest 明标 `training_ready=false`、未分 split、词面近重复/语义近重复/医学审阅未完成，不作为训练输入。
+- v2 候选对旧 RL train/dev、Stage-A train/dev、Search100、protocol dev、MIRAGE final test 的 ID/规范化题干精确冲突为 0；报告为 `MedSearch/docs/audits/distillation_v2_candidate_isolation.json`，容器复核报告为同目录的 `_container.json`。候选文件在 Windows 与既有 `llm-pytorch` 容器的 SHA256 完全一致：keep `53be1b32aa17f9b2389eeb23445bcf31eea5e4e30cca7421a03e1b12a5a8cd55`，other `1c8e2705f029141b1ca1ef4e6b1281817938c71bd40f486609ae58ca140ddcfe`；两边定向测试均 7 passed。
+- **语义近重复待复核队列**：在同一容器用本地 `MedicalGraphRAG/models/all-mpnet-base-v2`（权重 SHA256 `a8fd120b1a0032e70ff3d4b8ab8e46a6d01c2cb08ffe7c007a021c1788928146`）对 3,000 条候选与 39,320 条历史题做 Top-1 余弦扫描，阈值 0.92；232 条候选命中历史，72 对候选内部命中，合计涉及 336 个不同候选 ID，另有 2,664 个候选 ID 未触发该阈值。报告 `MedSearch/data/medical_verifiable_v2_20260919/semantic_neighbors.jsonl` 与同名 manifest，真实耗时 234.24 秒，设备 CUDA。高相似项只进入人工/医学复核，不自动删除；低于阈值也不保证没有近重复。原始 `sentence-transformers` 版本与当前 Hugging Face Hub 不兼容，脚本改用同一本地 MPNet 权重、384 token 截断和配置指定的 mean pooling；两题探针输出 `(2, 768)`，余弦 0.742793。未更改容器依赖、未调用付费 API。
+- 再核对历史记录：8 月曾出现 `data/rl/medical_verifiable_v2/quality_audit/` 与网页审阅文件，但当前工作区该目录及全工作区同名目录均不存在；这些历史记录不能代替本轮 Luna 产物或当前可读的审阅证据。新建的日期后缀目录仅为本轮重建候选，不能称为 Luna 审阅版。最终在既有 Docker 容器对本轮 3 个脚本运行 8 个定向测试，`8 passed`；语义队列文件 SHA256 `8e7eda554c9cbc50ba54c881ebc5d330ddae387631b37513a7d4b3ef7a9b2e39` 与 manifest 相符。
+- 环境澄清：本会话 `wsl.exe` 返回 Wsl/Service RPC 错误，先前称“没有可用发行版”不准确。经授权的 Docker 客户端可访问此前的 `llm-pytorch` 容器；原 `/workspace/code_list` bind 当前为空，本次将最小数据/脚本复制到容器临时目录完成复核。正式训练前仍需恢复工作区挂载，不通过这份临时副本训练。
+- 当前聚焦 MedSearch 新蒸馏方法，MedAgent harness 暂缓；本轮未编写或运行核心训练代码。
+- 已实现 `MedSearch/tools/check_distillation_inputs.py` 的 `check_split_isolation()` 及 CLI，读取真实文件并保存各输入 SHA256、行数、可定位的 ID/规范化题干冲突、缺失和未审阅资产；语义近重复单列为 `not_checked`。
+- 用户确认 7B 教师尚未下载。重复搜索 `MedSearch/data`、`MedSearch/outputs` 与临时目录仍未发现 Luna v2；旧 `medical_verifiable_expansion_v1/summary.json` 明记当时 Luna 子任务因 sandbox 缺少 bwrap 未执行，不能把旧规则筛查称作 Luna 医学复核。
+- 对旧 v1 另做来源一致性复核：原始题库 40,644 条、v1 保留 1,988 条；逐条核对来源索引、ID、原题、原标准答案、嵌入数据答案及当前正式 RL 文件，发现不一致 0。该检查只证明数据未被改写，不证明官方答案医学正确或题目无歧义；旧 `audit_text_only.py` 中的 `answer_correct=True`/`answer_unambiguous=True` 是规则脚本写入，不能当人工审阅证据。
+- 运行命令（当前 Windows 静态核查环境）：`python -m MedSearch.tools.check_distillation_inputs`。脚本因 Luna v2 缺失按设计返回退出码 1，报告位于 `MedSearch/docs/audits/distillation_split_isolation.json`。
+- 实际回读：现有 RL train 3,283、dev 396；Stage-A train 29,433、dev 640；Search100 100、protocol dev 12、MIRAGE medqa/medmcqa final test 5,456。已检查集合之间 ID/规范化题干精确冲突 0，空规范化题干 0；这不证明语义近重复已排除。
+- 原 Luna v2 清洗产物未找到；同日虽重建同目录候选池，仍未形成可训练的最终划分。Search-R1 7B 教师 checkpoint/revision 仍未固定，不能验收完整 P0。
+- 模型身份静态核查：学生基座 `models/Qwen2.5-3B-Instruct/` 的 config 为 `Qwen2ForCausalLM`、vocab_size 151936，Hugging Face 下载 metadata revision 为 `aa8e72537993ba99e69dfaafa59ed015b17504d1`，tokenizer.json SHA256 为 `c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539`；medical-o1 verifier 位于 `MedSearch/models/external_baselines/medical_o1_verifier_3B/`，其 config 为 `LlamaForSequenceClassification`，metadata revision 为 `c285f67f186cebb61d70950af1576dc2d52e4cba`。本地另有 Search-R1 3B baseline，但它不是本计划的 7B 教师；尚未进行教师/学生 token→ID 兼容性实测。
+- 验收命令：`set PYTEST_DISABLE_PLUGIN_AUTOLOAD=1&& python -m pytest --noconftest --confcutdir=MedSearch\tests MedSearch\tests\test_distillation_inputs.py -q`，Windows 结果 5 passed；`python -m py_compile` 对脚本和测试均退出码 0。随后经 Docker 客户端进入既有 `llm-pytorch` 容器（Python 3.12.3），在临时复制的同一项目文件上复跑：5 passed；真实审计计数相同，因 v2 缺失按设计退出码 1。容器报告保存在 `MedSearch/docs/audits/distillation_split_isolation_container.json`。本会话的 WSL CLI 报 Wsl/Service RPC 错误，Docker 客户端可连既有容器；其旧 `/workspace/code_list` bind 当前为空，因此本轮临时复制必需文件，没有更改训练容器依赖。
+- 较长训练前必须验收 checkpoint 保存、重载和一次动作推理；新实验不得沿用 V9 的 `trainer.save_freq=-1`。本轮未启动训练或付费 API。
+
+## 2026-09-20 当前任务补充：MedSearch 蒸馏工程规划
+
+- 当前仍为阶段 5；在已有 SFT、AgentLoop 与 RL 工程上规划 Search-R1 7B → 3B 冷启动及 GRPO + 失败 OPD。
+- 已完成文档：`MedSearch/DISTILLATION_ENGINEERING_PLAN.md`，包括源码复用审计、必要修改、目标目录、逐文件函数职责、数据契约及 P0–P7 验收顺序；同步 `MedSearch/DISTILLATION_PLAN.md`。
+- 本轮仅更新文档，没有新增训练代码、GPU smoke 或能力提升结果。单卡教师评分切换与 SFT adapter 导入仍需实测。
+- 下一项唯一编码任务：指导学生实现 `check_split_isolation()`，先验收 Luna 实际产物与历史隔离边界；输出真实数量、可定位的重复项与未覆盖项，再进入轨迹接线。
+
+**阶段 5：MedSearch-R1 医学证据搜索 Agent——SFT 已冻结，进入 RL 架构与基线收敛。**
 
 阶段 1、阶段 2 已完成并冻结，阶段 3 已完成最小 MedicalGPT SFT smoke，阶段 4 已完成
 Search-R1 3B 单步 GRPO 保底架构。MedSearch-R1 的 SFT 数据与隔离边界已经冻结，Stage-A/
@@ -18,20 +188,58 @@ Stage-A 8条单步验证，loss=1.173087、整卡峰值18,139 MiB。保存接口
 学生 prepare_qlora_model 已通过CPU验收；最新回归42 passed、16条警告，无xfail。
 真实4-bit准备与LoRA单样本反向传播已通过：515tokens、loss1.9581148624420166，
 504个LoRA张量梯度有限；无optimizer更新，不能称完整QLoRA训练通过。
-2026-09-01 正式入口与恢复分支已验收，Stage-A QLoRA 已在 Docker 后台启动并接入W&B；
-当前run `gufa7zwo`，首次观测至少17/2010步，训练尚未完成，不能声称效果提升。
+2026-09-01 正式 Stage-A QLoRA 已完成 2010/2010 步并保存最终 adapter；冻结的 328 条
+dev 上，Stage-A 相对 Base 的总体 NLL 从 1.3803 降至 1.0014、PPL 从 3.9762 降至
+2.7221。固定 32 条生成的格式与截断检查已通过，但医学正确性仍待人工审阅，不能仅据
+loss/PPL 宣称医学能力提升。2026-09-01 首轮正式 Stage-B 已使用全部 100 条 Search100
+完成 1 epoch（50 micro-batch、13 optimizer step），最终 adapter 已保存；12 条 protocol
+dev 也已完成跨 Search100、Stage-A 与 MIRAGE 最终测试集的冻结去重。
+
+2026-09-04 正式冻结两阶段 SFT：`MedSearch/outputs/stage_b/formal/adapter/` 作为后续 RL
+初始化 Checkpoint-B，不再继续增加 SFT epoch、replay 或调整训练配方。该冻结表示训练管线、
+adapter 产物、Stage-A 保留能力与 Stage-B 首轮搜索协议已达到进入 RL smoke 的准入线；不表示
+已经证明闭环检索质量、开放式医学答案正确性、幻觉改善或最终项目效果。
 
 ```text
-NQ / HotpotQA Parquet
-  → Search-R1 多轮 SEARCH / ANSWER rollout
-  → 原项目 HTTP 检索服务
-  → 开放域 QA Exact Match reward
-  → outcome-based GRPO
+Medical Verifiable Problems
+  → Checkpoint-B 多轮 <search> / <information> / <answer> rollout
+  → MedText BM25 检索环境
+  → Search-R1 normalized exact-match acc（0/1）
+  → DAPO-style group-relative policy update
   → actor policy update
 ```
 
-当前学习范围固定为 Search-R1 官方数据协议、Agent loop、检索接口、规则 reward、
-GRPO advantage 和 actor update；暂不讨论任何领域迁移。
+当前只收敛 RL 架构与可比较 baseline；不重训 SFT，不同时更换 retriever、corpus 和 reward。
+
+2026-09-13：V8 在医学 dev 的当前宽松 rule_acc 为 6.06%，未形成可保留的训练初始化；已按用户决定永久删除 V8 的 38GB 训练产物、V8 dev 输出及专用脚本。V9 重新从冻结的 Stage-B adapter（Qwen2.5-3B-Instruct + LoRA）开始，不再依赖 V8 权重。
+
+2026-09-13：已按用户决定永久删除不再参与 V9 的 Stage-A 与 Stage-B QLoRA 正式/检查点/smoke 产物（Stage-A 约 712MB，Stage-B 约 319MB）。V9 改为纯 Qwen2.5-3B-Instruct + 新 LoRA 初始化；Stage-A/Stage-B 的历史训练配置仍保留为复现记录，但不再具备旧 adapter 重跑条件。
+
+2026-09-13：已按用户确认永久删除旧 V6 RL 训练目录 `dapo_v6_tokenfix_dynamic_full_s42`（约 26GB）；它没有当前配置依赖。保留官方 Search-R1 3B、medical-o1 verifier 3B 和基础 Qwen2.5-3B，分别服务外部 baseline/V10、verifier reward 与 V9 基础初始化。
+
+
+## 2026-09-13：V9 verifier smoke 与 4-step pilot
+
+- V9 使用纯 Qwen2.5-3B-Instruct + 新 LoRA r=8/alpha=16，不加载 V8、Stage-A 或 Stage-B adapter；BM25 服务端口已统一为 8001，verifier 在 8002。
+- 先完成 1-step smoke：真实 GRPO 更新至 global_step=1、rollout 落盘、退出码 0；为修复此前 Ray 主机内存 OOM，将 SimpleStorage 数据单元从 8 降为 1，并补齐新版 veRL 所需的 ref log-prob micro-batch 配置。
+- 随后完成 4-step V9 pilot（seed=42）：42分08秒、global_step=4、退出码 0，四份 rollout 文件 1.jsonl--4.jsonl 均存在。没有评测集验证，因此 Final validation metrics=None，不能据此声明能力提升。
+- 40 分钟以上运行监控期间，BM25 与 verifier 的健康检查共 32 次均成功；未见 OOM、rollout failure 或有效 swap 使用。实际 nvidia-smi 峰值为 32,123 MiB/32,607 MiB，余量只有约 484 MiB；虽然本次通过，后续扩大实验前必须保守降低显存压力。
+- pilot 四步 verifier score 均值依次为 -0.20、-0.10、-0.275、-0.25；这是极小训练 pilot 的即时训练奖励，不是独立 QA 指标或结论。
+
+## 2026-09-16：MedAgent DSH 选型边界 smoke 开始
+
+- MedAgent 主框架候选改为 DeepSeek Harness；Python 保留医学状态机、业务校验、预算和最终提交权，DSH 只承担可替换的隔离角色执行。
+- 固定官方 dsh-v0.1.5-rc.2、commit fb2c4b9e698e30edb738bca4cf0618587db7d203、MIT；源码位于被忽略的 MedAgent/.deps/deepseek-harness/。
+- 新增无工具 patch、Planner 薄适配、标准库假 DeepSeek 服务、CMD 入口和决策记录。SDK 的请求 timeout 不覆盖 Session.run() 等待 idle，已增加 Python 外层 deadline，超时关闭 runtime 并拒绝迟到结果。
+- scripts\run_dsh_smoke.cmd unit 实测 4 tests passed；Python 编译通过。假服务本机 SSE 响应与请求抓包通过，固定 usage 为 17/9/26。
+- 官方 PyPI 只有占位版本、GitHub Release 没有 wheel；本地同版本 Node runtime 已构建并用于开发 smoke。单文件 EXE 封装因官方脚本生产安装时缺失 `lefthook` 失败，正式分发仍待解决。
+- 本地真实 DSH SDK→Node runtime→假 DeepSeek SSE 集成已通过：Planner 返回 SEARCH JSON、`completed`、`turn/end` 和 usage=17/9/26；假服务抓包一条 DSH 请求。最终配置导出证实两个 persistent shell 均禁用、session-log 上传关闭。会话隔离、错误重试和真实 API 调用仍为 TODO。
+
+# 今日唯一任务
+
+**验证 DSH Planner 与 Verifier 两个独立会话的实际请求上下文。**
+
+完成标准：假服务抓包中两个会话各有独立 messages，Verifier 不包含 Planner 私有输入；两个角色的事件与结果可对应。真实 DeepSeek 调用本任务不执行。
 
 # 当前项目
 
@@ -42,30 +250,420 @@ GRPO advantage 和 actor update；暂不讨论任何领域迁移。
 - 项目书：`MedSearch/PROJECT_BOOK.md`
 - SFT 训练管线参考：`MedicalGPT/`
 - 后续多轮协议参考：`Search-R1/search_r1/llm_agent/generation.py`
+- 已有新版接口适配：`Search-R1/modern_verl/search_r1_modern/search_agent_loop.py`
 
 # 本周目标
 
-1. 推进“对话型 Medical-SFT → Search100”两阶段 SFT，Stage-B 是否加入 replay 暂缓讨论。
-2. 审计候选单轮、多轮和 supervised rationale 数据的真实样本。
-3. 建立 SFT、Search100、RL 与最终测试集的严格隔离表。
+1. 为 MedSearch 建立干净、可复现的原生新版 veRL 依赖基线。
+2. 先跑通新版 veRL 官方 V1 单轮最小链路，再编写 MedSearch 搜索循环。
+3. 按协议、检索客户端、AgentLoop、reward、单步 GRPO 的顺序逐项实现和验证。
 
 # 今日唯一任务
 
-**2026-09-01：持续观察正式 Stage-A QLoRA 训练，确认首个 checkpoint 与最终产物。**
+**2026-09-08：由学生在 `MedSearch/scripts/run_medsearch_dapo_smoke.sh` 中接入 veRL 主命令和三个 reward 字段。**
 
-学生正式main与恢复分支已通过；教师已迁移冒烟到临时YAML、完成QLoRA保存重载和tiny断点恢复。
-正式训练PID7819，W&B run `gufa7zwo`；当前只观察真实曲线、checkpoint与最终adapter，
-不改训练参数、不启动Stage-B、不把进程运行包装成模型效果提升。
+完成标准：测试必须通过新版 veRL 的 `get_custom_reward_fn()` 按配置路径/函数名加载
+`compute_outcome_reward()`，并通过 `load_reward_manager()` 实例化注册名为 `dapo` 的 RewardManager；
+单条正确/错误 DataProto 分别得到 `reward_score=+1/-1` 与 `acc=1/0`。本轮不启动 CUDA、Ray、vLLM
+或 BM25。计划见 `MedSearch/docs/superpowers/plans/2026-09-08-dapo-reward-wiring.md`。
+
+## 2026-09-08：DAPO V1 outcome reward 冻结
+
+- 用户决定以 Search-R1 normalized exact match 计算 `acc`：命中任一 gold alias 为 `1`，否则为 `0`；
+  再以 `outcome_reward=2*acc-1` 得到正确 `+1`、错误 `-1`。训练 `score=outcome_reward`，DAPO
+  filtering metric 保持为 `acc`；不另设独立 `is_correct()`。
+- 只接受完整闭合的 `<answer>...</answer>`；未闭合、空答案、缺失答案或被长度上限截断均不给分，
+  不猜测或自动补标签。多个完整 answer 块取最后一个。
+- 训练 prompt 沿用 Search-R1 闭合协议说明与 `<answer> Beijing </answer>` 示例；现有严格动作 parser
+  对未闭合、空内容、双 action 和 action 后额外文本继续判 invalid。
+- 借用 `Search-R1/modern_verl/search_r1_modern/reward.py` 的 response-only 解析与 normalization；
+  MedSearch 自定义函数返回 `{"score": outcome_reward, "acc": acc}`，不重新设计语义 verifier。
+- DAPO group filtering 只读取 `acc`；Overlong Reward Shaping 暂时关闭，因为原生实现按 attention
+  mask 计长、包含 BM25 observation，当前也没有真实截断率证明必须启用。先记录长度与截断率。
+- V1 不增加 observation 扫描或转义层；只有真实 rollout 出现协议标签污染时再处理。
+- 2026-09-08：学生完成 `MedSearch/rl/reward.py`：`compute_acc_score()` 只计算 `acc=0|1`，
+  veRL 回调入口 `compute_outcome_reward()` 返回 `{"score": 2*acc-1, "acc": acc}`。教师实际运行
+  闭合命中、闭合未命中、未闭合、空 answer、多个完整 answer 五个分支，输出依次为
+  `(+1,1)、(-1,0)、(-1,0)、(-1,0)、(+1,1)`；reward 函数通过 CPU 验收，训练配置尚未接线。
+- 2026-09-08：教师新增 `MedSearch/tests/test_reward_wiring.py`，通过新版 veRL
+  `get_custom_reward_fn()` 与 `load_reward_manager()` 验证真实配置加载和 DAPO RewardManager 协议；
+  现有 Docker 环境实测 `2 passed, 1 warning in 9.53s`，未初始化 CUDA。原先误建的独立计划 MD
+  已删除。现有 `run_verl_v1_lora_smoke.sh` 保留为官方 V1/GSM8K 环境基线；另建
+  `run_medsearch_dapo_smoke.sh` 作为 MedSearch DAPO 学生工作文件，不新增 trainer YAML。
+- 2026-09-08：学生在 `run_medsearch_dapo_smoke.sh` 中用 Bash 数组接入
+  `reward.custom_reward_function.path`、`name=compute_outcome_reward` 与
+  `reward.reward_manager.name=dapo`；容器内 `bash -n` 退出码为 0。当前只完成 reward 参数组，
+  尚未加入 data/model/rollout/trainer 必填配置，也未启动训练。
+- 2026-09-08：新版 MedSearch DAPO 单步 smoke 已以退出码 0 完成：`train_batch_size=1`、
+  `rollout.n=5`、Checkpoint-B LoRA、BM25、AgentLoop、±1 outcome reward、GRPO advantage 与
+  actor update 全链路执行。5 条 reward 均为 -1，因此本组 advantage、loss 与 grad norm 均为 0；
+  这是无区分度组的真实记录，不代表正式训练无法学习。step 用时 33.59s，训练器记录 actor 峰值
+  allocated/reserved 为 23.11/23.18 GiB；外部 1 秒采样观察到整卡瞬时峰值 31,978 MiB。
+- 本次原始轨迹位于 `MedSearch/outputs/dapo_smoke/rollouts/1.jsonl`。该单题的 5 条模型输出均未形成
+  最终闭合 answer；轨迹中出现的 `<answer>answer</answer>` 来自环境纠错提示，不计作模型闭合。
+  该结果只作为训练前基线，闭合率是否改善应在 RL 训练后评估，不据此新增 parser 补救。
+- 按用户批准，RL prompt 恢复 Search-R1 的闭合脚手架：明确 answer 标签并加入
+  `<answer> Beijing </answer>` 示例；现有非法 action 反馈与再次生成逻辑保持不变。同步更新
+  train/dev parquet 的 prompt 字段，样本、split、问题、gold 与 reward 均未改变；相关测试 6 passed。
+
+当前进度：官方新版 veRL 已克隆到 `MedSearch/.deps/verl`，固定 commit
+`23af6a7a2e8d6efeeb2adbe5d1689c7a24f503a3`，工作树 clean，且根 `.gitignore` 已排除该目录。
+现有容器为 Python 3.12.3、PyTorch 2.13.0、vLLM 0.27.1。考虑磁盘约束，首轮决定不运行完整
+`uv sync`：通过 `VERL_USE_UV=0` 和显式 `PYTHONPATH` 复用
+现有 PyTorch 2.13.0 与 vLLM 0.27.1，只按官方锁定 commit 安装 TransferQueue 0.1.9.dev0。
+零安装新版 veRL/AgentLoop 导入以及安装后的 V1 `AgentLoopManagerTQ` 导入均已通过；PyTorch/vLLM
+版本保持不变。该组合是兼容性试验而非官方锁定环境。Hydra V1 单卡配置展开已通过，尚需完成
+官方 single-turn 初始化。
+
+进入代码前的固定学习进度：
+
+- [x] 能解释 trainer、actor、rollout、reward、reference 五个角色。
+  - 2026-09-05：通过状态同步检查：rollout 负责生成；actor 更新后、下一批采样前必须同步 rollout；
+    未同步轨迹不代表当前 actor；reference 保持冻结。
+- [x] 能画出或口述“问题 → 同组多条 rollout → reward → advantage → actor 更新”的 GRPO 数据流。
+  - 2026-09-05：理解同组全同 reward 可作为采样表现观察，但因零方差不能提供有效 advantage；
+    BM25 observation 参与后续 token 的 attention，`response_mask=0`，不参与 actor loss。
+- [x] 能用官方配置启动单轮最小任务，并解释 Hydra 覆盖后的关键配置。
+  - 2026-09-05：已通过固定 sample batch 语义检查：`train_batch_size=2`、`rollout.n=4` 产生
+    8 条轨迹，`ppo_micro_batch_size_per_gpu=1` 表示单卡一次处理 1 条；官方示例启用 dynamic batch 后
+    实际主要由 `ppo_max_token_len_per_gpu` 控制。
+  - 2026-09-05：Hydra `--cfg job --resolve` 已通过，确认 GRPO、V1、FSDP、vLLM、单卡、
+    `train_batch_size=1`、`ppo_mini_batch_size=1`、`rollout.n=2`、micro batch 1、KL 关闭及正式
+    train/dev 路径均生效；
+    V1 入口会在运行时启用 TransferQueue 的 `SimpleStorage`。尚未加载模型或启动 single-turn。
+  - 2026-09-05：官方 single-turn `val_only` 进行三次递进验证。第一次由配置校验发现
+    `train_batch_size=1 < ppo_mini_batch_size=2`，据源码约束将 mini batch 修正为 1；第二次发现遗漏
+    rollout log-prob micro batch，补为 1；第三次已通过配置校验并成功启动 Ray、读取 1 条 train/val、
+    启用 TransferQueue SimpleStorage、创建 actor/rollout worker，随后在构建 Qwen2.5 actor 时因环境
+    未安装 FlashAttention2 失败。失败后 Ray 已退出，GPU 回到约 2.76 GB。当前停在架构选择：安装
+    匹配 PyTorch 2.13/SM120 的 FlashAttention，或使用 veRL 官方支持的 SDPA；尚未作第四次尝试。
+  - 2026-09-05：按“保留 PyTorch 2.13、不替换现有 vLLM”的决定，以 `--no-deps` 安装 veRL
+    官方 `flash-attn==2.8.3` 预编译 wheel。安装本身成功，但首次导入
+    `flash_attn_2_cuda` 即报 `undefined symbol: c10::impl::cow::materialize_cow_storage`，证明该
+    PyTorch 2.11 ABI wheel 不能由 PyTorch 2.13 直接加载；因此没有继续做 SM120 前向/反向，也没有
+    重跑 trainer。已卸载该 wheel，PyTorch 2.13 与 vLLM 0.27.1 保持不变。下一步只评估针对当前
+    PyTorch/CUDA 源码编译 FlashAttention，或显式使用 SDPA，不能把相近版本视为二进制兼容。
+  - 2026-09-05：决定当前环境不再使用 FlashAttention，actor 改为
+    `+actor_rollout_ref.model.override_config.attn_implementation=sdpa`，并关闭依赖
+    `flash_attn.bert_padding` 的 `actor_rollout_ref.model.use_remove_padding`。实测 Qwen2.5-3B 权重、
+    FSDP actor、reward manager 均成功初始化，证明 SDPA 已越过原 FlashAttention 阻塞。vLLM 0.27.1
+    默认 V2 model runner 在 WSL 中因缺少 UVA 失败；设置 `VLLM_USE_V2_MODEL_RUNNER=0` 后，vLLM
+    服务、FlashInfer autotune 与 CUDA Graph 捕获均完成，但首次 actor→rollout 权重同步在 CUDA IPC
+    重建处报 `CUDA error: invalid resource handle`。上游 CUDA platform 无条件声明支持 IPC，而代码已
+    提供 shared-memory fallback；下一步应先做显式 WSL opt-in 的 SHM 兼容验证，不继续猜调训练参数。
+    失败进程已停止；完整 uv 环境仅在现有兼容路径无法成立时另建。
+  - 2026-09-05：为 CUDA platform 增加显式 `VERL_FORCE_SHM_WEIGHT_TRANSFER=1` 开关，默认仍使用
+    CUDA IPC；测试先得到预期失败，再修改实现，完整 platform 测试 `14 passed`。V1 smoke 日志确认
+    “Falling back to shared memory”，此前的 `invalid resource handle` 不再出现；权重同步、AgentLoop
+    rollout 和 reward 均已执行，训练进入 actor optimizer step。随后因当前 smoke 对 3B 模型执行全参数
+    Adam，在首次创建 optimizer state 时 `CUDA driver error: out of memory`。这不是 batch/rollout
+    语义问题；下一次必须恢复项目既定的 Stage-B LoRA adapter 训练，而不是继续测试全参数 actor。
+    失败进程已退出，GPU 显存回落至 354 MiB。
+  - 2026-09-05：将命令固化为 `MedSearch/scripts/run_verl_v1_lora_smoke.sh`，加载正式
+    `outputs/stage_b/formal/adapter`（rank 8），保持 `train_batch_size=1`、`rollout.n=2`，完成
+    1 个真实 GRPO optimizer step并以退出码 0 结束。日志确认 Stage-B adapter、vLLM LoRA rank 8、
+    SHM 权重同步、AgentLoop rollout、reward、actor backward/update 和更新后同步均执行；step 用时
+    23.08s，actor peak allocated/reserved 为 23.11/23.18 GiB，结束后 GPU 为 637 MiB。两条 rollout
+    reward 均为 0，因此 advantage、policy loss、grad norm 都为 0：只证明闭环可执行，不证明有效
+    学习。相关配置/platform 测试 `15 passed`；后续脚本固定 `data.dataloader_num_workers=0`，消除本次
+    成功退出时的 DataLoader teardown 噪声。
+- [x] 能解释 `AgentLoopBase.run()` 的输入输出与 `response_mask` 的 1/0 含义。
+  - 2026-09-05：通过结构检查：`prompt_ids` 是初始提示 token；`response_ids` 同时包含模型与工具
+    token；模型 token 的 mask 为 1，工具 token 为 0。工具 token 不参与 loss，但参与后续 attention。
+- [x] 完成以上四项后，由用户开始编写 `MedSearch/rl/protocol.py`。
+
+候选 V2 已完成自动隔离、token 长度和语义复审；本日继续人工核查 V1 剩余队列与 V2 新补位，
+不启动 RL，不把尚未完成的答案人工审核写成已经通过。
+
+## 2026-09-04：V2 2,304 条质量审核收拢与二次审计
+
+- 2,192 条剩余 batch 已全部回收；覆盖、ID、顺序、keep/reject 互斥和 reject manifest 均通过检查。
+- 合并此前 112 条后，桌面原始裁决为 keep 1,700 / reject 604。二次抽审只进行高置信修正：恢复
+  `medical-o1-verifiable:22697`，清理 10 条重复、冲突答案或时效/上下文不稳定样本。
+- 当前临时质量池为 1,691 条：train 1,494、dev 197；清洗 613 条，不补位，也暂不覆盖 V2 原
+  parquet。证据和输出归档于 `MedSearch/data/rl/medical_verifiable_v2/quality_audit/`。
+- 医学质量与搜索需求严格拆层：467 条 moderate/high、205 条 low、1,019 条 unknown。low 保留为
+  no-search/control；unknown 暂不准入 search-positive。467 条严格集只用于 search-only baseline。
+- 当前仍等待 256-dev 独立复核；返回后按 ID 合并冲突裁决，再冻结最终质量数据和重算训练 steps。
+- 质量版本最初在 `medical_verifiable_quality_v1` 候选目录生成，最终已发布为
+  `MedSearch/data/rl/train.parquet` 1,494 条与 `dev.parquet` 197 条；保持原 veRL 八列 schema，
+  train/dev ID 无交集且 manifest 哈希复核一致。候选目录现已移除，后续不得继续引用旧路径。
+  dev 仅作开发评测，冻结 MIRAGE MedQA/MedMCQA 继续承担最终测试。
+- 用户决定首轮 GRPO 使用全部 1,494 条质量合格 train。467 条高检索需求子集以及 no-search 对
+  BM25 收益诊断后移为消融，不作为首轮训练准入门槛；检索标签继续保留以支持后续分层分析。
+
+## 2026-09-07：token-F1 医学语义风险审计
+
+- 明确 `medical verifier` 指独立的医学语义判分模型；token-F1 只是词面重合规则，二者不能混用。
+- 新增 `MedSearch/tools/audit_token_f1_risk.py`，只用可解释规则标记方向、极性、数值与否定敏感答案；
+  它是人工或 LLM 复核队列生成器，不宣称判断医学正确性。
+- 对正式 train 1,494 条扫描得到 316 个风险记录、覆盖 280 个唯一问题；其中 97 个问题可通过替换一个
+  方向/极性词构造医学意义相反但 token-F1 仍不低于 0.5 的反事实答案。因此 token-F1 暂不冻结为
+  唯一在线正确性 reward，只作为 rollout 诊断指标。
+- 审计结果位于 `MedSearch/docs/audits/token_f1_semantic_risk.csv`；聚焦测试 `4 passed in 0.03s`。
 
 # 完成标准
 
-- YAML作为训练参数唯一来源；--config仅选择文件，不重复覆盖训练参数；实际QLoRA设置写入运行记录；
-- 正式main不携带smoke教学模式，复用已有接口；测试移出入口但不删除，回归行为保持；
-- 启动前核对训练规模、输出目录、种子、配置记录及保存方式，不把smoke的8条/max_steps1误作正式训练设置；
-- QLoRA保存重载、dev评估和完整断点恢复仍是待办，不因整合而删除验证关口；
-- 明日先完成相应启动前检查，再启动Stage-A SFT；不将“进程启动”视为训练效果通过。
+- 未拒绝的 V1 样本保持原 split，只有被拒绝位置由固定 reserve 补齐；
+- manifest 固化 V1 锚点、累计排除索引、裁决来源和最终 parquet 哈希；
+- 最终保持 2,048 train + 256 dev，且 MPNet `cosine >= 0.92` 命中数为 0；
+- 聚焦测试、Python 编译和 diff 检查通过；
+- 剩余人工质量审核完成前只称 candidate V2，不准入正式 RL 训练。
 
 # 已完成
+
+## 2026-09-04：V1 64 条网页审核回收与 dev 审核导出
+
+- `final_web_review_64_audited.jsonl` 完整覆盖输入 64 条，ID 唯一、无缺失或额外项；结果为
+  keep 35、reject 29，四个审核字段均无空值，reject 全有 notes，keep 与负向字段无矛盾。
+- 29 条 reject 中，14 条早已从当前 V2 删除，15 条是当前 V2 的新增待排除；另有 1 条网页判
+  keep 但此前因语义泄漏被删除，因此仍维持隔离。完整报告 SHA256 为
+  `e6dbdd127001669ed431a9e2b04ee816e7d62b6e9440bde9f6755a7eeb59943f`。
+- 已归档完整报告并导出 `v1_web_review_rejects.jsonl`。在 2,192 条其余候选网页报告返回前不重写
+  最终 parquet；届时与补位 24 条 reject 合并，按 ID 去重、只删除不补位。
+- 导出当前完整 dev 256 条到 `medical_verifiable_v2/dev_web_review_256.jsonl`，SHA256 为
+  `740a8be5b0c4d63dc842d65bcf444284fbe9519a6e1b9ac8c5cab6f4d7fa099d`；审核标准固化在
+  `WEB_REVIEW_STANDARD.md`。dev 253 条与 2,192 条 master 重合，另 3 条已在补位报告中审核，
+  最终合并按 ID 去重。
+
+## 2026-09-04：63 条补位队列网页审核回收
+
+- 校验 `refill_review_audited.jsonl`：63/63 个唯一 ID 与当前 `refill_review.jsonl` 完全对应，
+  无缺失、无额外 ID；结果为 keep 39、reject 24。四个审核字段无空值，reject 均有 notes，
+  keep 没有负向字段，reject 没有全正向字段。
+- 完整报告 SHA256 为
+  `baff963f915cf955da5a6ea7f03bdc969f08a78ef6edc4f20259dea21f19e6ae`；已另存仅含 24 条 reject
+  的 `refill_web_review_rejects.jsonl`，SHA256 为
+  `2b78e2b9a6e6fb41062cca4b90d9119566e7da123d0d4c02a8c52b59d96d7595`。
+- 用户决定不再为这 24 条补位。当前 parquet 暂不重写，待 V1 完整 64 条最后审核返回后合并
+  findings 一次性过滤；若没有其他新增 reject，规模将由 2,304 降至 2,280，实际最终数量以
+  最后一轮裁决为准。
+- 最后一批网页审核文件为 `medical_verifiable_v2/final_web_review_64.jsonl`，完整保留 V1 固定
+  64 条，SHA256 为 `3298755f3bf16931fbe877eaff4e2b629f0396cf1ded80362b1e9a14af7a7d95`。
+- 为后续独立审核导出当前 V2 其余 2,192 条：63 条补位报告与当前仍存在的 49 条 V1 队列共
+  覆盖 112 条；V1 队列另 15 条已不在 V2。`remaining_web_review_batches/` 包含 master 及
+  22 个批次，前 21 批各 100 条、最后一批 92 条，顺序固定为当前 train 后 dev。
+
+## 2026-09-04：candidate V2 稳定补样与语义复审
+
+- 首版排除实现错误地在删除 57 条后重新 shuffle 整个候选池，导致 V2 全量漂移；该版本判定
+  无效并覆盖。新增稳定补样回归测试后，构建器改为以 V1 train/dev 原始行号为锚，只从固定
+  reserve 顺序补空位，未拒绝样本不换 split。
+- 第一轮稳定补样保留 V1 的 2,247 条，train/dev 分别只替换 54/3 条；MPNet 复审发现 3 条
+  近乎逐字改写（Stage-A 1、MIRAGE 最终测试 2），已固化到
+  `stable_refill_semantic_findings.jsonl` 并加入累计排除。
+- 首轮补位与 V1 剩余队列的定向人工核查又确认 14 条问题：开放性气胸与无症状胆石处置错误、
+  反应性关节炎病原错误、PAR 缺少暴露率、胃癌手术回答回避、IBD/IBS 混写、循环题干、过时
+  clozapine 监测目标，以及 6 条 V1 的机制错误、过时疗法、内部矛盾或条件不足。权威依据与
+  逐条理由保存在两份新增 findings 文件中；拿不准的样本没有自动删除。
+- 当前累计排除 74 条，其中 11 条属于 reserve 中被二次拒绝的样本；candidate V2 仍为
+  train 2,048 + dev 256。相对 V1，train/dev 分别替换 60/3 条，共 63 条当前补位记录，跨 split
+  移动为 0。最终 MPNet cosine `0.92` 复审命中数为 0。
+- 当前 train/dev SHA256 分别为
+  `4a9c2dc4117ba5c6429c368ca1a346a27f29b83f7a64603d23c6a6011b6ff4e0` 与
+  `c40791681df592dc97e756c8ed6da430e4dbef5b59d270aaa54931e6fe9abe14`；累计排除索引
+  `applied_exclusions.jsonl` 共 74 条，SHA256 为
+  `a1837c3902419752278ff9b2863bf7866953ea0882156e4409d55a8f68121fac`。
+- 当前只通过自动门槛，尚未完成 V1 队列余下 50 条及当前 63 条补位样本的人工正确性审核，因此
+  仍称 candidate V2，不启动正式 RL。
+
+## 2026-09-04：candidate V1 第二轮自动审计与高风险人工核查
+
+- 使用本地 `models/Qwen2.5-3B-Instruct` tokenizer 检查全部 2,304 条：train/dev prompt 最大
+  `262/265` tokens，超过 `4096` 的样本均为 `0`；答案最大 `86/53` tokens。当前长度不会触发
+  prompt 截断，但 rollout 后的完整轨迹长度仍须在真实环境另测。
+- token-set Jaccard 阈值 `0.80` 对四个隔离池找到 7 条近重复：2 条命中 MIRAGE 最终测试、
+  5 条命中 Stage-A。逐条核对均为同题轻微改写，全部记录为未来 V2 的 reject；candidate V1
+  暂不原地修改，避免在 MPNet 审计前反复重建。
+- 64 条人工队列先核查 8 条明确高风险记录，均确认应拒绝：4 条存在可由权威资料或定义核验的
+  错误，4 条缺失图片、表格、X 光描述或血气数值。其余 56 条仍为 pending；这 8 条是定向核查，
+  不能外推为数据集错误率。
+- 后续在 `MedicalGraphRAG/models/all-mpnet-base-v2` 找到此前项目使用的固定模型；MedRAG 本身
+  默认是 MedCPT/Contriever，不为方便而更换去重口径。复用该 MPNet 在 CUDA 上完成全部 2,304
+  条语义审计，模型权重 SHA256 为
+  `a8fd120b1a0032e70ff3d4b8ab8e46a6d01c2cb08ffe7c007a021c1788928146`。
+- cosine `0.92` 共命中 49 条明显同题改写：Stage-A 30、Search100 1、protocol dev 0、MIRAGE
+  最终测试 18；此前 7 条 Jaccard 命中包含于其中。candidate V1 不原地修改，V2 按 split 排除并
+  从 reserve pool 补位后，所有补位题重新经过相同门槛。
+- 新增 token 长度和 Jaccard 契约测试，并修复近重复报告缺少候选侧原文的问题；测试经历预期
+  RED 后达到 `9 passed in 0.42s`。报告位于 `MedSearch/data/rl/medical_verifiable/`。
+
+## 2026-09-04：Medical Verifiable Problems 来源固化与首轮数据处理
+
+- 官方来源固定为 Hugging Face `FreedomIntelligence/medical-o1-verifiable-problem`，数据文件
+  revision `0b347655bd332537e6814d53c6fe4bc03b555bdc`，Apache-2.0；本地原文件 SHA256
+  `f5998431acb0eb35e9365f81b6e434d67c44392a5667280068c63ec072ba53cd` 与官方文件一致。
+- README 已记录 40,644 条官方 train、两个原始字段及其不包含 evidence、difficulty、原始考试
+  来源的限制；派生 parquet 的 `extra_info` 新增 source dataset/revision/split，保留原始行号。
+- 使用原 seed `20260902` 重建相同 2,048/256 候选选择；新增 `audit.json`：train/dev ID 不相交、
+  空问题 0、空答案 0、跨 split 规范化精确重复 0。新 parquet 哈希变化来自 provenance schema
+  增加，最新哈希以 manifest 为准。
+- 新增固定 64 条 `manual_review.jsonl`：先纳入 train 中全部答案长度 `<=2` 或 `>200` 的样本，
+  再由相同 seed 随机补足；长度只用于风险抽样，不作为自动删除规则。
+- TDD 先观察到缺少来源常量/manifest revision 的预期失败，再实现最小来源与审计逻辑；聚焦测试
+  `7 passed in 0.39s`。尚未完成 Qwen token 长度、词汇/MPNet 语义近重、人工答案质量和
+  no-search/BM25 搜索收益诊断，因此 candidate V1 仍只准用于最小链路 smoke。
+
+## 2026-09-04：modern veRL 架构准入审查
+
+- 总体分层合理：Search-R1 XML 协议被收敛到独立 `AgentLoopBase`、protocol 与 reward 文件；
+  `<information>` 通过 `response_mask=0` 排除 policy loss，检索仍是 policy-native action，未改成
+  generic function calling。WSL2 shared-memory 补丁为显式 opt-in 环境兼容项，不改 RL 算法。
+- 当前不能作为 MedSearch-R1 正式引擎：`generated.token_ids` 被 decode、截断后重新 encode，违反
+  token-in/token-out，训练 token 可能不是 vLLM 实际采样 token；pinned veRL 的标准单轮实现直接把
+  `output.token_ids` 传给 `ct_merge_assistant_token()`。
+- observation 先整体编码再右截断，可能截掉 `</information>`；空 query 会被当作合法 search 发给
+  检索器；同一生成中同时出现 search/answer 时被静默接受第一个 action，与冻结的 Stage-B
+  malformed 判定不一致。
+- 当前启动脚本加载 Qwen2.5-3B Base 并新建 rank-16 LoRA，未设置 `lora_adapter_path`；冻结的
+  Checkpoint-B 是 rank-8 LoRA。因此已完成的单步结果只是 Search-R1 modern fallback，不是
+  Checkpoint-B 初始化的医学 RL smoke。
+- 当前 `reward.py` 是开放域 normalized EM；Medical Verifiable Parquet 的 veRL schema 与其
+  `ground_truth.target` 接口兼容，但正式 medical verifier 尚未接入。检索异常也未转成可审计的
+  environment failure，一次 HTTP/schema 错误可能中断 rollout。
+- 从项目根运行测试时，本地旧 `Search-R1/verl` 会遮蔽 `.deps/verl`，导致缺少
+  `verl.experimental`；从 pinned `.deps/verl` checkout 运行同一组聚焦测试得到
+  `10 passed, 1 warning in 7.82s`。现有测试证明当前既定行为，不覆盖上述正式准入缺口。
+
+## 2026-09-04：两阶段 SFT 正式冻结并准入 RL 架构阶段
+
+- 冻结 Stage-A 医学领域 QLoRA 与 Stage-B Search100 协议冷启动配方；唯一 RL 初始化产物为
+  `MedSearch/outputs/stage_b/formal/adapter/`，不再通过追加 epoch、replay 或混合数据追逐指标。
+- Stage-A 冻结 dev 上 Base → Stage-A 的 NLL/PPL 为 `1.380321/3.976179` →
+  `1.001387/2.722054`；Stage-B 为 `1.038353/2.824561`，相对 Stage-A 有约 `3.7%` NLL
+  回升，但未出现灾难性遗忘。
+- Stage-B 在 12 条独立 protocol dev 上合法 search 与非空 query 均为 `12/12`、畸形 action
+  `0/12`，足以作为 RL 搜索协议冷启动；该结果仅为首轮 action，不代表 query 质量、BM25
+  闭环、开放式医学答案正确性或自适应停止已经通过。
+- 架构讨论候选方向为 policy-native `<search>` action、`<information>` environment observation、
+  token-in/token-out 轨迹和 environment token `response_mask=0`；不采用 generic function calling。
+- 网页讨论提出“先旧 Search-R1 baseline、再迁新版 AgentLoop”，但仓库已存在
+  `Search-R1/modern_verl/`，并于 2026-08-20 完成过 3B 单步 GRPO 全链路。因此下一步是比较
+  两条已有路径并冻结实验职责，不从零重复迁移；该单步两条 reward 均为 0，仍不算有效学习结果。
+
+## 2026-09-04：旧调度退出，原生新版 veRL 作为唯一 RL 路线
+
+- 使用新质量 parquet 对旧 `trainer.use_v1=False` 路径进行两次真实单步尝试。两次均成功读取
+  train 1,494 / dev 197，并通过 GRPO 配置检查；失败发生在异步 vLLM engine 的 KV cache 初始化，
+  未进入 rollout 或 optimizer step。
+- 第一轮沿用旧 smoke 参数（vLLM memory 0.25、上下文 1280）；第二轮仅将 memory 调至 0.35、
+  上下文调至 1024、response 调至 256，根因不变：`No available memory for the cache blocks`。
+  这不是医学 parquet 字段、BM25 服务或 reward 的错误。
+- 用户决定不再投入旧调度兼容性修复。保留失败日志
+  `MedSearch/docs/run_logs/modern_verl_fullpool_1step*.log` 作为环境证据；本次临时启动的 BM25
+  服务已停止。
+- 后续唯一架构路线：锁定新版 veRL 的原生训练调度，薄迁移 `<search>/<information>/<answer>` 协议、
+  token-in/token-out 与 medical verifier；不重用旧 trainer/rollout/WSL 兼容补丁。
+
+## 2026-09-02：Medical Verifiable Problems 首版 RL 数据冻结
+
+- 下载官方 `FreedomIntelligence/medical-o1-verifiable-problem`，共 40,644 条开放式医学可验证题，
+  Apache-2.0；原始文件 SHA-256 为
+  `f5998431acb0eb35e9365f81b6e434d67c44392a5667280068c63ec072ba53cd`。
+- 冻结 `MedSearch/data/rl/medical_verifiable/train.parquet` 2,048 条与 `dev.parquet` 256 条，
+  seed `20260902`。排除池覆盖 Stage-A 30,073 个 user turn、Search100 100 条、protocol dev
+  12 条和 MIRAGE 最终测试 5,456 条；规范化精确排除 1,156 条，源数据内部重复排除 342 条。
+- 输出使用当前 modern veRL 所需的 `prompt`、`reward_model`、`golden_answers`、`data_source`、
+  `ability` 与 `extra_info`；开放答案目标来自官方 `Ground-True Answer`。
+- 教师契约与产物验收：`4 passed in 1.09s`。manifest 与输出哈希位于
+  `MedSearch/data/rl/medical_verifiable/manifest.json`。
+- reward 决策：一步 smoke 暂用 normalized exact match 验证接口；正式 pilot 使用 HuatuoGPT-o1
+  风格 medical verifier outcome reward，不加入关键词、证据命中或搜索次数 shaping。
+- 单卡预算：3B 依次运行 1/20/200 updates，7B 仅在 3B 有效后运行 1/20/100，必要时延长到
+  200；不遍历全部 40K，也不按 8×H100 的 Search-R1 batch 512 配方照搬。
+
+## 2026-09-02：Stage-B SFT 首轮协议与保留能力准入结果
+
+- 教师新增 `MedSearch/sft/evaluate_stage_b.py`，只生成 protocol dev 的第一轮，遇到完整
+  `</search>` 或 `</answer>` 即停；明确不执行 BM25、information 注入、Evidence Hit@k 或闭环
+  答案评测。对应教师测试位于 `MedSearch/docs/tests/test_stage_b_evaluator.py`。
+- 同一冻结 Stage-A dev（328 条、89,335 supervised tokens）且同一口径下，Base / Stage-A /
+  Stage-B overall NLL/PPL 为 `1.380321/3.976179`、`1.001387/2.722054`、
+  `1.038353/2.824561`。Stage-B 相对 Stage-A 的 NLL 回升约 `3.7%`，四个 mixture group 均小幅
+  回升；尚未出现灾难性遗忘，但不能据此称“完全不遗忘”。
+- 固定 32 条 Stage-A 生成中，Stage-B 没有 `<search>` 泄漏；但 24 条普通对话有 4 条出现非预期
+  `<think>`（`16.7%`），高于零，需在后续阈值实验中处理。
+- 独立 protocol dev（12 条、greedy、seed `20260823`、max_new_tokens `256`）的合法 search /
+  非空 query / 直接 answer / 畸形 action：Base `1/12,1/12,3/12,8/12`；Stage-A
+  `0/12,0/12,0/12,12/12`；Stage-B `12/12,12/12,0/12,0/12`。这证明 100 条 Search100 的
+  Stage-B SFT 已学会首轮协议冷启动，不证明 query 质量、闭环能力或最终医学正确性。
+- 完整回归：`72 passed, 18 warnings`。新增评测不修改模型权重、训练样本或冻结 protocol dev。
+- 经学生决定，12 条的随机重复生成不作为下一步前置条件：首轮 `12/12` 已足以判断 SFT 是否
+  完成协议冷启动；随机稳定性检查移至搜索环境接入后，用于回归而非阻塞 RL smoke。
+
+## 2026-09-02：正式 Stage-B 与 12 条 protocol dev 独立验收
+
+- 正式 Stage-B 使用 Search100 全部 100 条：batch `2`、梯度累积 `4`，因此是 50 个
+  micro-batch、13 个 optimizer step；训练 1 epoch，train loss `1.5409584`、runtime
+  `912.2916s`，W&B run `krv3cmlr`。
+- checkpoint-13 的 13 个 step 均有有限 loss/grad norm；epoch 末 328 条 Stage-A dev 的
+  Trainer eval loss 为 `0.9218875`。最终 adapter 的 504 个 safetensors 张量全部有限。
+- protocol dev 共 12 条，one/two search 为 `8/4`，MedQA/MedMCQA 为 `6/6`；所有支持文档
+  ID 均存在于本地 MedText。输出 SHA-256 为
+  `76a670ec05a84e3a6363d0da9c11685e333e50542fd41ae06df58763a6970a80`。
+- 去重覆盖 Search100 100 条、Stage-A 30,073 个 user turn、MIRAGE MedQA/MedMCQA 最终测试
+  5,456 条；MPNet 语义阈值 `0.92`，实际最高相似度 `0.781795`。未来医学 RL 尚未构建，
+  这 12 个 ID 已显式预留为排除项。
+- 独立验收和完整回归通过：`67 passed, 18 warnings`。当前仍没有 Stage-B 行为指标，训练完成
+  不能替代协议效果评测。
+
+## 2026-09-01：Stage-B 跨阶段 eval 接线与 1-step QLoRA 冒烟通过
+
+- 修正 `build_dataloader` 的 dataset stage 分派：Search100 train 使用 `stage_b`，冻结的
+  Stage-A dev 使用配置中的 `eval_stage: stage_a`；定向测试 `5 passed`，完整回归
+  `67 passed, 18 warnings`。
+- 从 `MedSearch/outputs/stage_a/adapter` 加载 Stage-A LoRA，使用 Qwen2.5-3B NF4 QLoRA、
+  Search100、batch `2`、梯度累积 `4`、max length `4096` 完成 `global_step=1`。
+- 真实输出：train loss `2.0851536`，train runtime `35.5325s`；随后完整评估 328 条
+  Stage-A dev，控制台 eval loss `0.8756`、eval runtime `30.75s`。最终 adapter 与
+  `MedSearch/outputs/stage_b/train_metrics.json` 已生成。
+- 边界：本次没有运行 Stage-B 行为评测，不能证明 search 协议提升；该 eval loss 的聚合口径
+  也尚未与独立 Stage-A token-weighted NLL 对齐，不能直接拿 `0.8756` 与 `1.0014` 比较。
+
+## 2026-09-01：训练中 dev loss 教师接口与 RED 契约
+
+- 固定 `stage_a_dev.jsonl` 328 条作为训练过程 validation；MedQA test 与 MedMCQA dev 继续作为
+  项目最终测试资产，不参与 loss、checkpoint 选择或调参。
+- 为 `build_dataloader(..., split="train|eval")`、`build_trainer(..., eval_dataloader=...)`
+  增加最小接口和学生契约；Stage-A YAML 新增 `eval_data_path`，尚未开启正式 eval strategy。
+- 教师测试 `docs/tests/test_sft_eval_wiring.py` 在 `--runxfail` 下准确得到 4 failed：eval 仍读取
+  train、未知 split 未拒绝、TrainingArguments 仍强制 no、Trainer.eval_dataset 仍为 None。
+- 默认 CPU 回归 `62 passed, 4 xfailed, 18 warnings`；既有训练、量化、保存和最终评测路径未回归。
+
+## 2026-09-01：Stage-A 正式训练完成并完成 Base/SFT 自动评测
+
+- 正式 Stage-A QLoRA 跑满 `2010/2010` optimizer steps、1 epoch；16,077 条训练样本，
+  运行 `3638.2171s`，train loss `1.0024849`，最终 adapter 与 tokenizer 位于
+  `MedSearch/outputs/stage_a/adapter/`，`checkpoint-2010` 同时保留 optimizer、scheduler、
+  trainer state 与 RNG state。W&B run：`gufa7zwo`。
+- 评测代码 commit `7d59c8f`；冻结 dev 328 条、assistant supervised tokens 89,335。
+  Base 总体 NLL/PPL 为 `1.380321/3.976179`，Stage-A 为 `1.001387/2.722054`；四个组的
+  NLL 均下降：single `-0.268887`、multi `-0.541840`、reasoning `-0.470224`、general
+  `-0.187681`。
+- 固定 seed `20260823`，每组 8 条，共 32 条 greedy 生成。Base 与 Stage-A 的 sample ID
+  完全一致；两者 EOS 结束率均为 100%，max-token 截断率均为 0。
+- Base 在 8 条 reasoning 抽样上均未输出预期标签；Stage-A 的 reasoning 8/8 均严格输出
+  `<think>...</think><answer>...</answer>`，其余 24/24 普通样本均未误输出 `<think>`，
+  格式行为成功率为 100%。该结果只证明格式学习，不证明医学正确性提升。
+- 产物：`MedSearch/outputs/eval/base/` 与 `MedSearch/outputs/eval/stage-a-final/`，每个目录
+  均含 `metrics.json`、`generations.jsonl` 和 `review.md`。CPU 回归 `62 passed, 18 warnings`。
+
+## 2026-09-01：Stage-A dev 评测与医疗对话抽样脚本完成
+
+- 新增 `MedSearch/sft/evaluate_stage_a.py`：同一 Stage-A YAML 下分别加载 4-bit Base 或
+  inference-only adapter，在冻结的 328 条 dev 上计算 assistant-token 加权 NLL/PPL，并按
+  single、multi、reasoning、general 分组报告；未接触 MedQA/MedMCQA 最终测试资产。
+- 每组固定 seed 分层抽样，导出 `metrics.json`、`generations.jsonl` 与待人工填写的
+  `review.md`；人工栏覆盖医学正确性、相关性/完整性、幻觉、安全风险与标签行为。
+- 标签指标区分完整 think、畸形标签、reasoning 组缺失、普通组非预期 think、多次生成形态一致、
+  多次生成稳定符合预期，以及命中 max-new-tokens 的疑似截断，避免把一致犯错或长度截断算作成功。
+- TDD 专项测试经历三轮预期 RED 后达到 9 passed；Docker `llm-pytorch` 禁用 CUDA 的完整回归
+  `62 passed, 18 warnings in 13.89s`，警告均来自既有 Torch/TQDM/PEFT 第三方路径；compileall、
+  CLI `--help` 与 `git diff --check` 退出码均为 0。
+- 使用命令与 Base/SFT 公平对比约束已写入 `MedSearch/README.md`；实施计划位于
+  `docs/superpowers/plans/2026-09-01-stage-a-evaluation.md`。
+- 正式训练仍在运行，未抢占 GPU、未产生 Base/SFT dev loss、生成回答或医学能力结论；脚本验收
+  不等于模型效果验收。
 
 ## 2026-09-01：Stage-A正式QLoRA启动并接入W&B（运行中）
 
@@ -796,6 +1394,17 @@ git diff --check
 - `MedicalGraphRAG/` 固定在 README 结果对应的 commit `fe89a64`；未验收扩展仅保留在 Git 历史。
 - 图检索在四套基准均未胜出。该负结果保留，不再通过无依据调参追逐指标。
 
+## 2026-09-05：RL 数据资产收束
+
+- 后续 RL 只保留 `MedSearch/data/rl/train.parquet`（1,494 条）与
+  `MedSearch/data/rl/dev.parquet`（197 条），两者保持独立、不合并，且 ID 不重叠。
+- 已删除 `medical_verifiable`、`medical_verifiable_v2`、
+  `medical_verifiable_quality_v1` 历史候选目录及其 JSON/JSONL 审核材料；清洗依据、
+  来源 revision、隔离规则、人工裁决摘要、文件哈希和使用边界收束到
+  `MedSearch/data/rl/MEDICAL_VERIFIABLE_RL_CLEANING.md`。
+- 训练只读 train；dev 只作开发期诊断，最终效果仍由冻结的 MIRAGE、MedQA、MedMCQA
+  测试集报告。因审核原始记录按整理目标已删除，后续不能重建原人工审核过程。
+
 # 遇到的问题
 
 | 问题 | 当前处理 |
@@ -812,18 +1421,22 @@ git diff --check
 
 # 下一步
 
-- 观察W&B曲线与本地日志；首先确认`checkpoint-250`包含adapter、optimizer、scheduler和trainer state。
-- 训练完成后验收最终`adapter/`与`train_metrics.json`，再使用冻结的328条dev执行独立评测。
-- 正式训练期间不改YAML和训练源码；生产测试helper剪枝放到训练完成后的独立步骤。
-- Stage-B replay仍为待讨论项，不阻塞Stage-A；本日不启动Stage-B。
+- 唯一核心任务：完成 batch5 的 402 条人工证据、答案和推理审核，再做跨池语义近重复复核、历史训练暴露审计及冻结 split 隔离。逐条使用模型当时可见的 `<information>`；verifier 分数与 source-reference overlap 均不作为自动准入或排除条件。
+- 完成标准：402 条人工账本 ID 全覆盖、引用逐字可回查 query/Doc 与 `<information>` 边界；完成 batch3/4/旧 SFT/batch5/batch6 跨池去重、历史训练暴露审计和 train/dev/test 隔离；只有通过全部门槛且隔离后才计入 1,000 目标，目标未满不启动正式训练。
+- 当前有 304 条独立确认候选（batch3 112、batch4 101、旧 SFT 91），尚未完成全池语义去重与训练 split 隔离，不能称为最终可训练样本；batch5 另有 402 条待人工轨迹审核，batch6 题目盲审 keep 506 条尚未经过答案/检索轨迹复核。
 
+## RL 后续待办（SFT 数据目标完成后恢复）
 
+- 建立 `MedSearch/.deps/verl` 干净依赖，锁定 commit、Python、PyTorch、CUDA、vLLM、veRL 与 `transfer_queue` 版本，并验证导入来源。
+- 不接 MedSearch 代码，先跑通新版 veRL 官方 V1 单轮最小链路，确认单卡 `SimpleStorage`、rollout 与 actor 可工作。
+- 门槛通过后，从协议解析失败案例开始，由用户逐步编写 `protocol.py`；随后依次完成 BM25 客户端、AgentLoop、最小 reward、Checkpoint-B rollout-only 和 1-step GRPO。
 # 待补知识
 
-- MedQA-dialog 清洗后的实际保留量能否支持 30%～40% 多轮比例。
-- medical-o1 在 512-token CoT 阈值下的保留率。
-- Search100 一轮/两轮/直答比例和普通医学对话 replay 比例。
-- Search100 是否需要过采样，才能在保留 replay 时学会稳定协议。
+- 新版 veRL V1 在单卡下对 `transfer_queue`、`SimpleStorage` 和 worker 生命周期的实际要求。
+- Checkpoint-B LoRA 是否同时正确加载到 actor 与 rollout，以及 step 0 输出的一致性。
+- 使用 LoRA 训练时冻结 reference policy 的真实组成；不能确认 reference 为 Base + Checkpoint-B 时先关闭 KL。
+- `train_batch_size`、rollout `n`、PPO mini/micro batch 与梯度累积各自控制的维度和单卡实测边界。
+- medical verifier 的阈值、人工一致性、显存驻留方式和同组零方差 reward 比例。
 
 # 实验结果总表
 
@@ -846,4 +1459,57 @@ git diff --check
 | MedicalGPT 内部显存统计路径停滞 | Trainer 路径未形成完整产物 | 该次运行不计入；已用外部只读采样完成 smoke。 |
 | Search-R1 单步两条 rollout 均答错 | 同题组 reward 全 0，GRPO advantage 与 gradient 为 0 | 保留为“同组无差异则无学习信号”的真实失败样本；扩大实验时监控有效组比例。 |
 
+## 2026-09-09：RL 扩充数据 V1 重做
+
+- 核对确认 `MedSearch/data/rl/medical_verifiable_expansion_v1/` 原先只有 2,000 条自动初筛候选，
+  状态为 pending medical second audit，没有 parquet，不能直接用于 RL。
+- 保留原候选并以固定 seed `20260902` 发布新候选：train 1,800 条、dev 200 条；随后删除 12 条
+  缺失图表/波形依赖题，最终生成
+  `train.parquet`、`dev.parquet`、`manifest.json`、`medical_review_queue.jsonl` 和
+  `SHA256SUMS.txt`。
+- 容器内回读验证通过：veRL 八列 schema、split、ID/规范化题干去重均通过；最终保留 train
+  1,789 条、dev 199 条，与当前正式 train 1,494 + dev 197 无规范化题干重叠；Qwen2.5-3B
+  tokenizer 为 116–297 tokens。
+- 答案沿用官方 Ground-True Answer，没有自行改写；本轮文本-only 审查完成，可进入 RL，
+  但不是执业医生的独立临床标注，RL 结果不得解释为临床能力。
+
+## 2026-09-09：扩充数据合并
+
+- 已将审查后的 expansion train 1,789 条、dev 199 条合并到正式 RL 数据；当前正式数据为
+  train 3,283 条、dev 396 条，总计 3,679 条。
+- 合并前 1,494/197 parquet 已备份到 `MedSearch/data/rl/pre_expansion_backup_20260909/`，
+  合并校验和记录在 `MedSearch/data/rl/MERGE_MANIFEST_20260909.json`。
+- 合并前不再继续挑选几千条：先用 20、50、200 steps 逐级观察 reward 方差、有效组比例、
+  dev-32 和显存/延迟；只有发现题目覆盖或有效组比例不足，才从剩余源池按同一规则扩充。
+
 > 更早的逐日过程、已撤回方案和详细实验配置由 Git 历史、各子项目 README 与 `experiments/` 保留；本文件只维护当前有效状态。
+
+
+## 2026-09-10：V4修复后42步效果审计
+
+- 审计全部42步：2688条导出中剔除1961条padding，727条有效轨迹，奖励命中66/727=9.08%；旧V2前42步为257/2688=9.56%，筛选与题目不同，不作因果比较。
+- 非法动作提示率3.44%，强制作答提示率4.26%；格式交互改善，但不能等同搜索能力提升。
+- 每步有效轨迹9–32条，导出同题组均不足8条；不能视为完整8×8实验。初始dev仅保存20/64条，命中3条；无训练后dev结果。
+- 未启动训练、未排查终止报错。完整结论与口径：`MedSearch/docs/audits/2026-09-10-v4-42step-analysis.md`。
+
+## 2026-09-11：dev 抽样比较 wiki 与 textbook BM25
+
+- 从冻结 MedSearch/data/rl/dev.parquet 的 396 条题中，用 seed=20260911 固定抽取 20 条；两库均以原题做 BM25 topk=5，完整返回保存在 MedSearch/outputs/corpus_comparison/dev20_top5.json，口径与结论见同目录 README.md。
+- textbook 语料约 125,847 个医学片段、18 本书；wiki 索引约 2,101.5 万篇。答案词元 Top-5 命中为 textbook 5/20、wiki 6/20，Top-1 任一答案词元命中为 textbook 8/20、wiki 11/20；该指标只作词面代理，不能宣称医学正确性。
+- 快速人工审阅显示 textbook 在尿-阴道瘘、Wernicke 脑病、腹泻补液、食管下括约肌失弛缓等题上提供了更直接的医学关系；wiki 在胸锁乳突肌、上臀神经、血吸虫病等同名实体题上更集中。当前决定 textbook 继续作为 MedSearch 主库，wiki 作为独立 fallback/补充库，不直接混建单一 BM25 索引。
+
+
+## 2026-09-16：MedAgent DSH 工程与实验文档同步
+
+- 当前推进 MedAgent 工程设计：已统一项目书、逐文件函数规划、README、实验计划与状态清单；历史工程书保留在 `MedAgent/docs/history/`。
+- 依据现有报告，DSH 单 Planner 假服务链路通过；本轮未重跑 smoke，未调用付费 API，未编写正式业务代码。
+- 当前唯一编码任务：学生实现最小 RoleRunner，并通过实际假服务抓包检查 Planner/Verifier 上下文隔离；详细依赖和后续 P0～P6 顺序见 `MedAgent/ENGINEERING_PLAN_V1_V2.md`。
+- V2 保持 200 题构建、每 10 题离线维护、最多 100 条活跃记忆；冻结快照后比较有/无记忆，数据实际数量与隔离仍待核验。
+- 本次为文档更新，无准确率、费用或显存实测结果。
+
+## 2026-09-16：新增 MedAgent 工程进度书
+
+- 新建 `MedAgent/PROGRESS.md`，与设计书和实验状态分工：设计书记录计划，工程进度书只记录有代码、命令、日志或抓包证据的完成项，实验指标仍由 `refine-logs/EXPERIMENT_TRACKER.md` 维护。
+- 已记录 P0 的固定 DSH 版本、本地 Node runtime、单 Planner 回复链路、配置安全边界及未验证项；README 已加入阅读入口。
+- 根据固定版本源码补充 DSH 回复机制：Python SDK 以 stdio JSON-RPC 驱动本地 DSH 子进程，DSH 请求 DeepSeek chat-completions 并解析 SSE，SDK按 session 聚合事件，在 `session.status=idle` 后提取最终文本与 `turn/end`。
+- 当前唯一任务不变：学生实现正式 `RoleRunner`，用实际抓包验收 Planner/Verifier 上下文隔离。

@@ -33,6 +33,11 @@ from verl.trainer.ppo.ray_trainer import RayPPOTrainer
 import re
 import numpy as np
 
+
+def _should_create_reference_policy(config) -> bool:
+    """Reference logits are needed for training KL, not validation-only rollout."""
+    return not config.trainer.get('val_only', False)
+
 def _select_rm_score_fn(data_source):
     """按数据来源返回对应的规则打分函数。
 
@@ -234,6 +239,13 @@ def main_task(config):
         Role.Critic: global_pool_id,
         Role.RefPolicy: global_pool_id,
     }
+
+    # Validation only generates trajectories and computes rule rewards. It never
+    # calls compute_ref_log_prob(), so loading a second 3B reference model wastes
+    # enough GPU memory to prevent vLLM from waking on a single 32 GiB card.
+    if not _should_create_reference_policy(config):
+        role_worker_mapping.pop(Role.RefPolicy)
+        mapping.pop(Role.RefPolicy)
 
     # we should adopt a multi-source reward function here
     # - for rule-based rm, we directly call a reward score
