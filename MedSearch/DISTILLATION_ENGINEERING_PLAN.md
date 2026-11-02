@@ -2,6 +2,18 @@
 
 日期：2026-09-20。状态：工程蓝图；具体实施进度以当前代码和审计记录为准。
 
+2026-10-23 最新状态：run_failure_teacher_phase调度复验通过；辅助distillation/teacher_process.py与真实7B短生命周期进程通过。2条合成轨迹518 token，含4096＋500评分形状，BF16冻结，峰值allocated16.126GiB，进程退出0后显存回到评分前；联合CPU测试28 passed。详情docs/audits/teacher_process_acceptance_20261023.md。没有启动真实学生/Ray/FSDP，P6仍待V1的TransferQueue桥接与_step_once调用、actor loss装配及字段传递。当前唯一学生任务为_compute_failure_teacher_scores(self,batch,score_fn)；用户负责核心代码，辅助进程已由主对话完成。下文旧拟建接口以当前实际函数签名为准。
+
+2026-10-21 最新状态：P5真实纯GRPO单步、checkpoint保存、原生resume及一题搜索→答案推理通过，训练/最终重载均退出0。两条训练轨迹均reward=-1，组优势和梯度为0、LoRA参数未改变；这是运行闭环验收，不是非零学习效果。保存频率1；单卡NO_SHARD重载所需CPU暂存补丁保存在patches/verl_fsdp_checkpoint_cpu_load.patch。报告docs/audits/grpo_p5_acceptance_20261021.md，机器证据outputs/distillation/grpo_p5_20261021/P5_ACCEPTANCE.json。P6仍待实现V1循环的串行冻结教师评分、字段传递和actor合并loss接线；已有辅助函数不代表真实训练已调用。以下日期记录保留历史状态。
+
+2026-10-14 实际进度：冷启动已定稿 CE epoch3（checkpoint375）与 CE+Top32 epoch8（checkpoint1000），索引见 `outputs/distillation/FINALIZED_SFT_CHECKPOINTS.json`。按用户授权清除其他本轮SFT权重与非选中版本完整rollout，保留评分、配置、日志和报告。P5入口已配置原生 `model.lora_adapter_path`，两版Hydra配置解析通过；实际Ray/FSDP/vLLM单步、RL checkpoint重载尚未验收。RL输入读取当前正式发布指针，预检时correction04共164题，旧5756题池不作本次默认入口。失败评分、回填、OPD及合并loss函数已有，尚未接入上游训练循环。回到RL后当前唯一学生编码任务是§5 reward契约的第一步：在 `MedSearchAgentLoop.run` 输出被动作解析器接受的 `final_answer`；之后接通reward消费并完成P5。下文“拟建/尚不存在”的描述保留为初稿历史，不代表当前实现状态。
+
+2026-10-14 后续更新：用户授权主对话完成Search-R1动作解析本土化及loop final_answer输出，WSL相关测试16项通过。辅助launcher改用veRL原生naive reward manager，已验收其tool_extra_fields→extra_info传递，无上游补丁；GRPO与不滤全错组配置保持原样。当前唯一学生任务是compute_verifier_outcome_reward读取final_answer，P5真实GPU更新及RL checkpoint保存/重载/动作推理仍待验收。详见docs/audits/rl_next_task_20261014.md；上段loop字段任务为本次更新前状态。
+
+2026-10-20 更新：用户完成reward读取final_answer，实际veRL manager与临时本地HTTP验收通过，相关17项测试通过；当前进入P5单步，不将其视为已完成。首次真实启动发现ppo_mini_batch_size按题数计，辅助脚本修正为1，V1更新阶段乘n=2后仍为两条轨迹。报告docs/audits/reward_acceptance_20261020.md；较长训练仍须等待RL checkpoint保存/重载/动作推理验收。
+
+2026-10-20 资源状态补充：用户说明同卡脑电模型正在训练，主对话已终止本次GRPO driver，未触碰其他训练。P5已加载基座/定稿adapter并建立FSDP，但rollout、更新、保存/重载仍未验收。小并发下KV比例预算仍初始化失败；脚本512MiB显式KV配置未在停止前验收。待GPU资源合适时继续，无定时重试。
+
 2026-09-29 更新：旧 Stage A/B SFT 路线已退役，相关编码、配置和专属数据已清理。当前离线冷启动只使用 `search_distill` 教师轨迹；下文 A/B 表示蒸馏实验档位，不表示旧 SFT Stage A/B。
 
 方法决策以 [DISTILLATION_PLAN.md](DISTILLATION_PLAN.md) 为准。本文件回答“复用什么、改哪里、每个文件写什么、怎么验收”。本轮只创建文档；下列标为新增的代码文件尚不存在，函数名是拟定接口，不是已实现 API。下游 Agent 应逐项指导学生编码，不能一次生成全套工程。
@@ -20,7 +32,7 @@
 
 | 文件/组件 | 处理 | 原因及边界 |
 |---|---|---|
-| `rl/protocol.py` 的 `parse_action()` | 直接复用 | 已检查闭合标签、唯一动作、空内容和尾随文本；不再写一个解析器 |
+| `rl/protocol.py` 的 `parse_action()` | 复用本地入口 | 2026-10-14按用户要求本土化Search-R1首个完整动作提取；保留非空检查，忽略动作外文字，不要求唯一标签；无跨仓库运行依赖 |
 | `rl/retriever_client.py`、现有 BM25 服务及索引 | 复用 | 固定当前实际服务、语料和 top-k；保留检索来源，不更换检索方案 |
 | `tools/run_cpu_verifier_server.py` | 复用，补输入验收 | 当前 CPU BF16、`/verify` 接口已有；验证长答案截断及空 references，不新增 GPU verifier |
 | `rl/reward.py` | 小改 | 保留 verifier 阈值及正确性奖励；改为读取模型最终动作，区别环境异常与答错 |
@@ -163,6 +175,7 @@ MedSearch/
 
 - `forward_topk_loss(student_logits, teacher_cache, target_mask)`：用当前 veRL `fsdp/losses.py` 中的全词表 logsumexp/gather 与 KL helper，补 dense batch/位置适配；同时复现上层 `forward_kl_topk` 的 clamp 等实际行为。保持 T=1；不发明尾部处理。
 - `failure_opd_loss(model_output, data, config)`：在原 batch 上计算独立失败蒸馏项，不能覆盖 GRPO response_mask。优先复用 veRL sampled reverse-KL estimator + policy-gradient loss 路径，独立加入 GRPO loss。
+  - 2026-10-07 当前单项编码任务先实现二维张量核心 `failure_opd_loss(student_log_probs, old_log_probs, teacher_logprobs, response_mask, opd_mask, config)`，返回 `(loss, metrics)`；后续在 actor wrapper 中适配 model_output/TensorDict。首版使用 `kl_penalty(..., kl_penalty="k1")`，将负 KL detach 后按 opd_mask 置零，调用 `compute_policy_loss_vanilla`，传原 response_mask 与 `seq-mean-token-mean`；成功轨迹仍计入有效序列分母、padding 不计入。无 OPD 位置直接返回带学生计算图的零损失。全局有效序列数由后续 microbatch 接线提供，不使用失败条数；OPD 系数在合并 loss 时添加。本任务不启用原生教师管理器、不改原 GRPO loss。
 - `grpo_with_failure_opd_loss(...)`：调用原 `ppo_loss` 获得任务项，追加 `opd_coef * opd_loss`，分别返回日志；系数为零时不要求任何教师数据。
 
 **在线实现前必须写清数学定义**：本地 veRL estimator 读取当前 student logprob，PG 路径会 detach 蒸馏 advantage，再通过策略概率比与 clipping 求导。它不是直接对固定采样 token 的 logp-logq 求均值反传，也不自动等于 DGPO。首版建议采用该现成 PG 形式，独立 OPD clipping/归一化明确记录；不把 teacher KL 混入医学正确性 reward，不把两个 advantage 合并后假定等价。
@@ -179,16 +192,16 @@ MedSearch/
 
 ### `rl/distillation_hook.py` 与版本锁定补丁
 
-- `build_failure_batch(batch, reward_info)`：从完整已评分批次取有效失败项，保留 group_id、trajectory_id 和原始索引；不改变 GRPO 组组成。
+- `build_failure_batch(batch_meta, data)`：从完整已评分批次取有效失败项，保留 group_id、trajectory_id 和原始索引；不改变 GRPO 组组成。2026-10-01 按实际 V1 接口明确：`batch_meta` 是 `KVBatchMeta`，`data` 是按其 keys 顺序从 TransferQueue 读取的 TensorDict，包含 `uid/prompts/responses/response_mask/extra_fields`；失败读取 `extra_fields.reward_extra_info.acc == 0`，跳过 tag 中 `is_padding=True` 的合成项。有效样本缺少 acc 应报错，不能默认为失败。输出只携带身份与评分 token，不携带 gold。
 - `score_failed_batch(batch, config)`：无失败直接返回；有失败则写评分输入、调用教师进程、验证结果并散射回原 batch。
 - `prepare_teacher_phase(runtime)` / `restore_student_phase(runtime)`：封装已核实的 rollout sleep、actor/optimizer offload、模型恢复与权重同步调用；这些是拟建包装函数，不是已经存在的 veRL API。
 - `attach_teacher_scores(batch, scores)`：生成 teacher_logprobs/opd_mask/scored_mask；保留原 response_mask、old_log_probs、advantages。
 
-接入点：`RayPPOTrainer.fit()` 中 rollout 与 reward 完整汇总后、actor 更新前。可以在 `compute_advantage()` 前后接入评分，但只能用原完整组计算优势。teacher 阶段结束后恢复学生，才重算旧概率或更新；同组生成到更新前版本不变。
+接入点（2026-10-01 源码核对）：当前 `trainer.use_v1=true`、`trainer.v1.trainer_mode=sync`，实际在 `ppo/v1/trainer_base.py`，以 `_balance_batch` 之后、`_compute_old_log_prob` 之前作为批次教师 hook 候选位置；此时 reward 已完成，顺序与 padding 已确定。教师阶段结束后恢复学生，才重算旧概率或更新；同组生成到更新前版本不变。原文 `RayPPOTrainer.fit()` 是旧路径示意，不作为当前修改位置。
 
 上游最小改动清单：
 
-1. `verl/trainer/ppo/ray_trainer.py`：可选调用评分 hook；关闭此模式时走原路径。
+1. `verl/trainer/ppo/v1/trainer_base.py`：可选调用评分 hook；关闭此模式时走原路径。当前不修改旧 `ray_trainer.py`。
 2. `verl/workers/engine_workers.py`：在实际 actor loss 装配处选择项目 loss（本地已有 `set_loss_fn`，先验证初始化后不会被覆盖）。
 3. batch → TensorDict、microbatch 切分/设备转移链路：确保新增分数字段保留，不因字段白名单被丢弃。
 

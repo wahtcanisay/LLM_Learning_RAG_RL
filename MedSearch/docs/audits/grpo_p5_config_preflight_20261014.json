@@ -1,0 +1,20 @@
+[
+  {
+    "variant": "top32",
+    "base_model": "/workspace/code_list/some tricks/LLMLeanring/models/Qwen2.5-3B-Instruct",
+    "adapter": "/workspace/code_list/some tricks/LLMLeanring/MedSearch/outputs/distillation/sft_epoch_comparison_20261013/training/checkpoint-1000",
+    "rl_rows": 164,
+    "rl_publication": "rl_20261014_targeted_review_correction04",
+    "status": "config_passed",
+    "gpu_training_executed": false
+  },
+  {
+    "variant": "ce",
+    "base_model": "/workspace/code_list/some tricks/LLMLeanring/models/Qwen2.5-3B-Instruct",
+    "adapter": "/workspace/code_list/some tricks/LLMLeanring/MedSearch/outputs/distillation/sft_ce_epoch_comparison_20261013/training/checkpoint-375",
+    "rl_rows": 164,
+    "rl_publication": "rl_20261014_targeted_review_correction04",
+    "status": "config_passed",
+    "gpu_training_executed": false
+  }
+]

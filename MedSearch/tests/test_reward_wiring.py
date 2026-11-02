@@ -13,7 +13,7 @@ REWARD_PATH = ROOT / "MedSearch" / "rl" / "reward.py"
 sys.path.insert(0, str(VERL_ROOT))
 
 from verl import DataProto
-from verl.trainer.ppo.reward import get_custom_reward_fn, load_reward_manager
+from verl.trainer.ppo.reward import get_custom_reward_fn, load_reward_manager, resolve_reward_manager_cls
 
 
 class _Tokenizer:
@@ -81,3 +81,77 @@ def test_dapo_reward_manager_preserves_score_and_acc():
         "reward_score": 1,
         "reward_extra_info": {"score": 1, "acc": 1},
     }
+
+
+def test_grpo_launcher_manager_forwards_final_answer_to_callback():
+    import re
+
+    launcher = (ROOT / "MedSearch/scripts/run_medsearch_grpo_distill.sh").read_text(encoding="utf-8")
+    config = _config()
+    config.reward.reward_manager.name = re.search(r"reward\.reward_manager\.name=(\w+)", launcher).group(1)
+
+    async def run():
+        seen = []
+
+        async def score(data_source, solution_str, ground_truth, extra_info):
+            assert extra_info["source_note"] == "preserved"
+            answer = extra_info["final_answer"]
+            seen.append(answer)
+            acc = int(answer == "Beijing")
+            return {"score": 2 * acc - 1, "acc": acc}
+
+        manager = resolve_reward_manager_cls(config)(
+            config, _Tokenizer("<information><answer>Shanghai</answer></information>"), score,
+        )
+        for answer, expected in [("Beijing", 1), (None, -1)]:
+            data = _data()
+            data.non_tensor_batch["extra_info"] = np.array([{"source_note": "preserved"}], dtype=object)
+            data.non_tensor_batch["tool_extra_fields"] = np.array([{"final_answer": answer}], dtype=object)
+            result = await manager.run_single(data)
+            assert result["reward_score"] == expected
+            assert result["reward_extra_info"]["acc"] == int(expected == 1)
+        assert seen == ["Beijing", None]
+
+    asyncio.run(run())
+
+
+def test_verifier_reward_uses_only_final_answer_over_http(monkeypatch):
+    from aiohttp import web
+    from aiohttp.test_utils import TestServer
+
+    async def run():
+        requests = []
+
+        async def verify(request):
+            requests.append(await request.json())
+            return web.json_response({"prob": 0.9})
+
+        app = web.Application()
+        app.router.add_post("/verify", verify)
+        async with TestServer(app) as server:
+            monkeypatch.setenv("MEDSEARCH_VERIFIER_URL", str(server.make_url("/verify")))
+            config = _config()
+            config.reward.reward_manager.name = "naive"
+            config.reward.custom_reward_function.name = "compute_verifier_outcome_reward"
+            manager = load_reward_manager(
+                config,
+                _Tokenizer("<information><answer>Beijing</answer></information><answer>Shanghai</answer>"),
+            )
+            for answer in [None, "", "Beijing"]:
+                data = _data()
+                data.non_tensor_batch["tool_extra_fields"] = np.array([{"final_answer": answer}], dtype=object)
+                result = await manager.run_single(data)
+                if not answer:
+                    assert requests == []
+                    assert result == {
+                        "reward_score": -1,
+                        "reward_extra_info": {"score": -1, "acc": 0, "verifier_prob": 0.0},
+                    }
+                else:
+                    assert requests == [{"answer": "Beijing", "references": ["Beijing"]}]
+                    assert result == {
+                        "reward_score": 1,
+                        "reward_extra_info": {"score": 1, "acc": 1, "verifier_prob": 0.9},
+                    }
+
+    asyncio.run(run())

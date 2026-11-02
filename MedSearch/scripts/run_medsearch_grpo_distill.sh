@@ -5,8 +5,30 @@ set -euo pipefail  # 遇到错误、未定义变量或管道失败立即退出�
 # ===== 项目与数据路径 =====
 ROOT="/workspace/code_list/some tricks/LLMLeanring"  # 容器内项目根目录。
 VERL_DIR="$ROOT/MedSearch/.deps/verl"  # 固定的 veRL 源码目录。
-MODEL_DIR="${MEDSEARCH_STUDENT_MODEL:?Set MEDSEARCH_STUDENT_MODEL to the audited cold-start checkpoint}"  # 不用基础模型冒充冷启动起点。
-TRAIN_FILE="$ROOT/MedSearch/data/distillation/pools_v2_20260926_devclean/rl_train.parquet"
+SFT_VARIANT="${MEDSEARCH_SFT_VARIANT:-top32}"  # top32=8轮，ce=3轮；两版使用同一入口。
+INPUT_PATHS="$(python - "$ROOT" "$SFT_VARIANT" <<'PY'
+import hashlib
+import json
+import sys
+from pathlib import Path
+root=Path(sys.argv[1])
+final=json.loads((root/'MedSearch/outputs/distillation/FINALIZED_SFT_CHECKPOINTS.json').read_text())
+assert final['status']=='finalized'
+variant=final['variants'][sys.argv[2]]
+adapter=root/variant['checkpoint_path']
+assert hashlib.sha256((adapter/'adapter_model.safetensors').read_bytes()).hexdigest()==variant['adapter_sha256']
+release=json.loads((root/'MedSearch/data/cleaning_v2/CURRENT_RL_RELEASE.json').read_text())
+assert release['training_ready'] is True
+train=root/release['path']
+assert hashlib.sha256(train.read_bytes()).hexdigest()==release['sha256']
+for path in [root/final['base_model_path'],adapter,train]:
+    print(path)
+PY
+)"
+mapfile -t INPUTS <<< "$INPUT_PATHS"
+MODEL_DIR="${INPUTS[0]}"  # 原始3B基座与训练好的adapter分开加载。
+ADAPTER_DIR="${INPUTS[1]}"
+TRAIN_FILE="${INPUTS[2]}"  # 读取当前正式RL发布，避免误用旧5756题训练池。
 DEV_FILE="$ROOT/MedSearch/data/distillation/pools_v2_20260926_devclean/dev.parquet"
 AGENT_CONFIG="$ROOT/MedSearch/configs/medsearch_agent_v9.yaml"  # 自定义 AgentLoop：BM25、top-k、工具轮数等。
 REWARD_PATH="$ROOT/MedSearch/rl/reward.py"  # reward 回调；当前使用 3B verifier。
@@ -38,6 +60,8 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True  # 降低长时间训练
   printf "git_commit="  # 记录代码版本。
   git -C "$ROOT" rev-parse HEAD
   printf "training_steps=%s\nstudent_checkpoint=%s\n" "$TRAINING_STEPS" "$MODEL_DIR"
+  printf "sft_variant=%s\nsft_adapter=%s\n" "$SFT_VARIANT" "$ADAPTER_DIR"
+  sha256sum "$ADAPTER_DIR/adapter_model.safetensors" "$ROOT/MedSearch/data/cleaning_v2/CURRENT_RL_RELEASE.json"
   sha256sum "$0" "$AGENT_CONFIG" "$REWARD_PATH" "$TRAIN_FILE" "$DEV_FILE"  # 固化脚本、Agent、reward 与数据哈希。
 } > "$RUN_DIR/run_manifest.txt"
 
@@ -67,6 +91,9 @@ TRAIN_ARGS=(
   data.seed=42
   # actor、rollout 与冻结 reference 共用的基础模型。
   actor_rollout_ref.model.path="$MODEL_DIR"
+  # veRL FSDP原生加载训练好的LoRA，保留为可训练参数。
+  actor_rollout_ref.model.lora_adapter_path="$ADAPTER_DIR"
+  actor_rollout_ref.model.target_modules='[q_proj,v_proj]'
   # LoRA rank；越大可训练容量越强，也更占显存。
   actor_rollout_ref.model.lora_rank=8
   # LoRA 缩放；有效缩放为 alpha/rank=2。
@@ -79,8 +106,8 @@ TRAIN_ARGS=(
   actor_rollout_ref.actor.strategy=fsdp
   # 将部分 actor 参数状态卸载到 CPU，适配 32GB 显存。
   actor_rollout_ref.actor.fsdp_config.param_offload=true
-  # 一个 mini-batch 的 rollout 数。
-  actor_rollout_ref.actor.ppo_mini_batch_size=2
+  # 一个mini-batch的题数；V1训练器会乘rollout.n，实际处理两条轨迹。
+  actor_rollout_ref.actor.ppo_mini_batch_size=1
   # 单卡一次反传处理 1 条 rollout，控制显存峰值。
   actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=1
   # reference log-prob 的单卡微批大小。
@@ -99,8 +126,14 @@ TRAIN_ARGS=(
   actor_rollout_ref.rollout.name=vllm
   # 单卡推理，不做 tensor parallel。
   actor_rollout_ref.rollout.tensor_model_parallel_size=1
-  # rollout 进程最多预留约 30% 显存，给 FSDP actor 留空间。
+  # vLLM启动比例设置；下方显式KV大小决定缓存预算，并非进程显存硬上限。
   actor_rollout_ref.rollout.gpu_memory_utilization=0.30
+  # 单题双轨迹smoke无需默认1024并发；小prefill批次保留完整轨迹长度。
+  actor_rollout_ref.rollout.max_num_seqs=2
+  actor_rollout_ref.rollout.max_num_batched_tokens=2048
+  actor_rollout_ref.rollout.enforce_eager=true
+  # 多进程共卡时避免比例profile将actor占用扣入cache预算；512MiB用于本次双轨迹smoke。
+  +actor_rollout_ref.rollout.engine_kwargs.vllm.kv_cache_memory_bytes=536870912
   # rollout 最大上下文；512 prompt + 4096 response 的上界。
   actor_rollout_ref.rollout.max_model_len=4608
   # smoke 每题两条轨迹；正式预算待实际吞吐验收。
@@ -127,8 +160,8 @@ TRAIN_ARGS=(
   reward.num_workers=1
   # 不启用 veRL 内建 reward model，避免与自定义 verifier 重复。
   reward.reward_model.enable=false
-  # reward manager 负责汇总；是否过滤由 filter_groups.enable 决定。
-  reward.reward_manager.name=dapo
+  # 原生naive manager把AgentLoop extra_fields传给reward；组过滤另由algorithm配置。
+  reward.reward_manager.name=naive
   # 每个节点使用 1 张 GPU。
   trainer.n_gpus_per_node=1
   trainer.use_v1=true
@@ -174,5 +207,5 @@ TRAIN_ARGS=(
   transfer_queue.backend.SimpleStorage.num_data_storage_units=1
 )
 
-python -m verl.trainer.main_ppo "${TRAIN_ARGS[@]}" \
+python -m verl.trainer.main_ppo "${TRAIN_ARGS[@]}" "$@" \
   2>&1 | tee -a "$RUN_DIR/train.log"  # 同时显示并追加保存完整训练日志。

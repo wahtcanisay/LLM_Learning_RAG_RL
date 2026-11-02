@@ -18,7 +18,7 @@ from MedSearch.tools.check_distillation_inputs import _records
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def find_semantic_matches(candidates, history, candidate_ids, history_ids, threshold):
+def find_semantic_matches(candidates, history, candidate_ids, history_ids, threshold, top_k=1):
     """Return unique top-neighbor pairs at or above a cosine threshold."""
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     candidates, history = candidates.to(device), history.to(device)
@@ -26,26 +26,28 @@ def find_semantic_matches(candidates, history, candidate_ids, history_ids, thres
     for start in range(0, len(candidate_ids), 128):
         stop = min(start + 128, len(candidate_ids))
         query = candidates[start:stop]
-        history_scores, history_indices = (query @ history.T).max(dim=1)
+        history_scores, history_indices = (query @ history.T).topk(min(top_k, len(history_ids)), dim=1)
         internal = query @ candidates.T
         internal[torch.arange(stop - start, device=device), torch.arange(start, stop, device=device)] = -float("inf")
-        internal_scores, internal_indices = internal.max(dim=1)
+        internal_scores, internal_indices = internal.topk(min(top_k, len(candidate_ids)), dim=1)
         for offset, index in enumerate(range(start, stop)):
-            if history_scores[offset] >= threshold:
+            for score, other_index in zip(history_scores[offset], history_indices[offset]):
+                if score < threshold: continue
                 matches.append({
                     "kind": "history", "candidate": candidate_ids[index],
-                    "match": history_ids[int(history_indices[offset])],
-                    "cosine": round(float(history_scores[offset]), 6),
+                    "match": history_ids[int(other_index)],
+                    "cosine": round(float(score), 6),
                 })
-            if internal_scores[offset] >= threshold:
-                other = int(internal_indices[offset])
+            for score, other_index in zip(internal_scores[offset], internal_indices[offset]):
+                if score < threshold: continue
+                other = int(other_index)
                 pair = tuple(sorted((index, other)))
                 if pair not in seen_internal:
                     seen_internal.add(pair)
                     matches.append({
                         "kind": "internal", "candidate": candidate_ids[index],
                         "match": candidate_ids[other],
-                        "cosine": round(float(internal_scores[offset]), 6),
+                        "cosine": round(float(score), 6),
                     })
     return matches
 
@@ -74,6 +76,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--threshold", type=float, default=0.92)
     parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--neighbors", type=int, default=1)
     parser.add_argument(
         "--model", type=Path,
         default=ROOT / "MedicalGraphRAG/models/all-mpnet-base-v2",
@@ -88,7 +91,7 @@ def main():
     )
     parser.add_argument("--batch1-history", type=Path)
     args = parser.parse_args()
-    if not 0 < args.threshold <= 1 or args.batch_size <= 0:
+    if not 0 < args.threshold <= 1 or args.batch_size <= 0 or args.neighbors <= 0:
         parser.error("threshold must be in (0,1] and batch-size must be positive")
     boundaries = {
         "rl_train": ROOT / "MedSearch/data/rl/train.parquet",
@@ -113,7 +116,7 @@ def main():
     candidate_vectors = _embeddings(model, tokenizer, candidates, device, args.batch_size)
     history_vectors = _embeddings(model, tokenizer, references, device, args.batch_size)
     del model
-    matches = find_semantic_matches(candidate_vectors, history_vectors, candidate_ids, history_ids, args.threshold)
+    matches = find_semantic_matches(candidate_vectors, history_vectors, candidate_ids, history_ids, args.threshold, args.neighbors)
     candidate_by_id = {row["id"]: row for row in candidates}
     history_by_id = dict(zip(history_ids, references, strict=True))
     for match in matches:
@@ -132,6 +135,7 @@ def main():
         "candidate_rows": len(candidates),
         "reference_rows": len(references),
         "threshold": args.threshold,
+        "neighbors": args.neighbors,
         "model_path": str(args.model),
         "model_sha256": _sha256(args.model / "pytorch_model.bin"),
         "candidate_sha256": _sha256(args.candidate),

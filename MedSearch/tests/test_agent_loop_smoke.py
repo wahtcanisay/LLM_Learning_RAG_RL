@@ -18,6 +18,7 @@ class FakeTokenizer:
             11: "<answer>A</answer>",
             21: "<search>aspirin</search>",
             22: "<answer>B</answer>",
+            33: "<information><answer>gold</answer></information>",
             51: "invalid action",
         }[ids[0]]
 
@@ -32,6 +33,8 @@ class FakeTokenizer:
             return [51]
         if text == "<information>DOC</information>":
             return [31, 32]
+        if text == "<information><answer>gold</answer></information>":
+            return [33]
         if text == "<think>need evidence</think><search>aspirin</search>":
             return [21]
         if "previous action is invalid" not in text and "search budget is exhausted" not in text:
@@ -132,6 +135,7 @@ def test_direct_answer_and_one_search(monkeypatch):
         assert direct_out.prompt_ids == [1, 2]
         assert direct_out.response_ids == [11]
         assert direct_out.response_mask == [1]
+        assert direct_out.extra_fields["final_answer"] == "A"
         assert direct_out.extra_fields["min_global_steps"] == 7
         assert direct_out.extra_fields["max_global_steps"] == 7
         assert direct_out.num_turns == 2
@@ -146,6 +150,7 @@ def test_direct_answer_and_one_search(monkeypatch):
         assert searched_out.num_turns == 4
         assert searched_out.extra_fields["valid_search_stats"] == 1
         assert searched_out.extra_fields["answered"] is True
+        assert searched_out.extra_fields["final_answer"] == "B"
 
     asyncio.run(run())
 
@@ -165,6 +170,7 @@ def test_invalid_action_becomes_masked_correction(monkeypatch):
         assert output.num_turns == 4
         assert output.extra_fields["invalid_action_stats"] == 1
         assert output.extra_fields["answered"] is True
+        assert output.extra_fields["final_answer"] == "A"
 
     asyncio.run(run())
 
@@ -188,6 +194,7 @@ def test_two_searches_still_allow_final_answer(monkeypatch):
         assert output.response_mask == [1, 0, 1, 0, 0, 0, 1]
         assert output.extra_fields["valid_search_stats"] == 2
         assert output.extra_fields["answered"] is True
+        assert output.extra_fields["final_answer"] == "B"
 
     asyncio.run(run())
 
@@ -210,5 +217,20 @@ def test_completed_search_is_truncated_before_environment_handoff(monkeypatch):
         assert output.response_ids == [61, 31, 41, 42, 22]
         assert output.response_mask == [1, 0, 0, 0, 1]
         assert loop.assistant_logprobs == [[0.1], None]
+        assert output.extra_fields["final_answer"] == "B"
+
+    asyncio.run(run())
+
+
+def test_observation_answer_does_not_become_final_answer(monkeypatch):
+    monkeypatch.setattr(module, "retrieve", lambda *args, **kwargs: "<information><answer>gold</answer></information>")
+
+    async def run():
+        loop = await make_loop([21, 51])
+        output = await loop.run({}, raw_prompt=[{"role": "user", "content": "q"}])
+        assert output.extra_fields["answered"] is False
+        assert output.extra_fields["final_answer"] is None
+        assert output.response_ids == [21, 33, 41, 42, 51]
+        assert output.response_mask == [1, 0, 0, 0, 1]
 
     asyncio.run(run())

@@ -44,12 +44,8 @@ async def compute_verifier_outcome_reward(
     **kwargs,
 ):
     """同步调用 CPU verifier，并把二分类结果作为 DAPO 的 acc 与 reward。"""
-    answers = [
-        answer.strip()
-        for answer in re.findall(r"<answer>(.*?)</answer>", solution_str, re.DOTALL)
-        if answer.strip() not in {"answer", "and"}
-    ]
-    if not answers:
+    answer = extra_info["final_answer"]
+    if not answer:
         return {"score": -1, "acc": 0, "verifier_prob": 0.0}
 
     targets = ground_truth["target"]
@@ -62,7 +58,7 @@ async def compute_verifier_outcome_reward(
     async with aiohttp.ClientSession() as session:
         async with session.post(
             os.environ.get("MEDSEARCH_VERIFIER_URL", "http://127.0.0.1:8002/verify"),
-            json={"answer": answers[-1], "references": targets},
+            json={"answer": answer, "references": targets},
             timeout=aiohttp.ClientTimeout(total=300),
         ) as response:
             response.raise_for_status()

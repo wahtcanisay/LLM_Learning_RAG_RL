@@ -173,6 +173,9 @@ def generate_actions(llm, tokenizer, states, response_length, max_model_len, tem
                 top_p=top_p,
                 max_tokens=budget,
                 seed=seed,
+                # 和后面的 truncate_generated_action 使用相同动作边界。
+                stop=["</search>", "</answer>"],
+                include_stop_str_in_output=True,
             )
             for budget in max_tokens
         ],
@@ -183,8 +186,6 @@ def generate_actions(llm, tokenizer, states, response_length, max_model_len, tem
         generated_ids = list(output.outputs[0].token_ids)
         action_ids, action_text = truncate_generated_action(generated_ids, tokenizer)
         action = parse_action(action_text)
-        if capture and parse_action(tokenizer.decode(action_ids, skip_special_tokens=True)) != action:
-            action = None
         start = len(state.response_ids)
         state.runtime_ids.extend(action_ids)
         state.response_ids.extend(action_ids)
@@ -240,6 +241,8 @@ def run_agent(llm, tokenizer, states, args):
                             "top_k": args.top_k,
                             "observation_sha256": hashlib.sha256(observation.encode("utf-8")).hexdigest(),
                             "document_hashes": [hashlib.sha256(json.dumps(p["document"], sort_keys=True).encode("utf-8")).hexdigest() for p in passages],
+                            "document_ids": [str(p["document"]["id"]) for p in passages],
+                            "raw_response": body,
                         })
                     else:
                         observation = retrieve(action.content, search_url=args.search_url, topk=args.top_k, timeout=30.0)
@@ -253,6 +256,12 @@ def run_agent(llm, tokenizer, states, args):
                     observation, tokenizer, args.observation_length
                 )
                 add_context(state, observation_ids, "observation")
+                if capture:
+                    state.search_records[-1].update(
+                        visible_observation=tokenizer.decode(observation_ids, skip_special_tokens=False),
+                        visible_observation_token_ids=list(observation_ids),
+                        delivered_to_policy=not state.exhausted,
+                    )
                 state.searches += 1
             else:
                 correction_ids = tokenizer.encode(
@@ -494,7 +503,9 @@ def main():
         enforce_eager=True,
         tensor_parallel_size=1,
         max_num_seqs=8,
-        max_num_batched_tokens=8192,
+        max_num_batched_tokens=int(os.environ.get("MEDSEARCH_MAX_NUM_BATCHED_TOKENS", "8192")),
+        kv_cache_memory_bytes=(int(os.environ["MEDSEARCH_KV_CACHE_MEMORY_BYTES"])
+                               if "MEDSEARCH_KV_CACHE_MEMORY_BYTES" in os.environ else None),
     )
     tokenizer = llm.get_tokenizer()
     states = load_states(args.data, tokenizer, args.limit)

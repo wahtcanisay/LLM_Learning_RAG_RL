@@ -137,3 +137,40 @@ def test_export_writes_complete_manifest_and_split_files(monkeypatch, tmp_path):
     assert record["config_hash"] == manifest["config_hash"]
     assert record["tokenizer_hash"] == manifest["config"]["tokenizer_sha256"]
     assert (output / "rejected.jsonl").read_text(encoding="utf-8") == ""
+
+
+def test_protocol_accepts_first_complete_searchr1_action():
+    from MedSearch.rl.protocol import ParsedAction, parse_action
+
+    assert parse_action("Explanation <answer>A</answer>. More text") == ParsedAction("answer", "A")
+    assert parse_action("<search>query</search><answer>B</answer>") == ParsedAction("search", "query")
+    assert parse_action("<answer>A") is None
+    assert parse_action("<answer> </answer>") is None
+
+
+def test_closed_answer_with_same_token_trailing_period_is_accepted(monkeypatch):
+    from pathlib import Path
+    from transformers import AutoTokenizer
+    import MedSearch.tools.evaluate_agent_rollout as rollout
+
+    monkeypatch.setattr(rollout, "SamplingParams", lambda **kwargs: SimpleNamespace(**kwargs))
+    tokenizer = AutoTokenizer.from_pretrained(
+        Path(__file__).resolve().parents[2] / "models/Qwen2.5-3B-Instruct",
+        local_files_only=True,
+    )
+    ids = tokenizer.encode("The organism is <answer>Escherichia coli</answer>.", add_special_tokens=False)
+    assert tokenizer.decode(ids[-1:]) == ">."
+
+    class AnswerLLM:
+        def generate(self, prompts, params, use_tqdm):
+            return [SimpleNamespace(outputs=[SimpleNamespace(token_ids=ids)])]
+
+    state = State("q1", "What?", ["Escherichia coli"], [1, 2], 2)
+    action = generate_actions(
+        AnswerLLM(), tokenizer, [state], 4096, 4608, 0, 1, 42,
+        max_action_length=500, capture=True,
+    )[0][1]
+    assert action is not None and action.kind == "answer"
+    assert state.final_answer == "Escherichia coli"
+    assert state.response_ids == ids
+    assert state.response_mask == [1] * len(ids)

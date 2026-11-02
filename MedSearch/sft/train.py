@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments, set_seed
 
 from .data import SFTDataset, build_data_collator, load_samples
+from .distillation_trainer import DistillationTrainer
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2] # 指向第三个父目录
@@ -235,7 +236,7 @@ def build_trainer(
     train_arg = build_training_arguments(config, project_root)
     if train_arg.gradient_checkpointing:
         model.config.use_cache = False
-    trainer = Trainer(model=model,
+    trainer = DistillationTrainer(model=model,
                       args=train_arg,
                       processing_class=tokenizer, # 模型配套使用的数据处理器，文本模型通常传tokenizer
                       data_collator=dataloader.collate_fn,
@@ -295,7 +296,10 @@ def main(argv: list[str] | None = None) -> None:
     tokenizer = AutoTokenizer.from_pretrained(model_path, local_files_only=True)
     tokenizer.padding_side = "right"
     train_dataloader = build_dataloader(config, tokenizer, split="train")
-    eval_dataloader = build_dataloader(config, tokenizer, split="eval")
+    eval_dataloader = (
+        build_dataloader(config, tokenizer, split="eval")
+        if config["eval_data_path"] is not None else None
+    )
 
     # dtype用于后续加载量化base_model
     dtypes = {

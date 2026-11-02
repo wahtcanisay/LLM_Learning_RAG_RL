@@ -85,6 +85,7 @@ class MedSearchAgentLoop(AgentLoopBase):
         assistant_turns = 0
         invalid_actions = 0
         answered = False
+        final_answer = None
         num_preempted = 0
         min_global_steps = []
         max_global_steps = []
@@ -156,6 +157,7 @@ class MedSearchAgentLoop(AgentLoopBase):
             
             elif cur_action is not None and cur_action.kind == "answer":
                 answered = True
+                final_answer = cur_action.content
                 break
 
             else:
@@ -213,6 +215,7 @@ class MedSearchAgentLoop(AgentLoopBase):
             
             if cur_action is not None and cur_action.kind == "answer":
                 answered = True
+                final_answer = cur_action.content
             
             
         # 合并后的token拆分为prompt和response
@@ -240,6 +243,7 @@ class MedSearchAgentLoop(AgentLoopBase):
                 "valid_search_stats": searches, # 合法搜索次数
                 "invalid_action_stats": invalid_actions, # 非法动作次数，供后续日志或 reward 决策使用
                 "answered": answered,           # 是否给出回答           
+                "final_answer": final_answer,   # 模型提交的最终答案
                 # veRL 用该版本范围诊断 rollout 是否来自当前 actor。
                 "min_global_steps": min(min_global_steps) if min_global_steps else None,
                 "max_global_steps": max(max_global_steps) if max_global_steps else None,
