@@ -264,6 +264,9 @@ commit `23af6a7a2e8d6efeeb2adbe5d1689c7a24f503a3`。本地目录是 `MedSearch/.
 [安装说明](https://verl.readthedocs.io/en/latest/start/install.html) 为准；Search-R1 旧 fork 只用于理解
 BM25 服务语义，不作为新版 veRL API 的依据。
 
+P6 的 V1 教师评分接线以独立补丁提交。固定 commit 上的应用命令、已验证范围和剩余训练验收见
+[V1 教师评分接线验收](docs/audits/v1_teacher_step_acceptance_20261109.md)。
+
 计划文件边界：
 
 ```text

@@ -1,0 +1,61 @@
+diff --git a/verl/trainer/ppo/v1/trainer_base.py b/verl/trainer/ppo/v1/trainer_base.py
+index 4dd52d1..07ba9af 100644
+--- a/verl/trainer/ppo/v1/trainer_base.py
++++ b/verl/trainer/ppo/v1/trainer_base.py
+@@ -559,6 +559,28 @@ class PPOTrainer(ABC):
+         # 3. balance batch across data parallel groups
+         batch = self._balance_batch(batch, metrics=metrics)
+ 
++        # 按配置调用failure_log_prob
++        opd_coef = self.config.trainer.get("opd_coef", 0.0)
++
++        if opd_coef > 0:
++            # 失败trajectory评分
++            from MedSearch.distillation.teacher_process import score_in_subprocess
++
++            # 输出目录
++            output_dir = os.path.join(
++                                    os.path.dirname(self.config.trainer.default_local_dir),
++                                    "teacher_scores",
++                                    )
++
++            # 预填充评分函数的教师路径以及输出目录
++            score_fn = partial(
++                score_in_subprocess,
++                teacher_path=self.config.trainer.teacher_path,
++                output_dir=output_dir,
++            )
++            # failure_logp以及opd_mask加入进入batch当中
++            batch = self._compute_failure_log_prob(batch=batch, score_fn=score_fn)
++
+         # 4. compute old_log_prob
+         with marked_timer("old_log_prob", timing_raw, color="blue"):
+             batch = self._compute_old_log_prob(batch, metrics=metrics)
+@@ -1537,6 +1559,27 @@ class PPOTrainer(ABC):
+         )
+         metrics.update(global_balance_stats)
+         return batch
++    def _compute_failure_log_prob(self, batch:KVBatchMeta, score_fn) -> KVBatchMeta:
++        from MedSearch.rl.distillation_hook import run_failure_teacher_phase
++
++        # TransferQueue 读取当前批次轨迹数据 -> TensorDict
++        data = tq.kv_batch_get(
++            keys = batch.keys,
++            partition_id = batch.partition_id,
++            select_fields=["uid", "prompts", "responses", "response_mask", "extra_fields"],
++        )
++
++        # 调用教师调度, 写回teacher_logprobs和opd_mask结果进入TensorDict
++        data = run_failure_teacher_phase(self, batch, data, score_fn)
++
++        # teacher_logprobs和opd_mask写入TransferQueue
++        tq.kv_batch_put(
++            keys=batch.keys,
++            partition_id = batch.partition_id,
++            fields=data.select("teacher_logprobs", "opd_mask"),
++        )
++
++        return batch
+ 
+     def _compute_old_log_prob(self, batch: KVBatchMeta, metrics: dict) -> KVBatchMeta:
+         """Compute the old log prob of the batch."""
