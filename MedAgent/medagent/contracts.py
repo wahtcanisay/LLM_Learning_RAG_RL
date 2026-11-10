@@ -247,6 +247,7 @@ class SearchResult:
     attempt: workflow 的搜索尝试编号，从 0 开始。
     candidate_answer: 当前候选答案。
     evidence: 本次检索返回的 Evidence，按检索顺序保留原文。
+    context: 模型续写使用的内部上下文，可含 <think>。
     """
 
     attempt: int

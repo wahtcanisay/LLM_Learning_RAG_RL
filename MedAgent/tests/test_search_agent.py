@@ -59,6 +59,26 @@ class SearchAgentLoopTest(unittest.TestCase):
         self.assertEqual(result.candidate_answer, "done")
         self.assertEqual(result.evidence, [first, second])
 
+    def test_search_continuation_is_returned_with_final_action(self):
+        first_action = "<think>first private prefix</think>\n<search> first </search>"
+        second_action = "<think>second private prefix</think>\n<search> second </search>"
+        final_action = "<think>answer prefix</think>\n<answer>done</answer>"
+        agent, task = self.make_agent(
+            [first_action + " ignored tail", second_action, final_action + " ignored tail"],
+            [[Evidence("first passage")], [Evidence("second passage")]],
+        )
+
+        result = agent.run(task)
+
+        first_context = task.query + first_action + "<information>first passage</information>"
+        self.assertEqual(self.contexts[1], first_context)
+        self.assertEqual(
+            self.contexts[2], first_context + second_action + "<information>second passage</information>"
+        )
+        self.assertEqual(self.queries, ["first", "second"])
+        self.assertEqual(result.candidate_answer, "done")
+        self.assertEqual(result.context, self.contexts[2] + final_action)
+
     def test_empty_retrieval_is_explicitly_shown_without_invented_evidence(self):
         agent, task = self.make_agent(
             ["<search>missing</search>", "<answer>uncertain</answer>"],
@@ -90,6 +110,7 @@ class SearchAgentLoopTest(unittest.TestCase):
         self.assertEqual(result.candidate_answer, "")
         self.assertEqual(self.queries, ["first", "second"])
         self.assertEqual(len(self.contexts), 3)
+        self.assertEqual(result.context, self.contexts[2])
 
     def test_retrieval_failure_is_not_reported_as_an_empty_answer(self):
         agent, task = self.make_agent(["<search>first</search>"], [TimeoutError("service timed out")])

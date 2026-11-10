@@ -367,7 +367,7 @@ Verifier 不能只做主观语言评分，Schema、实际可见内容边界、�
 
 ## 十五、当前唯一任务
 
-P3-c 的 SearchAgent.run 基本 fake 循环已验；初始模型上下文只用 query，不把原题/反馈拼入。下一步核实本地 3B 单动作服务的真实请求/响应、模板、stop 和 checkpoint，接入真正的 `request_action`；回填限长与精确可见片段在真实模板明确后验收。可加载 checkpoint 与真实服务仍是外部未完成依赖。P3-a 的 Evidence 规范化与 P3-b 的只读检索假响应检查已通过；真实 BM25 端点只读请求待服务可用时记录，不用付费 API 替代。
+P3-c 的 SearchAgent.run 基本 fake 循环和续写上下文已验。开发权重为 Qwen2.5-3B-Instruct + Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用验收后的 RL+OPD 权重。初始业务输入只用 query，原题和反馈留在外层任务。当前任务是接入真实 SFT 单动作请求并核对模板、闭标签和续写 token 边界。真实 BM25 待接线验收。详见[工程进度书](PROGRESS.md)。
 
 现有 RoleRunner、fake 闭环和 trace 不重写。正式 DSH 双角色抓包、错误与挂起清理仍是后续真实角色集成准入，完整 workflow 等实际分支具备后再编码。付费前提醒并完成额度边界；V1 冻结之前不开始 200 题记忆构建。
 

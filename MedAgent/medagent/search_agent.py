@@ -14,7 +14,7 @@ from .contracts import (Usage,
                         SearchResult,
                         )
 from .retrieval import retrieve
-from MedSearch.rl.protocol import parse_action
+from MedSearch.rl.protocol import ACTION_PATTERN, parse_action
 
 
 @dataclass(frozen=True)
@@ -43,46 +43,34 @@ class SearchAgent:
             max_tries: int = 3) -> SearchResult:
 
         evidence_list = []
+        # 模型续写与内部 SearchResult 共用同一份上下文，可含 <think>。
         context = task.query
-        
 
         for step in range(max_tries):
             response = self.request_action(context)
-            cur_action = parse_action(response.text)    
-            if cur_action is not None and cur_action.kind == "search":
-
-                if step == max_tries - 1:
-                    # 最后一次禁止搜索
-                    break 
-
-                evidence = self.retrieve(
-                    cur_action.content,
-                    self.retrieve_config,
-                    self.retrieve_timeout_s,
-                    top_k=3,
-                )
-
-                
-                evidence_list.extend(evidence)
-
-                information = ("\n".join(item.text for item in evidence)
-                               if evidence
-                               else "No results.")
-
-                context += "<search>" + cur_action.content.strip() + "</search>" + "\n"
-                context += "<information>" + information.strip() + "</information>"
-
-            elif cur_action is not None and cur_action.kind == "answer":
-
-                context += "<answer>" + cur_action.content.strip() + "</answer>"
-                return SearchResult(
-                    task.attempt,
-                    cur_action.content,
-                    evidence_list,
-                    context
-                )
-            elif cur_action is None:
+            cur_action = parse_action(response.text)
+            if cur_action is None:
                 break
+            if cur_action.kind == "search" and step == max_tries - 1:
+                break
+
+            # 用与 parse_action 相同的规则定位闭标签，保留前面的生成文本。
+            action_match = ACTION_PATTERN.search(response.text)
+            assert action_match is not None
+            context += response.text[:action_match.end()] # 拼接当前动作
+            if cur_action.kind == "answer":
+                return SearchResult(task.attempt, cur_action.content, evidence_list, context)
+            # 检索动作
+            evidence = self.retrieve(
+                cur_action.content,
+                self.retrieve_config,
+                self.retrieve_timeout_s,
+                top_k=3,
+            )
+            evidence_list.extend(evidence)
+            # information清洗
+            information = "\n".join(item.text for item in evidence) if evidence else "No results."
+            context += "<information>" + information.strip() + "</information>" # 检索得到information拼接
 
         return SearchResult(
             task.attempt,

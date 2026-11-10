@@ -12,8 +12,8 @@
 
 ## 当前状态与唯一任务
 
-2026-09-26：已有 RoleRunner fake 边界、Plan 契约、有限 Search→Verify→Retry、trace、Evidence 和 retrieval；具体 SearchAgent 基本 fake 循环通过 6 项测试。最近普通回归 65 项通过。真实 DSH 多角色隔离、错误清理、本地 3B/BM25 和完整三路由尚未验收，未调用付费 API。
-当前 P3 的下一任务：核实真实单动作请求/响应与模板、stop、checkpoint；模型初始上下文只用 query，原题和反馈留在外层任务。Evidence 规范化、只读检索假响应及基本 SearchAgent 循环已验；真实 BM25 请求仍待服务可用时记录。精确可见片段与留档待真实接线时验收，具体边界见工程书第 4.4 节，不调用付费 API。
+2026-09-26：已有 RoleRunner fake 边界、Plan 契约、有限 Search→Verify→Retry、trace、Evidence 和 retrieval。真实 DSH 多角色隔离、错误清理和完整三路由尚未验收。
+2026-11-10：P3-c 的搜索续写已通过 CPU 回放，66 项普通回归通过。开发用 Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用训练完成的 RL+OPD 权重。当前任务是接真实 SFT 单动作请求，真实模型和 BM25 接线待验收。见 [工程进度书](PROGRESS.md) 与 [工程书 §4.4](ENGINEERING_PLAN_V1_V2.md#44-search_agentpysearchagent-单一实现)。
 
 现有 `dsh_smoke/` 是验证资产，`medagent/` 是已开始实现的正式包。不要照旧src/medagent方案创建第二个包；按任务逐步建文件。UPSTREAM.lock固定源码SDK/runtime版本，不能假定该版本有可直接pip安装的发行包。
 

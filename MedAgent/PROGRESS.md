@@ -4,11 +4,12 @@
 
 ## 当前状态
 
-- 当前阶段：P3-c——具体 SearchAgent 已有初步动作循环；下一步补循环 fake 验收与输入/回填缺口，再接真实 3B 单动作服务。
+- 当前阶段：P3-c，继续 SearchAgent 接线。开发占位默认用 `Qwen2.5-3B-Instruct` + Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用之后产出的 RL+OPD 权重。权重由调用方指定，接线共用。
+- 当前唯一编码任务是接入真实 SFT 单动作请求。搜索续写的字符串边界已通过 CPU 回放。用 Top32 SFT 做单题验收时，核对首次 chat template、闭标签 stop 和下一轮助手续写的 token 边界。
 - 已完成：固定 DSH 版本、本地开发 runtime、单 Planner smoke、RoleRunner fake backend 边界、Plan/SafetyResult 契约、fake Search → Verify → Retry 闭环。
 - 后续集成项：真实 DSH 双角色抓包、错误/挂起行为与线程清理；不在本次单元验收中冒充完成。
 - 付费状态：尚未调用真实 DeepSeek API；接入真实凭据前必须提醒用户。
-- 2026-09-26 验收：Evidence + normalize_evidence 和 retrieve 假响应检查已完成；普通回归最近为 65 项，其中 6 项覆盖具体 SearchAgent.run 的 fake 控制流。当前无传输自动重试、无动作纠错实现要求，语义返工仍最多一次。
+- Evidence 规范化和 retrieve 假响应已验收。2026-11-10 普通回归共 66 项通过，其中 7 项覆盖具体 SearchAgent.run 的 fake 控制流。语义返工最多一次。
 
 ## 总进度
 
@@ -30,6 +31,14 @@
 | P4～P6 | evaluation、V1/V2 实验 | 未开始 | 见工程架构书与实验书 |
 
 ## 已完成记录
+
+### 2026-11-10：SFT 权重核验与 P3-c CPU 回放
+
+- `FINALIZED_SFT_CHECKPOINTS.json` 的 Top32 项指向 `MedSearch/outputs/distillation/sft_epoch_comparison_20261013/training/checkpoint-1000`。Windows 用 `certutil -hashfile` 回读 adapter 和 config，均与清单一致。adapter SHA256 为 `8f51a6a6929e1d3292d8e2fcaa98269013a23968e966bc3ce1a3067c0c2e5144`，本地基座两个权重分片均在。adapter 配置中的基座路径来自训练容器，后续显式传本机基座目录。
+- `python scripts\check_sft_action_replay.py` 绑定定稿 adapter 和历史 rollout 的 hash。样例 `medical-o1-verifiable:18322` 的 2 次动作和 1 次回放检索得到历史终答。原 SFT 第二次输入为 998 tokens，包含第一次生成片段和实际 observation。修复前重建 `<search>` 会丢掉动作前缀，回放字段为 `false`。
+- `SearchAgent.run()` 共用一份内部 `context` 做模型续写和结果回传。每轮保留原始回复到已匹配的动作闭标签，搜索时追加实际 observation，作答时返回含最终动作的上下文。两次搜索的回归核对了续写、终答、闭标签后的截断与内部结果。`python -m unittest discover -s tests` 共 66 项通过，历史回放退出 0，续写前缀字段为 `true`。
+- 历史 rollout 的 stop 为 `</search>`、`</answer>`，保留闭标签。回放读取已保存 token，替代本轮模型请求与检索请求，未加载 3B 或启动 GPU 任务。真实单动作服务、真实 BM25、正式 Verifier 及端到端三路由仍待验收。
+- 开发回放和之后的 SFT 单题 smoke 单列为工程记录。正式 benchmark 等 RL+OPD checkpoint 实际保存并通过重载和动作验收，再冻结权重身份、模板、检索语料、动作预算和独立测试集。
 
 ### 2026-09-16：固定并构建 DSH 开发运行时
 
@@ -181,7 +190,7 @@ DSH 可以作为角色执行器：接收 Python 提交的角色输入，管理�
 10. **Python 接管业务**：我们的代码再解析 JSON、执行 Planner/Verifier schema 校验、结算预算并决定下一状态。DSH 的 `completed` 只表示执行完成，不表示医学答案正确。
 11. **关闭与超时**：正常关闭先发 `shutdown`，随后等待、terminate，必要时 kill。SDK 的 request timeout 不能覆盖 `Session.run()` 整段等待，因此正式 `RoleRunner` 仍要保留 Python 外层 deadline，并拒绝迟到结果。
 
-## 下一项验收
+## P3-c 早期接线记录
 
 2026-09-23 文档决策：Evidence 只保留 text、可选 title 和 score，废弃检索证据 ID、哈希补 ID 和按 ID 去重/冲突规则；原文及实际可见内容随结果传递，具体关联方式待后续接线讨论。任务占用/隔离可用启动时独立随机 run_id，不与检索数据绑定。本次仅统一现行文档，不代表检索实现或新测试已完成，用户的 retrieval.py 草稿保留。
 
@@ -193,7 +202,7 @@ DSH 可以作为角色执行器：接收 Python 提交的角色输入，管理�
 
 2026-09-26：SearchAgent 的初始 context 只用 query，原题与反馈留在外层任务中；成功和空候选路径的 evidence 已统一为 list。新增 6 项 fake 测试，覆盖 search→回填→answer、两次检索后回答、空召回、非法动作、第三次 search 不检索、检索超时向上传递；全量 65 项通过。workflow 同名 Protocol 尚未按具体类决定收敛。默认 max_tries=3 是动作生成上限（最多 2 次检索），workflow 的 max_retries=2 是外层总尝试次数。精确可见证据、公开留档及真实服务仍待验；context 不能直接写入公开 trace，usage 当前也未累计。
 
-下一项唯一任务：补具体 SearchAgent.run 的 fake 行为验收，并由用户修复实际输入/回填缺口；取得真实可加载 checkpoint、模板/stop 和单动作请求/响应后，再实现真正的 request_action。不接付费 API。工程书已把当前接口与待完成要求分开，未代写 Python harness。
+2026-09-26 的下一项计划是补 SearchAgent 的输入与回填，再核验 checkpoint、模板、stop 和单动作请求。接续入口见本文件顶部的当前状态。
 
 ## 后续真实 DSH 集成验收（不是当前派工）
 

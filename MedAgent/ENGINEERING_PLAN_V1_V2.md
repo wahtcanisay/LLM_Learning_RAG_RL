@@ -13,7 +13,7 @@
 | `role_runner.py` | fake backend 下 run、deadline、extract_usage 已实现 | 正式 DSH factory、双角色抓包、错误与挂起后的退出验证 |
 | `workflow.py` | fake Search → Verify → 最多一次返工通过；同名 SearchAgent Protocol 仍在 | 按具体类决定收敛并验收接线；完整三路由等待对应策略和 Generator |
 | `trace.py` | redact、TraceStore.start/append/finish、replay 已实现 | 调用方接线；不扩字段、不重写存储或回放器 |
-| `retrieval.py` / `search_agent.py` | retrieval 假响应及具体 SearchAgent 基本 fake 循环已验 | 核验真实 BM25、checkpoint 与 3B 单动作服务；随后验精确可见片段 |
+| `retrieval.py` / `search_agent.py` | retrieval 假响应、SearchAgent fake 循环和续写前缀已验，SFT 权重已核对 | 核验真实 3B 单动作服务、BM25 和实际可见片段 |
 | `verification.py` | 未实现；仅有 fake Verifier | 确定性证据检查、正式 Verifier 数据接线 |
 | `config.py` | 未实现 | 首个真实服务接入时加载一份配置 |
 | `policy.py` | preflight 延后，输出策略待冻结 | 无审核规则不写关键词安全引擎；Generator 前冻结公开输出规则 |
@@ -100,7 +100,7 @@
 
 当前 SearchResult 用 evidence 保存原文，用 context 保存模型工作上下文；尚无独立 visible_evidence、stop_reason 或 actions 字段。下一步先验证确切回填内容、停止原因和公开动作可被调用方取得，再按 Verifier/trace 的实际需要确定最小承载方式，不强制一次新增四个字段或 Observation 类型。每次 run 的证据必须自包含，不依赖共享可变 ledger；候选证据集合**不冒充已证明的逐声明支持关系**。
 
-context 不是可直接公开的 trace：它包含任务文本、回填正文和候选，应只在受控调用间传递。留档时沿用现有 TraceStore 白名单，公开动作只投影动作类型、query、条数、停止原因与必要用量；原始生成前缀和隐藏推理不得写入。精确可见片段与原文的关联、脱敏和产物接线尚待实现，当前没有 SearchAgent 自动留档。
+`SearchResult.context` 在受控调用间传递，可能包含任务文本、`<think>`、回填正文和候选。公开 trace 沿用现有 TraceStore 白名单，只投影动作类型、query、条数、停止原因和必要用量。精确可见片段与原文的关联、脱敏和产物接线尚待实现。
 
 语义审查时才补 `Claim`（candidate_answer 的 start/end）与获准声明结果；start/end 是 Python 字符串半开区间，切片必须非空且落在原答案中。支持它的证据内容必须随结果传给 Verifier/Generator，具体关联和引用格式留待接线时讨论，不预设 ID、列表序号、索引或标题作为引用键。模型只能选原答案片段，不能把补写的新事实当原声明。查询已召回但未实际给模型看的内容不能用于声称候选已有证据支持。
 
@@ -148,9 +148,11 @@ UserRequest/RunResult/FinalAnswer/EvalCase 等只在完整编排或评测消费�
 
 ### 4.4 search_agent.py：SearchAgent 单一实现
 
+2026-11-10：开发选用 Qwen2.5-3B-Instruct + 已定稿的 Top32 SFT LoRA `checkpoint-1000`。正式 benchmark 使用通过保存、重载和动作验收的 RL+OPD 权重，模型身份由调用方传入。已有 SFT rollout 的首次输入用 tokenizer chat template 构造，检索后在同一助手前缀续写。`scripts/check_sft_action_replay.py` 已验证上下文保留完整生成片段与实际回填。下一步在真实单题请求中核对模板、stop 保留与续写 token 边界。
+
 架构决定（2026-09-25）：统一使用具体类 `SearchAgent`，不新增 LocalSearchAgent。当前具体类已存在，workflow 中同名 Protocol 仍在，待用户接线时收敛；fake agent 可继续提供 run(task)。
 
-当前代码：`SearchAgent(request_action, retrieve, retrieve_config, retrieve_timeout_s)`，`run(task, max_tries=3)`；每次调用 `request_action(context)`，context 只从 task.query 初始化，符合当前只给模型 query 的决定。原题和反馈仍留在外层任务中，不自动拼入模型上下文。默认最多 3 次动作生成、2 次检索，最后一步返回 search 时不执行检索；未解析动作/额度结束均返回空候选，尚无明确停止原因。当前 top_k 固定为 3，usage 未累计，token 限制和标签转义未实现。下面是待完成要求，不能视为现状。
+当前 `SearchAgent.run(task, max_tries=3)` 从 `task.query` 初始化一份 `context`。每次接受动作时将原始生成片段截到闭标签并追加。搜索后追加 observation 供下一次 `request_action` 续写，作答后将同一份上下文随 `SearchResult` 返回。原题和反馈保留在外层任务。默认最多 3 次动作生成和 2 次检索。未解析动作或额度结束时返回空候选。当前 top_k 固定为 3，停止原因、usage 累计、token 限制和标签转义仍待接线。
 
 **`request_action(context: str) -> ActionResponse`**（当前注入调用契约）
 - 对核验过的本地单动作生成端点请求一次，返回原始生成文本与 Usage；模型/模板/stop/max_new_tokens 和超时由注入 callable 持有的生效配置提供。真实服务若要求 messages，由该请求函数转换，不另维护不一致的三参数接口。
@@ -167,7 +169,7 @@ UserRequest/RunResult/FinalAnswer/EvalCase 等只在完整编排或评测消费�
 
 **`SearchAgent.run(task) -> SearchResult`**
 - 接收包含原题、当前 query、attempt 和验证反馈的 SearchTask；模型初始 context 只用 query。原题供外层 Verifier 核对，attempt 供 Python 计数，反馈保留在任务中但不自动扩充模型输入。维护局部 context、有序证据列表、搜索次数与公开动作。
-- 调用 request_action 后复用 `MedSearch.rl.protocol.parse_action`。解析规则已有：一个完整非空 search/answer，拒绝额外动作与尾部文本；允许的前缀不进入公开日志。
+- 调用 request_action 后复用 `MedSearch.rl.protocol.parse_action`。当前解析器取第一个完整的 search/answer，内容为空则无有效动作。原生成片段保存在内部续写上下文，公开 trace 只写允许的动作与审计字段。
 - search 时执行一次 retrieve、合并证据、追加 observation；answer 时返回候选和实际可见证据。当前先使用最多 2 次检索，检索额度耗尽后仍允许一次 answer-only 生成；因此正常路径最多 3 次动作生成。
 - 非法动作或额度耗尽后再 search：以可观察的停止原因结束，不多一次模型“纠错”；承载字段接 trace 时确定。上下文超限同样明确结束，先靠回填预算控制，不写滚动摘要器。
 - 无有效候选时 candidate_answer 为空，由 Verifier 转成 ABSTAIN；传输/服务异常抛出给外层作为 FAILED，不能装成医学证据不足。
