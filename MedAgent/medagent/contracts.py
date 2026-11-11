@@ -230,7 +230,7 @@ class SearchTask:
     """SearchAgent 的一次搜索输入。
 
     question: 原始问题。
-    query: 当前搜索词。
+    query: 当前搜索词(搜索任务提示词+原始问题)。
     attempt: 搜索次数，从 0 开始。
     verifier_feedback: 上一次验证反馈，首次搜索为空。
     """

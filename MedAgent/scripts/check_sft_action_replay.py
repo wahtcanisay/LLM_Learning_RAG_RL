@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from types import SimpleNamespace
 
 from tokenizers import Tokenizer
 
@@ -73,7 +74,8 @@ def main():
 
     query = row["question"]
     task = SearchTask("Outer workflow question", query, 0, ("Outer workflow feedback",))
-    result = SearchAgent(request_action, retrieve, {}, 1).run(task)
+    prompt_tokenizer = SimpleNamespace(apply_chat_template=lambda messages, **_: messages[0]["content"])
+    result = SearchAgent(request_action, retrieve, {}, 1, tokenizer=prompt_tokenizer).run(task)
     assert len(contexts) == 2 and contexts[0] == query
     assert queries == [parse_action(search).content]
     assert observation in contexts[1]

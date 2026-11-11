@@ -5,7 +5,7 @@
 ## 当前状态
 
 - 当前阶段：P3-c，继续 SearchAgent 接线。开发占位默认用 `Qwen2.5-3B-Instruct` + Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用之后产出的 RL+OPD 权重。权重由调用方指定，接线共用。
-- 当前唯一编码任务是接入真实 SFT 单动作请求。搜索续写的字符串边界已通过 CPU 回放。用 Top32 SFT 做单题验收时，核对首次 chat template、闭标签 stop 和下一轮助手续写的 token 边界。
+- Top32 SFT 单题真实推理已验收。`SearchAgent` 实际生成一次搜索和一次终答，固定证据进入第二轮，两次都在对应动作闭标签停止。下一项验收是接入真实 BM25 并检查实际投递证据。
 - 已完成：固定 DSH 版本、本地开发 runtime、单 Planner smoke、RoleRunner fake backend 边界、Plan/SafetyResult 契约、fake Search → Verify → Retry 闭环。
 - 后续集成项：真实 DSH 双角色抓包、错误/挂起行为与线程清理；不在本次单元验收中冒充完成。
 - 付费状态：尚未调用真实 DeepSeek API；接入真实凭据前必须提醒用户。
@@ -31,6 +31,24 @@
 | P4～P6 | evaluation、V1/V2 实验 | 未开始 | 见工程架构书与实验书 |
 
 ## 已完成记录
+
+### 2026-11-11：Top32 SFT 单题 GPU 接线验收通过
+
+- 在 `llm-pytorch` 中执行 `python tmp\docker_medsearch.py --log MedAgent\.runtime\request_action_live_sft_20261111_retry.log env VLLM_WSL2_ENABLE_PIN_MEMORY=1 python MedAgent/.runtime/request_action_live_sft_20261111.py`，退出 0。第一次启动时辅助脚本缺少多进程主入口保护，退出 1。加上保护后重跑同一题，首次错误原日志保存在 `.runtime/request_action_live_sft_20261111.log`。
+- 使用本地 Qwen2.5-3B-Instruct 和 Top32 `checkpoint-1000`，LoRA 实物 SHA256 与定稿清单一致。BF16，温度 0，采样 seed 42，最长上下文 2048，每次动作最多 500 tokens，最多生成两次。`gpu_memory_utilization=0.40`，日志记录模型加载占用 5.82 GiB，配置 KV cache 为 6.5 GiB。
+- 历史 dev 样例 `medical-o1-verifiable:18322` 的首轮 202 input tokens 与存档逐项一致，真实生成 96 tokens 并保留 `</search>`，耗时 5.685 秒。回填一段存档证据后，第二轮 997 input tokens，真实生成 66 tokens 并保留 `</answer>`，耗时 3.269 秒。含模型启动耗时 82.936 秒，终答非空，与历史终答的文本不同。
+- 检索使用固定存档 observation，模型实际生成的搜索词与历史一致。验收范围是本地模型接线、搜索动作解析、证据回填和终答闭标签。机器报告 `.runtime/request_action_live_sft_20261111.json`，真实 BM25 和答案质量待后续验收。
+
+### 2026-11-11：Docker 中验收 `request_action`，未通过输入检查
+
+- 在现有 `llm-pytorch` 容器运行 CPU 验收。Transformers 为 5.10.4，vLLM 为 0.27.1。`python tmp\docker_medsearch.py --log MedAgent\.runtime\request_action_regression_20261111.log env CUDA_VISIBLE_DEVICES= PYTHONPATH=MedAgent python -m unittest discover -s MedAgent/tests` 退出 0，66 项通过。历史 SFT 回放也退出 0，续写前缀字段为 `true`。两项仍用注入回复，覆盖已有控制流。
+- 专项探针读取本地 Qwen2.5-3B tokenizer 和 `medical-o1-verifiable:18322` 的历史原始消息。正确首轮模板与历史 token 逐项一致，共 202 tokens。当前直接传字符串只得到 21 tokens，原用户提示未保留。单换消息列表得到 199 tokens，缺助手起始标记。第二轮用当前字符串模板得到 21 tokens，历史对应请求为 998。
+- 复验经过完整 `SearchAgent.run()`。`SearchTask.query` 使用原始 SFT 用户消息中的完整搜索提示词和原题，第二轮进入 `request_action` 前仍保留提示词、搜索动作和证据。经当前 `apply_chat_template(context)` 后，两次传给生成替身的输入均为 21 tokens，均缺完整提示词。两轮替身按历史动作返回搜索和终答，复验定位的是实际输入转换，未测模型生成效果。
+- 把套模板移入 `run()` 后复验，Docker 中 66 项运行、59 项通过、7 项报错。`__init__` 尚未设置 `self.tokenizer`，所以 `run()` 第 103 行在首次生成前抛出 `AttributeError`。同一 tokenizer 实测 `tokenizer=False` 返回 `BatchEncoding`，正确参数 `tokenize=False` 返回字符串，随后 `encode()` 得到与历史首轮逐项一致的 202 个 token。`request_action` 目前仍在重复套模板。日志为 `.runtime/request_action_recheck_20261111.log` 和 `.runtime/request_action_regression_recheck_20261111.log`。
+- 再次复验确认 `run()` 已用 `tokenize=False`，`request_action` 已改用 `encode()`。测试和回放调用方已传入新增的 `tokenizer` 参数。构造函数第 98 行写成 `self.tokenzier`，`run()` 读取 `self.tokenizer`，Docker 原样回归 59 通过、7 个相同 `AttributeError`。用真实 tokenizer 的专项探针仅在测试对象上临时补正确属性后完成两轮回放，首轮 202 个 token 与历史一致，第二轮保留助手续写和证据，实际 997 tokens，历史 998，未达到 token 逐项一致。两次 usage 均与真实输入列表长度一致，历史终答复现。未修改生产代码，未运行 GPU 推理。日志为 `.runtime/request_action_tokenizer_regression_20261111.log` 和 `.runtime/request_action_tokenizer_recheck_20261111.log`。
+- 应用户要求修正生产代码的 `self.tokenizer` 拼写并更新分词注释。随后 Docker 原样回归 66 项通过，历史回放和真实 tokenizer 双轮探针均退出 0，无测试临时属性。首轮 202 tokens 与历史逐项一致。第二轮 997 对 998，token 对齐有两处替换，证据回填与历史终答回放通过。差异见 `.runtime/request_action_token_boundary_20261111.log`。Docker `nvidia-smi` 读取时 GPU 利用率 78%，已用 11,005 MiB，本轮未启动真实 SFT 推理。
+- 当前 tokenizer 返回 `BatchEncoding`，`TokensPrompt.prompt_token_ids` 应接其 `input_ids` 列表。用记录参数的生成替身复验，当前代码把输入 token 数报成 2。真实 vLLM 的 `SamplingParams(stop=[...])` 默认不保留停止字符串，实际接线需显式保留闭标签。
+- 专项命令 `python tmp\docker_medsearch.py --log MedAgent\.runtime\request_action_acceptance_20261111.log env CUDA_VISIBLE_DEVICES= python MedAgent/.runtime/request_action_acceptance_20261111.py` 退出 1。当前修复目标是首轮正确应用模板并展开 token 列表，后续沿同一助手前缀续写。此次只加载 tokenizer 和请求类型，未加载权重，未启动 GPU 推理。用户实现原样保留。
 
 ### 2026-11-10：SFT 权重核验与 P3-c CPU 回放
 

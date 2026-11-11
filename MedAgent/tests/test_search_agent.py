@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 
 from medagent.contracts import Evidence, SearchTask, Usage
 from medagent.search_agent import ActionResponse, SearchAgent
@@ -22,7 +23,8 @@ class SearchAgentLoopTest(unittest.TestCase):
                 raise result
             return result
 
-        agent = SearchAgent(request_action, retrieve, {}, 1)
+        tokenizer = SimpleNamespace(apply_chat_template=lambda messages, **_: messages[0]["content"])
+        agent = SearchAgent(request_action, retrieve, {}, 1, tokenizer=tokenizer)
         task = SearchTask("original question", "planner query", 0, ())
         return agent, task
 
