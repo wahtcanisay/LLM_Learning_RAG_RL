@@ -88,6 +88,14 @@ class vLLMRollout(BaseRollout):
 
         assert model_hf_config.max_position_embeddings >= config.prompt_length + config.response_length, \
             "model context length should be greater than total sequence length"
+        engine_kwargs = {}
+        if vllm_version == '0.27.1':
+            # The current public vLLM defaults to an 8192-token scheduler warmup.
+            # Preserve the legacy veRL limits so a small rollout does not reserve
+            # training-irrelevant activation/KV memory on a colocated single GPU.
+            engine_kwargs['max_num_batched_tokens'] = config.get('max_num_batched_tokens', None)
+            engine_kwargs['max_num_seqs'] = config.get('max_num_seqs', None)
+            engine_kwargs['kv_cache_memory_bytes'] = config.get('kv_cache_memory_bytes', None)
         self.inference_engine = LLM(actor_module,
                                     tokenizer=tokenizer,
                                     model_hf_config=model_hf_config,
@@ -97,7 +105,8 @@ class vLLMRollout(BaseRollout):
                                     gpu_memory_utilization=config.gpu_memory_utilization,
                                     skip_tokenizer_init=False,
                                     max_model_len=config.prompt_length + config.response_length,
-                                    load_format=config.load_format)
+                                    load_format=config.load_format,
+                                    **engine_kwargs)
 
         # Offload vllm model to reduce peak memory usage
         self.inference_engine.offload_model_weights()

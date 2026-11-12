@@ -1,0 +1,140 @@
+{
+  "date": "2026-10-14",
+  "protected_checkpoints": [
+    "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-1000",
+    "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-375"
+  ],
+  "targets": [
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_checkpoint_smoke_20261013\\checkpoint-1",
+      "bytes": 33714785
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_checkpoint_smoke_20261013\\checkpoint-2",
+      "bytes": 33715000
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch1_20261013\\adapter",
+      "bytes": 18823240
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch1_20261013\\checkpoint-125",
+      "bytes": 33718603
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\epoch1\\rollouts.jsonl",
+      "bytes": 5787063
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\epoch5\\rollouts.jsonl",
+      "bytes": 6591560
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\epoch8\\rollouts.jsonl",
+      "bytes": 6577089
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\resume_smoke\\adapter",
+      "bytes": 18823240
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\resume_smoke\\checkpoint-126",
+      "bytes": 33718606
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\adapter",
+      "bytes": 18823240
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-1000",
+      "bytes": 33759646
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-250",
+      "bytes": 33724486
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-500",
+      "bytes": 33736215
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-625",
+      "bytes": 33742069
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-750",
+      "bytes": 33747922
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_ce_epoch_comparison_20261013\\training\\checkpoint-875",
+      "bytes": 33753783
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_checkpoint_smoke_20261013_final\\checkpoint-1",
+      "bytes": 33714723
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_checkpoint_smoke_20261013_final\\checkpoint-2",
+      "bytes": 33714875
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\epoch1\\rollouts.jsonl",
+      "bytes": 5830689
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\epoch3\\rollouts.jsonl",
+      "bytes": 6432003
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\epoch5\\rollouts.jsonl",
+      "bytes": 6669811
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\resume_smoke\\adapter",
+      "bytes": 18823240
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\resume_smoke\\checkpoint-126",
+      "bytes": 33719008
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\adapter",
+      "bytes": 18823240
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-250",
+      "bytes": 33725265
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-375",
+      "bytes": 33731504
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-500",
+      "bytes": 33737751
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-625",
+      "bytes": 33743978
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-750",
+      "bytes": 33750234
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_epoch_comparison_20261013\\training\\checkpoint-875",
+      "bytes": 33756483
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_top32_epoch1_20261013\\adapter",
+      "bytes": 18823240
+    },
+    {
+      "path": "MedSearch\\outputs\\distillation\\sft_top32_epoch1_20261013\\checkpoint-125",
+      "bytes": 33719005
+    }
+  ],
+  "retained": "selected full checkpoints and their dev rollouts; all scores, summaries, configs, logs, reports, source datasets and base/teacher/verifier weights",
+  "status": "complete",
+  "bytes_released": 825471596
+}

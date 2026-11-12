@@ -1,0 +1,8 @@
+.env
+.pi/sessions/
+runs/
+.deps/
+.runtime/
+.venv/
+__pycache__/
+*.pyc

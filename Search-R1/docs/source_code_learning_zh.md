@@ -634,3 +634,78 @@ save_freq → _save_checkpoint()
 cd /d "D:\code_list\some tricks\LLMLeanring"
 rg -n "def fit|val_before_train|GenerationConfig|for epoch|from_single_dict|n_agent|run_llm_loop|compute_log_prob|uid|_balance_batch|compute_ref_log_prob|reward_fn|compute_advantage|_create_loss_mask|update_actor|test_freq|save_freq|total_training_steps" Search-R1\verl\trainer\ppo\ray_trainer.py
 ```
+
+## 7. Search-R1 源码阅读收束：veRL 只掌握使用边界
+
+### 7.1 已经完成的 Search-R1 核心源码
+
+```text
+数据协议与 batch
+→ 多轮 Search/Answer Agent loop
+→ information state mask
+→ Exact Match reward
+→ uid 组内 GRPO advantage
+→ PPO clipped actor loss
+→ RayPPOTrainer.fit() 完整调度
+```
+
+这些内容已经覆盖 Search-R1 相对普通 veRL PPO/GRPO 的主要定制点。后续不再为了
+“完整读仓库”顺序阅读框架源码；真正运行出现明确报错时，再沿堆栈按需补读。
+
+### 7.2 veRL 的掌握标准
+
+只需能够说明：
+
+1. `RayPPOTrainer` 是 driver 侧总调度器；
+2. actor/rollout worker 负责生成、log-prob 和参数更新；
+3. reference policy 提供 KL 对照，不随 actor 更新；
+4. GRPO 不需要 critic/value model；
+5. driver 与 worker 通过 `DataProto` 传递 tensor 和 metadata；
+6. FSDP/vLLM/Ray/offload 是执行与显存基础设施，不改变 Search-R1 的 reward/advantage 定义。
+
+不要求主动阅读 `fsdp_workers.py`、FSDP shard/offload、vLLM engine、Ray RPC、
+`_validate()` 或官方 Dense/BM25/FAISS 检索实现。
+
+### 7.3 运行阶段的数据流
+
+检索端直接使用 Search-R1 已有的官方服务，只学习训练端看到的 HTTP 接口，不开发
+自有 search engine，也不写 adapter：
+
+```text
+现代 vLLM + Qwen2.5-3B-Instruct 单次生成成功
+→ 官方 BM25 search engine 启动
+→ 一条 curl 协议测试
+→ 一条无训练多轮 Search-R1 推理
+→ 一个 optimizer step 的 GRPO smoke
+→ 在 W&B 检查真实训练日志
+```
+
+Search-R1 训练端使用的检索协议是：
+
+```text
+POST retriever.url
+
+request:
+{
+  "queries": list[str],
+  "topk": int,
+  "return_scores": bool
+}
+
+response:
+{
+  "result": list[list[
+    {
+      "document": {"contents": str},
+      "score": float
+    }
+  ]]
+}
+```
+
+### 7.4 下一次唯一任务
+
+在现有 `llm-pytorch` Docker 容器中创建隔离环境，验证现代 vLLM 能在 RTX 5090 上
+使用 `Qwen/Qwen2.5-3B-Instruct` 完成一次真实生成。该检查成功之前，不下载完整检索
+资产、不启动 RL，也不修改 Search-R1 算法代码。检索阶段直接使用官方 BM25 服务，
+无需新增 adapter。

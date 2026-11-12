@@ -1,4 +1,4 @@
-# Python
+# ===== Python =====
 __pycache__/
 *.py[cod]
 *.pyo
@@ -13,71 +13,102 @@ ENV/
 .mypy_cache/
 .ruff_cache/
 
-# Jupyter and local tooling
+# ===== 本地工具 =====
 .ipynb_checkpoints/
 .idea/
 .vscode/
 .worktrees/
+.deps/
+Search-R1/.deps/
+MedSearch/.deps/
+MedAgent/.deps/
 
-# Secrets and local configuration
+# ===== 密钥与本地配置 =====
 .env
 .env.*
 !.env.example
 *.pem
 *.key
 
-# Models, datasets, indexes and experiment outputs
+# ===== 大体积资产：模型 / 数据 / 索引 / 语料，一律不入库 =====
 models/
 checkpoints/
 datasets/
 data/
-!MedicalGraphRAG/src/medical_graphrag/data/
-!MedicalGraphRAG/src/medical_graphrag/data/**
-!MedicalGraphRAG/data/
-!MedicalGraphRAG/data/**
 corpus/
 indexes/
 faiss_index/
-# Large local corpora downloaded for MedRAG; keep source/code, never commit data.
-MedRAG/corpus/
-R2RAG/data/
-R2RAG/models/
-R2RAG/logs/
-R2RAG/outputs/
-R2RAG/checkpoints/
+logs/
+outputs/
+results/
+wandb/
+mlruns/
+# 模型权重
 *.safetensors
 *.bin
 *.pt
 *.pth
 *.ckpt
 *.gguf
+# 数据表与数组
+*.parquet
+*.arrow
+*.npy
+*.npz
+*.h5
 *.sqlite
 *.db
-
-# Logs, caches and generated artifacts
-logs/
-outputs/
-results/
-wandb/
-mlruns/
+# 压缩包与转储（含 MedSearch/docs/archive 里退役脚本的 zip）
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.gz
+# 日志、缓存与导出行
 *.log
 *.tmp
 *.cache
 *.jsonl
 
-# OS files
+# 例外：医学 GraphRAG 需要入库的小样本与说明（大文件由 MedicalGraphRAG/.gitignore 排除）
+!MedicalGraphRAG/src/medical_graphrag/data/
+!MedicalGraphRAG/src/medical_graphrag/data/**
+!MedicalGraphRAG/data/
+!MedicalGraphRAG/data/**
+# 大语料不入库
+MedRAG/corpus/
+R2RAG/data/
+R2RAG/models/
+R2RAG/logs/
+R2RAG/outputs/
+R2RAG/checkpoints/
+
+# ===== 一次性脚本、临时产物：只在本地保留 =====
+# 仓库根目录的临时脚本
+/tmp/
+/.tmp*/
+/_*.py
+/*_tmp*.py
+/batch*_tmp*.py
+/trajectory*_tmp*
+# 按批次写的一次性清洗脚本（保留说明文件）
+/scripts/cleaning_oneshot_*/*
+!/scripts/cleaning_oneshot_*/README.md
+MedSearch/.tmp_*.py
+# 单次评审产物
+/reviews/
+
+# ===== 系统文件 =====
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Preserved nested repository metadata (kept locally, never committed)
+# ===== 其他 =====
+# 嵌套仓库元数据，只保留在本地
 **/.git.upstream/
-
-# Local working copy of study progress, maintained by DeepSeek since 2026-07-31
+# 本地学习进度副本（由 DeepSeek 维护）
 STUDY_PROGRESS_deepseek.md
-
-# MIRAGE benchmark repo (reference clone, reproducible via git clone)
+# MIRAGE 参考克隆，可用 git clone 复原
 MIRAGE/
-
-# Local research papers
+# 本地论文
 /papers/

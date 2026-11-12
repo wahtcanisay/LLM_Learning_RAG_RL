@@ -1,0 +1,15 @@
+{
+  "model_type": "qwen2",
+  "config_vocab_size": 152064,
+  "dtype": "torch.bfloat16",
+  "prompt_tokens": 20,
+  "action_tokens": 16,
+  "score_shape": [
+    1,
+    16
+  ],
+  "score_min": -19.698074340820312,
+  "score_max": 0.0,
+  "cuda_peak_allocated_gib": 14.286,
+  "elapsed_seconds": 5.31
+}

@@ -24,6 +24,7 @@ from verl.third_party.vllm import parallel_state as vllm_ps
 from verl import DataProto
 from verl.utils.torch_functional import (broadcast_dict_tensor, allgather_dict_tensors)
 from verl.utils.debug import log_gpu_memory_usage
+from verl.utils.fsdp_utils import offload_fsdp_param_and_grad, load_fsdp_param_and_grad
 
 from .base import BaseShardingManager
 
@@ -38,18 +39,22 @@ class FSDPVLLMShardingManager(BaseShardingManager):
                  inference_engine: LLM,
                  model_config,
                  full_params: bool = False,
-                 device_mesh: DeviceMesh = None):
+                 device_mesh: DeviceMesh = None,
+                 offload_params: bool = False,
+                 offload_grad: bool = False):
         self.module = module
         self.inference_engine = inference_engine
         self.model_config = model_config
         self.device_mesh = device_mesh
+        self.offload_params = offload_params
+        self.offload_grad = offload_grad
 
         # Full params
         self.full_params = full_params
         if full_params:
             FSDP.set_state_dict_type(self.module,
                                      state_dict_type=StateDictType.FULL_STATE_DICT,
-                                     state_dict_config=FullStateDictConfig())
+                                     state_dict_config=FullStateDictConfig(offload_to_cpu=offload_params))
         else:
             FSDP.set_state_dict_type(self.module,
                                      state_dict_type=StateDictType.SHARDED_STATE_DICT,
@@ -70,6 +75,9 @@ class FSDPVLLMShardingManager(BaseShardingManager):
         log_gpu_memory_usage('Before state_dict() in sharding manager memory', logger=logger)
         params = self.module.state_dict()
         log_gpu_memory_usage('After state_dict() in sharding manager memory', logger=logger)
+        if self.offload_params:
+            offload_fsdp_param_and_grad(module=self.module, offload_grad=self.offload_grad)
+            log_gpu_memory_usage('After offload FSDP actor in sharding manager', logger=logger)
         # Copy, not share memory
         load_format = 'hf' if self.full_params else 'dtensor'
         self.inference_engine.sync_model_weights(params, load_format=load_format)
@@ -78,12 +86,6 @@ class FSDPVLLMShardingManager(BaseShardingManager):
         del params
         torch.cuda.empty_cache()
         log_gpu_memory_usage('After del state_dict and empty_cache in sharding manager', logger=logger)
-
-        # TODO: offload FSDP model weights
-        # self.module.cpu()
-        # torch.cuda.empty_cache()
-        # if torch.distributed.get_rank() == 0:
-        # print(f'after model to cpu in sharding manager memory allocated: {torch.cuda.memory_allocated() / 1e9}GB, reserved: {torch.cuda.memory_reserved() / 1e9}GB')
 
         # important: need to manually set the random states of each tp to be identical.
         if self.device_mesh is not None:
@@ -95,9 +97,11 @@ class FSDPVLLMShardingManager(BaseShardingManager):
         self.inference_engine.offload_model_weights()
         log_gpu_memory_usage('After vllm offload in sharding manager', logger=logger)
 
-        # self.module.to('cuda')
-        # if torch.distributed.get_rank() == 0:
-        #     print(f'after actor module to cuda in sharding manager memory allocated: {torch.cuda.memory_allocated() / 1e9}GB, reserved: {torch.cuda.memory_reserved() / 1e9}GB')
+        if self.offload_params:
+            load_fsdp_param_and_grad(module=self.module,
+                                     device_id=torch.cuda.current_device(),
+                                     load_grad=self.offload_grad)
+            log_gpu_memory_usage('After restore FSDP actor in sharding manager', logger=logger)
 
         self.module.train()
 
