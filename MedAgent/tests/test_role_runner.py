@@ -106,7 +106,7 @@ class RoleRunnerTest(unittest.TestCase):
         backend = FakeBackend(
             completed_result(
                 "verifier-1",
-                {"verdict": "PASS", "failure_codes": []},
+                {"verdict": "PASS", "failure_codes": [], "retry_query_hint": None},
             )
         )
         runner, factory = self.make_runner(backend)
@@ -117,6 +117,28 @@ class RoleRunnerTest(unittest.TestCase):
         self.assertEqual(factory.calls[0]["system_prompt"], VERIFIER_SYSTEM_PROMPT)
         self.assertNotEqual(PLANNER_SYSTEM_PROMPT, VERIFIER_SYSTEM_PROMPT)
         self.assertTrue(backend.closed)
+
+    def test_verifier_accepts_retry_and_abstain(self):
+        for verdict, hint in (("RETRY", "targeted search"), ("ABSTAIN", None)):
+            with self.subTest(verdict=verdict):
+                payload = {"verdict": verdict, "failure_codes": ["MISSING_EVIDENCE"], "retry_query_hint": hint}
+                backend = FakeBackend(completed_result("verifier-1", payload))
+                runner, _ = self.make_runner(backend)
+                self.assertEqual(runner.run("verifier", "verify this", "verifier-1", 1.0).payload, payload)
+
+    def test_verifier_rejects_inconsistent_fields(self):
+        cases = (
+            ({"verdict": "RETRY", "failure_codes": ["MISSING_EVIDENCE"]}, "retry_query_hint"),
+            ({"verdict": "RETRY", "failure_codes": ["MISSING_EVIDENCE"], "retry_query_hint": "  "}, "retry_query_hint"),
+            ({"verdict": "PASS", "failure_codes": [], "retry_query_hint": "another query"}, "retry_query_hint"),
+            ({"verdict": "ABSTAIN", "failure_codes": [], "retry_query_hint": None}, "failure_codes"),
+        )
+        for payload, field in cases:
+            with self.subTest(payload=payload):
+                backend = FakeBackend(completed_result("verifier-1", payload))
+                runner, _ = self.make_runner(backend)
+                with self.assertRaisesRegex(ValueError, field):
+                    runner.run("verifier", "verify this", "verifier-1", 1.0)
 
     def test_unknown_role_is_rejected_before_backend_creation(self):
         backend = FakeBackend()

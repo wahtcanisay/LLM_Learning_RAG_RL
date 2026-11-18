@@ -272,10 +272,9 @@ class RoleRunner:
                 # endregion
 
             else:
-                # Verifier 协议：PASS 不能带失败原因；RETRY 可以带原因列表。
                 # region Verifier 判定校验
                 verdict = payload.get("verdict")
-                if verdict not in {"PASS", "RETRY"}:
+                if verdict not in ("PASS", "RETRY", "ABSTAIN"):
                     raise ValueError("verifier verdict is invalid")
                 # endregion
 
@@ -283,10 +282,23 @@ class RoleRunner:
                 failure_codes = payload.get("failure_codes")
                 if not isinstance(failure_codes, list):
                     raise ValueError("failure_codes must be a list")
-                if any(not isinstance(code, str) for code in failure_codes):
-                    raise ValueError("failure_codes must contain only strings")
+                if any(not isinstance(code, str) or not code.strip() for code in failure_codes):
+                    raise ValueError("failure_codes must contain non-empty strings")
                 if verdict == "PASS" and failure_codes:
                     raise ValueError("PASS requires empty failure_codes")
+                if verdict != "PASS" and not failure_codes:
+                    raise ValueError(f"{verdict} requires failure_codes")
+                # endregion
+
+                # region retry_query_hint 校验
+                if "retry_query_hint" not in payload:
+                    raise ValueError("retry_query_hint is required")
+                hint = payload["retry_query_hint"]
+                if verdict == "RETRY":
+                    if not isinstance(hint, str) or not hint.strip():
+                        raise ValueError("RETRY requires a non-empty retry_query_hint")
+                elif hint is not None:
+                    raise ValueError(f"{verdict} requires a null retry_query_hint")
                 # endregion
 
             # 对外返回精简、稳定的项目层结果：

@@ -5,7 +5,9 @@
 ## 当前状态
 
 - 当前阶段：P3-c，继续 SearchAgent 接线。开发占位默认用 `Qwen2.5-3B-Instruct` + Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用之后产出的 RL+OPD 权重。权重由调用方指定，接线共用。
-- Top32 SFT 单题真实推理已验收。`SearchAgent` 实际生成一次搜索和一次终答，固定证据进入第二轮，两次都在对应动作闭标签停止。下一项验收是接入真实 BM25 并检查实际投递证据。
+- Top32 SFT 单题已通过真实 BM25 联调。模型生成一次搜索，现有 `/retrieve` 返回 3 段，逐字核对后确认全部进入第二轮实际输入，模型随后生成非空终答。BM25 参数留到正式 `main_loop` 初始化 `SearchAgent` 时配置。
+- P3-d 的 `EvidenceVerifier.verify()` 已通过假后端验收。空答案短路、结构化审查输入、三种返回以及 `RETRY` 搜索词与失败码的传递均已核对。真实重搜的提示词已列入后端联调待办。
+- 2026-11-16 调整实施顺序。先完成 Verifier 的输入组装和业务接口，用现有假后端验收流程。真实 DSH adapter、API 配置和 `main_loop` 中的依赖装配留到后端阶段一起学习与联调。
 - 已完成：固定 DSH 版本、本地开发 runtime、单 Planner smoke、RoleRunner fake backend 边界、Plan/SafetyResult 契约、fake Search → Verify → Retry 闭环。
 - 后续集成项：真实 DSH 双角色抓包、错误/挂起行为与线程清理；不在本次单元验收中冒充完成。
 - 付费状态：尚未调用真实 DeepSeek API；接入真实凭据前必须提醒用户。
@@ -30,7 +32,38 @@
 | P3 | retrieval / 本地 SearchAgent / verification | P3-c 当前任务 | Evidence 规范化与检索假响应检查通过；真实 BM25 只读请求待服务可用时记录 |
 | P4～P6 | evaluation、V1/V2 实验 | 未开始 | 见工程架构书与实验书 |
 
+## 后端联调待办
+
+- [ ] 接真实 3B 重搜时修正 `workflow.py` 的 `RETRY` 分支。当前只用 `retry_query_hint` 作为第二次 SearchAgent 的用户消息。装配时应保留首轮的搜索指令和原题，再附上 Verifier 建议的补搜词。验收检查第二轮发给 3B 的实际消息包含这三项，并核对新一轮的搜索结果进入该轮 Verifier。此项随正式后端联调处理。
+
 ## 已完成记录
+
+### 2026-11-18：Planner 业务入口验收
+
+- 将 `planning_request()` 统一为约定的 `plan_request()`。真实 `RoleRunner` 配合假后端确认原题和 `HIGH` 风险下限只发一次，合法 `SEARCH` 转为 `Plan`，低于下限的 `LOW` 回复被拒绝。
+- 在 MedAgent 目录运行 `python -m unittest discover -s tests -p test_planning.py -v`，2 项通过。RoleRunner 和契约回归分别通过 11 项和 13 项。真实 DSH 和外层 workflow 路由仍待联调。
+
+### 2026-11-18：Planner 提示词对齐 Plan 契约
+
+- `prompts.py` 的 Planner 提示词接收 `question` 和 `risk_floor`，要求返回 `Plan` 的五个字段，移除了冒烟测试中固定选择 `SEARCH` 的指令。
+- 在 MedAgent 目录运行 `python -m unittest discover -s tests -p test_role_runner.py` 和 `python -m unittest discover -s tests -p test_contracts.py`，分别通过 11 项和 13 项。只覆盖假后端与 Python 契约，尚未验证真实模型对新提示词的响应。
+- 顺序定为先完成 Python Harness，跑通后再学 Java 和独立后端。
+
+### 2026-11-16：EvidenceVerifier 业务调用验收
+
+- `python -m unittest discover -s tests -p test_verification.py -v` 在 MedAgent 目录通过 5 项。空答案直接返回 `ABSTAIN`，RoleRunner 调用 0 次。非空候选调用 1 次，发送原题、答案和按顺序排列的证据。使用真实 RoleRunner 与假后端测试了 `PASS`、`ABSTAIN` 和 `RETRY`。重搜验证读取第二轮自己的证据。
+- `python tmp\docker_medsearch.py --log MedAgent\.runtime\evidence_verifier_acceptance.log env CUDA_VISIBLE_DEVICES= PYTHONPATH=MedAgent python -m unittest discover -s MedAgent/tests` 在 Docker CPU 通过 73 项，退出 0。未调用外部模型。假搜索验收确认重搜词传递，尚未验证真实 3B 重搜时的提示词。
+
+### 2026-11-12：Verifier 空答案检查通过
+
+- 验收复现了失败码 `EMPTY ANSER` 的拼写错误，按约定改为 `EMPTY_ANSWER`。`python -m unittest discover -s tests -p test_verification.py -v` 退出 0，覆盖空字符串、纯空白和有内容的候选。
+- Docker CPU 完整回归共 68 项通过，日志为 `.runtime/verifier_empty_answer_regression_20261112.log`。本轮验收覆盖结构检查，语义角色接线待完成。
+
+### 2026-11-12：现有 BM25 与 Top32 SFT 单题联调通过
+
+- 在 `llm-pytorch` 容器中复用现有 `http://127.0.0.1:8001/retrieve` 与 `medagent.retrieval.retrieve`。同一历史 dev 样例 `medical-o1-verifiable:18322` 的搜索词用于端点预检，返回 3 段非空证据。单题测试脚本使用同一 Top32 `checkpoint-1000`，BF16，seed 42，温度 0，上下文 2048，每动作最多 500 tokens，共两次动作。命令为 `python tmp\docker_medsearch.py --log MedAgent\.runtime\check_live_bm25_20261112.log env VLLM_WSL2_ENABLE_PIN_MEMORY=1 python MedAgent/.runtime/check_live_bm25_20261112.py`，退出 0。
+- 模型首轮输入 202 tokens，生成 96 tokens 并停在 `</search>`。真实 BM25 请求耗时 0.009 秒，返回 3 段。第二轮实际送入 vLLM 的 766 个 token 解码后，包含这次返回的完整 `<information>`。模型续写 80 tokens，停在 `</answer>`，终答非空。两轮生成共 9.767 秒，含预检和启动共 84.703 秒。
+- 本轮验收覆盖真实查询、检索回填和终答闭标签。终答文本与历史记录不同，未评定医学正确性。临时测试脚本、日志和记录 3 段正文及哈希的 JSON 均在 `.runtime/check_live_bm25_20261112.*`，生产入口未修改。
 
 ### 2026-11-11：Top32 SFT 单题 GPU 接线验收通过
 
