@@ -1,0 +1,8 @@
+- name: search_r1_agent
+  _target_: search_r1_modern.search_agent_loop.SearchR1AgentLoop
+  search_url: http://127.0.0.1:8000/retrieve
+  topk: 3
+  max_turns: 1
+  max_generation_length: 96
+  max_observation_length: 192
+  request_timeout: 30.0

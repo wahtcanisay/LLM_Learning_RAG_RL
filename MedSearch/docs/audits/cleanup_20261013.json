@@ -1,0 +1,329 @@
+{
+  "status": "completed",
+  "date": "2026-10-13",
+  "scripts_archive": "MedSearch/docs/archive/retired_scripts_20261013.zip",
+  "reason": "retired Stage A/B suite, superseded DAPO launchers, completed no-save smoke and temporary probes",
+  "removed_scripts": [
+    {
+      "path": "MedSearch/docs/tests/check_qlora_environment.sh",
+      "bytes": 1992,
+      "sha256": "d12aec08de5084a05c088c731a7e681989e6718f79a4e781ba91675ffc2afdb3"
+    },
+    {
+      "path": "MedSearch/docs/tests/check_qlora_loading.sh",
+      "bytes": 9715,
+      "sha256": "2470345ca6462f37674b600e248d61d48daa31638f720bb6f0cba397f9e3ebce"
+    },
+    {
+      "path": "MedSearch/docs/tests/run_sft_3b_smoke.py",
+      "bytes": 16535,
+      "sha256": "5ff852bfd6aa5302210e206a49fe6a8537cbabb57c9c57ae7a86a6bbce2da336"
+    },
+    {
+      "path": "MedSearch/docs/tests/run_sft_3b_smoke.sh",
+      "bytes": 830,
+      "sha256": "e6a31b14dc6a726bd8228b46b2f41eb709fd3cada8e135bc65c7ad9c9dab9a2f"
+    },
+    {
+      "path": "MedSearch/docs/tests/run_sft_checks.sh",
+      "bytes": 416,
+      "sha256": "34864e0c27234c29e072a79b53e08f5df34028be1ecd9afee6c7c09d52664e4b"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_cli.py",
+      "bytes": 4608,
+      "sha256": "9d204eb689ecd4fa6958d52c1a8c0a12926b6ba90648d096baf8b529e8de2c2b"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_data.py",
+      "bytes": 3556,
+      "sha256": "a4460a5e2579f4c832f29bbab099a4768e30121e9dd3ce884015199b67a8bacc"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_eval_wiring.py",
+      "bytes": 5096,
+      "sha256": "27570debd48f6f7253bd28ffdd3cab602688a92b10e6500864a4b45bc8607fc0"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_kbit_preparation.py",
+      "bytes": 2224,
+      "sha256": "615bcca4f24dba9d3b160c12f5c8629c68c14cf8703290cea2a439c62c4f9f9e"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_loading.py",
+      "bytes": 2941,
+      "sha256": "502ddee25f95c9d07664b54b65d6e5736d9eb0b6c35dd46eacdd8e0057209054"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_model.py",
+      "bytes": 2205,
+      "sha256": "a8324f23f3f2cf89b99f00592934cd04f7c4d7294e1dd44896a1dacf141cc715"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_preprocess.py",
+      "bytes": 7145,
+      "sha256": "2d05745c36be20f20a4472aae43ab7a4bf88ae7a0c0de95027dc56d05a9c46ed"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_quantization.py",
+      "bytes": 809,
+      "sha256": "2eb7beddd457b29385a4273443b17ca6aec2784a2dd2aa1806c2ba8d0162ef57"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_save.py",
+      "bytes": 5512,
+      "sha256": "3f4f1fd0b958381e203226c5ca788930822c368a704e2b87b6937f8a4526a3fc"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_step.py",
+      "bytes": 7502,
+      "sha256": "066446255630bb14dd820380623c4eae19bc4abab3c31f67dce711f0ae53004d"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_train.py",
+      "bytes": 3758,
+      "sha256": "a610955cc47b694b7f20442283216c563bc3a44fb47d59de40609dd4d7d4a882"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_sft_trainer.py",
+      "bytes": 5588,
+      "sha256": "1b4846668e7b70c248414a43c3e86bfa6ee35513d9ba93732a7e4d41e2065f12"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_stage_a_evaluate.py",
+      "bytes": 5954,
+      "sha256": "1bcb7176fe9e41a2c0e8b0da754d311f7269e9b7c20e4652b31f016747624574"
+    },
+    {
+      "path": "MedSearch/docs/tests/test_stage_b_evaluator.py",
+      "bytes": 1780,
+      "sha256": "385b89a133b776060917882808023deb2eb7e6d91b2fc5790ce4f52c897f3d45"
+    },
+    {
+      "path": "MedSearch/scripts/run_medsearch_dapo_dynamic.sh",
+      "bytes": 3445,
+      "sha256": "9fce8ed1ce9c9d824db8d30e7fb79506f908386e64bcd4dbe267b452c89aca5b"
+    },
+    {
+      "path": "MedSearch/scripts/run_medsearch_dapo_dynamic_50.sh",
+      "bytes": 3490,
+      "sha256": "fe782652ef609da315cd6aa8e6ed2006fff986b7e4f428c104ed88a8413b6cea"
+    },
+    {
+      "path": "MedSearch/scripts/run_medsearch_dapo_dynamic_50_v5.sh",
+      "bytes": 3488,
+      "sha256": "bb211db65bebac2d409736411b2619d0a497cebd5a79673b8fad2878c19693be"
+    },
+    {
+      "path": "MedSearch/scripts/run_medsearch_dapo_dynamic_full_v6.sh",
+      "bytes": 3495,
+      "sha256": "1489a668d45bc4b70887e98201f5ba6c94da0033f196c4fa0426d7c842e4f51d"
+    },
+    {
+      "path": "MedSearch/scripts/run_medsearch_dapo_dynamic_full_v7_lr3e6.sh",
+      "bytes": 3507,
+      "sha256": "827d78af5799f07d11a6291ec41a0e96fa50fb8d1e375a61dba75320f2a14a48"
+    },
+    {
+      "path": "MedSearch/scripts/run_medsearch_dapo_epoch1.sh",
+      "bytes": 3336,
+      "sha256": "66fac2e72b91bd05293d287588691647222635f8714bdf6e1108e2d86e348aed"
+    },
+    {
+      "path": "MedSearch/run_medsearch_dapo_v9_verifier.sh",
+      "bytes": 9715,
+      "sha256": "d005799405ebcea72f786d64390cd9e9c1f2d6d4fff8fd4d144331adc553ecb9"
+    },
+    {
+      "path": "MedSearch/tools/smoke_sft_top32.py",
+      "bytes": 6133,
+      "sha256": "9fb14e95ea8e62e5ca404362c5a516680a70824a1845b946216483d4211a4421"
+    },
+    {
+      "path": "tmp/run_sft_top32_smoke.py",
+      "bytes": 490,
+      "sha256": "00f59853af580cac879b26857d92b3ce56b6501e813662589892d75f42667f0d"
+    },
+    {
+      "path": "tmp/inspect_sft_action_context.py",
+      "bytes": 949,
+      "sha256": "5299191241da55ca190594e3b7233f17d2b470cc3a39c64916bb9cec5b9de367"
+    },
+    {
+      "path": "tmp/inventory_medsearch_cleanup.py",
+      "bytes": 1100,
+      "sha256": "8c97273442cd40a60dcce0c4c52f965c0af2d91781f6bd891b083de98298deaf"
+    }
+  ],
+  "removed_failed_checkpoint_files": [
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/adapter_config.json",
+      "bytes": 1125,
+      "sha256": "2447cfedf82f2453698e06a594f0d3472c10ec640467741552ae7b6f7d5c2288"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/adapter_model.safetensors",
+      "bytes": 7391728,
+      "sha256": "7103a973a55c2cd3837c1cdc93b71955eb0206dc7596e0503d21bb3fcd7ecaa3"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/chat_template.jinja",
+      "bytes": 2507,
+      "sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/optimizer.pt",
+      "bytes": 14869067,
+      "sha256": "ba2e725934dd6b10cf36f5351ae0943506d77c9e0390496cb7eb847852102d87"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/README.md",
+      "bytes": 5296,
+      "sha256": "6fd44c211f92acbf45700303b958f95c520485c3458f2b241feb664c5b1ed0f5"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/rng_state.pth",
+      "bytes": 14709,
+      "sha256": "bcab80925c6307cf75eb08f6792c43be736de6ec2abab417d3e2e0045cc40101"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/scheduler.pt",
+      "bytes": 1465,
+      "sha256": "af3a4541d05b3413a7f9caddd1267ec1b160ed3beb5b5ce82fd8631723d662b9"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/tokenizer.json",
+      "bytes": 11421892,
+      "sha256": "3fd169731d2cbde95e10bf356d66d5997fd885dd8dbb6fb4684da3f23b2585d8"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/tokenizer_config.json",
+      "bytes": 692,
+      "sha256": "1cc816812993bff176eb4f7495433b736f06fba9b6e7b05cac7b4a1780650c95"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/trainer_state.json",
+      "bytes": 913,
+      "sha256": "893861809564ddddb96a6a9712124754c651bea8a76e1959e63acfcb32a2f24b"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013/checkpoint-1/training_args.bin",
+      "bytes": 5329,
+      "sha256": "4be79f91429d766dbf46cbb3ef058a36e9c9d6014f6338a5e54b8ec41eaf547d"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/adapter_config.json",
+      "bytes": 1125,
+      "sha256": "e6d632ecc9debf9ffe211858bf91ec8bba16b61be95eed4f9a16c6dca39d7f9e"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/adapter_model.safetensors",
+      "bytes": 7391728,
+      "sha256": "00d7da9bb080335b36b34e21c64dd2b0335fec2f411aa918db7620818d89cb67"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/chat_template.jinja",
+      "bytes": 2507,
+      "sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/optimizer.pt",
+      "bytes": 14869067,
+      "sha256": "84e028362b3a516fae5acd33a1a55c8835de4002ceaf40f2f40b69ef4d8a0aab"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/README.md",
+      "bytes": 5296,
+      "sha256": "6fd44c211f92acbf45700303b958f95c520485c3458f2b241feb664c5b1ed0f5"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/rng_state.pth",
+      "bytes": 14709,
+      "sha256": "bcab80925c6307cf75eb08f6792c43be736de6ec2abab417d3e2e0045cc40101"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/scheduler.pt",
+      "bytes": 1465,
+      "sha256": "af3a4541d05b3413a7f9caddd1267ec1b160ed3beb5b5ce82fd8631723d662b9"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/tokenizer.json",
+      "bytes": 11421892,
+      "sha256": "3fd169731d2cbde95e10bf356d66d5997fd885dd8dbb6fb4684da3f23b2585d8"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/tokenizer_config.json",
+      "bytes": 692,
+      "sha256": "1cc816812993bff176eb4f7495433b736f06fba9b6e7b05cac7b4a1780650c95"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/trainer_state.json",
+      "bytes": 913,
+      "sha256": "4fb27f38dac48339496cd4befd8196e646cc363d36522ed5745322a54220738a"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_probe2/checkpoint-1/training_args.bin",
+      "bytes": 5329,
+      "sha256": "bb304d8680c3344d8a18e8b6ef133d30ade8ad2d3859343419fdedc2fee3f73b"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/adapter_config.json",
+      "bytes": 1125,
+      "sha256": "2447cfedf82f2453698e06a594f0d3472c10ec640467741552ae7b6f7d5c2288"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/adapter_model.safetensors",
+      "bytes": 7391728,
+      "sha256": "0f8c3eb34702ab5372652121a2a0aab216855e10b3576a75fd6f506d1d2396f0"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/chat_template.jinja",
+      "bytes": 2507,
+      "sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/optimizer.pt",
+      "bytes": 14869067,
+      "sha256": "55b8e7bde808b0f6ebe0f7d271fb118d9e83528f05345fbada51d340b762fbc9"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/README.md",
+      "bytes": 5296,
+      "sha256": "6fd44c211f92acbf45700303b958f95c520485c3458f2b241feb664c5b1ed0f5"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/rng_state.pth",
+      "bytes": 14709,
+      "sha256": "bcab80925c6307cf75eb08f6792c43be736de6ec2abab417d3e2e0045cc40101"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/scheduler.pt",
+      "bytes": 1465,
+      "sha256": "af3a4541d05b3413a7f9caddd1267ec1b160ed3beb5b5ce82fd8631723d662b9"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/tokenizer.json",
+      "bytes": 11421892,
+      "sha256": "3fd169731d2cbde95e10bf356d66d5997fd885dd8dbb6fb4684da3f23b2585d8"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/tokenizer_config.json",
+      "bytes": 692,
+      "sha256": "1cc816812993bff176eb4f7495433b736f06fba9b6e7b05cac7b4a1780650c95"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/trainer_state.json",
+      "bytes": 913,
+      "sha256": "cb85447174db3894c824711653f9be7d6c5c64ec00eb9c755ae20feabcab2958"
+    },
+    {
+      "path": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_verified/checkpoint-1/training_args.bin",
+      "bytes": 5329,
+      "sha256": "1158acd137af373754fb734a725af9e33e9f61da642311217d227745989c9948"
+    }
+  ],
+  "preserved_verified_checkpoint": "MedSearch/outputs/distillation/sft_checkpoint_smoke_20261013_final",
+  "preserved_current_tests": "MedSearch/tests",
+  "dev_evaluation": "deferred by user",
+  "released_bytes": 94778673
+}

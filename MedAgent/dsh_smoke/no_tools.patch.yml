@@ -1,0 +1,11 @@
+# sdk-minimal still exposes a persistent shell. Disable both platform variants.
+- id: persistent-bash
+  disabled: true
+
+- id: persistent-pwsh
+  disabled: true
+
+# Do not upload session-log suffixes during boundary validation.
+- id: session-log-deepseek
+  config:
+    enabled: false

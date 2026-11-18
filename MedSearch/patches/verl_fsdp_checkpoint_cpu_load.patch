@@ -1,0 +1,15 @@
+diff --git a/verl/utils/checkpoint/fsdp_checkpoint_manager.py b/verl/utils/checkpoint/fsdp_checkpoint_manager.py
+index 4ebe819..05f42e1 100644
+--- a/verl/utils/checkpoint/fsdp_checkpoint_manager.py
++++ b/verl/utils/checkpoint/fsdp_checkpoint_manager.py
+@@ -212,7 +212,9 @@ class FSDPCheckpointManager(BaseCheckpointManager):
+             if self.should_load_model:
+                 remote_model_path = os.path.join(local_path, f"model_world_size_{self.world_size}_rank_{self.rank}.pt")
+                 local_model_path = copy_to_local(remote_model_path)
+-                model_state_dict = torch.load(local_model_path, weights_only=False)
++                # Single-rank NO_SHARD may save CUDA storages despite offload_to_cpu.
++                # Stage on CPU to avoid a second full model allocation during reload.
++                model_state_dict = torch.load(local_model_path, map_location="cpu", weights_only=False)
+                 if self.is_lora_only_state_dict(model_state_dict):
+                     result = self.model.load_state_dict(model_state_dict, strict=False)
+                     if result is not None and result.unexpected_keys:

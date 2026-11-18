@@ -1,0 +1,144 @@
+{
+  "teacher": {
+    "repo_id": "PeterJinGo/SearchR1-nq_hotpotqa_train-qwen2.5-7b-it-em-ppo",
+    "revision": "74d46a43224daa612b5f27174e1c58b35587ee92",
+    "config_model_type": "qwen2",
+    "config_vocab_size": 152064
+  },
+  "student": {
+    "repo_id": "Qwen/Qwen2.5-3B-Instruct",
+    "revision": "aa8e72537993ba99e69dfaafa59ed015b17504d1",
+    "config_model_type": "qwen2",
+    "config_vocab_size": 151936
+  },
+  "tokenizer": {
+    "student_token_count": 151665,
+    "teacher_token_count": 151665,
+    "shared_token_count": 151665,
+    "id_mismatch_count": 0,
+    "id_mismatch_examples": [],
+    "student_only_token_count": 0,
+    "student_only_examples": [],
+    "teacher_only_token_count": 0,
+    "teacher_only_examples": [],
+    "max_student_token_id": 151664,
+    "max_teacher_token_id": 151664,
+    "unique_student_token_id_count": 151665,
+    "unique_teacher_token_id_count": 151665,
+    "student_token_ids_contiguous": true,
+    "teacher_token_ids_contiguous": true,
+    "teacher_token_ids_fit_student_output": true,
+    "teacher_model_rows_fit_student_output": false,
+    "config_output_padding_rows": {
+      "student": 271,
+      "teacher": 399,
+      "teacher_rows_beyond_student": 128
+    },
+    "config_special_token_ids": {
+      "student": {
+        "bos_token_id": 151643,
+        "eos_token_id": 151645,
+        "pad_token_id": null
+      },
+      "teacher": {
+        "bos_token_id": null,
+        "eos_token_id": 151645,
+        "pad_token_id": 151643
+      }
+    },
+    "special_tokens_map_equal": true,
+    "student_special_tokens": {
+      "bos_token": null,
+      "eos_token": "<|im_end|>",
+      "unk_token": null,
+      "pad_token": "<|endoftext|>",
+      "additional_special_tokens": [
+        "<|im_start|>",
+        "<|im_end|>",
+        "<|object_ref_start|>",
+        "<|object_ref_end|>",
+        "<|box_start|>",
+        "<|box_end|>",
+        "<|quad_start|>",
+        "<|quad_end|>",
+        "<|vision_start|>",
+        "<|vision_end|>",
+        "<|vision_pad|>",
+        "<|image_pad|>",
+        "<|video_pad|>"
+      ]
+    },
+    "teacher_special_tokens": {
+      "bos_token": null,
+      "eos_token": "<|im_end|>",
+      "unk_token": null,
+      "pad_token": "<|endoftext|>",
+      "additional_special_tokens": [
+        "<|im_start|>",
+        "<|im_end|>",
+        "<|object_ref_start|>",
+        "<|object_ref_end|>",
+        "<|box_start|>",
+        "<|box_end|>",
+        "<|quad_start|>",
+        "<|quad_end|>",
+        "<|vision_start|>",
+        "<|vision_end|>",
+        "<|vision_pad|>",
+        "<|image_pad|>",
+        "<|video_pad|>"
+      ]
+    },
+    "merges_line_count": {
+      "student": 151387,
+      "teacher": 151388
+    },
+    "merges_text_equal_ignoring_header": true,
+    "merges_json_equal": true,
+    "merges_json_count": {
+      "student": 151387,
+      "teacher": 151387
+    },
+    "merges_first_differences": [],
+    "post_processor_equal": true,
+    "pre_tokenizer_equal": true,
+    "normalizer_equal": true,
+    "chat_template_equal": true,
+    "tokenizer_json_model_vocab_equal": true,
+    "sample_encoding_equal": true,
+    "sample_encodings": [
+      {
+        "sample": "<|im_start|>user\nA 65-year-old presents with progressive dyspnea after taking beta blockers. Search for evidence.\n<|im_end|>\n<|im_start|>assistant\n<think>Need clinical evidence.</think><search>pulmonary embolism dyspnea beta blockers</search>",
+        "ids_equal": true,
+        "student_token_count": 53,
+        "teacher_token_count": 53
+      },
+      {
+        "sample": "<|im_start|>assistant\n<answer>Consider pulmonary embolism; assess pretest probability.</answer>",
+        "ids_equal": true,
+        "student_token_count": 19,
+        "teacher_token_count": 19
+      },
+      {
+        "sample": "HbA1c 7.2%, Na+ 132 mmol/L, and eGFR 48 mL/min/1.73 m².",
+        "ids_equal": true,
+        "student_token_count": 37,
+        "teacher_token_count": 37
+      }
+    ]
+  },
+  "file_sha256": {
+    "student": {
+      "merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+      "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+      "tokenizer_config.json": "5b5d4f65d0acd3b2d56a35b56d374a36cbc1c8fa5cf3b3febbbfabf22f359583",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    },
+    "teacher": {
+      "merges.txt": "8831e4f1a044471340f7c0a83d7bd71306a5b867e95fd870f74d0c5308a904d5",
+      "tokenizer.json": "9c5ae00e602b8860cbd784ba82a8aa14e8feecec692e7076590d014d7b7fdafa",
+      "tokenizer_config.json": "57fea41fa99fce34f91450643e48b3bfbb078c32c6831a3c06834f122c200510",
+      "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+    }
+  }
+}

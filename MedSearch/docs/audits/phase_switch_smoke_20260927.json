@@ -1,0 +1,56 @@
+{
+  "prompt_tokens": 20,
+  "action_tokens": 16,
+  "phases": {
+    "student_first_forward": {
+      "seconds": 2.35,
+      "cuda_peak_allocated_gib": 5.892,
+      "cuda_used_gib": 7.797,
+      "host_available_gib": 57.849
+    },
+    "student_offload_and_prepare": {
+      "seconds": 3.48,
+      "cuda_peak_allocated_gib": 5.885,
+      "cuda_used_gib": 1.78,
+      "host_available_gib": 52.098
+    },
+    "teacher_load_and_score": {
+      "seconds": 5.87,
+      "cuda_peak_allocated_gib": 14.286,
+      "cuda_used_gib": 16.157,
+      "host_available_gib": 51.766
+    },
+    "teacher_exit_and_restore_hook": {
+      "seconds": 0.3,
+      "cuda_peak_allocated_gib": 14.258,
+      "cuda_used_gib": 1.78,
+      "host_available_gib": 51.767
+    },
+    "student_restored_forward": {
+      "seconds": 1.19,
+      "cuda_peak_allocated_gib": 5.892,
+      "cuda_used_gib": 7.797,
+      "host_available_gib": 56.787
+    }
+  },
+  "teacher_score_shape": [
+    1,
+    16
+  ],
+  "first_action_token_id": 3862,
+  "restored_action_token_id": 3862,
+  "hook_calls": [
+    {
+      "device": "cpu",
+      "model": false,
+      "optimizer": true,
+      "grad": false
+    },
+    {
+      "device": "device",
+      "model": false,
+      "optimizer": true,
+      "grad": false
+    }
+  ]
+}
