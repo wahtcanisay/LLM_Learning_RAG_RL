@@ -1,0 +1,8 @@
+- name: medsearch_agent
+  _target_: MedSearch.rl.medsearch_agent_loop.MedSearchAgentLoop
+  search_url: http://127.0.0.1:8001/retrieve
+  top_k: 3
+  request_timeout: 30.0
+  max_turns: 2
+  max_observation_length: 500
+  max_action_length: 500

@@ -45,7 +45,17 @@ elif package_version == '0.6.3':
     from .vllm_v_0_6_3.llm import LLM
     from .vllm_v_0_6_3.llm import LLMEngine
     from .vllm_v_0_6_3 import parallel_state
+elif package_version == '0.27.1':
+    # Search-R1 keeps the legacy synchronous rollout contract, while this
+    # adapter translates it to vLLM's current public LLM and RL weight-transfer
+    # APIs.  Keeping the version-specific code here prevents the old copied
+    # vLLM internals from leaking into the trainer and Agent loop.
+    vllm_version = '0.27.1'
+    from .vllm_v_0_27_1.llm import LLM
+    from .vllm_v_0_27_1.llm import LLMEngine
+    from .vllm_v_0_27_1 import parallel_state
 else:
     raise ValueError(
-        f'vllm version {package_version} not supported. Currently supported versions are 0.3.1, 0.4.2, 0.5.4 and 0.6.3.'
+        f'vllm version {package_version} not supported. Currently supported versions are '
+        '0.3.1, 0.4.2, 0.5.4, 0.6.3 and 0.27.1.'
     )

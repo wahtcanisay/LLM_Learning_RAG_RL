@@ -1,0 +1,12 @@
+{
+  "checkpoint": "/workspace/code_list/some tricks/LLMLeanring/MedSearch/models/external_baselines/SearchR1-Qwen2.5-7B-Instruct",
+  "dtype": "torch.bfloat16",
+  "response_tokens": 44,
+  "scored_tokens": 28,
+  "observation_tokens": 16,
+  "score_min": -24.280149459838867,
+  "score_max": 0.0,
+  "elapsed_seconds": 51.53,
+  "cuda_peak_allocated_gib": 14.29,
+  "status": "passed"
+}

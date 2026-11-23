@@ -1,0 +1,3 @@
+# Add-on for the existing llm-pytorch container, not a replacement training stack.
+# Install with --no-deps to preserve its validated torch/transformers versions.
+bitsandbytes==0.50.2

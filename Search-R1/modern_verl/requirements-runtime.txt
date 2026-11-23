@@ -1,0 +1,6 @@
+peft
+pylatexenc
+tensorboard
+torchdata
+tensordict==0.10.0
+transformers>=5.5.3,<5.11,!=5.6.0

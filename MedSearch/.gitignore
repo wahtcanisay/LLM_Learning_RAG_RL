@@ -1,0 +1,4 @@
+# Local datasets, indexes and retired data-preparation artifacts.
+# The repository keeps only the project specification; these assets stay local.
+/data/
+/archive/

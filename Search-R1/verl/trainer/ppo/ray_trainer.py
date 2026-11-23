@@ -509,9 +509,11 @@ class RayPPOTrainer(object):
 
     def _validate(self):
         """
-        用确定性 rollout（``do_sample=False``）计算各 data_source 的平均规则 reward。
+        对独立 val DataLoader 生成轨迹，并返回各 data_source 的平均规则 reward。
 
-        ``do_search=True`` 时验证也复用 LLMGenerationManager，但不会按 n_agent 重复题目。
+        它只用于日志评测：不做 n_agent 组内采样、advantage 或 actor update。当前多轮
+        路径创建 active 子批次时没有继续传递 ``do_sample=False`` 等 meta_info；该问题
+        留到真实评测阶段验证，本阶段不深入本函数。
         """
         import torch
         reward_tensor_lst = []
