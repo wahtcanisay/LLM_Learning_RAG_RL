@@ -54,11 +54,12 @@ class RunSearchCycleTest(unittest.TestCase):
         search = FakeSearchAgent()
         verifier = FakeVerifier(*verifications)
         result = run_search_cycle(
-            "What is the evidence?",
-            "initial query",
-            search,
-            verifier,
+            question="What is the evidence?",
+            instruction="Search for supporting evidence.",
+            searchagent=search,
+            verifier=verifier,
             max_retries=max_retries,
+            initial_search_hint="initial direction",
         )
         return result, search, verifier
 
@@ -68,12 +69,13 @@ class RunSearchCycleTest(unittest.TestCase):
 
         result = run_search_cycle(
             question="question",
-            initial_query="query",
+            instruction="Search for supporting evidence.",
             searchagent=search,
             verifier=verifier,
         )
 
         self.assertIs(result.status, CycleStatus.VERIFIED)
+        self.assertEqual(search.tasks[0].query, "Search for supporting evidence.\nQuestion: question")
 
     def test_first_pass_verifies_after_one_search(self):
         result, search, verifier = self.run_cycle(
@@ -116,7 +118,14 @@ class RunSearchCycleTest(unittest.TestCase):
         self.assertEqual(len(search.tasks), 2)
         self.assertEqual(len(verifier.calls), 2)
         self.assertEqual(search.tasks[1].attempt, 1)
-        self.assertEqual(search.tasks[1].query, "refined query")
+        self.assertEqual(
+            search.tasks[0].query,
+            "Search for supporting evidence.\nQuestion: What is the evidence?\nSearch hint: initial direction",
+        )
+        self.assertEqual(
+            search.tasks[1].query,
+            "Search for supporting evidence.\nQuestion: What is the evidence?\nSearch hint: refined query",
+        )
         self.assertEqual(search.tasks[1].verifier_feedback, ("MISSING_SOURCE",))
 
     def test_second_retry_abstains_without_third_search(self):

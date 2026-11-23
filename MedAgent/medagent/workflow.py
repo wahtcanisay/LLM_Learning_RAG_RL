@@ -8,6 +8,7 @@ from .contracts import (
     VerificationVerdict,
     CycleStatus,
 )
+from .prompts import build_search_prompt
 
 # 预留接口设计
 class SearchAgent(Protocol):
@@ -20,10 +21,12 @@ class Verifier(Protocol):
 
 def run_search_cycle(
         question: str,
-        initial_query: str,
+        instruction: str,
         searchagent: SearchAgent,
         verifier: Verifier,
         max_retries: int = 2,
+        *,
+        initial_search_hint: str = "",
 ) -> SearchCycleResult:
     """执行搜索、验证和按反馈重试，返回本轮循环的最终状态。"""
 
@@ -34,11 +37,14 @@ def run_search_cycle(
     # endregion
 
     # 保存首次搜索所需的查询和验证反馈。
-    query = initial_query
+    current_hint = initial_search_hint
     feedback = None
     attempts = 0
 
     for attempt in range(max_retries):
+
+        # 拼接新一轮query
+        query = build_search_prompt(question, instruction, search_hint=current_hint)
         # 将当前查询和上轮失败反馈封装成一次搜索任务。
         seach_task = SearchTask(
                 question=question,
@@ -89,7 +95,7 @@ def run_search_cycle(
             if retry_hint is None or not retry_hint.strip():
                 raise ValueError("RETRY requires a non-empty retry_query_hint")
             # endregion
-            query = retry_hint.strip()
+            current_hint = retry_hint
             feedback = verification.failure_codes
             
         else:

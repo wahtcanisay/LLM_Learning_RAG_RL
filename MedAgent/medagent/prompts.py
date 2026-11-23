@@ -41,3 +41,20 @@ def get_system_prompt(role: str) -> str:
     if role not in role_dict:
         raise ValueError(f"unknown role: {role!r}")
     return role_dict[role]
+
+
+def build_search_prompt(
+    question: str,
+    instruction: str,
+    *,
+    search_hint: str = "",
+) -> str:
+    """组装给 3B 的 Search-R1 用户消息。"""
+
+    prompt = f"{instruction}\nQuestion: {question.strip()}"
+
+    search_hint = search_hint.strip()
+    if search_hint:
+        prompt += f"\nSearch hint: {search_hint}"
+
+    return prompt

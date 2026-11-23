@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-- 当前阶段：P3-c，继续 SearchAgent 接线。开发占位默认用 `Qwen2.5-3B-Instruct` + Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用之后产出的 RL+OPD 权重。权重由调用方指定，接线共用。
+- 当前阶段：P3 已用假后端串通首轮 Planner → SearchAgent → EvidenceVerifier。带固定 Planner 提示的新输入已在 3B SFT + BM25 上通过真实单题接线验收，候选与该题参考标签不一致。开发用 `Qwen2.5-3B-Instruct` + Top32 SFT LoRA `checkpoint-1000`，正式 benchmark 使用之后产出的 RL+OPD 权重。
 - Top32 SFT 单题已通过真实 BM25 联调。模型生成一次搜索，现有 `/retrieve` 返回 3 段，逐字核对后确认全部进入第二轮实际输入，模型随后生成非空终答。BM25 参数留到正式 `main_loop` 初始化 `SearchAgent` 时配置。
 - P3-d 的 `EvidenceVerifier.verify()` 已通过假后端验收。空答案短路、结构化审查输入、三种返回以及 `RETRY` 搜索词与失败码的传递均已核对。真实重搜的提示词已列入后端联调待办。
 - 2026-11-16 调整实施顺序。先完成 Verifier 的输入组装和业务接口，用现有假后端验收流程。真实 DSH adapter、API 配置和 `main_loop` 中的依赖装配留到后端阶段一起学习与联调。
@@ -29,14 +29,44 @@
 | P2-b | 预算账本与调用次数约束 | 延后 | 当前不接真实 API、不跑批量实验；保留设计位置，产生实际成本前再实现 |
 | P2-c | 公共审计 trace | 完成 | redact、start、append、finish、replay；全量56 tests passed |
 | P2-d | 完整 workflow 状态机 | 等待依赖 | DIRECT/EMERGENCY/Generator 具备后再实现；当前不写空迁移表 |
-| P3 | retrieval / 本地 SearchAgent / verification | P3-c 当前任务 | Evidence 规范化与检索假响应检查通过；真实 BM25 只读请求待服务可用时记录 |
+| P3 | retrieval / 本地 SearchAgent / planning / verification | 假后端闭环及真实搜索单题已验，待正式接线 | 真实 3B 已验带提示输入、BM25 证据回填与终答动作，Planner/Verifier 整体仍用假后端验收 |
 | P4～P6 | evaluation、V1/V2 实验 | 未开始 | 见工程架构书与实验书 |
 
 ## 后端联调待办
 
-- [ ] 接真实 3B 重搜时修正 `workflow.py` 的 `RETRY` 分支。当前只用 `retry_query_hint` 作为第二次 SearchAgent 的用户消息。装配时应保留首轮的搜索指令和原题，再附上 Verifier 建议的补搜词。验收检查第二轮发给 3B 的实际消息包含这三项，并核对新一轮的搜索结果进入该轮 Verifier。此项随正式后端联调处理。
+- [ ] 实跑新版 `workflow.py` 的自动补搜。用真实 3B 和 BM25 核对补搜时实际送入模型的 token，并检查新证据回传给 Verifier。Python 层的完整消息和新证据已通过模拟联调。
 
 ## 已完成记录
+
+### 2026-11-23：自动补搜消息与测试迁移
+
+- `run_search_cycle()` 接收 `instruction` 和可选的 `initial_search_hint`。每次尝试重新组装用户消息。`RETRY` 时保留指令和原题，只替换提示，并继续传递失败码。
+- 将 workflow、Verifier 和 Planner 搜索联调三处测试迁移到新调用方式。模拟 `RETRY → PASS` 验收确认两次 SearchAgent 的输入各带自己的提示，第二轮 Verifier 只收到当轮新证据，达到两次尝试上限后不会再搜。
+- `python tmp\docker_medsearch.py --log MedAgent\.runtime\retry_prompt_migration_20261123.log env CUDA_VISIBLE_DEVICES= PYTHONPATH=MedAgent python -m unittest discover -s MedAgent/tests -v`，Docker CPU 78 项通过，退出 0。模型动作、tokenizer、检索和角色回复均使用测试替身。
+
+### 2026-11-23：人工 Planner / Verifier 代演一次补搜
+
+- 用户指定暂由 Codex 代演 Planner 和 Verifier。首轮候选 `visual changes` 对照参考标签 `Ophthalmoplegia` 未命中。复现首轮 BM25 原查询并匹配实际输入的证据哈希，确认三段都在讨论垂体卒中，人工判 `RETRY`，提示 `cavernous sinus thrombosis sinus infection cranial nerve findings`。补搜词未包含参考答案。
+- 补搜保留 Search-R1 指令与原题，更换提示。首次 CMD 引号拆分导致参数解析失败，退出 2，尚未加载模型。脚本改为接收多词参数后，在仓库根目录运行 `python tmp\docker_medsearch.py --log MedAgent\.runtime\planned_live_bm25_manual_retry_20261123_v2.log env VLLM_WSL2_ENABLE_PIN_MEMORY=1 python MedAgent/.runtime/check_planned_live_bm25.py --live --search-hint cavernous sinus thrombosis sinus infection cranial nerve findings`，退出 0。
+- 同一 Top32 SFT 的实际搜索词为 `sinus infection and cavernous sinus thrombosis neurological findings`。BM25 的三段证据全部进入第二轮，3B 回答 `cranial nerve palsies`。按哈希回读的证据支持这一大类，但未明确到题目所需的具体眼球运动障碍。候选仍未命中参考标签，已用完一次补搜，人工终态为 `ABSTAIN`。原证据和补搜证据分别保存在 `.runtime/manual_verifier_first_20261123.json`、`.runtime/manual_verifier_retry_20261123.json`。这是两次单题执行间的人工反馈，正式 workflow 的真实补搜接线仍待做。
+
+### 2026-11-23：带固定 Planner 提示的真实 3B + BM25 单题
+
+- 在 `llm-pytorch` 执行 `python tmp\docker_medsearch.py --log MedAgent\.runtime\planned_live_bm25_gpu_20261123.log env VLLM_WSL2_ENABLE_PIN_MEMORY=1 python MedAgent/.runtime/check_planned_live_bm25.py --live`，退出 0。样本 `medical-o1-verifiable:18322`，Qwen2.5-3B + Top32 SFT `checkpoint-1000`，适配器 SHA256 `8f51a6a6929e1d3292d8e2fcaa98269013a23968e966bc3ce1a3067c0c2e5144`。BF16，seed 42，温度 0，2048 上下文，每动作最多 500 tokens，最多两次动作。
+- 首轮实际输入与 CPU 核对的 211 tokens 完全一致。模型在 `</search>` 停止，搜索词与固定提示相同，为 `pituitary apoplexy clinical presentation`。BM25 返回 3 段，检索耗时 0.003 秒。第二轮 805 个实际输入 tokens 解码后完整包含这 3 段证据，并在 `</answer>` 停止。两次生成分别 1.100 和 1.601 秒，不含初始化。
+- 候选是 `visual changes`，dev 参考标签是 `Ophthalmoplegia`，文本不匹配。此次通过的是实际接线和动作格式；先前历史输入的换行也不同，不能据此归因于新增提示。未调用真实 Planner 或 Verifier。启动前 GPU 空闲 29,880 MiB，未独立采样峰值。
+
+### 2026-11-23：真实单题脚本与 CPU 输入核对
+
+- 新增临时验收脚本 `.runtime/check_planned_live_bm25.py`，固定样本 `medical-o1-verifiable:18322`、Top32 SFT `checkpoint-1000` 和测试用 Planner 提示。`--live` 分支会通过既有 SearchAgent 请求 vLLM 与 BM25，并检查首轮输入、第二轮证据和终答闭标签。
+- 首次 CPU 检查错误地要求新提示词与历史 token 完全相同，原日志 `.runtime/planned_live_bm25_input_check.log`。核对原始 dev 用户消息发现 `Question:` 前存的是字面量 `\n`，而新组装使用真实换行。当前脚本分别检查历史 token 和新格式。
+- `python tmp\docker_medsearch.py --log MedAgent\.runtime\planned_live_bm25_input_check_v2.log env CUDA_VISIBLE_DEVICES= python MedAgent/.runtime/check_planned_live_bm25.py` 退出 0。历史消息精确复现 202 tokens，新组装无提示 200、有提示 211 tokens。解码确认完整指令、原题和提示保留。本次 CPU 核对未加载权重。
+
+### 2026-11-23：Search-R1 输入与 Planner 搜索单题联调
+
+- `build_search_prompt()` 首次验收发现 `Question:` 后缺少训练格式里的空格。补齐分隔后，无提示、空白提示和非空提示用例通过。
+- 以 `838e549` 为基线的工作区，用训练脚本的 `INSTRUCTION` 以及合成问题 `What is the sample identifier?`，将真实 Python Planner、SearchAgent 和 EvidenceVerifier 接入现有 `run_search_cycle()`。确认首轮含原题与 Planner 提示，检索用 `<search>` 中的词，检索段落进入第二轮并传给 Verifier。合成候选 `ALPHA-7` 在 1 次尝试后得到预设 `PASS` 和 `VERIFIED`。
+- 在仓库根目录运行 `python tmp\docker_medsearch.py --log MedAgent\.runtime\planned_search_smoke_20261123.log env CUDA_VISIBLE_DEVICES= PYTHONPATH=MedAgent python -m unittest discover -s MedAgent/tests -v`，Docker CPU 共 78 项通过，退出 0。角色回复、3B 动作、tokenizer 和检索均为测试替身，未加载模型或调用外部 API。该实验只覆盖首轮通过的路线，真实补搜仍在联调待办。
 
 ### 2026-11-18：Planner 业务入口验收
 

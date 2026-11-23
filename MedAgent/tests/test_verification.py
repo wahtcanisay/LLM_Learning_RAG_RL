@@ -70,13 +70,22 @@ class EvidenceVerifierTest(unittest.TestCase):
             SearchResult(1, "second answer", [Evidence("second passage")], None),
         ]))
 
-        result = run_search_cycle("original question", "initial query", searchagent, verifier)
+        result = run_search_cycle(
+            question="original question",
+            instruction="Search for supporting evidence.",
+            searchagent=searchagent,
+            verifier=verifier,
+            initial_search_hint="initial direction",
+        )
 
         self.assertEqual((result.status, result.attempts), (CycleStatus.VERIFIED, 2))
         calls = searchagent.run.call_args_list
         self.assertEqual(len(calls), 2)
         second_task = calls[1].kwargs["task"]
-        self.assertEqual(second_task.query, "targeted search")
+        self.assertEqual(
+            second_task.query,
+            "Search for supporting evidence.\nQuestion: original question\nSearch hint: targeted search",
+        )
         self.assertEqual(second_task.verifier_feedback, ("MISSING_EVIDENCE",))
         [(prompt, _)] = accept.calls
         self.assertEqual(json.loads(prompt)["evidence"], ["second passage"])
